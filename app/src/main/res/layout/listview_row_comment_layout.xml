@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <org.hisp.dhis.mobile.datacapture.ui.views.FontTextView
+            android:id="@+id/comment_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="6dp"
+            android:singleLine="true"
+            android:textColor="@color/dark_navy_blue"
+            android:textSize="14sp"
+            app:font="@string/light_font_name" />
+
+        <org.hisp.dhis.mobile.datacapture.ui.views.FontTextView
+            android:id="@+id/comment_last_updated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/darker_grey"
+            android:textSize="12sp"
+            app:font="@string/regular_font_name" />
+    </LinearLayout>
+
+    <org.hisp.dhis.mobile.datacapture.ui.views.FontTextView
+        android:id="@+id/interpretation_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:textSize="15sp"
+        app:font="@string/light_font_name" />
+
+</LinearLayout>

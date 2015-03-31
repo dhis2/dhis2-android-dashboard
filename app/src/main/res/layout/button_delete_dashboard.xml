@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.hisp.dhis.mobile.datacapture.ui.views.FontButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/delete_dashboard_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/button_delete_selector"
+    android:text="@string/delete"
+    android:textColor="@android:color/white"
+    android:textSize="17sp"
+    app:font="@string/bold_font_name" />
