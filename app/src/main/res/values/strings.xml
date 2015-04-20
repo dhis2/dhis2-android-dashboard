@@ -1,0 +1,45 @@
+<resources>
+    <string name="toolbar_title">DHIS2</string>
+    <string name="app_name">DHIS2 Dashboard</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_launcher">LauncherActivity</string>
+
+    <string name="description">ImageView description</string>
+    <string name="drawer_open">Open navigation menu</string>
+    <string name="drawer_close">Close navigation menu</string>
+
+    <!-- START LoginActivity resources -->
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="server_url">Enter server URL</string>
+    <string name="log_in">Log in</string>
+    <!-- END -->
+
+    <!-- START ConfirmUserActivity resources -->
+    <string name="delete_and_log_out">Delete and log out</string>
+    <string name="re_log_in">Re-Log In</string>
+    <!-- END -->
+
+    <!-- START MenuActivity resources -->
+    <string name="analytics">ANALYTICS</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="interpretations">Interpretations</string>
+    <string name="profile_section">PROFILE</string>
+    <string name="my_account">Account</string>
+    <string name="settings">Settings</string>
+    <string name="log_out">Log out</string>
+    <string name="other">OTHER</string>
+    <string name="about">About</string>
+    <!-- END -->
+
+    <!-- START Toast Messages -->
+    <string name="no_network_connection">No network connection</string>
+    <string name="bad_response">Bad server response</string>
+    <string name="wrong_credentials">Wrong username or password</string>
+    <string name="wrong_address">Wrong server address</string>
+    <string name="title_activity_menu">MenuActivity</string>
+    <string name="title_activity_confirm_user">ConfirmUserActivity</string>
+    <!-- END -->
+</resources>
