@@ -26,66 +26,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.ui.fragments.adapters;
+package org.dhis2.android.dashboard.api.controllers;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-
+import org.dhis2.android.dashboard.api.DhisManager;
+import org.dhis2.android.dashboard.api.network.APIException;
+import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
-import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardFragment;
 
 import java.util.List;
 
-public class DashboardAdapter extends FragmentPagerAdapter {
-    private static final String EMPTY_TITLE = "";
-    private List<Dashboard> mDashboards;
+public final class DashboardSyncController implements IController<Object> {
+    private final DhisManager mDhisManager;
+    private final SessionHandler mSessionHandler;
 
-    public DashboardAdapter(FragmentManager fm) {
-        super(fm);
+    public DashboardSyncController(DhisManager dhisManager, SessionHandler handler) {
+        mDhisManager = dhisManager;
+        mSessionHandler = handler;
     }
 
     @Override
-    public Fragment getItem(int position) {
-        if (mDashboards != null && mDashboards.size() > 0) {
-            return new DashboardFragment();
-        } else {
-            return null;
-        }
-    }
+    public Object run() throws APIException {
+        GetDashboardsController controller = new GetDashboardsController(
+                mDhisManager, mSessionHandler.get()
+        );
 
-    @Override
-    public int getCount() {
-        if (mDashboards != null) {
-            return mDashboards.size();
-        } else {
-            return 0;
+        List<Dashboard> dashboards = controller.run();
+        for (Dashboard dashboard : dashboards) {
+            dashboard.save(false);
         }
-    }
 
-    @Override
-    public CharSequence getPageTitle(int position) {
-        if (mDashboards != null && mDashboards.size() > 0) {
-            return mDashboards.get(position).getName();
-        } else {
-            return EMPTY_TITLE;
-        }
-    }
-
-    public Dashboard getDashboard(int position) {
-        if (mDashboards != null && mDashboards.size() > 0) {
-            return mDashboards.get(position);
-        } else {
-            return null;
-        }
-    }
-
-    public void swapData(List<Dashboard> dashboards) {
-        boolean hasToNotifyAdapter = mDashboards != dashboards;
-        mDashboards = dashboards;
-
-        if (hasToNotifyAdapter) {
-            notifyDataSetChanged();
-        }
+        return new Object();
     }
 }

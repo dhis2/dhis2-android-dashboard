@@ -30,6 +30,8 @@ package org.dhis2.android.dashboard.ui.fragments;
 
 import android.support.v4.app.Fragment;
 
+import org.dhis2.android.dashboard.api.DhisApplication;
+import org.dhis2.android.dashboard.api.DhisService;
 import org.dhis2.android.dashboard.api.utils.EventBus;
 
 public class BaseFragment extends Fragment {
@@ -44,5 +46,13 @@ public class BaseFragment extends Fragment {
     public void onResume() {
         super.onResume();
         EventBus.register(this);
+    }
+
+    public DhisService getService() {
+        if (isAdded() && getActivity() != null) {
+            return ((DhisApplication) getActivity().getApplication()).getDhisService();
+        } else {
+            throw new IllegalArgumentException("Fragment is not attached to Activity");
+        }
     }
 }

@@ -33,6 +33,7 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.tasks.GetDashboardsTask;
+import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
 import org.dhis2.android.dashboard.api.persistence.models.Session;
 import org.joda.time.DateTime;

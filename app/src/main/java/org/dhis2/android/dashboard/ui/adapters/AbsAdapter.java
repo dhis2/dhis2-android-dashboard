@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.ui.fragments.adapters;
+package org.dhis2.android.dashboard.ui.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

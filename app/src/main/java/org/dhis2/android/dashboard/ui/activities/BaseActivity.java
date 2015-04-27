@@ -75,6 +75,8 @@ public class BaseActivity extends ActionBarActivity {
     }
 
     protected void showApiExceptionMessage(APIException apiException) {
+        apiException.printStackTrace();
+
         if (apiException.isUnknownError()) {
             throw new IllegalArgumentException("Unexpected error");
         }

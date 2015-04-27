@@ -26,33 +26,66 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.network.converters;
+package org.dhis2.android.dashboard.ui.adapters;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 
 import java.util.List;
 
-public class DashboardConverter implements IJsonConverter<List<Dashboard>, List<Dashboard>> {
-    private static final String DASHBOARDS_NODE = "dashboards";
-    private final ObjectMapper mMapper;
+public class DashboardAdapter extends FragmentPagerAdapter {
+    private static final String EMPTY_TITLE = "";
+    private List<Dashboard> mDashboards;
 
-    public DashboardConverter(ObjectMapper mapper) {
-        mMapper = mapper;
+    public DashboardAdapter(FragmentManager fm) {
+        super(fm);
     }
 
     @Override
-    public List<Dashboard> deserialize(String source) throws Throwable {
-        JsonNode rootNode = mMapper.readTree(source);
-        return mMapper.convertValue(rootNode.get(DASHBOARDS_NODE),
-                new TypeReference<List<Dashboard>>() { });
+    public Fragment getItem(int position) {
+        if (mDashboards != null && mDashboards.size() > 0) {
+            return new BaseFragment();
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public String serialize(List<Dashboard> object) throws Throwable {
-        return null;
+    public int getCount() {
+        if (mDashboards != null) {
+            return mDashboards.size();
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        if (mDashboards != null && mDashboards.size() > 0) {
+            return mDashboards.get(position).getName();
+        } else {
+            return EMPTY_TITLE;
+        }
+    }
+
+    public Dashboard getDashboard(int position) {
+        if (mDashboards != null && mDashboards.size() > 0) {
+            return mDashboards.get(position);
+        } else {
+            return null;
+        }
+    }
+
+    public void swapData(List<Dashboard> dashboards) {
+        boolean hasToNotifyAdapter = mDashboards != dashboards;
+        mDashboards = dashboards;
+
+        if (hasToNotifyAdapter) {
+            notifyDataSetChanged();
+        }
     }
 }

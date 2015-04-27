@@ -28,22 +28,60 @@
 
 package org.dhis2.android.dashboard.api.persistence.models;
 
-public final class UserAccount extends BaseIdentifiableModel {
-    private String displayName;
-    private String firstName;
-    private String surname;
-    private String gender;
-    private String birthday;
-    private String introduction;
-    private String education;
-    private String employer;
-    private String interests;
-    private String jobTitle;
-    private String languages;
-    private String email;
-    private String phoneNumber;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public final class UserAccount {
+    @JsonProperty("id") private String id;
+    @JsonProperty("created") private String created;
+    @JsonProperty("lastUpdated") private String lastUpdated;
+    @JsonProperty("name") private String name;
+    @JsonProperty("displayName") private String displayName;
+    @JsonProperty("firstName") private String firstName;
+    @JsonProperty("surname") private String surname;
+    @JsonProperty("gender") private String gender;
+    @JsonProperty("birthday") private String birthday;
+    @JsonProperty("introduction") private String introduction;
+    @JsonProperty("education") private String education;
+    @JsonProperty("employer") private String employer;
+    @JsonProperty("interests") private String interests;
+    @JsonProperty("jobTitle") private String jobTitle;
+    @JsonProperty("languages") private String languages;
+    @JsonProperty("email") private String email;
+    @JsonProperty("phoneNumber") private String phoneNumber;
 
     public UserAccount() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
+    public String getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(String lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDisplayName() {

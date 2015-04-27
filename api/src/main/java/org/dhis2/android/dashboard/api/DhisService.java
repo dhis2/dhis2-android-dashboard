@@ -33,9 +33,9 @@ import android.net.Uri;
 import org.dhis2.android.dashboard.api.job.Job;
 import org.dhis2.android.dashboard.api.job.JobExecutor;
 import org.dhis2.android.dashboard.api.job.NetworkJob;
-import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.models.Credentials;
+import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
@@ -45,6 +45,7 @@ public final class DhisService {
     public static final int LOG_OUT_JOB_ID = 3;
 
     public static final int SYNC_META_DATA = 4;
+    public static final int SYNC_DASHBOARDS = 5;
 
     private DhisManager mDhisManager;
 
@@ -94,6 +95,19 @@ public final class DhisService {
             @Override
             public Object execute() throws APIException {
                 mDhisManager.syncMetaData();
+                return new Object();
+            }
+        });
+    }
+
+    public void syncDashboards() {
+        System.out.println("*** syncDashboards() ***");
+        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS) {
+
+            @Override
+            public Object execute() throws APIException {
+                System.out.println("Sync dashboards job is started");
+                mDhisManager.syncDashboards();
                 return new Object();
             }
         });

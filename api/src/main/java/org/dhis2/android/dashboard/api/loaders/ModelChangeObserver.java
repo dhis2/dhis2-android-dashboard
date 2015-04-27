@@ -35,17 +35,22 @@ import com.raizlabs.android.dbflow.structure.Model;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public class ModelChangeObserver<ModelClass extends Model> implements FlowContentObserver.ModelChangeListener {
+public class ModelChangeObserver<ModelClass extends Model>
+        implements FlowContentObserver.ModelChangeListener {
     private static final String TAG = ModelChangeObserver.class.getSimpleName();
+    private static final long NOTIFICATION_THRESHOLD = 128;
 
     private final DbLoader<?> mLoader;
     private final Class<ModelClass> mModelClass;
     private final FlowContentObserver mObserver;
 
+    private long mNextNotificationTime;
+
     public ModelChangeObserver(Class<ModelClass> modelClass, DbLoader<?> loader) {
         mModelClass = isNull(modelClass, "Class<ModelClass> object must not be null");
         mLoader = isNull(loader, "DbLoader must not be null");
         mObserver = new FlowContentObserver();
+        mNextNotificationTime = System.currentTimeMillis();
     }
 
     public void registerObserver() {
@@ -61,32 +66,41 @@ public class ModelChangeObserver<ModelClass extends Model> implements FlowConten
     }
 
     @Override
-    public void onModelChanged() {
-        Log.d(TAG, "onModelChanged()");
-        mLoader.onContentChanged();
+    public synchronized void onModelSaved() {
+        Log.v(TAG, "onModelSaved()");
+        notifyLoader();
     }
 
     @Override
-    public void onModelSaved() {
-        Log.d(TAG, "onModelSaved()");
-        mLoader.onContentChanged();
+    public synchronized void onModelDeleted() {
+        Log.v(TAG, "onModelDeleted()");
+        notifyLoader();
     }
 
     @Override
-    public void onModelDeleted() {
-        Log.d(TAG, "onModelDeleted()");
-        mLoader.onContentChanged();
+    public synchronized void onModelChanged() {
+        Log.v(TAG, "onModelChanged()");
+        notifyLoader();
     }
 
     @Override
-    public void onModelInserted() {
-        Log.d(TAG, "onModelInserted()");
-        mLoader.onContentChanged();
+    public synchronized void onModelInserted() {
+        Log.v(TAG, "onModelInserted()");
+        notifyLoader();
     }
 
     @Override
-    public void onModelUpdated() {
-        Log.d(TAG, "onModelUpdated()");
-        mLoader.onContentChanged();
+    public synchronized void onModelUpdated() {
+        Log.v(TAG, "onModelUpdated()");
+        notifyLoader();
+    }
+
+    private void notifyLoader() {
+        long currentTime = System.currentTimeMillis();
+        if (mNextNotificationTime < currentTime) {
+            Log.d(TAG, "*** onContentChanged() *** is called on Loader");
+            mLoader.onContentChanged();
+            mNextNotificationTime = System.currentTimeMillis() + NOTIFICATION_THRESHOLD;
+        }
     }
 }

@@ -31,12 +31,12 @@ package org.dhis2.android.dashboard.api;
 import android.content.Context;
 import android.net.Uri;
 
+import org.dhis2.android.dashboard.api.controllers.DashboardSyncController;
 import org.dhis2.android.dashboard.api.controllers.IController;
 import org.dhis2.android.dashboard.api.controllers.InvalidateUserController;
 import org.dhis2.android.dashboard.api.controllers.LogInUserController;
 import org.dhis2.android.dashboard.api.controllers.LogOutUserController;
 import org.dhis2.android.dashboard.api.controllers.MetaDataController;
-import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.http.Response;
 import org.dhis2.android.dashboard.api.network.managers.NetworkManager;
@@ -44,6 +44,7 @@ import org.dhis2.android.dashboard.api.network.models.Credentials;
 import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
 import org.dhis2.android.dashboard.api.persistence.handlers.UserAccountHandler;
 import org.dhis2.android.dashboard.api.persistence.models.Session;
+import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
 
 import java.net.HttpURLConnection;
 
@@ -123,6 +124,12 @@ public class DhisManager extends NetworkManager {
                 mContext, this, mSessionHandler
         );
         runController(metaDataController);
+    }
+
+    public void syncDashboards() throws APIException {
+        runController(
+                new DashboardSyncController(this, mSessionHandler)
+        );
     }
 
     // we need this method in order to catch certain types of exceptions.
