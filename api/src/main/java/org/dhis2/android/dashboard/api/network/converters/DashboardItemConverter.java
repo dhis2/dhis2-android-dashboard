@@ -48,7 +48,7 @@ public final class DashboardItemConverter implements IJsonConverter<List<Dashboa
     @Override public List<DashboardItem> deserialize(String source) throws Throwable {
         JsonNode rootNode = mMapper.readTree(source);
         return mMapper.convertValue(rootNode.get(NODE),
-                new TypeReference<List<Dashboard>>() { });
+                new TypeReference<List<DashboardItem>>() { });
     }
 
     @Override public String serialize(List<DashboardItem> object) throws Throwable {
