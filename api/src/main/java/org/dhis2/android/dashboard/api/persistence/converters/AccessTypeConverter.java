@@ -33,7 +33,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.raizlabs.android.dbflow.converter.TypeConverter;
 
 import org.dhis2.android.dashboard.api.persistence.models.Access;
-import org.dhis2.android.dashboard.api.utils.ObjectMapperProvide;
+import org.dhis2.android.dashboard.api.utils.JsonMapperProvider;
 
 import java.io.IOException;
 
@@ -44,7 +44,7 @@ public final class AccessTypeConverter extends TypeConverter<String, Access> {
         String serializedData = null;
         if (model != null) {
             try {
-                serializedData = ObjectMapperProvide.getInstance()
+                serializedData = JsonMapperProvider.getInstance()
                         .writeValueAsString(model);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
@@ -57,7 +57,7 @@ public final class AccessTypeConverter extends TypeConverter<String, Access> {
         Access access = null;
         if (data != null) {
             try {
-                access = ObjectMapperProvide.getInstance()
+                access = JsonMapperProvider.getInstance()
                         .readValue(data, Access.class);
             } catch (IOException e) {
                 e.printStackTrace();

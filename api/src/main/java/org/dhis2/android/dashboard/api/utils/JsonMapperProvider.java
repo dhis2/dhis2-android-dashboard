@@ -31,10 +31,10 @@ package org.dhis2.android.dashboard.api.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
-public class ObjectMapperProvide {
+public class JsonMapperProvider {
     private static ObjectMapper mMapper;
 
-    private ObjectMapperProvide() {
+    private JsonMapperProvider() {
         // hidden constructor
     }
 
