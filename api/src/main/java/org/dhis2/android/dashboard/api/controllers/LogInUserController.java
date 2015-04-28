@@ -38,7 +38,7 @@ import org.dhis2.android.dashboard.api.network.tasks.ITask;
 import org.dhis2.android.dashboard.api.network.tasks.LoginUserTask;
 import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
 import org.dhis2.android.dashboard.api.persistence.handlers.UserAccountHandler;
-import org.dhis2.android.dashboard.api.persistence.models.Session;
+import org.dhis2.android.dashboard.api.network.models.Session;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 

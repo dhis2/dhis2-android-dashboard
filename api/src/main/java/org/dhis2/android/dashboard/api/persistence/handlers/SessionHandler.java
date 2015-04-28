@@ -33,7 +33,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 
 import org.dhis2.android.dashboard.api.network.models.Credentials;
-import org.dhis2.android.dashboard.api.persistence.models.Session;
+import org.dhis2.android.dashboard.api.network.models.Session;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 

@@ -28,51 +28,45 @@
 
 package org.dhis2.android.dashboard.api.persistence.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
+import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
+import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 
-import org.joda.time.DateTime;
+import org.dhis2.android.dashboard.api.persistence.AppDb;
 
+@Table(databaseName = AppDb.NAME)
+public class DashboardToItem extends BaseModel {
+    @Column(columnType = Column.PRIMARY_KEY_AUTO_INCREMENT) long id;
 
-public class BaseIdentifiableModel extends BaseModel {
-    @JsonProperty("id") @Column(columnType = Column.PRIMARY_KEY) String id;
-    @JsonProperty("created") @Column DateTime created;
-    @JsonProperty("lastUpdated") @Column DateTime lastUpdated;
-    @JsonProperty("name") @Column String name;
+    @Column(columnType = Column.FOREIGN_KEY,
+            references = {
+                    @ForeignKeyReference(columnName = "dashboardId", columnType = String.class, foreignColumnName = "id")
+            }, saveForeignKeyModel = false) ForeignKeyContainer<Dashboard> dashboard;
 
-    public BaseIdentifiableModel() {
-    }
+    @Column(columnType = Column.FOREIGN_KEY,
+            references = {
+                    @ForeignKeyReference(columnName = "dashboardItemId", columnType = String.class, foreignColumnName = "id")
+            }, saveForeignKeyModel = false) ForeignKeyContainer<DashboardItem> dashboardItem;
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public ForeignKeyContainer<Dashboard> getDashboard() {
+        return dashboard;
     }
 
-    public DateTime getCreated() {
-        return created;
+    public void setDashboard(ForeignKeyContainer<Dashboard> dashboard) {
+        this.dashboard = dashboard;
     }
 
-    public void setCreated(DateTime created) {
-        this.created = created;
+    public ForeignKeyContainer<DashboardItem> getDashboardItem() {
+        return dashboardItem;
     }
 
-    public DateTime getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(DateTime lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setDashboardItem(ForeignKeyContainer<DashboardItem> dashboardItem) {
+        this.dashboardItem = dashboardItem;
     }
 }

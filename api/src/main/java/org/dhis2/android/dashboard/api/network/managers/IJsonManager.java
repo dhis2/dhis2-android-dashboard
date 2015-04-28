@@ -29,6 +29,7 @@
 package org.dhis2.android.dashboard.api.network.managers;
 
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.converters.IJsonConverter;
 
@@ -37,4 +38,5 @@ import java.util.List;
 public interface IJsonManager {
     public IJsonConverter<UserAccount, UserAccount> getUserAccountConverter();
     public IJsonConverter<List<Dashboard>, List<Dashboard>> getDashboardConverter();
+    public IJsonConverter<List<DashboardItem>, List<DashboardItem>> getDashboardItemConverter();
 }

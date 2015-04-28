@@ -36,37 +36,37 @@ import org.dhis2.android.dashboard.api.network.http.Request;
 import org.dhis2.android.dashboard.api.network.http.RequestBuilder;
 import org.dhis2.android.dashboard.api.network.managers.INetworkManager;
 import org.dhis2.android.dashboard.api.network.models.Credentials;
-import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 
 import java.util.List;
 
-public class GetDashboardsTask implements ITask<List<Dashboard>> {
-    private final ApiRequest<List<Dashboard>, List<Dashboard>> mRequest;
+public class GetDashboardItemsTask implements ITask<List<DashboardItem>> {
+    private final ApiRequest<List<DashboardItem>, List<DashboardItem>> mRequest;
 
-    public GetDashboardsTask(INetworkManager manager,
-                             Uri serverUri, Credentials credentials,
-                             List<String> dashboardIds) {
+    public GetDashboardItemsTask(INetworkManager manager,
+                                 Uri serverUri, Credentials credentials,
+                                 List<String> dashboardItemIds) {
         String base64Credentials = manager.getBase64Manager()
                 .toBase64(credentials);
-        String url = buildQuery(serverUri, dashboardIds);
+        String url = buildQuery(serverUri, dashboardItemIds);
         Request request = RequestBuilder.forUri(url)
                 .header("Authorization", base64Credentials)
                 .header("Accept", "application/json")
                 .build();
         mRequest = new ApiRequest<>(
                 request, manager.getHttpManager(), manager.getLogManager(),
-                manager.getJsonManager().getDashboardConverter()
+                manager.getJsonManager().getDashboardItemConverter()
         );
     }
 
     private static String buildQuery(Uri serverUri, List<String> ids) {
         Uri.Builder builder = serverUri.buildUpon()
-                .appendEncodedPath("api/dashboards/")
+                .appendEncodedPath("api/dashboardItems/")
                 .appendQueryParameter("paging", "false");
 
         String fields = "id,created,lastUpdated,name,displayName";
         if (ids != null && !ids.isEmpty()) {
-            fields += "," + "itemCount,access,dashboardItems";
+            fields += "," + "access,contentCount,type,shape";
         }
 
         builder.appendQueryParameter("fields", fields);
@@ -80,7 +80,7 @@ public class GetDashboardsTask implements ITask<List<Dashboard>> {
     }
 
     @Override
-    public List<Dashboard> run() throws APIException {
+    public List<DashboardItem> run() throws APIException {
         return mRequest.request();
     }
 }

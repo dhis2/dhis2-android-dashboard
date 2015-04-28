@@ -31,8 +31,10 @@ package org.dhis2.android.dashboard.api.utils;
 import org.dhis2.android.dashboard.api.persistence.models.BaseIdentifiableModel;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class DbUtils {
     private DbUtils() {
@@ -47,5 +49,15 @@ public final class DbUtils {
             }
         }
         return map;
+    }
+
+    public static <T extends BaseIdentifiableModel> Set<String> getIds(List<T> items) {
+        Set<String> set = new HashSet<>();
+        if (items != null && !items.isEmpty()) {
+            for (T item : items) {
+                set.add(item.getId());
+            }
+        }
+        return set;
     }
 }

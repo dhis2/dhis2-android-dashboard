@@ -31,17 +31,17 @@ package org.dhis2.android.dashboard.api.utils;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
-public class EventBus {
-    private static EventBus mEventBus;
+public class EventBusProvider {
+    private static EventBusProvider mEventBus;
     private Bus mBus;
 
-    private EventBus() {
+    private EventBusProvider() {
         mBus = new Bus(ThreadEnforcer.MAIN);
     }
 
-    private static EventBus getInstance() {
+    private static EventBusProvider getInstance() {
         if (mEventBus == null) {
-            mEventBus = new EventBus();
+            mEventBus = new EventBusProvider();
         }
 
         return mEventBus;

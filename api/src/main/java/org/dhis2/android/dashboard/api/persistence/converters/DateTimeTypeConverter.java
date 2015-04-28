@@ -26,33 +26,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.ui.fragments;
+package org.dhis2.android.dashboard.api.persistence.converters;
 
-import android.support.v4.app.Fragment;
+import com.raizlabs.android.dbflow.converter.TypeConverter;
 
-import org.dhis2.android.dashboard.api.DhisApplication;
-import org.dhis2.android.dashboard.api.DhisService;
-import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+import org.joda.time.DateTime;
 
-public class BaseFragment extends Fragment {
+@com.raizlabs.android.dbflow.annotation.TypeConverter
+public final class DateTimeTypeConverter extends TypeConverter<String, DateTime> {
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBusProvider.unregister(this);
+    @Override public String getDBValue(DateTime model) {
+        return model.toString();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBusProvider.register(this);
-    }
-
-    public DhisService getService() {
-        if (isAdded() && getActivity() != null) {
-            return ((DhisApplication) getActivity().getApplication()).getDhisService();
-        } else {
-            throw new IllegalArgumentException("Fragment is not attached to Activity");
-        }
+    @Override public DateTime getModelValue(String data) {
+        return DateTime.parse(data);
     }
 }

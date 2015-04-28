@@ -28,9 +28,9 @@
 
 package org.dhis2.android.dashboard.api.job;
 
-import org.dhis2.android.dashboard.api.persistence.models.ResponseHolder;
+import org.dhis2.android.dashboard.api.network.models.ResponseHolder;
 import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.utils.EventBus;
+import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 
 public abstract class NetworkJob<T> extends Job<ResponseHolder<T>> {
     public NetworkJob(int jobId) {
@@ -64,11 +64,11 @@ public abstract class NetworkJob<T> extends Job<ResponseHolder<T>> {
     }
 
     public void onSuccess(T item) {
-        EventBus.post(item);
+        EventBusProvider.post(item);
     }
 
     public void onFailure(APIException exception) {
-        EventBus.post(exception);
+        EventBusProvider.post(exception);
     }
 
     public abstract T execute() throws APIException;

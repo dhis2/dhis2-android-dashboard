@@ -43,7 +43,7 @@ import org.dhis2.android.dashboard.api.network.managers.NetworkManager;
 import org.dhis2.android.dashboard.api.network.models.Credentials;
 import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
 import org.dhis2.android.dashboard.api.persistence.handlers.UserAccountHandler;
-import org.dhis2.android.dashboard.api.persistence.models.Session;
+import org.dhis2.android.dashboard.api.network.models.Session;
 import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
 
 import java.net.HttpURLConnection;

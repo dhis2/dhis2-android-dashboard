@@ -31,18 +31,22 @@ package org.dhis2.android.dashboard.api.network.managers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.dhis2.android.dashboard.api.network.converters.DashboardConverter;
-import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
-import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
+import org.dhis2.android.dashboard.api.network.converters.DashboardItemConverter;
 import org.dhis2.android.dashboard.api.network.converters.IJsonConverter;
 import org.dhis2.android.dashboard.api.network.converters.UserAccountConverter;
+import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
+import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
 
 import java.util.List;
+
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public class JsonManager implements IJsonManager {
     private final ObjectMapper mMapper;
 
-    public JsonManager() {
-        mMapper = new ObjectMapper();
+    public JsonManager(ObjectMapper mapper) {
+        mMapper = isNull(mapper, "ObjectMapper must not be null");
     }
 
     @Override
@@ -53,5 +57,10 @@ public class JsonManager implements IJsonManager {
     @Override
     public IJsonConverter<List<Dashboard>, List<Dashboard>> getDashboardConverter() {
         return new DashboardConverter(mMapper);
+    }
+
+    @Override
+    public IJsonConverter<List<DashboardItem>, List<DashboardItem>> getDashboardItemConverter() {
+        return new DashboardItemConverter(mMapper);
     }
 }

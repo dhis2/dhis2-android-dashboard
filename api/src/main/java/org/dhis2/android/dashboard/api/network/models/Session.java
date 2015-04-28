@@ -26,33 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.ui.fragments;
+package org.dhis2.android.dashboard.api.network.models;
 
-import android.support.v4.app.Fragment;
+import android.net.Uri;
 
-import org.dhis2.android.dashboard.api.DhisApplication;
-import org.dhis2.android.dashboard.api.DhisService;
-import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+import org.dhis2.android.dashboard.api.network.models.Credentials;
 
-public class BaseFragment extends Fragment {
+public final class Session {
+    private Uri serverUri;
+    private Credentials credentials;
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBusProvider.unregister(this);
+    public Session(Uri serverUri, Credentials credentials) {
+        this.serverUri = serverUri;
+        this.credentials = credentials;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBusProvider.register(this);
+    public Credentials getCredentials() {
+        return credentials;
     }
 
-    public DhisService getService() {
-        if (isAdded() && getActivity() != null) {
-            return ((DhisApplication) getActivity().getApplication()).getDhisService();
-        } else {
-            throw new IllegalArgumentException("Fragment is not attached to Activity");
-        }
+    public Uri getServerUri() {
+        return serverUri;
     }
 }

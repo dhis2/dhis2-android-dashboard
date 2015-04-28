@@ -33,6 +33,7 @@ import android.net.Uri;
 import com.squareup.okhttp.OkHttpClient;
 
 import org.dhis2.android.dashboard.api.network.models.Credentials;
+import org.dhis2.android.dashboard.api.utils.ObjectMapperProvide;
 
 public class NetworkManager implements INetworkManager {
     private IHttpManager mHttpManager;
@@ -44,8 +45,10 @@ public class NetworkManager implements INetworkManager {
     private Credentials mCredentials;
 
     public NetworkManager() {
-        mHttpManager = new HttpManager(new OkHttpClient());
-        mJsonManager = new JsonManager();
+        OkHttpClient okHttpClient = new OkHttpClient();
+
+        mHttpManager = new HttpManager(okHttpClient);
+        mJsonManager = new JsonManager(ObjectMapperProvide.getInstance());
         mBase64Manager = new Base64Manager();
         mLogManager = new LogManager();
     }

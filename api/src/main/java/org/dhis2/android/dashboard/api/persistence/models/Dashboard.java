@@ -34,10 +34,14 @@ import com.raizlabs.android.dbflow.annotation.Table;
 
 import org.dhis2.android.dashboard.api.persistence.AppDb;
 
+import java.util.List;
+
 @Table(databaseName = AppDb.NAME)
 public class Dashboard extends BaseIdentifiableModel {
     @JsonProperty("displayName") @Column String displayName;
     @JsonProperty("itemCount") @Column long itemCount;
+    @JsonProperty("access") @Column Access access;
+    @JsonProperty("dashboardItems") List<DashboardItem> dashboardItems;
 
     public String getId() {
         return id;
@@ -57,5 +61,21 @@ public class Dashboard extends BaseIdentifiableModel {
 
     public void setItemCount(long itemCount) {
         this.itemCount = itemCount;
+    }
+
+    public Access getAccess() {
+        return access;
+    }
+
+    public void setAccess(Access access) {
+        this.access = access;
+    }
+
+    public List<DashboardItem> getDashboardItems() {
+        return dashboardItems;
+    }
+
+    public void setDashboardItems(List<DashboardItem> dashboardItems) {
+        this.dashboardItems = dashboardItems;
     }
 }

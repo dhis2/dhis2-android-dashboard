@@ -31,37 +31,61 @@ package org.dhis2.android.dashboard.api.persistence.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.dhis2.android.dashboard.api.persistence.AppDb;
 
 @Table(databaseName = AppDb.NAME)
-public class DashboardItem extends BaseModel {
-    @JsonProperty("id") @Column(columnType = Column.PRIMARY_KEY) String id;
-    @JsonProperty("created") @Column String created;
-    @JsonProperty("lastUpdated") @Column String lastUpdated;
+public class DashboardItem extends BaseIdentifiableModel {
+    public static final String TYPE_CHART = "chart";
+    public static final String TYPE_EVENT_CHART = "eventChart";
+    public static final String TYPE_MAP = "map";
+    public static final String TYPE_REPORT_TABLE = "reportTable";
+    public static final String TYPE_EVENT_REPORT = "eventReport";
+    public static final String TYPE_USERS = "users";
+    public static final String TYPE_REPORT_TABLES = "reportTables";
+    public static final String TYPE_REPORTS = "reports";
+    public static final String TYPE_RESOURCES = "resources";
+    public static final String TYPE_MESSAGES = "messages";
 
-    public String getId() {
-        return id;
+    // TODO think about using StaggeredView in DashboardFragment
+    public static final String SHAPE_NORMAL = "normal";
+    public static final String SHAPE_DOUBLE_WIDTH = "double_width";
+    public static final String SHAPE_FULL_WIDTH = "full_width";
+
+    @JsonProperty("access") @Column Access access;
+    @JsonProperty("contentCount") @Column int contentCount;
+    @JsonProperty("type") @Column String type;
+    @JsonProperty("shape") @Column String shape;
+
+    public Access getAccess() {
+        return access;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setAccess(Access access) {
+        this.access = access;
     }
 
-    public String getCreated() {
-        return created;
+    public int getContentCount() {
+        return contentCount;
     }
 
-    public void setCreated(String created) {
-        this.created = created;
+    public void setContentCount(int contentCount) {
+        this.contentCount = contentCount;
     }
 
-    public String getLastUpdated() {
-        return lastUpdated;
+    public String getType() {
+        return type;
     }
 
-    public void setLastUpdated(String lastUpdated) {
-        this.lastUpdated = lastUpdated;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getShape() {
+        return shape;
+    }
+
+    public void setShape(String shape) {
+        this.shape = shape;
     }
 }

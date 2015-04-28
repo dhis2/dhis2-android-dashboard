@@ -26,33 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.ui.fragments;
+package org.dhis2.android.dashboard.api.utils;
 
-import android.support.v4.app.Fragment;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
-import org.dhis2.android.dashboard.api.DhisApplication;
-import org.dhis2.android.dashboard.api.DhisService;
-import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+public class ObjectMapperProvide {
+    private static ObjectMapper mMapper;
 
-public class BaseFragment extends Fragment {
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBusProvider.unregister(this);
+    private ObjectMapperProvide() {
+        // hidden constructor
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBusProvider.register(this);
-    }
-
-    public DhisService getService() {
-        if (isAdded() && getActivity() != null) {
-            return ((DhisApplication) getActivity().getApplication()).getDhisService();
-        } else {
-            throw new IllegalArgumentException("Fragment is not attached to Activity");
+    public static ObjectMapper getInstance() {
+        if (mMapper == null) {
+            mMapper = new ObjectMapper();
+            mMapper.registerModule(new JodaModule());
         }
+
+        return mMapper;
     }
 }

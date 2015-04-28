@@ -28,12 +28,18 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
+import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
+import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
+
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class DashboardSyncController implements IController<Object> {
     private final DhisManager mDhisManager;
@@ -46,15 +52,35 @@ public final class DashboardSyncController implements IController<Object> {
 
     @Override
     public Object run() throws APIException {
-        GetDashboardsController controller = new GetDashboardsController(
+        List<Dashboard> dashboards = (new GetDashboardsController(
                 mDhisManager, mSessionHandler.get()
-        );
+        )).run();
+        List<DashboardItem> dashboardItems = null;
 
-        List<Dashboard> dashboards = controller.run();
-        for (Dashboard dashboard : dashboards) {
-            dashboard.save(false);
-        }
+        new SaveModelTransaction<>(ProcessModelInfo
+                .withModels(dashboards)).onExecute();
 
         return new Object();
     }
+
+    private Set<String> getDashboardItemIds(List<Dashboard> dashboards) {
+        Set<String> set = new HashSet<>();
+        if (dashboards == null || dashboards.isEmpty()) {
+            return set;
+        }
+
+        for (Dashboard dashboard : dashboards) {
+            if (dashboard.getDashboardItems() == null ||
+                    dashboard.getDashboardItems().isEmpty()) {
+                continue;
+            }
+
+            for (DashboardItem dashboardItem : dashboard.getDashboardItems()) {
+                set.add(dashboardItem.getId());
+            }
+        }
+
+        return set;
+    }
+
 }

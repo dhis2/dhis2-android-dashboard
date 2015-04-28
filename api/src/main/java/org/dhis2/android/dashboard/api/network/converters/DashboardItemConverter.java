@@ -26,33 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.ui.fragments;
+package org.dhis2.android.dashboard.api.network.converters;
 
-import android.support.v4.app.Fragment;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.dhis2.android.dashboard.api.DhisApplication;
-import org.dhis2.android.dashboard.api.DhisService;
-import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 
-public class BaseFragment extends Fragment {
+import java.util.List;
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBusProvider.unregister(this);
+public final class DashboardItemConverter implements IJsonConverter<List<DashboardItem>, List<DashboardItem>> {
+    private static final String NODE = "dashboardItems";
+    private final ObjectMapper mMapper;
+
+    public DashboardItemConverter(ObjectMapper objectMapper) {
+        mMapper = objectMapper;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBusProvider.register(this);
+    @Override public List<DashboardItem> deserialize(String source) throws Throwable {
+        JsonNode rootNode = mMapper.readTree(source);
+        return mMapper.convertValue(rootNode.get(NODE),
+                new TypeReference<List<Dashboard>>() { });
     }
 
-    public DhisService getService() {
-        if (isAdded() && getActivity() != null) {
-            return ((DhisApplication) getActivity().getApplication()).getDhisService();
-        } else {
-            throw new IllegalArgumentException("Fragment is not attached to Activity");
-        }
+    @Override public String serialize(List<DashboardItem> object) throws Throwable {
+        return null;
     }
 }

@@ -28,15 +28,17 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.tasks.GetDashboardsTask;
-import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
-import org.dhis2.android.dashboard.api.persistence.models.Session;
-import org.joda.time.DateTime;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardToItem;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardToItem$Table;
+import org.dhis2.android.dashboard.api.network.models.Session;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,10 +70,7 @@ public final class GetDashboardsController implements IController<List<Dashboard
                 continue;
             }
 
-            DateTime newLastUpdated = DateTime.parse(newDashboard.getLastUpdated());
-            DateTime oldLastUpdated = DateTime.parse(oldDashboard.getLastUpdated());
-
-            if (newLastUpdated.isAfter(oldLastUpdated)) {
+            if (newDashboard.getLastUpdated().isAfter(oldDashboard.getLastUpdated())) {
                 dashboardsToDownload.add(dashboardId);
             }
         }
@@ -107,8 +106,28 @@ public final class GetDashboardsController implements IController<List<Dashboard
     }
 
     private Map<String, Dashboard> getOldFullDashboards() {
-        return toMap(
-                Select.all(Dashboard.class)
-        );
+        List<Dashboard> dashboards = Select.all(Dashboard.class);
+        if (dashboards == null || dashboards.isEmpty()) {
+            return toMap(dashboards);
+        }
+
+        for (Dashboard dashboard : dashboards) {
+            // reading Dashboards to DashboardItems relationship
+            // for particular Dashboard
+            List<DashboardToItem> items = Select.all(
+                    DashboardToItem.class, Condition.column(
+                            DashboardToItem$Table.DASHBOARD_DASHBOARDID).is(dashboard)
+            );
+
+            // Reading full sized dashboard items
+            // and passing them to dashboards
+            for (DashboardToItem item : items) {
+                List<DashboardItem> dashboardItems = new ArrayList<>();
+                dashboardItems.add(item.getDashboardItem().toModel());
+                dashboard.setDashboardItems(dashboardItems);
+            }
+        }
+
+        return toMap(dashboards);
     }
 }

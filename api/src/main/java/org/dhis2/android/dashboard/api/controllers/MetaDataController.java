@@ -33,7 +33,7 @@ import android.content.Context;
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
-import org.dhis2.android.dashboard.api.persistence.models.Session;
+import org.dhis2.android.dashboard.api.network.models.Session;
 
 public final class MetaDataController implements IController<Object> {
     private final Context mContext;

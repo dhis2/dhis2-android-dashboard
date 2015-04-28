@@ -32,7 +32,7 @@ import android.app.Application;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
 
-import org.dhis2.android.dashboard.api.utils.EventBus;
+import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 
 public class DhisApplication extends Application {
     private DhisService mDhisService;
@@ -43,7 +43,7 @@ public class DhisApplication extends Application {
         super.onCreate();
 
         FlowManager.init(this);
-        EventBus.register(this);
+        EventBusProvider.register(this);
 
         mDhisManager = new DhisManager(getBaseContext());
         mDhisService = new DhisService(mDhisManager);

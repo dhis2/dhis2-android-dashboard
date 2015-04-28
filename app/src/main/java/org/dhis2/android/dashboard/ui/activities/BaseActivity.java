@@ -36,7 +36,7 @@ import org.dhis2.android.dashboard.api.DhisService;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.utils.EventBus;
+import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
@@ -47,13 +47,13 @@ public class BaseActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        EventBus.register(this);
+        EventBusProvider.register(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        EventBus.unregister(this);
+        EventBusProvider.unregister(this);
     }
 
     protected DhisService getDhisService() {

@@ -26,33 +26,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.ui.fragments;
+package org.dhis2.android.dashboard.api.network.models;
 
-import android.support.v4.app.Fragment;
+import org.dhis2.android.dashboard.api.network.APIException;
+import org.dhis2.android.dashboard.api.network.http.Response;
 
-import org.dhis2.android.dashboard.api.DhisApplication;
-import org.dhis2.android.dashboard.api.DhisService;
-import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+public final class ResponseHolder<T> {
+    private Response mResponse;
+    private APIException mApiException;
+    private T mItem;
 
-public class BaseFragment extends Fragment {
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBusProvider.unregister(this);
+    public Response getResponse() {
+        return mResponse;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBusProvider.register(this);
+    public void setResponse(Response response) {
+        mResponse = response;
     }
 
-    public DhisService getService() {
-        if (isAdded() && getActivity() != null) {
-            return ((DhisApplication) getActivity().getApplication()).getDhisService();
-        } else {
-            throw new IllegalArgumentException("Fragment is not attached to Activity");
-        }
+    public APIException getApiException() {
+        return mApiException;
+    }
+
+    public void setApiException(APIException apiException) {
+        mApiException = apiException;
+    }
+
+    public T getItem() {
+        return mItem;
+    }
+
+    public void setItem(T item) {
+        mItem = item;
     }
 }

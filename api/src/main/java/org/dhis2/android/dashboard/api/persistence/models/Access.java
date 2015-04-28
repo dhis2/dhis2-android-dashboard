@@ -28,35 +28,59 @@
 
 package org.dhis2.android.dashboard.api.persistence.models;
 
-import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.network.http.Response;
+public final class Access {
+    private boolean delete;
+    private boolean externalize;
+    private boolean manage;
+    private boolean read;
+    private boolean update;
+    private boolean write;
 
-public final class ResponseHolder<T> {
-    private Response mResponse;
-    private APIException mApiException;
-    private T mItem;
-
-    public Response getResponse() {
-        return mResponse;
+    public boolean isDelete() {
+        return delete;
     }
 
-    public void setResponse(Response response) {
-        mResponse = response;
+    public void setDelete(boolean delete) {
+        this.delete = delete;
     }
 
-    public APIException getApiException() {
-        return mApiException;
+    public boolean isExternalize() {
+        return externalize;
     }
 
-    public void setApiException(APIException apiException) {
-        mApiException = apiException;
+    public void setExternalize(boolean externalize) {
+        this.externalize = externalize;
     }
 
-    public T getItem() {
-        return mItem;
+    public boolean isManage() {
+        return manage;
     }
 
-    public void setItem(T item) {
-        mItem = item;
+    public void setManage(boolean manage) {
+        this.manage = manage;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
+    }
+
+    public boolean isUpdate() {
+        return update;
+    }
+
+    public void setUpdate(boolean update) {
+        this.update = update;
+    }
+
+    public boolean isWrite() {
+        return write;
+    }
+
+    public void setWrite(boolean write) {
+        this.write = write;
     }
 }

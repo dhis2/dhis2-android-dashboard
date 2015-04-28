@@ -26,26 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence.models;
+package org.dhis2.android.dashboard.api.persistence.converters;
 
-import android.net.Uri;
 
-import org.dhis2.android.dashboard.api.network.models.Credentials;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.raizlabs.android.dbflow.converter.TypeConverter;
 
-public final class Session {
-    private Uri serverUri;
-    private Credentials credentials;
+import org.dhis2.android.dashboard.api.persistence.models.Access;
+import org.dhis2.android.dashboard.api.utils.ObjectMapperProvide;
 
-    public Session(Uri serverUri, Credentials credentials) {
-        this.serverUri = serverUri;
-        this.credentials = credentials;
+import java.io.IOException;
+
+@com.raizlabs.android.dbflow.annotation.TypeConverter
+public final class AccessTypeConverter extends TypeConverter<String, Access> {
+
+    @Override public String getDBValue(Access model) {
+        String serializedData = null;
+        if (model != null) {
+            try {
+                serializedData = ObjectMapperProvide.getInstance()
+                        .writeValueAsString(model);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+        return serializedData;
     }
 
-    public Credentials getCredentials() {
-        return credentials;
-    }
-
-    public Uri getServerUri() {
-        return serverUri;
+    @Override public Access getModelValue(String data) {
+        Access access = null;
+        if (data != null) {
+            try {
+                access = ObjectMapperProvide.getInstance()
+                        .readValue(data, Access.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return access;
     }
 }
