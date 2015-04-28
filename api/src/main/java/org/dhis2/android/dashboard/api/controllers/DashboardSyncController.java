@@ -37,6 +37,7 @@ import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
 import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,20 +54,22 @@ public final class DashboardSyncController implements IController<Object> {
     @Override
     public Object run() throws APIException {
         List<Dashboard> dashboards = (new GetDashboardsController(
-                mDhisManager, mSessionHandler.get()
-        )).run();
-        List<DashboardItem> dashboardItems = null;
+                mDhisManager, mSessionHandler.get())).run();
+        List<DashboardItem> dashboardItems = (new GetDashboardItemsController(
+                mDhisManager, mSessionHandler.get(), getDashboardItemIds(dashboards))).run();
 
         new SaveModelTransaction<>(ProcessModelInfo
                 .withModels(dashboards)).onExecute();
+        new SaveModelTransaction<>(ProcessModelInfo
+                .withModels(dashboardItems)).onExecute();
 
         return new Object();
     }
 
-    private Set<String> getDashboardItemIds(List<Dashboard> dashboards) {
+    private List<String> getDashboardItemIds(List<Dashboard> dashboards) {
         Set<String> set = new HashSet<>();
         if (dashboards == null || dashboards.isEmpty()) {
-            return set;
+            return new ArrayList<>(set);
         }
 
         for (Dashboard dashboard : dashboards) {
@@ -80,7 +83,7 @@ public final class DashboardSyncController implements IController<Object> {
             }
         }
 
-        return set;
+        return new ArrayList<>(set);
     }
 
 }

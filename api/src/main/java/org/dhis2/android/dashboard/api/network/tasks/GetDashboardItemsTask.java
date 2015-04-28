@@ -45,10 +45,10 @@ public class GetDashboardItemsTask implements ITask<List<DashboardItem>> {
 
     public GetDashboardItemsTask(INetworkManager manager,
                                  Uri serverUri, Credentials credentials,
-                                 List<String> dashboardItemIds) {
+                                 List<String> dashboardItemIds, boolean flat) {
         String base64Credentials = manager.getBase64Manager()
                 .toBase64(credentials);
-        String url = buildQuery(serverUri, dashboardItemIds);
+        String url = buildQuery(serverUri, dashboardItemIds, flat);
         Request request = RequestBuilder.forUri(url)
                 .header("Authorization", base64Credentials)
                 .header("Accept", "application/json")
@@ -59,13 +59,13 @@ public class GetDashboardItemsTask implements ITask<List<DashboardItem>> {
         );
     }
 
-    private static String buildQuery(Uri serverUri, List<String> ids) {
+    private static String buildQuery(Uri serverUri, List<String> ids, boolean flat) {
         Uri.Builder builder = serverUri.buildUpon()
                 .appendEncodedPath("api/dashboardItems/")
                 .appendQueryParameter("paging", "false");
 
         String fields = "id,created,lastUpdated,name,displayName";
-        if (ids != null && !ids.isEmpty()) {
+        if (!flat) {
             fields += "," + "access,contentCount,type,shape";
         }
 
