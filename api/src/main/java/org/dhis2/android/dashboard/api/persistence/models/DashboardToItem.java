@@ -29,6 +29,7 @@
 package org.dhis2.android.dashboard.api.persistence.models;
 
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ForeignKeyAction;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
@@ -43,12 +44,12 @@ public class DashboardToItem extends BaseModel {
     @Column(columnType = Column.FOREIGN_KEY,
             references = {
                     @ForeignKeyReference(columnName = "dashboardId", columnType = String.class, foreignColumnName = "id")
-            }, saveForeignKeyModel = false) ForeignKeyContainer<Dashboard> dashboard;
+            }, onDelete = ForeignKeyAction.CASCADE, saveForeignKeyModel = false) ForeignKeyContainer<Dashboard> dashboard;
 
     @Column(columnType = Column.FOREIGN_KEY,
             references = {
                     @ForeignKeyReference(columnName = "dashboardItemId", columnType = String.class, foreignColumnName = "id")
-            }, saveForeignKeyModel = false) ForeignKeyContainer<DashboardItem> dashboardItem;
+            }, onDelete = ForeignKeyAction.CASCADE, saveForeignKeyModel = false) ForeignKeyContainer<DashboardItem> dashboardItem;
 
     public long getId() {
         return id;

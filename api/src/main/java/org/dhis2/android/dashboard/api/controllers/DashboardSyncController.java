@@ -58,6 +58,10 @@ public final class DashboardSyncController implements IController<Object> {
         List<DashboardItem> dashboardItems = (new GetDashboardItemsController(
                 mDhisManager, mSessionHandler.get(), getDashboardItemIds(dashboards))).run();
 
+        // sync dashboards here
+        // sync dashboard items
+        // sync dashboardToItems relationship
+
         new SaveModelTransaction<>(ProcessModelInfo
                 .withModels(dashboards)).onExecute();
         new SaveModelTransaction<>(ProcessModelInfo
@@ -85,5 +89,4 @@ public final class DashboardSyncController implements IController<Object> {
 
         return new ArrayList<>(set);
     }
-
 }
