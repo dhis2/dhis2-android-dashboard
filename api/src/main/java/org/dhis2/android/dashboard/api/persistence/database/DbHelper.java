@@ -26,50 +26,45 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence.models;
+package org.dhis2.android.dashboard.api.persistence.database;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
-import org.joda.time.DateTime;
+public final class DbHelper extends SQLiteOpenHelper {
+    private static final String DB_NAME = "dhis2.db";
+    private static final String ENABLE_FOREIGN_KEYS = "PRAGMA foreign_keys = ON;";
+    private static final int DATABASE_VERSION = 1;
 
-public class BaseIdentifiableModel {
-    @JsonProperty("id") private String id;
-    @JsonProperty("created") private DateTime created;
-    @JsonProperty("lastUpdated") private DateTime lastUpdated;
-    @JsonProperty("name") private String name;
-
-    public BaseIdentifiableModel() {
+    public DbHelper(Context context) {
+        super(context, DB_NAME, null, DATABASE_VERSION);
     }
 
-    public String getId() {
-        return id;
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL(DbSchema.CREATE_DASHBOARD_TABLE);
+        db.execSQL(DbSchema.CREATE_DASHBOARD_ITEMS_TABLE);
+        db.execSQL(DbSchema.CREATE_DASHBOARD_TO_ITEMS_TABLE);
     }
 
-    public void setId(String id) {
-        this.id = id;
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL(DbSchema.DROP_DASHBOARD_TABLE);
+        db.execSQL(DbSchema.DROP_DASHBOARD_ITEMS_TABLE);
+        db.execSQL(DbSchema.DROP_DASHBOARD_TO_ITEMS_TABLE);
+        onCreate(db);
     }
 
-    public DateTime getCreated() {
-        return created;
-    }
-
-    public void setCreated(DateTime created) {
-        this.created = created;
-    }
-
-    public DateTime getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(DateTime lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * Enabling support of ForeignKeys in SQLite database
+     * each time it is being used. Works on android from 2.2
+     */
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        if (!db.isReadOnly()) {
+            db.execSQL(ENABLE_FOREIGN_KEYS);
+        }
     }
 }

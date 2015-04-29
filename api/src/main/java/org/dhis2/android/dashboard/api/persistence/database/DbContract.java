@@ -28,23 +28,25 @@
 
 package org.dhis2.android.dashboard.api.persistence.database;
 
+import android.content.ContentResolver;
 import android.net.Uri;
+import android.provider.BaseColumns;
 
 public final class DbContract {
     public static final String AUTHORITY = "org.dhis2.android.dashboard.api.persistence.database.DbContentProvider";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
     static interface AccessColumns {
-        public static final String DELETE = "delete";
-        public static final String EXTERNALIZE = "externalize";
-        public static final String MANAGE = "manage";
-        public static final String READ = "read";
-        public static final String UPDATE = "update";
-        public static final String WRITE = "write";
+        public static final String DELETE = "deleteAccess";
+        public static final String EXTERNALIZE = "externalizeAccess";
+        public static final String MANAGE = "manageAccess";
+        public static final String READ = "readAccess";
+        public static final String UPDATE = "updateAccess";
+        public static final String WRITE = "writeAccess";
     }
 
     static interface DashboardColumns extends AccessColumns {
-        public static final String TABLE_NAME = "organizationUnitsTable";
+        public static final String TABLE_NAME = "dashboardsTable";
         public static final String ID = "id";
         public static final String CREATED = "created";
         public static final String LAST_UPDATED = "lastUpdated";
@@ -54,7 +56,7 @@ public final class DbContract {
     }
 
     static interface DashboardItemColumns extends AccessColumns {
-        public static final String TABLE_NAME = "dashboardsTable";
+        public static final String TABLE_NAME = "dashboardItemsTable";
         public static final String ID = "id";
         public static final String CREATED = "created";
         public static final String LAST_UPDATED = "lastUpdated";
@@ -63,7 +65,70 @@ public final class DbContract {
         public static final String SHAPE = "shape";
     }
 
-    public static final class Dashboards implements DashboardColumns {
+    static interface DashboardsToItemsColumns {
+        public static final String TABLE_NAME = "dashboardsToItemsTable";
+        public static final String ID = BaseColumns._ID;
+        public static final String DASHBOARD_ID = "dashboardId";
+        public static final String DASHBOARD_ITEM_ID = "dashboardItemId";
+    }
 
+    public static final class Dashboards implements DashboardColumns {
+        public static final String PATH = TABLE_NAME;
+        public static final String DASHBOARDS_PATH = PATH;
+        public static final String DASHBOARD_ID_PATH = PATH + "/*/";
+        public static final String DASHBOARD_ID_ITEMS_PATH = DASHBOARD_ID_PATH
+                + DashboardItems.TABLE_NAME;
+
+        private static final int DASHBOARD_ID_POSITION = 1;
+
+        public static Uri buildUriWithItems(String dashboardId) {
+            return CONTENT_URI.buildUpon()
+                    .appendPath(dashboardId)
+                    .appendPath(DashboardItems.TABLE_NAME)
+                    .build();
+        }
+
+        public static String getId(Uri uri) {
+            return uri.getPathSegments().get(DASHBOARD_ID_POSITION);
+        }
+
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(
+                BASE_CONTENT_URI, PATH);
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE +
+                "/org.hisp.dhis2.mobile.Dashboard";
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE +
+                "/org.hisp.dhis2.mobile.Dashboard";
+    }
+
+    public static final class DashboardItems implements DashboardItemColumns {
+        public static final String PATH = TABLE_NAME;
+        public static final String DASHBOARD_ITEMS_PATH = PATH;
+        public static final String DASHBOARD_ITEM_ID_PATH = PATH + "/*/";
+
+        private static final int DASHBOARD_ITEM_ID_POSITION = 1;
+
+        public static String getId(Uri uri) {
+            return uri.getPathSegments().get(DASHBOARD_ITEM_ID_POSITION);
+        }
+
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(
+                BASE_CONTENT_URI, PATH);
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE +
+                "/org.hisp.dhis2.mobile.DashboardItem";
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE +
+                "/org.hisp.dhis2.mobile.DashboardItem";
+    }
+
+    public static class DashboardsToItems implements DashboardsToItemsColumns {
+        public static final String PATH = TABLE_NAME;
+        public static final String DASHBOARD_TO_ITEMS_PATH = PATH;
+        public static final String DASHBOARD_TO_ITEM_ID_PATH = PATH + "/#/";
+
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE +
+                "/org.dhis2.mobile.DashboardsToItems";
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE +
+                "/org.dhis2.mobile.DashboardsToItems";
+
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH);
     }
 }

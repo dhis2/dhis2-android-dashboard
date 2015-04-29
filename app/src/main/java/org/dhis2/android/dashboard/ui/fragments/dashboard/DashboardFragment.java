@@ -29,6 +29,7 @@
 package org.dhis2.android.dashboard.ui.fragments.dashboard;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -37,18 +38,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.Model;
-
 import org.dhis2.android.dashboard.R;
-import org.dhis2.android.dashboard.api.loaders.DbLoader;
-import org.dhis2.android.dashboard.api.loaders.Query;
+import org.dhis2.android.dashboard.api.persistence.database.DbContract;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardHandler;
+import org.dhis2.android.dashboard.api.persistence.loaders.CursorLoaderBuilder;
+import org.dhis2.android.dashboard.api.persistence.loaders.Transformation;
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
 import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.views.SlidingTabLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -102,18 +101,17 @@ public class DashboardFragment extends BaseFragment implements LoaderCallbacks<L
     @Override
     public Loader<List<Dashboard>> onCreateLoader(int id, Bundle args) {
         if (id == LOADER_ID && isAdded()) {
-            List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
-            tablesToTrack.add(Dashboard.class);
-            return new DbLoader<>(
-                    getActivity().getBaseContext(), tablesToTrack, new DbQuery()
-            );
+            return CursorLoaderBuilder.forUri(DbContract.Dashboards.CONTENT_URI)
+                    .projection(DashboardHandler.PROJECTION)
+                    .transformation(new DbTransformer())
+                    .build(getActivity().getApplicationContext());
         }
         return null;
     }
 
     @Override
     public void onLoadFinished(Loader<List<Dashboard>> loader, List<Dashboard> data) {
-        System.out.println("****** LOADER ******");
+        System.out.println("****** LOADER ******: " + data);
         if (loader.getId() == LOADER_ID && data != null) {
             mDashboardAdapter.swapData(data);
             mTabs.setViewPager(mViewPager);
@@ -127,11 +125,10 @@ public class DashboardFragment extends BaseFragment implements LoaderCallbacks<L
         }
     }
 
-    static class DbQuery implements Query<List<Dashboard>> {
+    static class DbTransformer implements Transformation<List<Dashboard>> {
 
-        @Override
-        public List<Dashboard> query(Context context) {
-            return Select.all(Dashboard.class);
+        @Override public List<Dashboard> transform(Context context, Cursor cursor) {
+            return DashboardHandler.map(cursor, false);
         }
     }
 }

@@ -28,48 +28,15 @@
 
 package org.dhis2.android.dashboard.api.persistence.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+/**
+ * Created by araz on 29.04.2015.
+ */
+public class DbRow<T> {
+    public final long id;
+    public final T item;
 
-import org.joda.time.DateTime;
-
-public class BaseIdentifiableModel {
-    @JsonProperty("id") private String id;
-    @JsonProperty("created") private DateTime created;
-    @JsonProperty("lastUpdated") private DateTime lastUpdated;
-    @JsonProperty("name") private String name;
-
-    public BaseIdentifiableModel() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
+    public DbRow(long id, T item) {
         this.id = id;
-    }
-
-    public DateTime getCreated() {
-        return created;
-    }
-
-    public void setCreated(DateTime created) {
-        this.created = created;
-    }
-
-    public DateTime getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(DateTime lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        this.item = item;
     }
 }

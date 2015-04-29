@@ -26,20 +26,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence.converters;
+package org.dhis2.android.dashboard.api.persistence.loaders;
 
-import com.raizlabs.android.dbflow.converter.TypeConverter;
+import android.content.Context;
+import android.database.Cursor;
 
-import org.joda.time.DateTime;
-
-@com.raizlabs.android.dbflow.annotation.TypeConverter
-public final class DateTimeTypeConverter extends TypeConverter<String, DateTime> {
-
-    @Override public String getDBValue(DateTime model) {
-        return model.toString();
-    }
-
-    @Override public DateTime getModelValue(String data) {
-        return DateTime.parse(data);
-    }
+public interface Transformation<T> {
+    public T transform(Context context, Cursor cursor);
 }

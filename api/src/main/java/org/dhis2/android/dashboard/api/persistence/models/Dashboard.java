@@ -29,23 +29,14 @@
 package org.dhis2.android.dashboard.api.persistence.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.Table;
-
-import org.dhis2.android.dashboard.api.persistence.AppDb;
 
 import java.util.List;
 
-@Table(databaseName = AppDb.NAME)
 public class Dashboard extends BaseIdentifiableModel {
-    @JsonProperty("displayName") @Column String displayName;
-    @JsonProperty("itemCount") @Column long itemCount;
-    @JsonProperty("access") @Column Access access;
+    @JsonProperty("displayName") private String displayName;
+    @JsonProperty("itemCount") private long itemCount;
+    @JsonProperty("access") private Access access;
     @JsonProperty("dashboardItems") List<DashboardItem> dashboardItems;
-
-    public String getId() {
-        return id;
-    }
 
     public String getDisplayName() {
         return displayName;

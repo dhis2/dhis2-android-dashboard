@@ -26,50 +26,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence.models;
+package org.dhis2.android.dashboard.api.persistence;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import android.app.Application;
+import android.content.Context;
 
-import org.joda.time.DateTime;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public class BaseIdentifiableModel {
-    @JsonProperty("id") private String id;
-    @JsonProperty("created") private DateTime created;
-    @JsonProperty("lastUpdated") private DateTime lastUpdated;
-    @JsonProperty("name") private String name;
+/**
+ * Created by araz on 29.04.2015.
+ */
+public final class DbManager {
+    private static DbManager mManager;
+    private final Context mContext;
 
-    public BaseIdentifiableModel() {
+    private DbManager(Application application) {
+        mContext = isNull(application, "Application object must not be null");
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public DateTime getCreated() {
-        return created;
-    }
-
-    public void setCreated(DateTime created) {
-        this.created = created;
-    }
-
-    public DateTime getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(DateTime lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public static void init(Application application) {
+        if (mManager == null) {
+            mManager = new DbManager(application);
+        }
     }
 }

@@ -28,11 +28,11 @@
 
 package org.dhis2.android.dashboard.api.persistence.database;
 
+import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardItems;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
+import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardsToItems;
 
-/**
- * Created by araz on 28.04.2015.
- */
+
 public final class DbSchema {
 
     public static final String CREATE_DASHBOARD_TABLE = "CREATE TABLE " + Dashboards.TABLE_NAME + "(" +
@@ -42,12 +42,48 @@ public final class DbSchema {
             Dashboards.NAME + " TEXT," +
             Dashboards.DISPLAY_NAME + " TEXT," +
             Dashboards.ITEM_COUNT + " INTEGER," +
-            Dashboards.DELETE + " TEXT NOT NULL," +
-            Dashboards.EXTERNALIZE + " TEXT NOT NULL," +
-            Dashboards.MANAGE + " TEXT NOT NULL," +
-            Dashboards.READ + " TEXT NOT NULL," +
-            Dashboards.UPDATE + " TEXT NOT NULL," +
-            Dashboards.WRITE + " TEXT NOT NULL" + ")";
+            Dashboards.DELETE + " INTEGER NOT NULL," +
+            Dashboards.EXTERNALIZE + " INTEGER NOT NULL," +
+            Dashboards.MANAGE + " INTEGER NOT NULL," +
+            Dashboards.READ + " INTEGER NOT NULL," +
+            Dashboards.UPDATE + " INTEGER NOT NULL," +
+            Dashboards.WRITE + " INTEGER NOT NULL" + ")";
 
     public static final String DROP_DASHBOARD_TABLE = "DROP TABLE IF EXISTS " + Dashboards.TABLE_NAME;
+
+    public static final String CREATE_DASHBOARD_ITEMS_TABLE = "CREATE TABLE " + DashboardItems.TABLE_NAME + "(" +
+            DashboardItems.ID + " TEXT PRIMARY KEY," +
+            DashboardItems.CREATED + " TEXT NOT NULL," +
+            DashboardItems.LAST_UPDATED + " TEXT NOT NULL," +
+            DashboardItems.CONTENT_COUNT + " INTEGER," +
+            DashboardItems.TYPE + " TEXT NOT NULL," +
+            DashboardItems.SHAPE + " TEXT NOT NULL," +
+            DashboardItems.DELETE + " INTEGER NOT NULL," +
+            DashboardItems.EXTERNALIZE + " INTEGER NOT NULL," +
+            DashboardItems.MANAGE + " INTEGER NOT NULL," +
+            DashboardItems.READ + " INTEGER NOT NULL," +
+            DashboardItems.UPDATE + " INTEGER NOT NULL," +
+            DashboardItems.WRITE + " INTEGER NOT NULL" + ")";
+
+    public static final String DROP_DASHBOARD_ITEMS_TABLE = "DROP TABLE IF EXISTS " + DashboardItems.TABLE_NAME;
+
+    public static final String CREATE_DASHBOARD_TO_ITEMS_TABLE = "CREATE TABLE " + DashboardsToItems.TABLE_NAME + "(" +
+            DashboardsToItems.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            DashboardsToItems.DASHBOARD_ID + " TEXT NOT NULL," +
+            DashboardsToItems.DASHBOARD_ITEM_ID + " TEXT NOT NULL," +
+            " FOREIGN KEY " + "(" + DashboardsToItems.DASHBOARD_ID + ")" +
+            " REFERENCES " + Dashboards.TABLE_NAME + "(" + Dashboards.ID + ")" +
+            " ON DELETE CASCADE " +
+            " FOREIGN KEY " + "(" + DashboardsToItems.DASHBOARD_ITEM_ID + ")" +
+            " REFERENCES " + DashboardItems.TABLE_NAME + "(" + DashboardItems.ID + ")" +
+            " ON DELETE CASCADE " +
+            " UNIQUE " + "(" + DashboardsToItems.DASHBOARD_ID + "," + DashboardsToItems.DASHBOARD_ITEM_ID + ")" +
+            " ON CONFLICT REPLACE" + ")";
+
+    public static final String DROP_DASHBOARD_TO_ITEMS_TABLE = "DROP TABLE IF EXISTS " + DashboardItems.TABLE_NAME;
+
+    public static final String UNIT_JOIN_DASHBOARD_ITEMS_TABLE = DashboardsToItems.TABLE_NAME +
+            " LEFT OUTER JOIN " + DashboardItems.TABLE_NAME + " ON " +
+            DashboardsToItems.TABLE_NAME + "." + DashboardsToItems.DASHBOARD_ITEM_ID +
+            " = " + DashboardItems.TABLE_NAME + "." + DashboardItems.ID;
 }

@@ -6,6 +6,11 @@
 
     <application
         android:name=".DhisApplication"
-        android:allowBackup="true"/>
+        android:allowBackup="true">
+        <provider
+            android:name=".persistence.database.DbContentProvider"
+            android:authorities="org.dhis2.android.dashboard.api.persistence.database.DbContentProvider"
+            android:exported="false"/>
+    </application>
 
 </manifest>

@@ -28,9 +28,200 @@
 
 package org.dhis2.android.dashboard.api.persistence.handlers;
 
-/**
- * Created by araz on 28.04.2015.
- */
-public class DashboardHandler {
+import android.content.ContentProviderOperation;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.util.Log;
 
+import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
+import org.dhis2.android.dashboard.api.persistence.models.Access;
+import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
+
+public final class DashboardHandler {
+    private static final String TAG = DashboardHandler.class.getSimpleName();
+
+    public static final String[] PROJECTION = {
+            Dashboards.TABLE_NAME + "." + Dashboards.ID,
+            Dashboards.TABLE_NAME + "." + Dashboards.CREATED,
+            Dashboards.TABLE_NAME + "." + Dashboards.LAST_UPDATED,
+            Dashboards.TABLE_NAME + "." + Dashboards.NAME,
+            Dashboards.TABLE_NAME + "." + Dashboards.DISPLAY_NAME,
+            Dashboards.TABLE_NAME + "." + Dashboards.ITEM_COUNT,
+            Dashboards.TABLE_NAME + "." + Dashboards.DELETE,
+            Dashboards.TABLE_NAME + "." + Dashboards.EXTERNALIZE,
+            Dashboards.TABLE_NAME + "." + Dashboards.MANAGE,
+            Dashboards.TABLE_NAME + "." + Dashboards.READ,
+            Dashboards.TABLE_NAME + "." + Dashboards.UPDATE,
+            Dashboards.TABLE_NAME + "." + Dashboards.WRITE
+    };
+
+    private static final int ID = 0;
+    private static final int CREATED = 1;
+    private static final int LAST_UPDATED = 2;
+    private static final int NAME = 3;
+    private static final int DISPLAY_NAME = 4;
+    private static final int ITEM_COUNT = 5;
+    private static final int DELETE = 6;
+    private static final int EXTERNALIZE = 7;
+    private static final int MANAGE = 8;
+    private static final int READ = 9;
+    private static final int UPDATE = 10;
+    private static final int WRITE = 11;
+
+    private Context mContext;
+
+    public DashboardHandler(Context context) {
+        mContext = isNull(context, "Context object must not be null");
+    }
+
+    private static ContentValues toContentValues(Dashboard dashboard) {
+        isNull(dashboard, "Dashboard object must not be null");
+
+        String created = dashboard.getCreated().toString();
+        String lastUpdated = dashboard.getLastUpdated().toString();
+        Access access = dashboard.getAccess();
+
+        ContentValues values = new ContentValues();
+        values.put(Dashboards.ID, dashboard.getId());
+        values.put(Dashboards.CREATED, created);
+        values.put(Dashboards.LAST_UPDATED, lastUpdated);
+        values.put(Dashboards.NAME, dashboard.getName());
+        values.put(Dashboards.DISPLAY_NAME, dashboard.getDisplayName());
+        values.put(Dashboards.ITEM_COUNT, dashboard.getItemCount());
+        values.put(Dashboards.DELETE, access.isDelete() ? 1 : 0);
+        values.put(Dashboards.EXTERNALIZE, access.isExternalize() ? 1 : 0);
+        values.put(Dashboards.MANAGE, access.isManage() ? 1 : 0);
+        values.put(Dashboards.READ, access.isRead() ? 1 : 0);
+        values.put(Dashboards.UPDATE, access.isUpdate() ? 1 : 0);
+        values.put(Dashboards.WRITE, access.isWrite() ? 1 : 0);
+        return values;
+    }
+
+    private static Dashboard fromCursor(Cursor cursor) {
+        isNull(cursor, "Cursor object must not be null");
+
+        DateTime created = DateTime.parse(cursor.getString(CREATED));
+        DateTime lastUpdated = DateTime.parse(cursor.getString(LAST_UPDATED));
+
+        Access access = new Access();
+        access.setDelete(cursor.getInt(DELETE) == 1);
+        access.setExternalize(cursor.getInt(EXTERNALIZE) == 1);
+        access.setManage(cursor.getInt(MANAGE) == 1);
+        access.setRead(cursor.getInt(READ) == 1);
+        access.setUpdate(cursor.getInt(UPDATE) == 1);
+        access.setWrite(cursor.getInt(WRITE) == 1);
+
+        Dashboard dashboard = new Dashboard();
+        dashboard.setId(cursor.getString(ID));
+        dashboard.setCreated(created);
+        dashboard.setLastUpdated(lastUpdated);
+        dashboard.setName(cursor.getString(NAME));
+        dashboard.setDisplayName(cursor.getString(DISPLAY_NAME));
+        dashboard.setItemCount(cursor.getInt(ITEM_COUNT));
+        dashboard.setAccess(access);
+
+        return dashboard;
+    }
+
+    public static List<Dashboard> map(Cursor cursor, boolean closeCursor) {
+        List<Dashboard> units = new ArrayList<>();
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                units.add(fromCursor(cursor));
+            } while (cursor.moveToNext());
+
+            if (closeCursor) {
+                cursor.close();
+            }
+        }
+        return units;
+    }
+
+    private static void insert(List<ContentProviderOperation> ops,
+                               Dashboard dashboard) {
+        isNull(dashboard, "Dashboard must not be null");
+
+        Log.d(TAG, "Inserting " + dashboard.getName());
+        ops.add(ContentProviderOperation
+                .newInsert(Dashboards.CONTENT_URI)
+                .withValues(toContentValues(dashboard))
+                .build());
+    }
+
+    private static void update(List<ContentProviderOperation> ops,
+                               Dashboard dashboard) {
+        isNull(dashboard, "OrganizationUnit must not be null");
+
+        Log.d(TAG, "Updating " + dashboard.getName());
+        Uri uri = Dashboards.CONTENT_URI.buildUpon()
+                .appendPath(dashboard.getId()).build();
+        ops.add(ContentProviderOperation
+                .newUpdate(uri)
+                .withValues(toContentValues(dashboard))
+                .build());
+    }
+
+    private static void delete(List<ContentProviderOperation> ops,
+                               Dashboard dashboard) {
+        isNull(dashboard, "Dashboard must not be null");
+
+        Log.d(TAG, "Deleting " + dashboard.getName());
+        Uri uri = Dashboards.CONTENT_URI.buildUpon()
+                .appendPath(dashboard.getId()).build();
+        ops.add(ContentProviderOperation
+                .newDelete(uri)
+                .build());
+    }
+
+    public List<Dashboard> query() {
+        return query(null);
+    }
+
+    public List<Dashboard> query(String selection) {
+        Cursor cursor = mContext.getContentResolver().query(
+                Dashboards.CONTENT_URI, PROJECTION, selection, null, null
+        );
+
+        return map(cursor, true);
+    }
+
+    public List<ContentProviderOperation> sync(List<Dashboard> units) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+        Map<String, Dashboard> newDashboards = toMap(units);
+        Map<String, Dashboard> oldDashboards = toMap(query());
+
+        for (String oldDashboardKey : oldDashboards.keySet()) {
+            Dashboard newDashboard = newDashboards.get(oldDashboardKey);
+            Dashboard oldDashboard = oldDashboards.get(oldDashboardKey);
+
+            if (newDashboard == null) {
+                delete(ops, oldDashboard);
+                continue;
+            }
+
+            if (newDashboard.getLastUpdated().isAfter(oldDashboard.getLastUpdated())) {
+                update(ops, newDashboard);
+            }
+
+            newDashboards.remove(oldDashboardKey);
+        }
+
+        for (String newDashboardKey : newDashboards.keySet()) {
+            Dashboard dashboard = newDashboards.get(newDashboardKey);
+            insert(ops, dashboard);
+        }
+
+        return ops;
+    }
 }

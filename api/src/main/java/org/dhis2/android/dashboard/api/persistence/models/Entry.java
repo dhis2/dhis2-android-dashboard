@@ -26,12 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence;
+package org.dhis2.android.dashboard.api.persistence.models;
 
-import com.raizlabs.android.dbflow.annotation.Database;
+/**
+ * Created by araz on 29.04.2015.
+ */
+public final class Entry {
+    public final String first;
+    public final String second;
 
-@Database(name = AppDb.NAME, version = AppDb.VERSION, foreignKeysSupported = true)
-public class AppDb {
-    public static final String NAME = "dashboard";
-    public static final int VERSION = 1;
+    public Entry(String first, String second) {
+        this.first = first;
+        this.second = second;
+    }
 }

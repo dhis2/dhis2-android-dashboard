@@ -41,6 +41,9 @@ import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.http.Response;
 import org.dhis2.android.dashboard.api.network.managers.NetworkManager;
 import org.dhis2.android.dashboard.api.network.models.Credentials;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardHandler;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardItemHandler;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardsToItemsHandler;
 import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
 import org.dhis2.android.dashboard.api.persistence.handlers.UserAccountHandler;
 import org.dhis2.android.dashboard.api.network.models.Session;
@@ -128,7 +131,12 @@ public class DhisManager extends NetworkManager {
 
     public void syncDashboards() throws APIException {
         runController(
-                new DashboardSyncController(this, mSessionHandler)
+                new DashboardSyncController(
+                        mContext, this, mSessionHandler,
+                        new DashboardHandler(mContext),
+                        new DashboardItemHandler(mContext),
+                        new DashboardsToItemsHandler(mContext)
+                )
         );
     }
 

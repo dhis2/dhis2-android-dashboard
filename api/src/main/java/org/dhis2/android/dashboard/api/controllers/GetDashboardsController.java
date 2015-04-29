@@ -28,17 +28,13 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.network.tasks.GetDashboardsTask;
-import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
-import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
-import org.dhis2.android.dashboard.api.persistence.models.DashboardToItem;
-import org.dhis2.android.dashboard.api.persistence.models.DashboardToItem$Table;
 import org.dhis2.android.dashboard.api.network.models.Session;
+import org.dhis2.android.dashboard.api.network.tasks.GetDashboardsTask;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardHandler;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardsToItemsHandler;
+import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +45,16 @@ import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
 public final class GetDashboardsController implements IController<List<Dashboard>> {
     private final DhisManager mDhisManager;
     private final Session mSession;
+    private final DashboardHandler mDashboardHandler;
+    private final DashboardsToItemsHandler mDashboardsToItemsHandler;
 
-    public GetDashboardsController(DhisManager dhisManager, Session session) {
+    public GetDashboardsController(DhisManager dhisManager, Session session,
+                                   DashboardHandler dashboardHandler,
+                                   DashboardsToItemsHandler dashboardsToItemsHandler) {
         mDhisManager = dhisManager;
         mSession = session;
+        mDashboardHandler = dashboardHandler;
+        mDashboardsToItemsHandler = dashboardsToItemsHandler;
     }
 
     @Override
@@ -106,26 +108,17 @@ public final class GetDashboardsController implements IController<List<Dashboard
     }
 
     private Map<String, Dashboard> getOldFullDashboards() {
-        List<Dashboard> dashboards = Select.all(Dashboard.class);
+        List<Dashboard> dashboards = mDashboardHandler.query();
         if (dashboards == null || dashboards.isEmpty()) {
             return toMap(dashboards);
         }
 
         for (Dashboard dashboard : dashboards) {
-            // reading Dashboards to DashboardItems relationship
-            // for particular Dashboard
-            List<DashboardToItem> items = Select.all(
-                    DashboardToItem.class, Condition.column(
-                            DashboardToItem$Table.DASHBOARD_DASHBOARDID).is(dashboard)
+            // fetching DashboardItems from db for Dashboard
+            dashboard.setDashboardItems(
+                    mDashboardsToItemsHandler
+                            .queryDashboardItems(dashboard.getId())
             );
-
-            // Reading full sized dashboard items
-            // and passing them to dashboards
-            for (DashboardToItem item : items) {
-                List<DashboardItem> dashboardItems = new ArrayList<>();
-                dashboardItems.add(item.getDashboardItem().toModel());
-                dashboard.setDashboardItems(dashboardItems);
-            }
         }
 
         return toMap(dashboards);

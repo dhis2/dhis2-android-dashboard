@@ -29,12 +29,7 @@
 package org.dhis2.android.dashboard.api.persistence.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.Table;
 
-import org.dhis2.android.dashboard.api.persistence.AppDb;
-
-@Table(databaseName = AppDb.NAME)
 public class DashboardItem extends BaseIdentifiableModel {
     public static final String TYPE_CHART = "chart";
     public static final String TYPE_EVENT_CHART = "eventChart";
@@ -52,10 +47,10 @@ public class DashboardItem extends BaseIdentifiableModel {
     public static final String SHAPE_DOUBLE_WIDTH = "double_width";
     public static final String SHAPE_FULL_WIDTH = "full_width";
 
-    @JsonProperty("access") @Column Access access;
-    @JsonProperty("contentCount") @Column int contentCount;
-    @JsonProperty("type") @Column String type;
-    @JsonProperty("shape") @Column String shape;
+    @JsonProperty("access") private Access access;
+    @JsonProperty("contentCount") private int contentCount;
+    @JsonProperty("type") private String type;
+    @JsonProperty("shape") private String shape;
 
     public Access getAccess() {
         return access;

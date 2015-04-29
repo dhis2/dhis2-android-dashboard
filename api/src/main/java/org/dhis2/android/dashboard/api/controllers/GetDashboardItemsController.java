@@ -28,12 +28,11 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.models.Session;
 import org.dhis2.android.dashboard.api.network.tasks.GetDashboardItemsTask;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardItemHandler;
 import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 
 import java.util.ArrayList;
@@ -44,12 +43,15 @@ import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
 
 public final class GetDashboardItemsController implements IController<List<DashboardItem>> {
     private final DhisManager mDhisManager;
+    private final DashboardItemHandler mItemHandler;
     private final Session mSession;
     private final List<String> mIds;
 
-    public GetDashboardItemsController(DhisManager dhisManager, Session session, List<String> ids) {
+    public GetDashboardItemsController(DhisManager dhisManager, Session session,
+                                       DashboardItemHandler itemHandler, List<String> ids) {
         mDhisManager = dhisManager;
         mSession = session;
+        mItemHandler = itemHandler;
         mIds = ids;
     }
 
@@ -104,6 +106,6 @@ public final class GetDashboardItemsController implements IController<List<Dashb
     }
 
     private Map<String, DashboardItem> getOldFullDashboardItems() {
-        return toMap(Select.all(DashboardItem.class));
+        return toMap(mItemHandler.query());
     }
 }

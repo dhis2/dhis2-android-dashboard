@@ -26,43 +26,49 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence.converters;
+package org.dhis2.android.dashboard.api.persistence.loaders;
 
+import android.net.Uri;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.raizlabs.android.dbflow.converter.TypeConverter;
+public class CursorLoaderBuilder {
+    private Uri mUri;
+    private String[] mProjection;
+    private String mSelection;
+    private String[] mSelectionArgs;
+    private String mSortOrder;
+    private Transformation mTransformation;
 
-import org.dhis2.android.dashboard.api.persistence.models.Access;
-import org.dhis2.android.dashboard.api.utils.JsonMapperProvider;
-
-import java.io.IOException;
-
-@com.raizlabs.android.dbflow.annotation.TypeConverter
-public final class AccessTypeConverter extends TypeConverter<String, Access> {
-
-    @Override public String getDBValue(Access model) {
-        String serializedData = null;
-        if (model != null) {
-            try {
-                serializedData = JsonMapperProvider.getInstance()
-                        .writeValueAsString(model);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        }
-        return serializedData;
+    private CursorLoaderBuilder(Uri uri) {
+        mUri = uri;
     }
 
-    @Override public Access getModelValue(String data) {
-        Access access = null;
-        if (data != null) {
-            try {
-                access = JsonMapperProvider.getInstance()
-                        .readValue(data, Access.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return access;
+    public static CursorLoaderBuilder forUri(Uri uri) {
+        return new CursorLoaderBuilder(uri);
+    }
+
+    public CursorLoaderBuilder projection(String[] projection) {
+        mProjection = projection;
+        return this;
+    }
+
+    public CursorLoaderBuilder selection(String selection) {
+        mSelection = selection;
+        return this;
+    }
+
+    public CursorLoaderBuilder selectionArgs(String[] selectionArgs) {
+        mSelectionArgs = selectionArgs;
+        return this;
+    }
+
+    public CursorLoaderBuilder sortOrder(String sortOrder) {
+        mSortOrder = sortOrder;
+        return this;
+    }
+
+    public <T> TransformationCursorBuilder<T> transformation(Transformation<T> transformation) {
+        mTransformation = transformation;
+        return new TransformationCursorBuilder<T>(mUri, mProjection, mSelection,
+                mSelectionArgs, mSortOrder, transformation);
     }
 }

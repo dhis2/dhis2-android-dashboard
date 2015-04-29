@@ -28,11 +28,18 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
-import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
-import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
+import android.content.ContentProviderOperation;
+import android.content.Context;
+import android.content.OperationApplicationException;
+import android.os.RemoteException;
 
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.network.APIException;
+import org.dhis2.android.dashboard.api.persistence.database.DbContract;
+import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardHandler;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardItemHandler;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardsToItemsHandler;
 import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
 import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
@@ -43,39 +50,67 @@ import java.util.List;
 import java.util.Set;
 
 public final class DashboardSyncController implements IController<Object> {
+    private final Context mContext;
     private final DhisManager mDhisManager;
     private final SessionHandler mSessionHandler;
+    private final DashboardHandler mDashboardHandler;
+    private final DashboardItemHandler mDashboardItemHandler;
+    private final DashboardsToItemsHandler mDashboardToItemsHandler;
 
-    public DashboardSyncController(DhisManager dhisManager, SessionHandler handler) {
+    public DashboardSyncController(Context context, DhisManager dhisManager, SessionHandler handler,
+                                   DashboardHandler dashboardHandler, DashboardItemHandler itemHandler,
+                                   DashboardsToItemsHandler dashboardsToItemsHandler) {
+        mContext = context;
         mDhisManager = dhisManager;
         mSessionHandler = handler;
+        mDashboardHandler = dashboardHandler;
+        mDashboardItemHandler = itemHandler;
+        mDashboardToItemsHandler = dashboardsToItemsHandler;
     }
 
     @Override
     public Object run() throws APIException {
-        List<Dashboard> dashboards = (new GetDashboardsController(
-                mDhisManager, mSessionHandler.get())).run();
-        List<DashboardItem> dashboardItems = (new GetDashboardItemsController(
-                mDhisManager, mSessionHandler.get(), getDashboardItemIds(dashboards))).run();
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+        System.out.println("Here 0");
+        List<Dashboard> dashboards = updateDashboards();
+        System.out.println("Here 1");
+        List<DashboardItem> items = updateDashboardItems(dashboards);
+        System.out.println("Here 2");
 
-        // sync dashboards here
-        // sync dashboard items
-        // sync dashboardToItems relationship
+        ops.addAll(mDashboardHandler.sync(dashboards));
+        ops.addAll(mDashboardItemHandler.sync(items));
+        ops.addAll(mDashboardToItemsHandler.sync(dashboards));
 
-        new SaveModelTransaction<>(ProcessModelInfo
+        try {
+            mContext.getContentResolver()
+                    .applyBatch(DbContract.AUTHORITY, ops);
+            mContext.getContentResolver()
+                    .notifyChange(Dashboards.CONTENT_URI, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (OperationApplicationException e) {
+            e.printStackTrace();
+        }
+        /* new SaveModelTransaction<>(ProcessModelInfo
                 .withModels(dashboards)).onExecute();
         new SaveModelTransaction<>(ProcessModelInfo
-                .withModels(dashboardItems)).onExecute();
+                .withModels(dashboardItems)).onExecute(); */
 
         return new Object();
     }
 
-    private List<String> getDashboardItemIds(List<Dashboard> dashboards) {
-        Set<String> set = new HashSet<>();
+    private List<Dashboard> updateDashboards() {
+        return (new GetDashboardsController(
+                mDhisManager, mSessionHandler.get(),
+                mDashboardHandler, mDashboardToItemsHandler)).run();
+    }
+
+    private List<DashboardItem> updateDashboardItems(List<Dashboard> dashboards) {
         if (dashboards == null || dashboards.isEmpty()) {
-            return new ArrayList<>(set);
+            return new ArrayList<>();
         }
 
+        Set<String> set = new HashSet<>();
         for (Dashboard dashboard : dashboards) {
             if (dashboard.getDashboardItems() == null ||
                     dashboard.getDashboardItems().isEmpty()) {
@@ -86,7 +121,8 @@ public final class DashboardSyncController implements IController<Object> {
                 set.add(dashboardItem.getId());
             }
         }
-
-        return new ArrayList<>(set);
+        return (new GetDashboardItemsController(
+                mDhisManager, mSessionHandler.get(),
+                mDashboardItemHandler, new ArrayList<>(set))).run();
     }
 }
