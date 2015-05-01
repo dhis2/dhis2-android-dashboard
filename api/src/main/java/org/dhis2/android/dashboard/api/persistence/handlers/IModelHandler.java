@@ -26,17 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence.models;
+package org.dhis2.android.dashboard.api.persistence.handlers;
+
+import android.content.ContentProviderOperation;
+import android.database.Cursor;
+
+import java.util.List;
 
 /**
- * Created by araz on 29.04.2015.
+ * Created by araz on 01.05.2015.
  */
-public final class Entry {
-    public final String first;
-    public final String second;
+public interface IModelHandler<T> {
+    public List<T> map(Cursor cursor, boolean closeCursor);
 
-    public Entry(String first, String second) {
-        this.first = first;
-        this.second = second;
-    }
+    public String[] getProjection();
+
+    public ContentProviderOperation insert(T object);
+
+    public ContentProviderOperation update(T object);
+
+    public ContentProviderOperation delete(T object);
+
+    public <T> List<T> queryRelatedModels(Class<T> clazz, Object id);
+
+    public List<T> query(String selection, String[] selectionArgs);
+
+    public List<T> query();
+
+    public List<ContentProviderOperation> sync(List<T> items);
 }

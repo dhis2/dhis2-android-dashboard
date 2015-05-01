@@ -44,14 +44,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static android.text.TextUtils.isEmpty;
 import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public final class DashboardItemHandler implements IDbHandler<DashboardItem> {
+public final class DashboardItemHandler implements IModelHandler<DashboardItem> {
     private static final String TAG = DashboardItemHandler.class.getSimpleName();
 
-    public static final String[] PROJECTION = {
+    private static final String[] PROJECTION = {
             DashboardItems.TABLE_NAME + "." + DashboardItems.ID,
             DashboardItems.TABLE_NAME + "." + DashboardItems.CREATED,
             DashboardItems.TABLE_NAME + "." + DashboardItems.LAST_UPDATED,
@@ -134,7 +133,7 @@ public final class DashboardItemHandler implements IDbHandler<DashboardItem> {
         return item;
     }
 
-    public static List<DashboardItem> map(Cursor cursor, boolean closeCursor) {
+    @Override public List<DashboardItem> map(Cursor cursor, boolean closeCursor) {
         List<DashboardItem> items = new ArrayList<>();
         try {
             if (cursor != null && cursor.getCount() > 0) {
@@ -155,111 +154,59 @@ public final class DashboardItemHandler implements IDbHandler<DashboardItem> {
         return items;
     }
 
-    private static void insert(List<ContentProviderOperation> ops,
-                               DashboardItem item) {
-        isNull(item, "DashboardItem must not be null");
-
-        if (isItemComplete(item)) {
-            Log.d(TAG, "Inserting " + item.getId());
-            ops.add(ContentProviderOperation
-                    .newInsert(DashboardItems.CONTENT_URI)
-                    .withValues(toContentValues(item))
-                    .build());
-        }
-    }
-
-    private static void update(List<ContentProviderOperation> ops,
-                               DashboardItem item) {
-        isNull(item, "DashboardItem must not be null");
-
-        if (isItemComplete(item)) {
-            Log.d(TAG, "Updating " + item.getName());
-            Uri uri = DashboardItems.CONTENT_URI.buildUpon()
-                    .appendPath(item.getId()).build();
-            ops.add(ContentProviderOperation
-                    .newUpdate(uri)
-                    .withValues(toContentValues(item))
-                    .build());
-        }
-    }
-
-    private static void delete(List<ContentProviderOperation> ops,
-                               DashboardItem item) {
-        isNull(item, "DashboardItem must not be null");
-
-        Log.d(TAG, "Deleting " + item.getName());
-        Uri uri = DashboardItems.CONTENT_URI.buildUpon()
-                .appendPath(item.getId()).build();
-        ops.add(ContentProviderOperation
-                .newDelete(uri)
-                .build());
-    }
-
-    public static boolean isItemComplete(DashboardItem item) {
-        return item != null && !(isEmpty(item.getId()) ||
-                isEmpty(item.getType()) ||
-                isEmpty(item.getShape()) ||
-                item.getAccess() == null);
+    @Override public String[] getProjection() {
+        return PROJECTION;
     }
 
     @Override public ContentProviderOperation insert(DashboardItem item) {
         isNull(item, "DashboardItem must not be null");
 
-        if (isItemComplete(item)) {
-            Log.d(TAG, "Inserting " + item.getId());
-            return ContentProviderOperation
-                    .newInsert(DashboardItems.CONTENT_URI)
-                    .withValues(toContentValues(item))
-                    .build();
-        } else {
-            return null;
-        }
+        Log.d(TAG, "Inserting " + item.getId());
+        return ContentProviderOperation
+                .newInsert(DashboardItems.CONTENT_URI)
+                .withValues(toContentValues(item))
+                .build();
     }
 
     @Override public ContentProviderOperation update(DashboardItem item) {
         isNull(item, "DashboardItem must not be null");
 
-        if (isItemComplete(item)) {
-            Log.d(TAG, "Updating " + item.getName());
-            Uri uri = DashboardItems.CONTENT_URI.buildUpon()
-                    .appendPath(item.getId()).build();
-            return ContentProviderOperation
-                    .newUpdate(uri)
-                    .withValues(toContentValues(item))
-                    .build();
-        } else {
-            return null;
-        }
+        Log.d(TAG, "Updating " + item.getName());
+        Uri uri = DashboardItems.CONTENT_URI.buildUpon()
+                .appendPath(item.getId()).build();
+        return ContentProviderOperation
+                .newUpdate(uri)
+                .withValues(toContentValues(item))
+                .build();
     }
 
     @Override public ContentProviderOperation delete(DashboardItem item) {
-            isNull(item, "DashboardItem must not be null");
+        isNull(item, "DashboardItem must not be null");
 
-            Log.d(TAG, "Deleting " + item.getName());
-            Uri uri = DashboardItems.CONTENT_URI.buildUpon()
-                    .appendPath(item.getId()).build();
-            return ContentProviderOperation
-                    .newDelete(uri)
-                    .build();
+        Log.d(TAG, "Deleting " + item.getId());
+        Uri uri = DashboardItems.CONTENT_URI.buildUpon()
+                .appendPath(item.getId()).build();
+        return ContentProviderOperation
+                .newDelete(uri)
+                .build();
     }
 
-    @Override public List<DashboardItem> query(String selection, String[] selectionArgs) {
-        return query(selection);
+    @Override public <T> List<T> queryRelatedModels(Class<T> clazz, Object id) {
+        throw new IllegalArgumentException("Unsupported method");
     }
 
-    @Override public List<DashboardItem> query() {
-        return query(null);
-    }
-
-    public List<DashboardItem> query(String selection) {
+    @Override public List<DashboardItem> query(String selection, String[] args) {
         Cursor cursor = mContext.getContentResolver().query(
-                DashboardItems.CONTENT_URI, PROJECTION, selection, null, null
+                DashboardItems.CONTENT_URI, PROJECTION, selection, args, null
         );
-
         return map(cursor, true);
     }
 
-    public List<ContentProviderOperation> sync(List<DashboardItem> items) {
+    @Override public List<DashboardItem> query() {
+        return query(null, null);
+    }
+
+    @Override public List<ContentProviderOperation> sync(List<DashboardItem> items) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         Map<String, DashboardItem> newItems = toMap(items);
         Map<String, DashboardItem> oldItems = toMap(query());
@@ -269,20 +216,19 @@ public final class DashboardItemHandler implements IDbHandler<DashboardItem> {
             DashboardItem oldItem = oldItems.get(oldItemKey);
 
             if (newItem == null) {
-                delete(ops, oldItem);
+                ops.add(delete(oldItem));
                 continue;
             }
 
             if (newItem.getLastUpdated().isAfter(oldItem.getLastUpdated())) {
-                update(ops, newItem);
+                ops.add(update(newItem));
             }
 
             newItems.remove(oldItemKey);
         }
 
         for (String newItemKey : newItems.keySet()) {
-            DashboardItem item = newItems.get(newItemKey);
-            insert(ops, item);
+            ops.add(insert(newItems.get(newItemKey)));
         }
 
         return ops;

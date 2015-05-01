@@ -30,6 +30,7 @@ package org.dhis2.android.dashboard.api;
 
 import android.app.Application;
 
+import org.dhis2.android.dashboard.api.persistence.DbManager;
 import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 
 public class DhisApplication extends Application {
@@ -41,6 +42,7 @@ public class DhisApplication extends Application {
         super.onCreate();
 
         EventBusProvider.register(this);
+        DbManager.init(this);
 
         mDhisManager = new DhisManager(getBaseContext());
         mDhisService = new DhisService(mDhisManager);

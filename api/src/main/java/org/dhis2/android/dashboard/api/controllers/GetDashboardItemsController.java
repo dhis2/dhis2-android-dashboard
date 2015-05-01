@@ -32,7 +32,7 @@ import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.models.Session;
 import org.dhis2.android.dashboard.api.network.tasks.GetDashboardItemsTask;
-import org.dhis2.android.dashboard.api.persistence.handlers.DashboardItemHandler;
+import org.dhis2.android.dashboard.api.persistence.DbManager;
 import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 
 import java.util.ArrayList;
@@ -43,54 +43,52 @@ import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
 
 public final class GetDashboardItemsController implements IController<List<DashboardItem>> {
     private final DhisManager mDhisManager;
-    private final DashboardItemHandler mItemHandler;
     private final Session mSession;
     private final List<String> mIds;
 
-    public GetDashboardItemsController(DhisManager dhisManager, Session session,
-                                       DashboardItemHandler itemHandler, List<String> ids) {
+    public GetDashboardItemsController(DhisManager dhisManager,
+                                       Session session, List<String> ids) {
         mDhisManager = dhisManager;
         mSession = session;
-        mItemHandler = itemHandler;
         mIds = ids;
     }
 
     @Override
     public List<DashboardItem> run() throws APIException {
-        Map<String, DashboardItem> newBaseDashboardItems = getNewBaseDashboardItems();
-        Map<String, DashboardItem> oldDashboardItems = getOldFullDashboardItems();
+        Map<String, DashboardItem> newBaseItems = getNewBaseDashboardItems();
+        Map<String, DashboardItem> oldItems = getOldFullDashboardItems();
 
-        List<String> dashboardsToDownload = new ArrayList<>();
-        for (String dashboardItemId : newBaseDashboardItems.keySet()) {
-            DashboardItem newDashboardItem = newBaseDashboardItems.get(dashboardItemId);
-            DashboardItem oldDashboardItem = oldDashboardItems.get(dashboardItemId);
+        List<String> toDownload = new ArrayList<>();
+        for (String itemId : newBaseItems.keySet()) {
+            DashboardItem newItem = newBaseItems.get(itemId);
+            DashboardItem oldItem = oldItems.get(itemId);
 
-            if (oldDashboardItem == null) {
-                dashboardsToDownload.add(dashboardItemId);
+            if (oldItem == null) {
+                toDownload.add(itemId);
                 continue;
             }
 
-            if (newDashboardItem.getLastUpdated().isAfter(oldDashboardItem.getLastUpdated())) {
-                dashboardsToDownload.add(dashboardItemId);
+            if (newItem.getLastUpdated().isAfter(oldItem.getLastUpdated())) {
+                toDownload.add(itemId);
             }
         }
 
-        Map<String, DashboardItem> newDashboardItems = getNewFullDashboardItems(dashboardsToDownload);
-        List<DashboardItem> combinedDashboardItems = new ArrayList<>();
-        for (String dashboardItemId : newBaseDashboardItems.keySet()) {
-            DashboardItem newDashboardItem = newDashboardItems.get(dashboardItemId);
-            DashboardItem oldDashboardItem = oldDashboardItems.get(dashboardItemId);
+        Map<String, DashboardItem> newItems = getNewFullDashboardItems(toDownload);
+        List<DashboardItem> combinedItems = new ArrayList<>();
+        for (String itemId : newBaseItems.keySet()) {
+            DashboardItem newItem = newItems.get(itemId);
+            DashboardItem oldItem = oldItems.get(itemId);
 
-            if (newDashboardItem != null) {
-                combinedDashboardItems.add(newDashboardItem);
+            if (newItem != null) {
+                combinedItems.add(newItem);
                 continue;
             }
 
-            if (oldDashboardItem != null) {
-                combinedDashboardItems.add(oldDashboardItem);
+            if (oldItem != null) {
+                combinedItems.add(oldItem);
             }
         }
-        return combinedDashboardItems;
+        return combinedItems;
     }
 
     private Map<String, DashboardItem> getNewBaseDashboardItems() throws APIException {
@@ -106,6 +104,6 @@ public final class GetDashboardItemsController implements IController<List<Dashb
     }
 
     private Map<String, DashboardItem> getOldFullDashboardItems() {
-        return toMap(mItemHandler.query());
+        return toMap(DbManager.with(DashboardItem.class).query());
     }
 }

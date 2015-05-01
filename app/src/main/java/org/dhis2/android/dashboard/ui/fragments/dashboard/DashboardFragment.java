@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.persistence.DbManager;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract;
 import org.dhis2.android.dashboard.api.persistence.handlers.DashboardHandler;
 import org.dhis2.android.dashboard.api.persistence.loaders.CursorLoaderBuilder;
@@ -128,7 +129,7 @@ public class DashboardFragment extends BaseFragment implements LoaderCallbacks<L
     static class DbTransformer implements Transformation<List<Dashboard>> {
 
         @Override public List<Dashboard> transform(Context context, Cursor cursor) {
-            return DashboardHandler.map(cursor, false);
+            return DbManager.with(Dashboard.class).map(cursor, false);
         }
     }
 }

@@ -46,7 +46,6 @@ public final class DbContract {
     }
 
     static interface DashboardColumns extends AccessColumns {
-        public static final String TABLE_NAME = "dashboardsTable";
         public static final String ID = "id";
         public static final String CREATED = "created";
         public static final String LAST_UPDATED = "lastUpdated";
@@ -56,7 +55,6 @@ public final class DbContract {
     }
 
     static interface DashboardItemColumns extends AccessColumns {
-        public static final String TABLE_NAME = "dashboardItemsTable";
         public static final String ID = "id";
         public static final String CREATED = "created";
         public static final String LAST_UPDATED = "lastUpdated";
@@ -66,16 +64,15 @@ public final class DbContract {
     }
 
     static interface DashboardsToItemsColumns {
-        public static final String TABLE_NAME = "dashboardsToItemsTable";
         public static final String ID = BaseColumns._ID;
         public static final String DASHBOARD_ID = "dashboardId";
         public static final String DASHBOARD_ITEM_ID = "dashboardItemId";
     }
 
     public static final class Dashboards implements DashboardColumns {
-        public static final String PATH = TABLE_NAME;
-        public static final String DASHBOARDS_PATH = PATH;
-        public static final String DASHBOARD_ID_PATH = PATH + "/*/";
+        public static final String TABLE_NAME = "dashboardsTable";
+        public static final String DASHBOARDS_PATH = TABLE_NAME;
+        public static final String DASHBOARD_ID_PATH = TABLE_NAME + "/*/";
         public static final String DASHBOARD_ID_ITEMS_PATH = DASHBOARD_ID_PATH +
                 DashboardItems.TABLE_NAME;
 
@@ -93,7 +90,7 @@ public final class DbContract {
         }
 
         public static final Uri CONTENT_URI = Uri.withAppendedPath(
-                BASE_CONTENT_URI, PATH);
+                BASE_CONTENT_URI, DASHBOARDS_PATH);
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE +
                 "/org.hisp.dhis2.mobile.Dashboard";
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE +
@@ -101,9 +98,9 @@ public final class DbContract {
     }
 
     public static final class DashboardItems implements DashboardItemColumns {
-        public static final String PATH = TABLE_NAME;
-        public static final String DASHBOARD_ITEMS_PATH = PATH;
-        public static final String DASHBOARD_ITEM_ID_PATH = PATH + "/*/";
+        public static final String TABLE_NAME = "dashboardItemsTable";
+        public static final String DASHBOARD_ITEMS_PATH = TABLE_NAME;
+        public static final String DASHBOARD_ITEM_ID_PATH = TABLE_NAME + "/*/";
 
         private static final int DASHBOARD_ITEM_ID_POSITION = 1;
 
@@ -112,7 +109,7 @@ public final class DbContract {
         }
 
         public static final Uri CONTENT_URI = Uri.withAppendedPath(
-                BASE_CONTENT_URI, PATH);
+                BASE_CONTENT_URI, DASHBOARD_ITEMS_PATH);
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE +
                 "/org.hisp.dhis2.mobile.DashboardItem";
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE +
@@ -120,15 +117,15 @@ public final class DbContract {
     }
 
     public static class DashboardsToItems implements DashboardsToItemsColumns {
-        public static final String PATH = TABLE_NAME;
-        public static final String DASHBOARD_TO_ITEMS_PATH = PATH;
-        public static final String DASHBOARD_TO_ITEM_ID_PATH = PATH + "/#/";
+        public static final String TABLE_NAME = "dashboardsToItemsTable";
+        public static final String DASHBOARD_TO_ITEMS_PATH = TABLE_NAME;
+        public static final String DASHBOARD_TO_ITEM_ID_PATH = TABLE_NAME + "/#/";
 
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(
+                BASE_CONTENT_URI, DASHBOARD_TO_ITEMS_PATH);
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE +
-                "/org.dhis2.mobile.DashboardsToItems";
+                "/org.dhis2.mobile.DashboardToItem";
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE +
-                "/org.dhis2.mobile.DashboardsToItems";
-
-        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH);
+                "/org.dhis2.mobile.DashboardToItem";
     }
 }

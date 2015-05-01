@@ -30,6 +30,7 @@ package org.dhis2.android.dashboard.api.persistence;
 
 import android.app.Application;
 import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.os.RemoteException;
@@ -37,9 +38,11 @@ import android.os.RemoteException;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract;
 import org.dhis2.android.dashboard.api.persistence.handlers.DashboardHandler;
 import org.dhis2.android.dashboard.api.persistence.handlers.DashboardItemHandler;
-import org.dhis2.android.dashboard.api.persistence.handlers.IDbHandler;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardsToItemsHandler;
+import org.dhis2.android.dashboard.api.persistence.handlers.IModelHandler;
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
 import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardToItem;
 
 import java.util.ArrayList;
 
@@ -72,12 +75,15 @@ public final class DbManager {
         return mContext;
     }
 
-    public static <T> IDbHandler<T> with(Class<T> clazz) {
+    public static <T> IModelHandler<T> with(Class<T> clazz) {
         isNull(clazz, "Class object must not be null");
-        if (clazz.equals(Dashboard.class)) {
-            return (IDbHandler<T>) new DashboardHandler(getInstance().getContext());
-        } else if (clazz.equals(DashboardItem.class)) {
-            return (IDbHandler<T>) new DashboardItemHandler(getInstance().getContext());
+
+        if (clazz == Dashboard.class) {
+            return (IModelHandler<T>) new DashboardHandler(getInstance().getContext());
+        } else if (clazz == DashboardItem.class) {
+            return (IModelHandler<T>) new DashboardItemHandler(getInstance().getContext());
+        } else if (clazz == DashboardToItem.class) {
+            return (IModelHandler<T>) new DashboardsToItemsHandler(getInstance().getContext());
         } else {
             throw new IllegalArgumentException("Unsupported type");
         }
@@ -91,6 +97,22 @@ public final class DbManager {
             throw new RuntimeException(e);
         } catch (OperationApplicationException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> void notifyChange(Class<T> clazz) {
+        isNull(clazz, "Class object must not be null");
+
+        ContentResolver resolver = getInstance().getContext()
+                .getContentResolver();
+        if (clazz == Dashboard.class) {
+            resolver.notifyChange(DbContract.Dashboards.CONTENT_URI, null);
+        } else if (clazz == DashboardItem.class) {
+            resolver.notifyChange(DbContract.DashboardItems.CONTENT_URI, null);
+        } else if (clazz == DashboardToItem.class) {
+            resolver.notifyChange(DbContract.DashboardsToItems.CONTENT_URI, null);
+        } else {
+            throw new IllegalArgumentException("Unsupported type");
         }
     }
 }

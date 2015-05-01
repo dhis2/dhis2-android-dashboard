@@ -131,12 +131,7 @@ public class DhisManager extends NetworkManager {
 
     public void syncDashboards() throws APIException {
         runController(
-                new DashboardSyncController(
-                        mContext, this, mSessionHandler,
-                        new DashboardHandler(mContext),
-                        new DashboardItemHandler(mContext),
-                        new DashboardsToItemsHandler(mContext)
-                )
+                new DashboardSyncController(this, mSessionHandler)
         );
     }
 

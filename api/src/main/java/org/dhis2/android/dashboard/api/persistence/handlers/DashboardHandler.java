@@ -35,22 +35,25 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import org.dhis2.android.dashboard.api.persistence.DbManager;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
 import org.dhis2.android.dashboard.api.persistence.models.Access;
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards.buildUriWithItems;
 import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public final class DashboardHandler implements IDbHandler<Dashboard> {
+public final class DashboardHandler implements IModelHandler<Dashboard> {
     private static final String TAG = DashboardHandler.class.getSimpleName();
 
-    private static final String[] PROJECTION = {
+    public static final String[] PROJECTION = {
             Dashboards.TABLE_NAME + "." + Dashboards.ID,
             Dashboards.TABLE_NAME + "." + Dashboards.CREATED,
             Dashboards.TABLE_NAME + "." + Dashboards.LAST_UPDATED,
@@ -133,42 +136,6 @@ public final class DashboardHandler implements IDbHandler<Dashboard> {
         return dashboard;
     }
 
-    private static void insert(List<ContentProviderOperation> ops,
-                               Dashboard dashboard) {
-        isNull(dashboard, "Dashboard must not be null");
-
-        Log.d(TAG, "Inserting " + dashboard.getName());
-        ops.add(ContentProviderOperation
-                .newInsert(Dashboards.CONTENT_URI)
-                .withValues(toContentValues(dashboard))
-                .build());
-    }
-
-    private static void update(List<ContentProviderOperation> ops,
-                               Dashboard dashboard) {
-        isNull(dashboard, "Dashboard must not be null");
-
-        Log.d(TAG, "Updating " + dashboard.getName());
-        Uri uri = Dashboards.CONTENT_URI.buildUpon()
-                .appendPath(dashboard.getId()).build();
-        ops.add(ContentProviderOperation
-                .newUpdate(uri)
-                .withValues(toContentValues(dashboard))
-                .build());
-    }
-
-    private static void delete(List<ContentProviderOperation> ops,
-                               Dashboard dashboard) {
-        isNull(dashboard, "Dashboard must not be null");
-
-        Log.d(TAG, "Deleting " + dashboard.getName());
-        Uri uri = Dashboards.CONTENT_URI.buildUpon()
-                .appendPath(dashboard.getId()).build();
-        ops.add(ContentProviderOperation
-                .newDelete(uri)
-                .build());
-    }
-
     @Override public List<Dashboard> map(Cursor cursor, boolean closeCursor) {
         List<Dashboard> units = new ArrayList<>();
         if (cursor != null && cursor.getCount() > 0) {
@@ -221,27 +188,34 @@ public final class DashboardHandler implements IDbHandler<Dashboard> {
                 .build();
     }
 
-    @Override public List<Dashboard> query(String selection, String[] selectionArgs) {
-        Cursor cursor = mContext.getContentResolver().query(
-                Dashboards.CONTENT_URI, PROJECTION, selection, selectionArgs, null
-        );
+    @Override public <T> List<T> queryRelatedModels(Class<T> clazz, Object id) {
+        isNull(clazz, "Class object must not be null");
+        isNull(id, "id must not be null");
 
+        if (clazz == DashboardItem.class) {
+            Cursor cursor = mContext.getContentResolver().query(
+                    buildUriWithItems((String) id), DbManager.with(DashboardItem.class)
+                            .getProjection(), null, null, null
+            );
+
+            return (List<T>) DbManager.with(DashboardItem.class).map(cursor, true);
+        } else {
+            throw new IllegalArgumentException("Unsupported type");
+        }
+    }
+
+    @Override public List<Dashboard> query(String selection, String[] args) {
+        Cursor cursor = mContext.getContentResolver().query(
+                Dashboards.CONTENT_URI, PROJECTION, selection, args, null
+        );
         return map(cursor, true);
     }
 
-    public List<Dashboard> query() {
-        return query(null);
+    @Override public List<Dashboard> query() {
+        return query(null, null);
     }
 
-    public List<Dashboard> query(String selection) {
-        Cursor cursor = mContext.getContentResolver().query(
-                Dashboards.CONTENT_URI, PROJECTION, selection, null, null
-        );
-
-        return map(cursor, true);
-    }
-
-    public List<ContentProviderOperation> sync(List<Dashboard> units) {
+    @Override public List<ContentProviderOperation> sync(List<Dashboard> units) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         Map<String, Dashboard> newDashboards = toMap(units);
         Map<String, Dashboard> oldDashboards = toMap(query());
@@ -251,20 +225,19 @@ public final class DashboardHandler implements IDbHandler<Dashboard> {
             Dashboard oldDashboard = oldDashboards.get(oldDashboardKey);
 
             if (newDashboard == null) {
-                delete(ops, oldDashboard);
+                ops.add(delete(oldDashboard));
                 continue;
             }
 
             if (newDashboard.getLastUpdated().isAfter(oldDashboard.getLastUpdated())) {
-                update(ops, newDashboard);
+                ops.add(update(newDashboard));
             }
 
             newDashboards.remove(oldDashboardKey);
         }
 
         for (String newDashboardKey : newDashboards.keySet()) {
-            Dashboard dashboard = newDashboards.get(newDashboardKey);
-            insert(ops, dashboard);
+            ops.add(insert(newDashboards.get(newDashboardKey)));
         }
 
         return ops;

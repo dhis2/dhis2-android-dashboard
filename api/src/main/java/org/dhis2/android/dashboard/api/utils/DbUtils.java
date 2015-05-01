@@ -29,7 +29,9 @@
 package org.dhis2.android.dashboard.api.utils;
 
 import org.dhis2.android.dashboard.api.persistence.models.BaseIdentifiableModel;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,5 +61,17 @@ public final class DbUtils {
             }
         }
         return set;
+    }
+
+    public static <T extends BaseIdentifiableModel> List<T> filter(List<T> items) {
+        List<T> filteredItems = new ArrayList<>();
+        if (items != null && !items.isEmpty()) {
+            for (T item : items) {
+                if (item.isItemComplete()) {
+                    filteredItems.add(item);
+                }
+            }
+        }
+        return filteredItems;
     }
 }

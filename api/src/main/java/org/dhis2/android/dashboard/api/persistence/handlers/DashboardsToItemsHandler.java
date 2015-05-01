@@ -37,23 +37,16 @@ import android.net.Uri;
 import android.util.Log;
 
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardsToItems;
-import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
-import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
-import org.dhis2.android.dashboard.api.persistence.models.DbRow;
-import org.dhis2.android.dashboard.api.persistence.models.Entry;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardToItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards.buildUriWithItems;
-import static org.dhis2.android.dashboard.api.persistence.handlers.DashboardItemHandler.isItemComplete;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public final class DashboardsToItemsHandler {
+public final class DashboardsToItemsHandler implements IModelHandler<DashboardToItem> {
     private static final String TAG = DashboardsToItemsHandler.class.getSimpleName();
 
     private static final String[] PROJECTION = new String[]{
@@ -72,28 +65,28 @@ public final class DashboardsToItemsHandler {
         mContext = context;
     }
 
-    private static ContentValues toContentValues(String dashboardId, String itemId) {
-        isNull(dashboardId, "Dashboard ID object must not be null");
-        isNull(dashboardId, "DashboardItem ID object must not be null");
+    private static ContentValues toContentValues(DashboardToItem dashboardToItem) {
+        isNull(dashboardToItem, "DashboardToItem object must not be null");
 
         ContentValues values = new ContentValues();
-        values.put(DashboardsToItems.DASHBOARD_ID, dashboardId);
-        values.put(DashboardsToItems.DASHBOARD_ITEM_ID, itemId);
+        values.put(DashboardsToItems.DASHBOARD_ID,
+                dashboardToItem.getDashboardId());
+        values.put(DashboardsToItems.DASHBOARD_ITEM_ID,
+                dashboardToItem.getDashboardItemId());
         return values;
     }
 
-    private static DbRow<Entry> fromCursor(Cursor cursor) {
+    private static DashboardToItem fromCursor(Cursor cursor) {
         isNull(cursor, "Cursor object must not be null");
-        return new DbRow<>(
+        return new DashboardToItem(
                 cursor.getLong(ID),
-                new Entry(
-                        cursor.getString(DASHBOARD_ID),
-                        cursor.getString(DASHBOARD_ITEM_ID))
+                cursor.getString(DASHBOARD_ID),
+                cursor.getString(DASHBOARD_ITEM_ID)
         );
     }
 
-    private static List<DbRow<Entry>> map(Cursor cursor, boolean close) {
-        List<DbRow<Entry>> entries = new ArrayList<>();
+    @Override public List<DashboardToItem> map(Cursor cursor, boolean close) {
+        List<DashboardToItem> entries = new ArrayList<>();
 
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
@@ -109,104 +102,66 @@ public final class DashboardsToItemsHandler {
         return entries;
     }
 
-    private void insert(List<ContentProviderOperation> ops,
-                        String dashboardId, String itemId) {
-        isNull(dashboardId, "Dashboard ID must not be null");
-        isNull(itemId, "DashboardItem ID must not be null");
+    @Override public String[] getProjection() {
+        return PROJECTION;
+    }
 
-        Log.d(TAG, "Inserting dashboardItem " + "[" + itemId + "]"
-                + " for dashboard " + "[" + dashboardId + "]");
-        ops.add(ContentProviderOperation
+    @Override public ContentProviderOperation insert(DashboardToItem item) {
+        isNull(item, "DashboardToItem object must not be null");
+
+        Log.d(TAG, "Inserting dashboardItem " + "[" + item.getDashboardItemId() + "]"
+                + " for dashboard " + "[" + item.getDashboardId() + "]");
+        return ContentProviderOperation
                 .newInsert(DashboardsToItems.CONTENT_URI)
-                .withValues(toContentValues(dashboardId, itemId))
-                .build());
+                .withValues(toContentValues(item))
+                .build();
     }
 
-    private static void delete(List<ContentProviderOperation> ops,
-                               DbRow<Entry> entry) {
-        isNull(entry, "Entry object must not be null");
+    @Override public ContentProviderOperation update(DashboardToItem object) {
+        throw new IllegalArgumentException("No implementation");
+    }
 
-        Log.d(TAG, "Deleting: " + "[" + entry.item.first + ":" + entry.item.second + "]");
+    @Override public ContentProviderOperation delete(DashboardToItem item) {
+        isNull(item, "DashboardToItem object must not be null");
+
+        Log.d(TAG, "Deleting: " + "[" + item.getDashboardId() + ":" + item.getDashboardItemId() + "]");
         Uri uri = ContentUris.withAppendedId(
-                DashboardsToItems.CONTENT_URI, entry.id);
-        ops.add(ContentProviderOperation
+                DashboardsToItems.CONTENT_URI, item.getId());
+        return ContentProviderOperation
                 .newDelete(uri)
-                .build());
+                .build();
     }
 
-    public List<DashboardItem> queryDashboardItems(String dashboardId) {
-        isNull(dashboardId, "Dashboard ID must not be null");
-
-        Cursor cursor = mContext.getContentResolver().query(
-                buildUriWithItems(dashboardId), DashboardItemHandler.PROJECTION, null, null, null
-        );
-        return DashboardItemHandler.map(cursor, true);
+    @Override public <T> List<T> queryRelatedModels(Class<T> clazz, Object id) {
+        throw new IllegalArgumentException("Unsupported method");
     }
 
-    public List<DbRow<Entry>> queryRelationShip() {
+    @Override public List<DashboardToItem> query(String selection, String[] args) {
         Cursor cursor = mContext.getContentResolver().query(
-                DashboardsToItems.CONTENT_URI, PROJECTION, null, null, null
+                DashboardsToItems.CONTENT_URI, PROJECTION, selection, args, null
         );
         return map(cursor, true);
     }
 
-    private Set<String> buildRelationShipSet(List<Entry> entries) {
-        Set<String> set = new HashSet<>();
-        for (Entry entry : entries) {
-            set.add(entry.first + entry.second);
-        }
-        return set;
+    @Override public List<DashboardToItem> query() {
+        return query(null, null);
     }
 
-    private Map<String, Entry> buildDashboardToItemMap(List<Dashboard> dashboards,
-                                                       List<DashboardItem> dashboardItems) {
-        Map<String, DashboardItem> dashboardItemMap = new HashMap<>();
-        if (dashboardItems != null && !dashboardItems.isEmpty()) {
-            for (DashboardItem dashboardItem : dashboardItems) {
-                if (isItemComplete(dashboardItem)) {
-                    dashboardItemMap.put(dashboardItem.getId(), dashboardItem);
-                }
-            }
-        }
-
-        Map<String, Entry> map = new HashMap<>();
-        if (dashboards != null && !dashboards.isEmpty()) {
-            for (Dashboard dashboard : dashboards) {
-                if (dashboard.getDashboardItems() == null
-                        || dashboard.getDashboardItems().isEmpty()) {
-                    System.out.println("*** Empty dashboard items ***");
-                    continue;
-                }
-
-                for (DashboardItem item : dashboard.getDashboardItems()) {
-                    if (dashboardItemMap.get(item.getId()) != null) {
-                        System.out.println("Access: " + item.getAccess() +
-                                " Type: " + item.getType());
-                        map.put(dashboard.getId() + item.getId(),
-                                new Entry(dashboard.getId(), item.getId()));
-                    }
-                }
-            }
-        }
-        return map;
-    }
-
-    public List<ContentProviderOperation> sync(List<Dashboard> dashboards,
-                                               List<DashboardItem> dashboardsItems) {
-        isNull(dashboards, "List<Dashboard> object must not be null");
-        isNull(dashboardsItems, "List<DashboardItem> object must not be null");
+    @Override public List<ContentProviderOperation> sync(List<DashboardToItem> items) {
+        isNull(items, "List<DashboardToItem> object must not be null");
         List<ContentProviderOperation> ops = new ArrayList<>();
 
-        Map<String, Entry> newRelations
-                = buildDashboardToItemMap(dashboards, dashboardsItems);
-        List<DbRow<Entry>> oldRelations = queryRelationShip();
+        Map<String, DashboardToItem> newRelations = toMap(items);
+        Map<String, DashboardToItem> oldRelations = toMap(query());
 
-        for (DbRow<Entry> oldRelation : oldRelations) {
-            String key = oldRelation.item.first + oldRelation.item.second;
-            Entry newRelation = newRelations.get(key);
+        for (String oldRelationKey : oldRelations.keySet()) {
+            DashboardToItem oldRelation = oldRelations.get(oldRelationKey);
+            String key = oldRelation.getDashboardId() +
+                    oldRelation.getDashboardItemId();
+            DashboardToItem newRelation = newRelations.get(key);
 
             if (newRelation == null) {
-                delete(ops, oldRelation);
+                ops.add(delete(oldRelation));
                 continue;
             }
 
@@ -214,10 +169,21 @@ public final class DashboardsToItemsHandler {
         }
 
         for (String newItemKey : newRelations.keySet()) {
-            Entry item = newRelations.get(newItemKey);
-            insert(ops, item.first, item.second);
+            ops.add(insert(newRelations.get(newItemKey)));
         }
 
         return ops;
+    }
+
+    private static Map<String, DashboardToItem> toMap(List<DashboardToItem> items) {
+        Map<String, DashboardToItem> map = new HashMap<>();
+        if (items != null && !items.isEmpty()) {
+            for (DashboardToItem item : items) {
+                String key = item.getDashboardId() +
+                        item.getDashboardItemId();
+                map.put(key, item);
+            }
+        }
+        return map;
     }
 }

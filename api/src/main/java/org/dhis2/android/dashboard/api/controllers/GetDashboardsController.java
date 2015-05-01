@@ -32,9 +32,9 @@ import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.models.Session;
 import org.dhis2.android.dashboard.api.network.tasks.GetDashboardsTask;
-import org.dhis2.android.dashboard.api.persistence.handlers.DashboardHandler;
-import org.dhis2.android.dashboard.api.persistence.handlers.DashboardsToItemsHandler;
+import org.dhis2.android.dashboard.api.persistence.DbManager;
 import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,16 +45,10 @@ import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
 public final class GetDashboardsController implements IController<List<Dashboard>> {
     private final DhisManager mDhisManager;
     private final Session mSession;
-    private final DashboardHandler mDashboardHandler;
-    private final DashboardsToItemsHandler mDashboardsToItemsHandler;
 
-    public GetDashboardsController(DhisManager dhisManager, Session session,
-                                   DashboardHandler dashboardHandler,
-                                   DashboardsToItemsHandler dashboardsToItemsHandler) {
+    public GetDashboardsController(DhisManager dhisManager, Session session) {
         mDhisManager = dhisManager;
         mSession = session;
-        mDashboardHandler = dashboardHandler;
-        mDashboardsToItemsHandler = dashboardsToItemsHandler;
     }
 
     @Override
@@ -108,16 +102,17 @@ public final class GetDashboardsController implements IController<List<Dashboard
     }
 
     private Map<String, Dashboard> getOldFullDashboards() {
-        List<Dashboard> dashboards = mDashboardHandler.query();
+        List<Dashboard> dashboards = DbManager.with(Dashboard.class).query();
         if (dashboards == null || dashboards.isEmpty()) {
+            System.out.println("Here");
             return toMap(dashboards);
         }
 
         for (Dashboard dashboard : dashboards) {
             // fetching DashboardItems from db for Dashboard
             dashboard.setDashboardItems(
-                    mDashboardsToItemsHandler
-                            .queryDashboardItems(dashboard.getId())
+                    DbManager.with(Dashboard.class)
+                            .queryRelatedModels(DashboardItem.class, dashboard.getId())
             );
         }
 

@@ -26,28 +26,51 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence.handlers;
-
-import android.content.ContentProviderOperation;
-import android.database.Cursor;
-
-import java.util.List;
+package org.dhis2.android.dashboard.api.persistence.models;
 
 /**
  * Created by araz on 01.05.2015.
  */
-public interface IDbHandler<T> {
-    public List<T> map(Cursor cursor, boolean closeCursor);
+public final class DashboardToItem {
+    private long id;
+    private String dashboardId;
+    private String dashboardItemId;
 
-    public String[] getProjection();
+    public DashboardToItem() {
+    }
 
-    public ContentProviderOperation insert(T object);
+    public DashboardToItem(long id, String dashboardId, String dashboardItemId) {
+        this.id = id;
+        this.dashboardId = dashboardId;
+        this.dashboardItemId = dashboardItemId;
+    }
 
-    public ContentProviderOperation update(T object);
+    public DashboardToItem(String dashboardId, String dashboardItemId) {
+        this.dashboardId = dashboardId;
+        this.dashboardItemId = dashboardItemId;
+    }
 
-    public ContentProviderOperation delete(T object);
+    public long getId() {
+        return id;
+    }
 
-    public List<T> query(String selection, String[] selectionArgs);
+    public void setId(long id) {
+        this.id = id;
+    }
 
-    public List<T> query();
+    public String getDashboardId() {
+        return dashboardId;
+    }
+
+    public void setDashboardId(String dashboardId) {
+        this.dashboardId = dashboardId;
+    }
+
+    public String getDashboardItemId() {
+        return dashboardItemId;
+    }
+
+    public void setDashboardItemId(String dashboardItemId) {
+        this.dashboardItemId = dashboardItemId;
+    }
 }

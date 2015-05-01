@@ -69,4 +69,9 @@ public class Dashboard extends BaseIdentifiableModel {
     public void setDashboardItems(List<DashboardItem> dashboardItems) {
         this.dashboardItems = dashboardItems;
     }
+
+    @Override
+    public boolean isItemComplete() {
+        return super.isItemComplete() && access != null;
+    }
 }

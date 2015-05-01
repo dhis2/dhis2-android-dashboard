@@ -30,6 +30,8 @@ package org.dhis2.android.dashboard.api.persistence.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import static android.text.TextUtils.isEmpty;
+
 public class DashboardItem extends BaseIdentifiableModel {
     public static final String TYPE_CHART = "chart";
     public static final String TYPE_EVENT_CHART = "eventChart";
@@ -82,5 +84,12 @@ public class DashboardItem extends BaseIdentifiableModel {
 
     public void setShape(String shape) {
         this.shape = shape;
+    }
+
+    @Override
+    public boolean isItemComplete() {
+        return super.isItemComplete() &&
+                !(isEmpty(getType()) || isEmpty(getShape())
+                        || getAccess() == null);
     }
 }

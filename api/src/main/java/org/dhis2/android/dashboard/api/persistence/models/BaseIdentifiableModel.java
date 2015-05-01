@@ -32,6 +32,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
 
+import static android.text.TextUtils.isEmpty;
+
 public class BaseIdentifiableModel {
     @JsonProperty("id") private String id;
     @JsonProperty("created") private DateTime created;
@@ -71,5 +73,11 @@ public class BaseIdentifiableModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isItemComplete() {
+        return !(isEmpty(id) ||
+                created == null ||
+                lastUpdated == null);
     }
 }
