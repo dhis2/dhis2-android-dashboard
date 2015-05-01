@@ -48,7 +48,7 @@ import static android.text.TextUtils.isEmpty;
 import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public final class DashboardItemHandler {
+public final class DashboardItemHandler implements IDbHandler<DashboardItem> {
     private static final String TAG = DashboardItemHandler.class.getSimpleName();
 
     public static final String[] PROJECTION = {
@@ -135,18 +135,24 @@ public final class DashboardItemHandler {
     }
 
     public static List<DashboardItem> map(Cursor cursor, boolean closeCursor) {
-        List<DashboardItem> units = new ArrayList<>();
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            do {
-                units.add(fromCursor(cursor));
-            } while (cursor.moveToNext());
+        List<DashboardItem> items = new ArrayList<>();
+        try {
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                do {
+                    items.add(fromCursor(cursor));
+                } while (cursor.moveToNext());
 
-            if (closeCursor) {
+                if (closeCursor) {
+                    cursor.close();
+                }
+            }
+        } finally {
+            if (cursor != null && closeCursor) {
                 cursor.close();
             }
         }
-        return units;
+        return items;
     }
 
     private static void insert(List<ContentProviderOperation> ops,
@@ -154,7 +160,7 @@ public final class DashboardItemHandler {
         isNull(item, "DashboardItem must not be null");
 
         if (isItemComplete(item)) {
-            Log.d(TAG, "Inserting " + item.getName());
+            Log.d(TAG, "Inserting " + item.getId());
             ops.add(ContentProviderOperation
                     .newInsert(DashboardItems.CONTENT_URI)
                     .withValues(toContentValues(item))
@@ -189,14 +195,59 @@ public final class DashboardItemHandler {
                 .build());
     }
 
-    private static boolean isItemComplete(DashboardItem item) {
+    public static boolean isItemComplete(DashboardItem item) {
         return item != null && !(isEmpty(item.getId()) ||
                 isEmpty(item.getType()) ||
                 isEmpty(item.getShape()) ||
                 item.getAccess() == null);
     }
 
-    public List<DashboardItem> query() {
+    @Override public ContentProviderOperation insert(DashboardItem item) {
+        isNull(item, "DashboardItem must not be null");
+
+        if (isItemComplete(item)) {
+            Log.d(TAG, "Inserting " + item.getId());
+            return ContentProviderOperation
+                    .newInsert(DashboardItems.CONTENT_URI)
+                    .withValues(toContentValues(item))
+                    .build();
+        } else {
+            return null;
+        }
+    }
+
+    @Override public ContentProviderOperation update(DashboardItem item) {
+        isNull(item, "DashboardItem must not be null");
+
+        if (isItemComplete(item)) {
+            Log.d(TAG, "Updating " + item.getName());
+            Uri uri = DashboardItems.CONTENT_URI.buildUpon()
+                    .appendPath(item.getId()).build();
+            return ContentProviderOperation
+                    .newUpdate(uri)
+                    .withValues(toContentValues(item))
+                    .build();
+        } else {
+            return null;
+        }
+    }
+
+    @Override public ContentProviderOperation delete(DashboardItem item) {
+            isNull(item, "DashboardItem must not be null");
+
+            Log.d(TAG, "Deleting " + item.getName());
+            Uri uri = DashboardItems.CONTENT_URI.buildUpon()
+                    .appendPath(item.getId()).build();
+            return ContentProviderOperation
+                    .newDelete(uri)
+                    .build();
+    }
+
+    @Override public List<DashboardItem> query(String selection, String[] selectionArgs) {
+        return query(selection);
+    }
+
+    @Override public List<DashboardItem> query() {
         return query(null);
     }
 

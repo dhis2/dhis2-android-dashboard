@@ -121,6 +121,7 @@ public final class DbContentProvider extends ContentProvider {
             }
             case DASHBOARD_ID_ITEMS: {
                 String id = Dashboards.getId(uri);
+                System.out.println("DashboardID: " + id);
                 return queryId(uri, DbSchema.UNIT_JOIN_DASHBOARD_ITEMS_TABLE,
                         DashboardsToItems.TABLE_NAME + "." + DashboardsToItems.DASHBOARD_ID,
                         projection, selection, selectionArgs, sortOrder, id);
@@ -244,6 +245,9 @@ public final class DbContentProvider extends ContentProvider {
 
     private Uri insert(String tableName, ContentValues values, Uri uri) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        if (uri.equals(DashboardsToItems.CONTENT_URI)) {
+            System.out.println(values);
+        }
         long id = db.insertOrThrow(tableName, null, values);
         return withAppendedId(uri, id);
     }

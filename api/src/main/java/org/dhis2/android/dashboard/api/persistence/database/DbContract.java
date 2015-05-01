@@ -76,8 +76,8 @@ public final class DbContract {
         public static final String PATH = TABLE_NAME;
         public static final String DASHBOARDS_PATH = PATH;
         public static final String DASHBOARD_ID_PATH = PATH + "/*/";
-        public static final String DASHBOARD_ID_ITEMS_PATH = DASHBOARD_ID_PATH
-                + DashboardItems.TABLE_NAME;
+        public static final String DASHBOARD_ID_ITEMS_PATH = DASHBOARD_ID_PATH +
+                DashboardItems.TABLE_NAME;
 
         private static final int DASHBOARD_ID_POSITION = 1;
 

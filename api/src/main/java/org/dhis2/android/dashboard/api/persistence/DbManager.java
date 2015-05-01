@@ -29,7 +29,19 @@
 package org.dhis2.android.dashboard.api.persistence;
 
 import android.app.Application;
+import android.content.ContentProviderOperation;
 import android.content.Context;
+import android.content.OperationApplicationException;
+import android.os.RemoteException;
+
+import org.dhis2.android.dashboard.api.persistence.database.DbContract;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardHandler;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardItemHandler;
+import org.dhis2.android.dashboard.api.persistence.handlers.IDbHandler;
+import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
+
+import java.util.ArrayList;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
@@ -47,6 +59,38 @@ public final class DbManager {
     public static void init(Application application) {
         if (mManager == null) {
             mManager = new DbManager(application);
+        }
+    }
+
+    private static DbManager getInstance() {
+        isNull(mManager, "You have to call init() " +
+                "on DbManager before using it");
+        return mManager;
+    }
+
+    private Context getContext() {
+        return mContext;
+    }
+
+    public static <T> IDbHandler<T> with(Class<T> clazz) {
+        isNull(clazz, "Class object must not be null");
+        if (clazz.equals(Dashboard.class)) {
+            return (IDbHandler<T>) new DashboardHandler(getInstance().getContext());
+        } else if (clazz.equals(DashboardItem.class)) {
+            return (IDbHandler<T>) new DashboardItemHandler(getInstance().getContext());
+        } else {
+            throw new IllegalArgumentException("Unsupported type");
+        }
+    }
+
+    public static void applyBatch(ArrayList<ContentProviderOperation> ops) {
+        try {
+            getInstance().getContext().getContentResolver()
+                    .applyBatch(DbContract.AUTHORITY, ops);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        } catch (OperationApplicationException e) {
+            throw new RuntimeException(e);
         }
     }
 }

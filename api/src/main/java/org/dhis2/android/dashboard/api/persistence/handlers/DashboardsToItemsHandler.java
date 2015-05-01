@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards.buildUriWithItems;
+import static org.dhis2.android.dashboard.api.persistence.handlers.DashboardItemHandler.isItemComplete;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public final class DashboardsToItemsHandler {
@@ -113,8 +114,8 @@ public final class DashboardsToItemsHandler {
         isNull(dashboardId, "Dashboard ID must not be null");
         isNull(itemId, "DashboardItem ID must not be null");
 
-        Log.d(TAG, "Inserting dataset " + "[" + itemId + "]"
-                + " for organisation unit " + "[" + dashboardId + "]");
+        Log.d(TAG, "Inserting dashboardItem " + "[" + itemId + "]"
+                + " for dashboard " + "[" + dashboardId + "]");
         ops.add(ContentProviderOperation
                 .newInsert(DashboardsToItems.CONTENT_URI)
                 .withValues(toContentValues(dashboardId, itemId))
@@ -157,31 +158,47 @@ public final class DashboardsToItemsHandler {
         return set;
     }
 
-    private Map<String, Entry> buildDashboardToItemMap(
-            List<Dashboard> dashboards) {
+    private Map<String, Entry> buildDashboardToItemMap(List<Dashboard> dashboards,
+                                                       List<DashboardItem> dashboardItems) {
+        Map<String, DashboardItem> dashboardItemMap = new HashMap<>();
+        if (dashboardItems != null && !dashboardItems.isEmpty()) {
+            for (DashboardItem dashboardItem : dashboardItems) {
+                if (isItemComplete(dashboardItem)) {
+                    dashboardItemMap.put(dashboardItem.getId(), dashboardItem);
+                }
+            }
+        }
+
         Map<String, Entry> map = new HashMap<>();
         if (dashboards != null && !dashboards.isEmpty()) {
             for (Dashboard dashboard : dashboards) {
                 if (dashboard.getDashboardItems() == null
                         || dashboard.getDashboardItems().isEmpty()) {
+                    System.out.println("*** Empty dashboard items ***");
                     continue;
                 }
 
                 for (DashboardItem item : dashboard.getDashboardItems()) {
-                    map.put(dashboard.getId() + item.getId(),
-                            new Entry(dashboard.getId(), item.getId()));
+                    if (dashboardItemMap.get(item.getId()) != null) {
+                        System.out.println("Access: " + item.getAccess() +
+                                " Type: " + item.getType());
+                        map.put(dashboard.getId() + item.getId(),
+                                new Entry(dashboard.getId(), item.getId()));
+                    }
                 }
             }
         }
         return map;
     }
 
-    public List<ContentProviderOperation> sync(List<Dashboard> dashboards) {
+    public List<ContentProviderOperation> sync(List<Dashboard> dashboards,
+                                               List<DashboardItem> dashboardsItems) {
         isNull(dashboards, "List<Dashboard> object must not be null");
+        isNull(dashboardsItems, "List<DashboardItem> object must not be null");
         List<ContentProviderOperation> ops = new ArrayList<>();
 
         Map<String, Entry> newRelations
-                = buildDashboardToItemMap(dashboards);
+                = buildDashboardToItemMap(dashboards, dashboardsItems);
         List<DbRow<Entry>> oldRelations = queryRelationShip();
 
         for (DbRow<Entry> oldRelation : oldRelations) {

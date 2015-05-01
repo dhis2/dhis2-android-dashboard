@@ -71,15 +71,12 @@ public final class DashboardSyncController implements IController<Object> {
     @Override
     public Object run() throws APIException {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-        System.out.println("Here 0");
         List<Dashboard> dashboards = updateDashboards();
-        System.out.println("Here 1");
         List<DashboardItem> items = updateDashboardItems(dashboards);
-        System.out.println("Here 2");
 
         ops.addAll(mDashboardHandler.sync(dashboards));
         ops.addAll(mDashboardItemHandler.sync(items));
-        ops.addAll(mDashboardToItemsHandler.sync(dashboards));
+        ops.addAll(mDashboardToItemsHandler.sync(dashboards, items));
 
         try {
             mContext.getContentResolver()
@@ -91,10 +88,6 @@ public final class DashboardSyncController implements IController<Object> {
         } catch (OperationApplicationException e) {
             e.printStackTrace();
         }
-        /* new SaveModelTransaction<>(ProcessModelInfo
-                .withModels(dashboards)).onExecute();
-        new SaveModelTransaction<>(ProcessModelInfo
-                .withModels(dashboardItems)).onExecute(); */
 
         return new Object();
     }

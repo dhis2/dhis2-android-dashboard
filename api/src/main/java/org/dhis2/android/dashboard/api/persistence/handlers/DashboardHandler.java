@@ -47,10 +47,10 @@ import java.util.Map;
 import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public final class DashboardHandler {
+public final class DashboardHandler implements IDbHandler<Dashboard> {
     private static final String TAG = DashboardHandler.class.getSimpleName();
 
-    public static final String[] PROJECTION = {
+    private static final String[] PROJECTION = {
             Dashboards.TABLE_NAME + "." + Dashboards.ID,
             Dashboards.TABLE_NAME + "." + Dashboards.CREATED,
             Dashboards.TABLE_NAME + "." + Dashboards.LAST_UPDATED,
@@ -133,21 +133,6 @@ public final class DashboardHandler {
         return dashboard;
     }
 
-    public static List<Dashboard> map(Cursor cursor, boolean closeCursor) {
-        List<Dashboard> units = new ArrayList<>();
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            do {
-                units.add(fromCursor(cursor));
-            } while (cursor.moveToNext());
-
-            if (closeCursor) {
-                cursor.close();
-            }
-        }
-        return units;
-    }
-
     private static void insert(List<ContentProviderOperation> ops,
                                Dashboard dashboard) {
         isNull(dashboard, "Dashboard must not be null");
@@ -161,7 +146,7 @@ public final class DashboardHandler {
 
     private static void update(List<ContentProviderOperation> ops,
                                Dashboard dashboard) {
-        isNull(dashboard, "OrganizationUnit must not be null");
+        isNull(dashboard, "Dashboard must not be null");
 
         Log.d(TAG, "Updating " + dashboard.getName());
         Uri uri = Dashboards.CONTENT_URI.buildUpon()
@@ -182,6 +167,66 @@ public final class DashboardHandler {
         ops.add(ContentProviderOperation
                 .newDelete(uri)
                 .build());
+    }
+
+    @Override public List<Dashboard> map(Cursor cursor, boolean closeCursor) {
+        List<Dashboard> units = new ArrayList<>();
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                units.add(fromCursor(cursor));
+            } while (cursor.moveToNext());
+
+            if (closeCursor) {
+                cursor.close();
+            }
+        }
+        return units;
+    }
+
+    @Override public String[] getProjection() {
+        return PROJECTION;
+    }
+
+    @Override public ContentProviderOperation insert(Dashboard dashboard) {
+        isNull(dashboard, "Dashboard must not be null");
+
+        Log.d(TAG, "Inserting " + dashboard.getName());
+        return ContentProviderOperation
+                .newInsert(Dashboards.CONTENT_URI)
+                .withValues(toContentValues(dashboard))
+                .build();
+    }
+
+    @Override public ContentProviderOperation update(Dashboard dashboard) {
+        isNull(dashboard, "Dashboard must not be null");
+
+        Log.d(TAG, "Updating " + dashboard.getName());
+        Uri uri = Dashboards.CONTENT_URI.buildUpon()
+                .appendPath(dashboard.getId()).build();
+        return ContentProviderOperation
+                .newUpdate(uri)
+                .withValues(toContentValues(dashboard))
+                .build();
+    }
+
+    @Override public ContentProviderOperation delete(Dashboard dashboard) {
+        isNull(dashboard, "Dashboard must not be null");
+
+        Log.d(TAG, "Deleting " + dashboard.getName());
+        Uri uri = Dashboards.CONTENT_URI.buildUpon()
+                .appendPath(dashboard.getId()).build();
+        return ContentProviderOperation
+                .newDelete(uri)
+                .build();
+    }
+
+    @Override public List<Dashboard> query(String selection, String[] selectionArgs) {
+        Cursor cursor = mContext.getContentResolver().query(
+                Dashboards.CONTENT_URI, PROJECTION, selection, selectionArgs, null
+        );
+
+        return map(cursor, true);
     }
 
     public List<Dashboard> query() {
