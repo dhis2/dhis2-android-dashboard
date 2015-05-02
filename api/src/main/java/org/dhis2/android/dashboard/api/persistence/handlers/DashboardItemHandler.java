@@ -141,10 +141,6 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
                 do {
                     items.add(fromCursor(cursor));
                 } while (cursor.moveToNext());
-
-                if (closeCursor) {
-                    cursor.close();
-                }
             }
         } finally {
             if (cursor != null && closeCursor) {
@@ -161,7 +157,7 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
     @Override public ContentProviderOperation insert(DashboardItem item) {
         isNull(item, "DashboardItem must not be null");
 
-        Log.d(TAG, "Inserting " + item.getId());
+        Log.v(TAG, "Inserting " + item.getId());
         return ContentProviderOperation
                 .newInsert(DashboardItems.CONTENT_URI)
                 .withValues(toContentValues(item))
@@ -171,7 +167,7 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
     @Override public ContentProviderOperation update(DashboardItem item) {
         isNull(item, "DashboardItem must not be null");
 
-        Log.d(TAG, "Updating " + item.getName());
+        Log.v(TAG, "Updating " + item.getName());
         Uri uri = DashboardItems.CONTENT_URI.buildUpon()
                 .appendPath(item.getId()).build();
         return ContentProviderOperation
@@ -183,7 +179,7 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
     @Override public ContentProviderOperation delete(DashboardItem item) {
         isNull(item, "DashboardItem must not be null");
 
-        Log.d(TAG, "Deleting " + item.getId());
+        Log.v(TAG, "Deleting " + item.getId());
         Uri uri = DashboardItems.CONTENT_URI.buildUpon()
                 .appendPath(item.getId()).build();
         return ContentProviderOperation

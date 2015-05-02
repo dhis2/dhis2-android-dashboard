@@ -80,4 +80,22 @@ public class BaseIdentifiableModel {
                 created == null ||
                 lastUpdated == null);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(" name: ");
+        builder.append(name);
+
+        builder.append(" id: ");
+        builder.append(id);
+
+        builder.append(" created: ");
+        builder.append(created == null ? "null" : created.toString());
+
+        builder.append(" lastUpdated: ");
+        builder.append(created == null ? "null" : created.toString());
+
+        return builder.toString();
+    }
 }

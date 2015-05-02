@@ -64,7 +64,7 @@ public class GetDashboardItemsTask implements ITask<List<DashboardItem>> {
                 .appendEncodedPath("api/dashboardItems/")
                 .appendQueryParameter("paging", "false");
 
-        String fields = "id,created,lastUpdated,name,displayName";
+        String fields = "id,created,lastUpdated";
         if (!flat) {
             fields += "," + "access,contentCount,type,shape";
         }

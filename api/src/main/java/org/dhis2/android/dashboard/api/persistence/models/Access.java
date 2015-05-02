@@ -83,4 +83,28 @@ public final class Access {
     public void setWrite(boolean write) {
         this.write = write;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(" delete: ");
+        builder.append(delete);
+
+        builder.append(" externalize: ");
+        builder.append(externalize);
+
+        builder.append(" manage: ");
+        builder.append(manage);
+
+        builder.append(" read: ");
+        builder.append(read);
+
+        builder.append(" update: ");
+        builder.append(update);
+
+        builder.append(" write: ");
+        builder.append(write);
+
+        return builder.toString();
+    }
 }

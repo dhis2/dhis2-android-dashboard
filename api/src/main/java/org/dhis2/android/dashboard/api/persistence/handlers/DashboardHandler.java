@@ -74,6 +74,7 @@ public final class DashboardHandler implements IModelHandler<Dashboard> {
     private static final int NAME = 3;
     private static final int DISPLAY_NAME = 4;
     private static final int ITEM_COUNT = 5;
+
     private static final int DELETE = 6;
     private static final int EXTERNALIZE = 7;
     private static final int MANAGE = 8;
@@ -101,6 +102,7 @@ public final class DashboardHandler implements IModelHandler<Dashboard> {
         values.put(Dashboards.NAME, dashboard.getName());
         values.put(Dashboards.DISPLAY_NAME, dashboard.getDisplayName());
         values.put(Dashboards.ITEM_COUNT, dashboard.getItemCount());
+
         values.put(Dashboards.DELETE, access.isDelete() ? 1 : 0);
         values.put(Dashboards.EXTERNALIZE, access.isExternalize() ? 1 : 0);
         values.put(Dashboards.MANAGE, access.isManage() ? 1 : 0);
@@ -138,13 +140,15 @@ public final class DashboardHandler implements IModelHandler<Dashboard> {
 
     @Override public List<Dashboard> map(Cursor cursor, boolean closeCursor) {
         List<Dashboard> units = new ArrayList<>();
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            do {
-                units.add(fromCursor(cursor));
-            } while (cursor.moveToNext());
-
-            if (closeCursor) {
+        try {
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                do {
+                    units.add(fromCursor(cursor));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null && closeCursor) {
                 cursor.close();
             }
         }
@@ -158,7 +162,7 @@ public final class DashboardHandler implements IModelHandler<Dashboard> {
     @Override public ContentProviderOperation insert(Dashboard dashboard) {
         isNull(dashboard, "Dashboard must not be null");
 
-        Log.d(TAG, "Inserting " + dashboard.getName());
+        Log.v(TAG, "Inserting " + dashboard.getName());
         return ContentProviderOperation
                 .newInsert(Dashboards.CONTENT_URI)
                 .withValues(toContentValues(dashboard))
@@ -168,7 +172,7 @@ public final class DashboardHandler implements IModelHandler<Dashboard> {
     @Override public ContentProviderOperation update(Dashboard dashboard) {
         isNull(dashboard, "Dashboard must not be null");
 
-        Log.d(TAG, "Updating " + dashboard.getName());
+        Log.v(TAG, "Updating " + dashboard.getName());
         Uri uri = Dashboards.CONTENT_URI.buildUpon()
                 .appendPath(dashboard.getId()).build();
         return ContentProviderOperation
@@ -180,7 +184,7 @@ public final class DashboardHandler implements IModelHandler<Dashboard> {
     @Override public ContentProviderOperation delete(Dashboard dashboard) {
         isNull(dashboard, "Dashboard must not be null");
 
-        Log.d(TAG, "Deleting " + dashboard.getName());
+        Log.v(TAG, "Deleting " + dashboard.getName());
         Uri uri = Dashboards.CONTENT_URI.buildUpon()
                 .appendPath(dashboard.getId()).build();
         return ContentProviderOperation

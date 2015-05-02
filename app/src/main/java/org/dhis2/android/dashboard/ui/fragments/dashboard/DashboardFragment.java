@@ -112,7 +112,7 @@ public class DashboardFragment extends BaseFragment implements LoaderCallbacks<L
 
     @Override
     public void onLoadFinished(Loader<List<Dashboard>> loader, List<Dashboard> data) {
-        System.out.println("****** LOADER ******: " + data);
+        System.out.println("****** LOADER ****** ");
         if (loader.getId() == LOADER_ID && data != null) {
             mDashboardAdapter.swapData(data);
             mTabs.setViewPager(mViewPager);

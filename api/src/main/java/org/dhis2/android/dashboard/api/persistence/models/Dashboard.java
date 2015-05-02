@@ -74,4 +74,23 @@ public class Dashboard extends BaseIdentifiableModel {
     public boolean isItemComplete() {
         return super.isItemComplete() && access != null;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        String baseString = super.toString();
+        builder.append(baseString);
+
+        builder.append(" displayName: ");
+        builder.append(displayName);
+
+        builder.append(" itemCount: " );
+        builder.append(itemCount);
+
+        builder.append(" access: ");
+        builder.append(access == null ? "null" : access.toString());
+
+        return builder.toString();
+    }
 }

@@ -36,6 +36,7 @@ import org.dhis2.android.dashboard.api.persistence.DbManager;
 import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -98,9 +99,13 @@ public final class GetDashboardItemsController implements IController<List<Dashb
     }
 
     private Map<String, DashboardItem> getNewFullDashboardItems(List<String> ids) throws APIException {
-        return toMap(
-                (new GetDashboardItemsTask(mDhisManager,
-                        mSession.getServerUri(), mSession.getCredentials(), ids, false).run()));
+        if (ids != null && !ids.isEmpty()) {
+            return toMap(
+                    (new GetDashboardItemsTask(mDhisManager,
+                            mSession.getServerUri(), mSession.getCredentials(), ids, false).run()));
+        } else {
+            return new HashMap<>();
+        }
     }
 
     private Map<String, DashboardItem> getOldFullDashboardItems() {

@@ -37,6 +37,7 @@ import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
 import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -92,19 +93,22 @@ public final class GetDashboardsController implements IController<List<Dashboard
     private Map<String, Dashboard> getNewBaseDashboards() throws APIException {
         return toMap(
                 (new GetDashboardsTask(mDhisManager,
-                        mSession.getServerUri(), mSession.getCredentials(), null).run()));
+                        mSession.getServerUri(), mSession.getCredentials(), null, true).run()));
     }
 
     private Map<String, Dashboard> getNewFullDashboards(List<String> ids) throws APIException {
-        return toMap(
-                (new GetDashboardsTask(mDhisManager,
-                        mSession.getServerUri(), mSession.getCredentials(), ids).run()));
+        if (ids != null && !ids.isEmpty()) {
+            return toMap(
+                    (new GetDashboardsTask(mDhisManager,
+                            mSession.getServerUri(), mSession.getCredentials(), ids, false).run()));
+        } else {
+            return new HashMap<>();
+        }
     }
 
     private Map<String, Dashboard> getOldFullDashboards() {
         List<Dashboard> dashboards = DbManager.with(Dashboard.class).query();
         if (dashboards == null || dashboards.isEmpty()) {
-            System.out.println("Here");
             return toMap(dashboards);
         }
 

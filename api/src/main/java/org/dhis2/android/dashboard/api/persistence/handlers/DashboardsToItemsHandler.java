@@ -85,17 +85,21 @@ public final class DashboardsToItemsHandler implements IModelHandler<DashboardTo
         );
     }
 
+
+    // TODO appropriate handling of cursor
     @Override public List<DashboardToItem> map(Cursor cursor, boolean close) {
         List<DashboardToItem> entries = new ArrayList<>();
 
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
+        try {
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
 
-            do {
-                entries.add(fromCursor(cursor));
-            } while (cursor.moveToNext());
-
-            if (close) {
+                do {
+                    entries.add(fromCursor(cursor));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null && close) {
                 cursor.close();
             }
         }
@@ -109,7 +113,7 @@ public final class DashboardsToItemsHandler implements IModelHandler<DashboardTo
     @Override public ContentProviderOperation insert(DashboardToItem item) {
         isNull(item, "DashboardToItem object must not be null");
 
-        Log.d(TAG, "Inserting dashboardItem " + "[" + item.getDashboardItemId() + "]"
+        Log.v(TAG, "Inserting dashboardItem " + "[" + item.getDashboardItemId() + "]"
                 + " for dashboard " + "[" + item.getDashboardId() + "]");
         return ContentProviderOperation
                 .newInsert(DashboardsToItems.CONTENT_URI)
@@ -124,7 +128,7 @@ public final class DashboardsToItemsHandler implements IModelHandler<DashboardTo
     @Override public ContentProviderOperation delete(DashboardToItem item) {
         isNull(item, "DashboardToItem object must not be null");
 
-        Log.d(TAG, "Deleting: " + "[" + item.getDashboardId() + ":" + item.getDashboardItemId() + "]");
+        Log.v(TAG, "Deleting: " + "[" + item.getDashboardId() + ":" + item.getDashboardItemId() + "]");
         Uri uri = ContentUris.withAppendedId(
                 DashboardsToItems.CONTENT_URI, item.getId());
         return ContentProviderOperation

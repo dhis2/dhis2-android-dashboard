@@ -67,9 +67,11 @@ public final class DashboardSyncController implements IController<Object> {
         ops.addAll(DbManager.with(DashboardItem.class).sync(items));
         ops.addAll(DbManager.with(DashboardToItem.class).sync(relations));
 
-        DbManager.applyBatch(ops);
-        DbManager.notifyChange(Dashboard.class);
-        DbManager.notifyChange(DashboardItem.class);
+        if (!ops.isEmpty()) {
+            DbManager.applyBatch(ops);
+            DbManager.notifyChange(Dashboard.class);
+            DbManager.notifyChange(DashboardItem.class);
+        }
 
         return new Object();
     }
