@@ -70,6 +70,7 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
             DashboardItems.TABLE_NAME + "." + DashboardItems.READ,
             DashboardItems.TABLE_NAME + "." + DashboardItems.UPDATE,
             DashboardItems.TABLE_NAME + "." + DashboardItems.WRITE,
+            DashboardItems.TABLE_NAME + "." + DashboardItems.DASHBOARD_ID,
 
             DashboardItems.TABLE_NAME + "." + DashboardItems.CHART,
             DashboardItems.TABLE_NAME + "." + DashboardItems.EVENT_CHART,
@@ -81,8 +82,6 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
             DashboardItems.TABLE_NAME + "." + DashboardItems.RESOURCES,
             DashboardItems.TABLE_NAME + "." + DashboardItems.REPORT_TABLES,
             DashboardItems.TABLE_NAME + "." + DashboardItems.MESSAGES,
-
-            DashboardItems.TABLE_NAME + "." + DashboardItems.DASHBOARD_ID
     };
 
     private static final int ID = 0;
@@ -97,15 +96,17 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
     private static final int READ = 9;
     private static final int UPDATE = 10;
     private static final int WRITE = 11;
-    private static final int CHART = 12;
-    private static final int EVENT_CHART = 13;
-    private static final int MAP = 14;
-    private static final int REPORT_TABLE = 15;
-    private static final int EVENT_REPORT = 16;
-    private static final int USERS = 17;
-    private static final int REPORTS = 18;
-    private static final int RESOURCES = 19;
-    private static final int DASHBOARD_ID = 20;
+    private static final int DASHBOARD_ID = 12;
+    private static final int CHART = 13;
+    private static final int EVENT_CHART = 14;
+    private static final int MAP = 15;
+    private static final int REPORT_TABLE = 16;
+    private static final int EVENT_REPORT = 17;
+    private static final int USERS = 18;
+    private static final int REPORTS = 19;
+    private static final int RESOURCES = 20;
+    private static final int REPORT_TABLES = 21;
+    private static final int MESSAGES = 22;
 
     private Context mContext;
 
@@ -120,14 +121,15 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         String lastUpdated = item.getLastUpdated().toString();
         Access access = item.getAccess();
 
+        String chart = elementToString(item.getChart());
+        String eventChart = elementToString(item.getEventChart());
+        String map = elementToString(item.getMap());
+        String reportTable = elementToString(item.getReportTable());
+        String eventReport = elementToString(item.getEventReport());
         String users = elementsToString(item.getUsers());
         String reports = elementsToString(item.getReports());
         String resources = elementsToString(item.getResources());
-        String reportTable = elementToString(item.getReportTable());
-        String eventChart = elementToString(item.getEventChart());
-        String eventReport = elementToString(item.getEventReport());
-        String chart = elementToString(item.getChart());
-        String map = elementToString(item.getMap());
+        String reportTables = elementsToString(item.getReportTables());
 
         ContentValues values = new ContentValues();
         values.put(DashboardItems.ID, item.getId());
@@ -142,17 +144,18 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         values.put(DashboardItems.READ, access.isRead() ? 1 : 0);
         values.put(DashboardItems.UPDATE, access.isUpdate() ? 1 : 0);
         values.put(DashboardItems.WRITE, access.isWrite() ? 1 : 0);
-
+        values.put(DashboardItems.DASHBOARD_ID, item.getDashboardId());
+        values.put(DashboardItems.CHART, chart);
+        values.put(DashboardItems.EVENT_CHART, eventChart);
+        values.put(DashboardItems.MAP, map);
+        values.put(DashboardItems.REPORT_TABLE, reportTable);
+        values.put(DashboardItems.EVENT_REPORT, eventReport);
         values.put(DashboardItems.USERS, users);
         values.put(DashboardItems.REPORTS, reports);
         values.put(DashboardItems.RESOURCES, resources);
-        values.put(DashboardItems.REPORT_TABLE, reportTable);
-        values.put(DashboardItems.EVENT_CHART, eventChart);
-        values.put(DashboardItems.EVENT_REPORT, eventReport);
-        values.put(DashboardItems.CHART, chart);
-        values.put(DashboardItems.MAP, map);
+        values.put(DashboardItems.REPORT_TABLES, reportTables);
+        values.put(DashboardItems.MESSAGES, item.isMessages() ? 1 : 0);
 
-        values.put(DashboardItems.DASHBOARD_ID, item.getDashboardId());
         return values;
     }
 
@@ -170,14 +173,17 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         access.setUpdate(cursor.getInt(UPDATE) == 1);
         access.setWrite(cursor.getInt(WRITE) == 1);
 
-        List<DashboardElement> users = elementsFromString(cursor.getString(USERS));
-        List<DashboardElement> reports = elementsFromString(cursor.getString(REPORTS));
-        List<DashboardElement> resources = elementsFromString(cursor.getString(RESOURCES));
+        DashboardElement chart = elementFromString(cursor.getString(CHART));
+        DashboardElement eventChart = elementFromString(cursor.getString(EVENT_CHART));
+        DashboardElement map = elementFromString(cursor.getString(MAP));
+
         DashboardElement reportTable = elementFromString(cursor.getString(REPORT_TABLE));
         DashboardElement eventReport = elementFromString(cursor.getString(EVENT_REPORT));
-        DashboardElement eventChart = elementFromString(cursor.getString(EVENT_CHART));
-        DashboardElement chart = elementFromString(cursor.getString(CHART));
-        DashboardElement map = elementFromString(cursor.getString(MAP));
+        List<DashboardElement> users = elementsFromString(cursor.getString(USERS));
+
+        List<DashboardElement> reports = elementsFromString(cursor.getString(REPORTS));
+        List<DashboardElement> resources = elementsFromString(cursor.getString(RESOURCES));
+        List<DashboardElement> reportTables = elementsFromString(cursor.getString(REPORT_TABLES));
 
         DashboardItem item = new DashboardItem();
         item.setId(cursor.getString(ID));
@@ -188,15 +194,16 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         item.setContentCount(cursor.getInt(CONTENT_COUNT));
         item.setDashboardId(cursor.getString(DASHBOARD_ID));
         item.setAccess(access);
-
+        item.setChart(chart);
+        item.setEventChart(eventChart);
+        item.setMap(map);
+        item.setReportTable(reportTable);
+        item.setEventReport(eventReport);
         item.setUsers(users);
         item.setReports(reports);
         item.setResources(resources);
-        item.setReportTable(reportTable);
-        item.setEventReport(eventReport);
-        item.setEventChart(eventChart);
-        item.setChart(chart);
-        item.setMap(map);
+        item.setReportTables(reportTables);
+        item.setMessages(cursor.getInt(MESSAGES) == 1);
 
         return item;
     }

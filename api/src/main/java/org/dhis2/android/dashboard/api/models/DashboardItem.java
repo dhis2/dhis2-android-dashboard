@@ -56,7 +56,6 @@ public class DashboardItem extends BaseIdentifiableModel {
     @JsonProperty("contentCount") private int contentCount;
     @JsonProperty("type") private String type;
     @JsonProperty("shape") private String shape;
-    @JsonProperty("messages") private boolean messages;
     @JsonIgnore() private String dashboardId;
 
     // DashboardElements
@@ -69,6 +68,14 @@ public class DashboardItem extends BaseIdentifiableModel {
     @JsonProperty("reports") private List<DashboardElement> reports;
     @JsonProperty("resources") private List<DashboardElement> resources;
     @JsonProperty("reportTables") private List<DashboardElement> reportTables;
+    @JsonProperty("messages") private boolean messages;
+
+    @Override
+    public boolean isItemComplete() {
+        return super.isItemComplete() &&
+                !(isEmpty(getType()) || isEmpty(getShape())
+                        || getAccess() == null);
+    }
 
     public Access getAccess() {
         return access;
@@ -100,13 +107,6 @@ public class DashboardItem extends BaseIdentifiableModel {
 
     public void setShape(String shape) {
         this.shape = shape;
-    }
-
-    @Override
-    public boolean isItemComplete() {
-        return super.isItemComplete() &&
-                !(isEmpty(getType()) || isEmpty(getShape())
-                        || getAccess() == null);
     }
 
     public String getDashboardId() {
