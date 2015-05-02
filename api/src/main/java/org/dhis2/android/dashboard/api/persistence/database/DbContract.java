@@ -55,12 +55,23 @@ public final class DbContract {
 
     static interface DashboardItemColumns extends AccessColumns {
         public static final String ID = "id";
+        public static final String DASHBOARD_ID = "dashboardId";
+
         public static final String CREATED = "created";
         public static final String LAST_UPDATED = "lastUpdated";
+
         public static final String CONTENT_COUNT = "contentCount";
         public static final String TYPE = "type";
         public static final String SHAPE = "shape";
-        public static final String DASHBOARD_ID = "dashboardId";
+
+        public static final String CHART = "chart";
+        public static final String EVENT_CHART = "eventChart";
+        public static final String MAP = "map";
+        public static final String REPORT_TABLE = "reportTable";
+        public static final String EVENT_REPORT = "eventReport";
+        public static final String USERS = "users";
+        public static final String REPORTS = "reports";
+        public static final String RESOURCES = "resources";
     }
 
     public static final class Dashboards implements DashboardColumns {

@@ -55,7 +55,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class DashboardFragment extends BaseFragment implements LoaderCallbacks<List<Dashboard>> {
+public class DashboardViewPagerFragment extends BaseFragment implements LoaderCallbacks<List<Dashboard>> {
     private static final int LOADER_ID = 1233432;
     private DashboardAdapter mDashboardAdapter;
 

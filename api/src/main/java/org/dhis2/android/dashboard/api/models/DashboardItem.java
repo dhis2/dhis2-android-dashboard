@@ -31,6 +31,8 @@ package org.dhis2.android.dashboard.api.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 import static android.text.TextUtils.isEmpty;
 
 public class DashboardItem extends BaseIdentifiableModel {
@@ -40,9 +42,11 @@ public class DashboardItem extends BaseIdentifiableModel {
     public static final String TYPE_REPORT_TABLE = "reportTable";
     public static final String TYPE_EVENT_REPORT = "eventReport";
     public static final String TYPE_USERS = "users";
-    public static final String TYPE_REPORT_TABLES = "reportTables";
     public static final String TYPE_REPORTS = "reports";
     public static final String TYPE_RESOURCES = "resources";
+
+    // Not supported yet
+    public static final String TYPE_REPORT_TABLES = "reportTables";
     public static final String TYPE_MESSAGES = "messages";
 
     // TODO think about using StaggeredView in DashboardFragment
@@ -54,6 +58,16 @@ public class DashboardItem extends BaseIdentifiableModel {
     @JsonProperty("contentCount") private int contentCount;
     @JsonProperty("type") private String type;
     @JsonProperty("shape") private String shape;
+    @JsonProperty("users") private List<DashboardElement> users;
+    @JsonProperty("reports") private List<DashboardElement> reports;
+    @JsonProperty("resources") private List<DashboardElement> resources;
+    @JsonProperty("reportTables") private List<DashboardElement> reportTables;
+    @JsonProperty("eventReport") private DashboardElement eventReport;
+    @JsonProperty("chart") private DashboardElement chart;
+    @JsonProperty("eventChart") private DashboardElement eventChart;
+    @JsonProperty("reportTable") private DashboardElement reportTable;
+    @JsonProperty("map") private DashboardElement map;
+
     @JsonIgnore() private String dashboardId;
 
     public Access getAccess() {
@@ -101,5 +115,77 @@ public class DashboardItem extends BaseIdentifiableModel {
 
     public void setDashboardId(String dashboardId) {
         this.dashboardId = dashboardId;
+    }
+
+    public List<DashboardElement> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<DashboardElement> users) {
+        this.users = users;
+    }
+
+    public List<DashboardElement> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<DashboardElement> reports) {
+        this.reports = reports;
+    }
+
+    public List<DashboardElement> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<DashboardElement> resources) {
+        this.resources = resources;
+    }
+
+    public List<DashboardElement> getReportTables() {
+        return reportTables;
+    }
+
+    public void setReportTables(List<DashboardElement> reportTables) {
+        this.reportTables = reportTables;
+    }
+
+    public DashboardElement getChart() {
+        return chart;
+    }
+
+    public void setChart(DashboardElement chart) {
+        this.chart = chart;
+    }
+
+    public DashboardElement getEventChart() {
+        return eventChart;
+    }
+
+    public void setEventChart(DashboardElement eventChart) {
+        this.eventChart = eventChart;
+    }
+
+    public DashboardElement getReportTable() {
+        return reportTable;
+    }
+
+    public void setReportTable(DashboardElement reportTable) {
+        this.reportTable = reportTable;
+    }
+
+    public DashboardElement getMap() {
+        return map;
+    }
+
+    public void setMap(DashboardElement map) {
+        this.map = map;
+    }
+
+    public DashboardElement getEventReport() {
+        return eventReport;
+    }
+
+    public void setEventReport(DashboardElement eventReport) {
+        this.eventReport = eventReport;
     }
 }

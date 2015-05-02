@@ -45,7 +45,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.dhis2.android.dashboard.R;
-import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardFragment;
+import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardViewPagerFragment;
 import org.dhis2.android.dashboard.ui.navigation.NavigationAdapter;
 import org.dhis2.android.dashboard.ui.navigation.NavigationItem;
 import org.dhis2.android.dashboard.ui.navigation.NavigationMenuItem;
@@ -183,7 +183,7 @@ public class MenuActivity extends BaseActivity {
 
     private Fragment findFragmentById(long id) {
         if (id == DASHBOARD) {
-            return new DashboardFragment();
+            return new DashboardViewPagerFragment();
         }
         return new Fragment();
     }
