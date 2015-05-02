@@ -79,6 +79,8 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
             DashboardItems.TABLE_NAME + "." + DashboardItems.USERS,
             DashboardItems.TABLE_NAME + "." + DashboardItems.REPORTS,
             DashboardItems.TABLE_NAME + "." + DashboardItems.RESOURCES,
+            DashboardItems.TABLE_NAME + "." + DashboardItems.REPORT_TABLES,
+            DashboardItems.TABLE_NAME + "." + DashboardItems.MESSAGES,
 
             DashboardItems.TABLE_NAME + "." + DashboardItems.DASHBOARD_ID
     };

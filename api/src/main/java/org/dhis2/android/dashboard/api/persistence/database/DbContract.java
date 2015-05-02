@@ -35,43 +35,42 @@ public final class DbContract {
     public static final String AUTHORITY = "org.dhis2.android.dashboard.api.persistence.database.DbContentProvider";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    static interface AccessColumns {
-        public static final String DELETE = "deleteAccess";
-        public static final String EXTERNALIZE = "externalizeAccess";
-        public static final String MANAGE = "manageAccess";
-        public static final String READ = "readAccess";
-        public static final String UPDATE = "updateAccess";
-        public static final String WRITE = "writeAccess";
+    interface AccessColumns {
+        String DELETE = "deleteAccess";
+        String EXTERNALIZE = "externalizeAccess";
+        String MANAGE = "manageAccess";
+        String READ = "readAccess";
+        String UPDATE = "updateAccess";
+        String WRITE = "writeAccess";
     }
 
-    static interface DashboardColumns extends AccessColumns {
-        public static final String ID = "id";
-        public static final String CREATED = "created";
-        public static final String LAST_UPDATED = "lastUpdated";
-        public static final String NAME = "name";
-        public static final String DISPLAY_NAME = "displayName";
-        public static final String ITEM_COUNT = "itemCount";
+    interface DashboardColumns extends AccessColumns {
+        String ID = "id";
+        String CREATED = "created";
+        String LAST_UPDATED = "lastUpdated";
+        String NAME = "name";
+        String DISPLAY_NAME = "displayName";
+        String ITEM_COUNT = "itemCount";
     }
 
-    static interface DashboardItemColumns extends AccessColumns {
-        public static final String ID = "id";
-        public static final String DASHBOARD_ID = "dashboardId";
-
-        public static final String CREATED = "created";
-        public static final String LAST_UPDATED = "lastUpdated";
-
-        public static final String CONTENT_COUNT = "contentCount";
-        public static final String TYPE = "type";
-        public static final String SHAPE = "shape";
-
-        public static final String CHART = "chart";
-        public static final String EVENT_CHART = "eventChart";
-        public static final String MAP = "map";
-        public static final String REPORT_TABLE = "reportTable";
-        public static final String EVENT_REPORT = "eventReport";
-        public static final String USERS = "users";
-        public static final String REPORTS = "reports";
-        public static final String RESOURCES = "resources";
+    interface DashboardItemColumns extends AccessColumns {
+        String ID = "id";
+        String DASHBOARD_ID = "dashboardId";
+        String CREATED = "created";
+        String LAST_UPDATED = "lastUpdated";
+        String CONTENT_COUNT = "contentCount";
+        String TYPE = "type";
+        String SHAPE = "shape";
+        String CHART = "chart";
+        String EVENT_CHART = "eventChart";
+        String MAP = "map";
+        String REPORT_TABLE = "reportTable";
+        String EVENT_REPORT = "eventReport";
+        String USERS = "users";
+        String REPORTS = "reports";
+        String RESOURCES = "resources";
+        String REPORT_TABLES = "reportTables";
+        String MESSAGES = "messages";
     }
 
     public static final class Dashboards implements DashboardColumns {

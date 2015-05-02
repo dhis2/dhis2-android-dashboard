@@ -44,8 +44,6 @@ public class DashboardItem extends BaseIdentifiableModel {
     public static final String TYPE_USERS = "users";
     public static final String TYPE_REPORTS = "reports";
     public static final String TYPE_RESOURCES = "resources";
-
-    // Not supported yet
     public static final String TYPE_REPORT_TABLES = "reportTables";
     public static final String TYPE_MESSAGES = "messages";
 
@@ -58,17 +56,19 @@ public class DashboardItem extends BaseIdentifiableModel {
     @JsonProperty("contentCount") private int contentCount;
     @JsonProperty("type") private String type;
     @JsonProperty("shape") private String shape;
+    @JsonProperty("messages") private boolean messages;
+    @JsonIgnore() private String dashboardId;
+
+    // DashboardElements
+    @JsonProperty("chart") private DashboardElement chart;
+    @JsonProperty("eventChart") private DashboardElement eventChart;
+    @JsonProperty("map") private DashboardElement map;
+    @JsonProperty("reportTable") private DashboardElement reportTable;
+    @JsonProperty("eventReport") private DashboardElement eventReport;
     @JsonProperty("users") private List<DashboardElement> users;
     @JsonProperty("reports") private List<DashboardElement> reports;
     @JsonProperty("resources") private List<DashboardElement> resources;
     @JsonProperty("reportTables") private List<DashboardElement> reportTables;
-    @JsonProperty("eventReport") private DashboardElement eventReport;
-    @JsonProperty("chart") private DashboardElement chart;
-    @JsonProperty("eventChart") private DashboardElement eventChart;
-    @JsonProperty("reportTable") private DashboardElement reportTable;
-    @JsonProperty("map") private DashboardElement map;
-
-    @JsonIgnore() private String dashboardId;
 
     public Access getAccess() {
         return access;
@@ -187,5 +187,14 @@ public class DashboardItem extends BaseIdentifiableModel {
 
     public void setEventReport(DashboardElement eventReport) {
         this.eventReport = eventReport;
+    }
+
+
+    public boolean isMessages() {
+        return messages;
+    }
+
+    public void setMessages(boolean messages) {
+        this.messages = messages;
     }
 }
