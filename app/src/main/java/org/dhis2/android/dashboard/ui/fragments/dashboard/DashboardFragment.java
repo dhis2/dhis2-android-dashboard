@@ -39,16 +39,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.persistence.DbManager;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract;
 import org.dhis2.android.dashboard.api.persistence.handlers.DashboardHandler;
 import org.dhis2.android.dashboard.api.persistence.loaders.CursorLoaderBuilder;
 import org.dhis2.android.dashboard.api.persistence.loaders.Transformation;
-import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
 import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.views.SlidingTabLayout;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -129,7 +130,9 @@ public class DashboardFragment extends BaseFragment implements LoaderCallbacks<L
     static class DbTransformer implements Transformation<List<Dashboard>> {
 
         @Override public List<Dashboard> transform(Context context, Cursor cursor) {
-            return DbManager.with(Dashboard.class).map(cursor, false);
+            List<Dashboard> dashboards = DbManager.with(Dashboard.class).map(cursor, false);
+            Collections.sort(dashboards, Dashboard.NAME_COMPARATOR);
+            return dashboards;
         }
     }
 }

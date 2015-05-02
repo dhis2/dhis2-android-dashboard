@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence.models;
+package org.dhis2.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

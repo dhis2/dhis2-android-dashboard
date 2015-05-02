@@ -31,7 +31,7 @@ package org.dhis2.android.dashboard.api.persistence.handlers;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 

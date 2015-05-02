@@ -32,7 +32,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.Dashboard;
 
 import java.util.List;
 

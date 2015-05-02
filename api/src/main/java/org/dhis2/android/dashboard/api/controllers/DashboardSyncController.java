@@ -31,12 +31,11 @@ package org.dhis2.android.dashboard.api.controllers;
 import android.content.ContentProviderOperation;
 
 import org.dhis2.android.dashboard.api.DhisManager;
+import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.persistence.DbManager;
 import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
-import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
-import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
-import org.dhis2.android.dashboard.api.persistence.models.DashboardToItem;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -56,16 +55,19 @@ public final class DashboardSyncController implements IController<Object> {
         mSessionHandler = handler;
     }
 
+
+    // TODO safely join tables (ignore empty rows)
+    // TODO revise updateDashboards() and updateDashboardItems()
+
     @Override
     public Object run() throws APIException {
         List<Dashboard> dashboards = filter(updateDashboards());
         List<DashboardItem> items = filter(updateDashboardItems(dashboards));
-        List<DashboardToItem> relations = buildRelationShip(dashboards, items);
+        buildRelationShip(dashboards, items);
 
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         ops.addAll(DbManager.with(Dashboard.class).sync(dashboards));
         ops.addAll(DbManager.with(DashboardItem.class).sync(items));
-        ops.addAll(DbManager.with(DashboardToItem.class).sync(relations));
 
         if (!ops.isEmpty()) {
             DbManager.applyBatch(ops);
@@ -103,24 +105,21 @@ public final class DashboardSyncController implements IController<Object> {
         ).run();
     }
 
-    private List<DashboardToItem> buildRelationShip(List<Dashboard> dashboards,
-                                                    List<DashboardItem> dashboardItems) {
-        List<DashboardToItem> dashboardToItems = new ArrayList<>();
-        Map<String, DashboardItem> dashboardItemMap = toMap(dashboardItems);
-
+    private void buildRelationShip(List<Dashboard> dashboards,
+                                   List<DashboardItem> dashboardItems) {
+        Map<String, DashboardItem> itemsMap = toMap(dashboardItems);
         for (Dashboard dashboard : dashboards) {
-            if (dashboard.getDashboardItems() == null
-                    || dashboard.getDashboardItems().isEmpty()) {
+            if (dashboard.getDashboardItems() == null ||
+                    dashboard.getDashboardItems().isEmpty()) {
                 continue;
             }
 
-            for (DashboardItem item : dashboard.getDashboardItems()) {
-                if (dashboardItemMap.get(item.getId()) != null) {
-                    dashboardToItems.add(new DashboardToItem(dashboard.getId(), item.getId()));
+            for (DashboardItem shortItem : dashboard.getDashboardItems()) {
+                DashboardItem fullItem = itemsMap.get(shortItem.getId());
+                if (fullItem != null) {
+                    fullItem.setDashboardId(dashboard.getId());
                 }
             }
         }
-
-        return dashboardToItems;
     }
 }

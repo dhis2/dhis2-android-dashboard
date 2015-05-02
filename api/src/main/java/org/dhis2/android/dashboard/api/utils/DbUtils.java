@@ -28,7 +28,7 @@
 
 package org.dhis2.android.dashboard.api.utils;
 
-import org.dhis2.android.dashboard.api.persistence.models.BaseIdentifiableModel;
+import org.dhis2.android.dashboard.api.models.BaseIdentifiableModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;

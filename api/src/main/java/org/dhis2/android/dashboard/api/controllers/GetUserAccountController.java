@@ -29,7 +29,7 @@
 package org.dhis2.android.dashboard.api.controllers;
 
 import org.dhis2.android.dashboard.api.DhisManager;
-import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.tasks.ITask;
 import org.dhis2.android.dashboard.api.network.tasks.LoginUserTask;

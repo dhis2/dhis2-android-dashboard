@@ -30,7 +30,6 @@ package org.dhis2.android.dashboard.api.persistence.database;
 
 import android.content.ContentResolver;
 import android.net.Uri;
-import android.provider.BaseColumns;
 
 public final class DbContract {
     public static final String AUTHORITY = "org.dhis2.android.dashboard.api.persistence.database.DbContentProvider";
@@ -61,12 +60,7 @@ public final class DbContract {
         public static final String CONTENT_COUNT = "contentCount";
         public static final String TYPE = "type";
         public static final String SHAPE = "shape";
-    }
-
-    static interface DashboardsToItemsColumns {
-        public static final String ID = BaseColumns._ID;
         public static final String DASHBOARD_ID = "dashboardId";
-        public static final String DASHBOARD_ITEM_ID = "dashboardItemId";
     }
 
     public static final class Dashboards implements DashboardColumns {
@@ -114,18 +108,5 @@ public final class DbContract {
                 "/org.hisp.dhis2.mobile.DashboardItem";
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE +
                 "/org.hisp.dhis2.mobile.DashboardItem";
-    }
-
-    public static class DashboardsToItems implements DashboardsToItemsColumns {
-        public static final String TABLE_NAME = "dashboardsToItemsTable";
-        public static final String DASHBOARD_TO_ITEMS_PATH = TABLE_NAME;
-        public static final String DASHBOARD_TO_ITEM_ID_PATH = TABLE_NAME + "/#/";
-
-        public static final Uri CONTENT_URI = Uri.withAppendedPath(
-                BASE_CONTENT_URI, DASHBOARD_TO_ITEMS_PATH);
-        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE +
-                "/org.dhis2.mobile.DashboardToItem";
-        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE +
-                "/org.dhis2.mobile.DashboardToItem";
     }
 }

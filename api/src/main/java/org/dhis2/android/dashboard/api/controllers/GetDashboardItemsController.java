@@ -33,7 +33,7 @@ import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.models.Session;
 import org.dhis2.android.dashboard.api.network.tasks.GetDashboardItemsTask;
 import org.dhis2.android.dashboard.api.persistence.DbManager;
-import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
+import org.dhis2.android.dashboard.api.models.DashboardItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;

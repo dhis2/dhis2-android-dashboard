@@ -30,7 +30,7 @@ package org.dhis2.android.dashboard.api.network.tasks;
 
 import android.net.Uri;
 
-import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.http.ApiRequest;
 import org.dhis2.android.dashboard.api.network.http.Request;

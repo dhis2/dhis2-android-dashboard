@@ -36,7 +36,7 @@ import org.dhis2.android.dashboard.api.network.http.Request;
 import org.dhis2.android.dashboard.api.network.http.RequestBuilder;
 import org.dhis2.android.dashboard.api.network.managers.INetworkManager;
 import org.dhis2.android.dashboard.api.network.models.Credentials;
-import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.Dashboard;
 
 import java.util.List;
 

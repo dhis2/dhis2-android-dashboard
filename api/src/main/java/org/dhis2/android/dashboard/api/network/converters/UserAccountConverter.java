@@ -30,7 +30,7 @@ package org.dhis2.android.dashboard.api.network.converters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 
 public class UserAccountConverter implements IJsonConverter<UserAccount, UserAccount> {
     private final ObjectMapper mObjectMapper;

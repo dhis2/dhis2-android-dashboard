@@ -31,7 +31,7 @@ package org.dhis2.android.dashboard.api.controllers;
 import android.net.Uri;
 
 import org.dhis2.android.dashboard.api.DhisManager;
-import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.models.Credentials;
 import org.dhis2.android.dashboard.api.network.tasks.ITask;

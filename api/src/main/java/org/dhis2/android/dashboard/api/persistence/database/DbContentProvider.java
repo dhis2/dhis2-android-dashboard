@@ -41,11 +41,9 @@ import android.net.Uri;
 
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardItems;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
-import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardsToItems;
 
 import java.util.ArrayList;
 
-import static android.content.ContentUris.parseId;
 import static android.content.ContentUris.withAppendedId;
 import static android.text.TextUtils.isEmpty;
 
@@ -56,9 +54,6 @@ public final class DbContentProvider extends ContentProvider {
 
     private static final int DASHBOARD_ITEMS = 200;
     private static final int DASHBOARD_ITEM_ID = 201;
-
-    private static final int DASHBOARDS_TO_ITEMS = 300;
-    private static final int DASHBOARDS_TO_ITEM_ID = 301;
 
     private static final UriMatcher URI_MATCHER = buildMatcher();
     private DbHelper mDbHelper;
@@ -72,8 +67,6 @@ public final class DbContentProvider extends ContentProvider {
         matcher.addURI(DbContract.AUTHORITY, DashboardItems.DASHBOARD_ITEMS_PATH, DASHBOARD_ITEMS);
         matcher.addURI(DbContract.AUTHORITY, DashboardItems.DASHBOARD_ITEM_ID_PATH, DASHBOARD_ITEM_ID);
 
-        matcher.addURI(DbContract.AUTHORITY, DashboardsToItems.DASHBOARD_TO_ITEMS_PATH, DASHBOARDS_TO_ITEMS);
-        matcher.addURI(DbContract.AUTHORITY, DashboardsToItems.DASHBOARD_TO_ITEM_ID_PATH, DASHBOARDS_TO_ITEM_ID);
         return matcher;
     }
 
@@ -96,16 +89,11 @@ public final class DbContentProvider extends ContentProvider {
                 return DashboardItems.CONTENT_TYPE;
             case DASHBOARD_ITEM_ID:
                 return DashboardItems.CONTENT_ITEM_TYPE;
-            case DASHBOARDS_TO_ITEMS:
-                return DashboardsToItems.CONTENT_TYPE;
-            case DASHBOARDS_TO_ITEM_ID:
-                return DashboardsToItems.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalArgumentException("No corresponding Uri type was found");
         }
     }
 
-    // TODO add relationship handling code for DashboardsToItems table
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
@@ -122,7 +110,7 @@ public final class DbContentProvider extends ContentProvider {
             case DASHBOARD_ID_ITEMS: {
                 String id = Dashboards.getId(uri);
                 return queryId(uri, DbSchema.UNIT_JOIN_DASHBOARD_ITEMS_TABLE,
-                        DashboardsToItems.TABLE_NAME + "." + DashboardsToItems.DASHBOARD_ID,
+                        Dashboards.TABLE_NAME + "." + Dashboards.ID,
                         projection, selection, selectionArgs, sortOrder, id);
             }
             case DASHBOARD_ITEMS: {
@@ -133,15 +121,6 @@ public final class DbContentProvider extends ContentProvider {
                 String id = DashboardItems.getId(uri);
                 return queryId(uri, DashboardItems.TABLE_NAME,
                         DashboardItems.ID, projection, selection, selectionArgs, sortOrder, id);
-            }
-            case DASHBOARDS_TO_ITEMS: {
-                return query(uri, DashboardsToItems.TABLE_NAME, projection,
-                        selection, selectionArgs, sortOrder);
-            }
-            case DASHBOARDS_TO_ITEM_ID: {
-                String id = parseId(uri) + "";
-                return queryId(uri, DashboardsToItems.TABLE_NAME,
-                        DashboardsToItems.ID, projection, selection, selectionArgs, sortOrder, id);
             }
 
             default:
@@ -157,9 +136,6 @@ public final class DbContentProvider extends ContentProvider {
             }
             case DASHBOARD_ITEMS: {
                 return insert(DashboardItems.TABLE_NAME, values, uri);
-            }
-            case DASHBOARDS_TO_ITEMS: {
-                return insert(DashboardsToItems.TABLE_NAME, values, uri);
             }
             default:
                 throw new IllegalArgumentException("Unsupported URI for insertion: " + uri);
@@ -186,15 +162,6 @@ public final class DbContentProvider extends ContentProvider {
                 String id = DashboardItems.getId(uri);
                 return deleteId(DashboardItems.TABLE_NAME,
                         DashboardItems.ID, selection, selectionArgs, id);
-            }
-            case DASHBOARDS_TO_ITEMS: {
-                return delete(DashboardsToItems.TABLE_NAME,
-                        selection, selectionArgs);
-            }
-            case DASHBOARDS_TO_ITEM_ID: {
-                String id = parseId(uri) + "";
-                return deleteId(DashboardsToItems.TABLE_NAME,
-                        DashboardsToItems.ID, selection, selectionArgs, id);
             }
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);

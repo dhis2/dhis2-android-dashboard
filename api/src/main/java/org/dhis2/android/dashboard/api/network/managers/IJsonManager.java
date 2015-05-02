@@ -28,9 +28,9 @@
 
 package org.dhis2.android.dashboard.api.network.managers;
 
-import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
-import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
-import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.DashboardItem;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.converters.IJsonConverter;
 
 import java.util.List;

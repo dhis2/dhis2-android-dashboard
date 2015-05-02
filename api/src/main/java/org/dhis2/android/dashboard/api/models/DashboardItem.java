@@ -26,8 +26,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence.models;
+package org.dhis2.android.dashboard.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import static android.text.TextUtils.isEmpty;
@@ -53,6 +54,7 @@ public class DashboardItem extends BaseIdentifiableModel {
     @JsonProperty("contentCount") private int contentCount;
     @JsonProperty("type") private String type;
     @JsonProperty("shape") private String shape;
+    @JsonIgnore() private String dashboardId;
 
     public Access getAccess() {
         return access;
@@ -91,5 +93,13 @@ public class DashboardItem extends BaseIdentifiableModel {
         return super.isItemComplete() &&
                 !(isEmpty(getType()) || isEmpty(getShape())
                         || getAccess() == null);
+    }
+
+    public String getDashboardId() {
+        return dashboardId;
+    }
+
+    public void setDashboardId(String dashboardId) {
+        this.dashboardId = dashboardId;
     }
 }

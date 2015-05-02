@@ -36,8 +36,8 @@ import android.net.Uri;
 import android.util.Log;
 
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardItems;
-import org.dhis2.android.dashboard.api.persistence.models.Access;
-import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
+import org.dhis2.android.dashboard.api.models.Access;
+import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -62,7 +62,8 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
             DashboardItems.TABLE_NAME + "." + DashboardItems.MANAGE,
             DashboardItems.TABLE_NAME + "." + DashboardItems.READ,
             DashboardItems.TABLE_NAME + "." + DashboardItems.UPDATE,
-            DashboardItems.TABLE_NAME + "." + DashboardItems.WRITE
+            DashboardItems.TABLE_NAME + "." + DashboardItems.WRITE,
+            DashboardItems.TABLE_NAME + "." + DashboardItems.DASHBOARD_ID
     };
 
     private static final int ID = 0;
@@ -77,6 +78,7 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
     private static final int READ = 9;
     private static final int UPDATE = 10;
     private static final int WRITE = 11;
+    private static final int DASHBOARD_ID = 12;
 
     private Context mContext;
 
@@ -104,6 +106,7 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         values.put(DashboardItems.READ, access.isRead() ? 1 : 0);
         values.put(DashboardItems.UPDATE, access.isUpdate() ? 1 : 0);
         values.put(DashboardItems.WRITE, access.isWrite() ? 1 : 0);
+        values.put(DashboardItems.DASHBOARD_ID, item.getDashboardId());
         return values;
     }
 
@@ -128,6 +131,7 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         item.setType(cursor.getString(TYPE));
         item.setShape(cursor.getString(SHAPE));
         item.setContentCount(cursor.getInt(CONTENT_COUNT));
+        item.setDashboardId(cursor.getString(DASHBOARD_ID));
         item.setAccess(access);
 
         return item;
@@ -167,7 +171,7 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
     @Override public ContentProviderOperation update(DashboardItem item) {
         isNull(item, "DashboardItem must not be null");
 
-        Log.v(TAG, "Updating " + item.getName());
+        Log.v(TAG, "Updating " + item.getId());
         Uri uri = DashboardItems.CONTENT_URI.buildUpon()
                 .appendPath(item.getId()).build();
         return ContentProviderOperation

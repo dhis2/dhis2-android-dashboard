@@ -26,13 +26,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence.models;
+package org.dhis2.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class Dashboard extends BaseIdentifiableModel {
+    public static final NameComparator NAME_COMPARATOR = new NameComparator();
+
     @JsonProperty("displayName") private String displayName;
     @JsonProperty("itemCount") private long itemCount;
     @JsonProperty("access") private Access access;
@@ -92,5 +95,15 @@ public class Dashboard extends BaseIdentifiableModel {
         builder.append(access == null ? "null" : access.toString());
 
         return builder.toString();
+    }
+
+    public static class NameComparator implements Comparator<Dashboard> {
+
+        @Override public int compare(Dashboard first, Dashboard second) {
+            if (first == null || second == null) {
+                return 0;
+            }
+            return String.CASE_INSENSITIVE_ORDER.compare(first.getName(), second.getName());
+        }
     }
 }

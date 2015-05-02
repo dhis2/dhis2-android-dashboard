@@ -35,7 +35,7 @@ import org.dhis2.android.dashboard.api.job.JobExecutor;
 import org.dhis2.android.dashboard.api.job.NetworkJob;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.models.Credentials;
-import org.dhis2.android.dashboard.api.persistence.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 

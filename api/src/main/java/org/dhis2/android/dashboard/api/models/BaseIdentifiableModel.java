@@ -26,84 +26,75 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence.models;
+package org.dhis2.android.dashboard.api.models;
 
-public final class Access {
-    private boolean delete;
-    private boolean externalize;
-    private boolean manage;
-    private boolean read;
-    private boolean update;
-    private boolean write;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public boolean isDelete() {
-        return delete;
+import org.joda.time.DateTime;
+
+import static android.text.TextUtils.isEmpty;
+
+public class BaseIdentifiableModel {
+    @JsonProperty("id") private String id;
+    @JsonProperty("created") private DateTime created;
+    @JsonProperty("lastUpdated") private DateTime lastUpdated;
+    @JsonProperty("name") private String name;
+
+    public BaseIdentifiableModel() {
     }
 
-    public void setDelete(boolean delete) {
-        this.delete = delete;
+    public String getId() {
+        return id;
     }
 
-    public boolean isExternalize() {
-        return externalize;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setExternalize(boolean externalize) {
-        this.externalize = externalize;
+    public DateTime getCreated() {
+        return created;
     }
 
-    public boolean isManage() {
-        return manage;
+    public void setCreated(DateTime created) {
+        this.created = created;
     }
 
-    public void setManage(boolean manage) {
-        this.manage = manage;
+    public DateTime getLastUpdated() {
+        return lastUpdated;
     }
 
-    public boolean isRead() {
-        return read;
+    public void setLastUpdated(DateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
-    public void setRead(boolean read) {
-        this.read = read;
+    public String getName() {
+        return name;
     }
 
-    public boolean isUpdate() {
-        return update;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setUpdate(boolean update) {
-        this.update = update;
-    }
-
-    public boolean isWrite() {
-        return write;
-    }
-
-    public void setWrite(boolean write) {
-        this.write = write;
+    public boolean isItemComplete() {
+        return !(isEmpty(id) ||
+                created == null ||
+                lastUpdated == null);
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(" delete: ");
-        builder.append(delete);
+        builder.append(" name: ");
+        builder.append(name);
 
-        builder.append(" externalize: ");
-        builder.append(externalize);
+        builder.append(" id: ");
+        builder.append(id);
 
-        builder.append(" manage: ");
-        builder.append(manage);
+        builder.append(" created: ");
+        builder.append(created == null ? "null" : created.toString());
 
-        builder.append(" read: ");
-        builder.append(read);
-
-        builder.append(" update: ");
-        builder.append(update);
-
-        builder.append(" write: ");
-        builder.append(write);
+        builder.append(" lastUpdated: ");
+        builder.append(created == null ? "null" : created.toString());
 
         return builder.toString();
     }

@@ -30,8 +30,6 @@ package org.dhis2.android.dashboard.api.persistence.database;
 
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardItems;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
-import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardsToItems;
-
 
 public final class DbSchema {
 
@@ -63,27 +61,16 @@ public final class DbSchema {
             DashboardItems.MANAGE + " INTEGER NOT NULL," +
             DashboardItems.READ + " INTEGER NOT NULL," +
             DashboardItems.UPDATE + " INTEGER NOT NULL," +
-            DashboardItems.WRITE + " INTEGER NOT NULL" + ")";
+            DashboardItems.WRITE + " INTEGER NOT NULL," +
+            DashboardItems.DASHBOARD_ID + " TEXT NOT NULL," +
+            " FOREIGN KEY " + "(" + DashboardItems.DASHBOARD_ID + ")" +
+            " REFERENCES " + Dashboards.TABLE_NAME + "(" + Dashboards.ID + ")" +
+            " ON DELETE CASCADE " + ")";
 
     public static final String DROP_DASHBOARD_ITEMS_TABLE = "DROP TABLE IF EXISTS " + DashboardItems.TABLE_NAME;
 
-    public static final String CREATE_DASHBOARD_TO_ITEMS_TABLE = "CREATE TABLE " + DashboardsToItems.TABLE_NAME + "(" +
-            DashboardsToItems.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            DashboardsToItems.DASHBOARD_ID + " TEXT NOT NULL," +
-            DashboardsToItems.DASHBOARD_ITEM_ID + " TEXT NOT NULL," +
-            " FOREIGN KEY " + "(" + DashboardsToItems.DASHBOARD_ID + ")" +
-            " REFERENCES " + Dashboards.TABLE_NAME + "(" + Dashboards.ID + ")" +
-            " ON DELETE CASCADE " +
-            " FOREIGN KEY " + "(" + DashboardsToItems.DASHBOARD_ITEM_ID + ")" +
-            " REFERENCES " + DashboardItems.TABLE_NAME + "(" + DashboardItems.ID + ")" +
-            " ON DELETE CASCADE " +
-            " UNIQUE " + "(" + DashboardsToItems.DASHBOARD_ID + "," + DashboardsToItems.DASHBOARD_ITEM_ID + ")" +
-            " ON CONFLICT REPLACE" + ")";
-
-    public static final String DROP_DASHBOARD_TO_ITEMS_TABLE = "DROP TABLE IF EXISTS " + DashboardItems.TABLE_NAME;
-
-    public static final String UNIT_JOIN_DASHBOARD_ITEMS_TABLE = DashboardsToItems.TABLE_NAME +
-            " LEFT OUTER JOIN " + DashboardItems.TABLE_NAME + " ON " +
-            DashboardsToItems.TABLE_NAME + "." + DashboardsToItems.DASHBOARD_ITEM_ID +
-            " = " + DashboardItems.TABLE_NAME + "." + DashboardItems.ID;
+    public static final String UNIT_JOIN_DASHBOARD_ITEMS_TABLE =
+            Dashboards.TABLE_NAME + " LEFT OUTER JOIN " + DashboardItems.TABLE_NAME +
+                    " ON " + Dashboards.TABLE_NAME + "." + Dashboards.ID +
+                    " = " + DashboardItems.TABLE_NAME + "." + DashboardItems.DASHBOARD_ID;
 }

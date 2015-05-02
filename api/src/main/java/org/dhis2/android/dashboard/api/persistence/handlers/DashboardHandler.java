@@ -36,10 +36,12 @@ import android.net.Uri;
 import android.util.Log;
 
 import org.dhis2.android.dashboard.api.persistence.DbManager;
+import org.dhis2.android.dashboard.api.persistence.database.DbContract;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
-import org.dhis2.android.dashboard.api.persistence.models.Access;
-import org.dhis2.android.dashboard.api.persistence.models.Dashboard;
-import org.dhis2.android.dashboard.api.persistence.models.DashboardItem;
+import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardItems;
+import org.dhis2.android.dashboard.api.models.Access;
+import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -68,13 +70,19 @@ public final class DashboardHandler implements IModelHandler<Dashboard> {
             Dashboards.TABLE_NAME + "." + Dashboards.WRITE
     };
 
+    /* When two tables are joined sometimes we can get empty rows.
+    For example dashboard does not contain any dashboard items.
+    In order to avoid strange bugs during table JOINs,
+    we explicitly state that we want only not null values  */
+    private static final String NON_NULL_DASHBOARD_ITEMS = DashboardItems.TABLE_NAME + "." +
+            DashboardItems.ID + " IS NOT NULL";
+
     private static final int ID = 0;
     private static final int CREATED = 1;
     private static final int LAST_UPDATED = 2;
     private static final int NAME = 3;
     private static final int DISPLAY_NAME = 4;
     private static final int ITEM_COUNT = 5;
-
     private static final int DELETE = 6;
     private static final int EXTERNALIZE = 7;
     private static final int MANAGE = 8;
@@ -199,7 +207,7 @@ public final class DashboardHandler implements IModelHandler<Dashboard> {
         if (clazz == DashboardItem.class) {
             Cursor cursor = mContext.getContentResolver().query(
                     buildUriWithItems((String) id), DbManager.with(DashboardItem.class)
-                            .getProjection(), null, null, null
+                            .getProjection(), NON_NULL_DASHBOARD_ITEMS, null, null
             );
 
             return (List<T>) DbManager.with(DashboardItem.class).map(cursor, true);
