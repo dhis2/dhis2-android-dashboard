@@ -35,13 +35,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
-import org.dhis2.android.dashboard.api.persistence.DbManager;
-import org.dhis2.android.dashboard.api.persistence.database.DbContract;
-import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
-import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardItems;
 import org.dhis2.android.dashboard.api.models.Access;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
+import org.dhis2.android.dashboard.api.persistence.DbManager;
+import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardItems;
+import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;

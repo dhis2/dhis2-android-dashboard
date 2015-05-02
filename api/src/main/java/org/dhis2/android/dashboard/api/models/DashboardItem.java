@@ -52,11 +52,11 @@ public class DashboardItem extends BaseIdentifiableModel {
     public static final String SHAPE_DOUBLE_WIDTH = "double_width";
     public static final String SHAPE_FULL_WIDTH = "full_width";
 
+    @JsonIgnore private String dashboardId;
     @JsonProperty("access") private Access access;
     @JsonProperty("contentCount") private int contentCount;
     @JsonProperty("type") private String type;
     @JsonProperty("shape") private String shape;
-    @JsonIgnore() private String dashboardId;
 
     // DashboardElements
     @JsonProperty("chart") private DashboardElement chart;
@@ -70,131 +70,130 @@ public class DashboardItem extends BaseIdentifiableModel {
     @JsonProperty("reportTables") private List<DashboardElement> reportTables;
     @JsonProperty("messages") private boolean messages;
 
-    @Override
+    @JsonIgnore @Override
     public boolean isItemComplete() {
         return super.isItemComplete() &&
                 !(isEmpty(getType()) || isEmpty(getShape())
                         || getAccess() == null);
     }
 
-    public Access getAccess() {
+    @JsonIgnore public Access getAccess() {
         return access;
     }
 
-    public void setAccess(Access access) {
+    @JsonIgnore public void setAccess(Access access) {
         this.access = access;
     }
 
-    public int getContentCount() {
+    @JsonIgnore public int getContentCount() {
         return contentCount;
     }
 
-    public void setContentCount(int contentCount) {
+    @JsonIgnore public void setContentCount(int contentCount) {
         this.contentCount = contentCount;
     }
 
-    public String getType() {
+    @JsonIgnore public String getType() {
         return type;
     }
 
-    public void setType(String type) {
+    @JsonIgnore public void setType(String type) {
         this.type = type;
     }
 
-    public String getShape() {
+    @JsonIgnore public String getShape() {
         return shape;
     }
 
-    public void setShape(String shape) {
+    @JsonIgnore public void setShape(String shape) {
         this.shape = shape;
     }
 
-    public String getDashboardId() {
+    @JsonIgnore public String getDashboardId() {
         return dashboardId;
     }
 
-    public void setDashboardId(String dashboardId) {
+    @JsonIgnore public void setDashboardId(String dashboardId) {
         this.dashboardId = dashboardId;
     }
 
-    public List<DashboardElement> getUsers() {
+    @JsonIgnore public List<DashboardElement> getUsers() {
         return users;
     }
 
-    public void setUsers(List<DashboardElement> users) {
+    @JsonIgnore public void setUsers(List<DashboardElement> users) {
         this.users = users;
     }
 
-    public List<DashboardElement> getReports() {
+    @JsonIgnore public List<DashboardElement> getReports() {
         return reports;
     }
 
-    public void setReports(List<DashboardElement> reports) {
+    @JsonIgnore public void setReports(List<DashboardElement> reports) {
         this.reports = reports;
     }
 
-    public List<DashboardElement> getResources() {
+    @JsonIgnore public List<DashboardElement> getResources() {
         return resources;
     }
 
-    public void setResources(List<DashboardElement> resources) {
+    @JsonIgnore public void setResources(List<DashboardElement> resources) {
         this.resources = resources;
     }
 
-    public List<DashboardElement> getReportTables() {
+    @JsonIgnore public List<DashboardElement> getReportTables() {
         return reportTables;
     }
 
-    public void setReportTables(List<DashboardElement> reportTables) {
+    @JsonIgnore public void setReportTables(List<DashboardElement> reportTables) {
         this.reportTables = reportTables;
     }
 
-    public DashboardElement getChart() {
+    @JsonIgnore public DashboardElement getChart() {
         return chart;
     }
 
-    public void setChart(DashboardElement chart) {
+    @JsonIgnore public void setChart(DashboardElement chart) {
         this.chart = chart;
     }
 
-    public DashboardElement getEventChart() {
+    @JsonIgnore public DashboardElement getEventChart() {
         return eventChart;
     }
 
-    public void setEventChart(DashboardElement eventChart) {
+    @JsonIgnore public void setEventChart(DashboardElement eventChart) {
         this.eventChart = eventChart;
     }
 
-    public DashboardElement getReportTable() {
+    @JsonIgnore public DashboardElement getReportTable() {
         return reportTable;
     }
 
-    public void setReportTable(DashboardElement reportTable) {
+    @JsonIgnore public void setReportTable(DashboardElement reportTable) {
         this.reportTable = reportTable;
     }
 
-    public DashboardElement getMap() {
+    @JsonIgnore public DashboardElement getMap() {
         return map;
     }
 
-    public void setMap(DashboardElement map) {
+    @JsonIgnore public void setMap(DashboardElement map) {
         this.map = map;
     }
 
-    public DashboardElement getEventReport() {
+    @JsonIgnore public DashboardElement getEventReport() {
         return eventReport;
     }
 
-    public void setEventReport(DashboardElement eventReport) {
+    @JsonIgnore public void setEventReport(DashboardElement eventReport) {
         this.eventReport = eventReport;
     }
 
-
-    public boolean isMessages() {
+    @JsonIgnore public boolean isMessages() {
         return messages;
     }
 
-    public void setMessages(boolean messages) {
+    @JsonIgnore public void setMessages(boolean messages) {
         this.messages = messages;
     }
 }

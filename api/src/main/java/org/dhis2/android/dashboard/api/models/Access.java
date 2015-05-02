@@ -28,63 +28,66 @@
 
 package org.dhis2.android.dashboard.api.models;
 
-public final class Access {
-    private boolean delete;
-    private boolean externalize;
-    private boolean manage;
-    private boolean read;
-    private boolean update;
-    private boolean write;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public boolean isDelete() {
+public final class Access {
+    @JsonProperty("delete") private boolean delete;
+    @JsonProperty("externalize") private boolean externalize;
+    @JsonProperty("manage") private boolean manage;
+    @JsonProperty("read") private boolean read;
+    @JsonProperty("update") private boolean update;
+    @JsonProperty("write") private boolean write;
+
+    @JsonIgnore public boolean isDelete() {
         return delete;
     }
 
-    public void setDelete(boolean delete) {
+    @JsonIgnore public void setDelete(boolean delete) {
         this.delete = delete;
     }
 
-    public boolean isExternalize() {
+    @JsonIgnore public boolean isExternalize() {
         return externalize;
     }
 
-    public void setExternalize(boolean externalize) {
+    @JsonIgnore public void setExternalize(boolean externalize) {
         this.externalize = externalize;
     }
 
-    public boolean isManage() {
+    @JsonIgnore public boolean isManage() {
         return manage;
     }
 
-    public void setManage(boolean manage) {
+    @JsonIgnore public void setManage(boolean manage) {
         this.manage = manage;
     }
 
-    public boolean isRead() {
+    @JsonIgnore public boolean isRead() {
         return read;
     }
 
-    public void setRead(boolean read) {
+    @JsonIgnore public void setRead(boolean read) {
         this.read = read;
     }
 
-    public boolean isUpdate() {
+    @JsonIgnore public boolean isUpdate() {
         return update;
     }
 
-    public void setUpdate(boolean update) {
+    @JsonIgnore public void setUpdate(boolean update) {
         this.update = update;
     }
 
-    public boolean isWrite() {
+    @JsonIgnore public boolean isWrite() {
         return write;
     }
 
-    public void setWrite(boolean write) {
+    @JsonIgnore public void setWrite(boolean write) {
         this.write = write;
     }
 
-    @Override
+    @JsonIgnore @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(" delete: ");

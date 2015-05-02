@@ -28,6 +28,7 @@
 
 package org.dhis2.android.dashboard.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
@@ -43,45 +44,45 @@ public class BaseIdentifiableModel {
     public BaseIdentifiableModel() {
     }
 
-    public String getId() {
+    @JsonIgnore public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    @JsonIgnore public void setId(String id) {
         this.id = id;
     }
 
-    public DateTime getCreated() {
+    @JsonIgnore public DateTime getCreated() {
         return created;
     }
 
-    public void setCreated(DateTime created) {
+    @JsonIgnore public void setCreated(DateTime created) {
         this.created = created;
     }
 
-    public DateTime getLastUpdated() {
+    @JsonIgnore public DateTime getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(DateTime lastUpdated) {
+    @JsonIgnore public void setLastUpdated(DateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
-    public String getName() {
+    @JsonIgnore public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    @JsonIgnore public void setName(String name) {
         this.name = name;
     }
 
-    public boolean isItemComplete() {
+    @JsonIgnore public boolean isItemComplete() {
         return !(isEmpty(id) ||
                 created == null ||
                 lastUpdated == null);
     }
 
-    @Override
+    @JsonIgnore @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(" name: ");

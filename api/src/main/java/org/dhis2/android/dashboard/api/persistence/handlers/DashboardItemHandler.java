@@ -35,22 +35,21 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import org.dhis2.android.dashboard.api.models.Access;
 import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardItems;
-import org.dhis2.android.dashboard.api.utils.JsonMapperProvider;
 import org.joda.time.DateTime;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
+import static org.dhis2.android.dashboard.api.utils.JsonUtils.fromJson;
+import static org.dhis2.android.dashboard.api.utils.JsonUtils.toJson;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public final class DashboardItemHandler implements IModelHandler<DashboardItem> {
@@ -70,18 +69,9 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
             DashboardItems.TABLE_NAME + "." + DashboardItems.READ,
             DashboardItems.TABLE_NAME + "." + DashboardItems.UPDATE,
             DashboardItems.TABLE_NAME + "." + DashboardItems.WRITE,
-            DashboardItems.TABLE_NAME + "." + DashboardItems.DASHBOARD_ID,
-
-            DashboardItems.TABLE_NAME + "." + DashboardItems.CHART,
-            DashboardItems.TABLE_NAME + "." + DashboardItems.EVENT_CHART,
-            DashboardItems.TABLE_NAME + "." + DashboardItems.MAP,
-            DashboardItems.TABLE_NAME + "." + DashboardItems.REPORT_TABLE,
-            DashboardItems.TABLE_NAME + "." + DashboardItems.EVENT_REPORT,
-            DashboardItems.TABLE_NAME + "." + DashboardItems.USERS,
-            DashboardItems.TABLE_NAME + "." + DashboardItems.REPORTS,
-            DashboardItems.TABLE_NAME + "." + DashboardItems.RESOURCES,
-            DashboardItems.TABLE_NAME + "." + DashboardItems.REPORT_TABLES,
             DashboardItems.TABLE_NAME + "." + DashboardItems.MESSAGES,
+            DashboardItems.TABLE_NAME + "." + DashboardItems.ELEMENT,
+            DashboardItems.TABLE_NAME + "." + DashboardItems.DASHBOARD_ID,
     };
 
     private static final int ID = 0;
@@ -96,19 +86,11 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
     private static final int READ = 9;
     private static final int UPDATE = 10;
     private static final int WRITE = 11;
-    private static final int DASHBOARD_ID = 12;
-    private static final int CHART = 13;
-    private static final int EVENT_CHART = 14;
-    private static final int MAP = 15;
-    private static final int REPORT_TABLE = 16;
-    private static final int EVENT_REPORT = 17;
-    private static final int USERS = 18;
-    private static final int REPORTS = 19;
-    private static final int RESOURCES = 20;
-    private static final int REPORT_TABLES = 21;
-    private static final int MESSAGES = 22;
+    private static final int MESSAGES = 12;
+    private static final int ELEMENT = 12;
+    private static final int DASHBOARD_ID = 13;
 
-    private Context mContext;
+    private final Context mContext;
 
     public DashboardItemHandler(Context context) {
         mContext = isNull(context, "Context object must not be null");
@@ -120,16 +102,6 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         String created = item.getCreated().toString();
         String lastUpdated = item.getLastUpdated().toString();
         Access access = item.getAccess();
-
-        String chart = elementToString(item.getChart());
-        String eventChart = elementToString(item.getEventChart());
-        String map = elementToString(item.getMap());
-        String reportTable = elementToString(item.getReportTable());
-        String eventReport = elementToString(item.getEventReport());
-        String users = elementsToString(item.getUsers());
-        String reports = elementsToString(item.getReports());
-        String resources = elementsToString(item.getResources());
-        String reportTables = elementsToString(item.getReportTables());
 
         ContentValues values = new ContentValues();
         values.put(DashboardItems.ID, item.getId());
@@ -144,17 +116,9 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         values.put(DashboardItems.READ, access.isRead() ? 1 : 0);
         values.put(DashboardItems.UPDATE, access.isUpdate() ? 1 : 0);
         values.put(DashboardItems.WRITE, access.isWrite() ? 1 : 0);
-        values.put(DashboardItems.DASHBOARD_ID, item.getDashboardId());
-        values.put(DashboardItems.CHART, chart);
-        values.put(DashboardItems.EVENT_CHART, eventChart);
-        values.put(DashboardItems.MAP, map);
-        values.put(DashboardItems.REPORT_TABLE, reportTable);
-        values.put(DashboardItems.EVENT_REPORT, eventReport);
-        values.put(DashboardItems.USERS, users);
-        values.put(DashboardItems.REPORTS, reports);
-        values.put(DashboardItems.RESOURCES, resources);
-        values.put(DashboardItems.REPORT_TABLES, reportTables);
         values.put(DashboardItems.MESSAGES, item.isMessages() ? 1 : 0);
+        values.put(DashboardItems.DASHBOARD_ID, item.getDashboardId());
+        putElementToValues(item, values);
 
         return values;
     }
@@ -173,18 +137,6 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         access.setUpdate(cursor.getInt(UPDATE) == 1);
         access.setWrite(cursor.getInt(WRITE) == 1);
 
-        DashboardElement chart = elementFromString(cursor.getString(CHART));
-        DashboardElement eventChart = elementFromString(cursor.getString(EVENT_CHART));
-        DashboardElement map = elementFromString(cursor.getString(MAP));
-
-        DashboardElement reportTable = elementFromString(cursor.getString(REPORT_TABLE));
-        DashboardElement eventReport = elementFromString(cursor.getString(EVENT_REPORT));
-        List<DashboardElement> users = elementsFromString(cursor.getString(USERS));
-
-        List<DashboardElement> reports = elementsFromString(cursor.getString(REPORTS));
-        List<DashboardElement> resources = elementsFromString(cursor.getString(RESOURCES));
-        List<DashboardElement> reportTables = elementsFromString(cursor.getString(REPORT_TABLES));
-
         DashboardItem item = new DashboardItem();
         item.setId(cursor.getString(ID));
         item.setCreated(created);
@@ -194,71 +146,112 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         item.setContentCount(cursor.getInt(CONTENT_COUNT));
         item.setDashboardId(cursor.getString(DASHBOARD_ID));
         item.setAccess(access);
-        item.setChart(chart);
-        item.setEventChart(eventChart);
-        item.setMap(map);
-        item.setReportTable(reportTable);
-        item.setEventReport(eventReport);
-        item.setUsers(users);
-        item.setReports(reports);
-        item.setResources(resources);
-        item.setReportTables(reportTables);
         item.setMessages(cursor.getInt(MESSAGES) == 1);
+        putElementToItem(item, cursor);
 
         return item;
     }
 
-    private static DashboardElement elementFromString(String source) {
-        if (source != null) {
-            try {
-                return JsonMapperProvider.getInstance()
-                        .readValue(source, DashboardElement.class);
-            } catch (IOException e) {
-                e.printStackTrace();
+    private static void putElementToValues(DashboardItem item, ContentValues values) {
+        String element;
+        switch (item.getType()) {
+            case DashboardItem.TYPE_CHART: {
+                element = toJson(item.getChart());
+                break;
             }
+            case DashboardItem.TYPE_EVENT_CHART: {
+                element = toJson(item.getEventChart());
+                break;
+            }
+            case DashboardItem.TYPE_MAP: {
+                element = toJson(item.getMap());
+                break;
+            }
+            case DashboardItem.TYPE_REPORT_TABLE: {
+                element = toJson(item.getReportTable());
+                break;
+            }
+            case DashboardItem.TYPE_EVENT_REPORT: {
+                element = toJson(item.getEventReport());
+                break;
+            }
+            case DashboardItem.TYPE_USERS: {
+                element = toJson(item.getUsers());
+                break;
+            }
+            case DashboardItem.TYPE_REPORTS: {
+                element = toJson(item.getReports());
+                break;
+            }
+            case DashboardItem.TYPE_RESOURCES: {
+                element = toJson(item.getResources());
+                break;
+            }
+            case DashboardItem.TYPE_REPORT_TABLES: {
+                element = toJson(item.getReportTables());
+                break;
+            }
+            case DashboardItem.TYPE_MESSAGES: {
+                element = EMPTY_FIELD;
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported DashboardItem Type");
         }
 
-        return null;
+        values.put(DashboardItems.ELEMENT, element);
     }
 
-    private static List<DashboardElement> elementsFromString(String source) {
-        if (source != null) {
-            try {
-                return JsonMapperProvider.getInstance()
-                        .readValue(source, new TypeReference<List<DashboardElement>>() {
-                        });
-            } catch (IOException e) {
-                e.printStackTrace();
+    private static void putElementToItem(DashboardItem item, Cursor cursor) {
+        String type = cursor.getString(TYPE);
+        String element = cursor.getString(ELEMENT);
+        TypeReference<List<DashboardElement>> typeReference
+                = new TypeReference<List<DashboardElement>>() {
+        };
+
+        switch (type) {
+            case DashboardItem.TYPE_CHART: {
+                item.setChart(fromJson(element, DashboardElement.class));
+                break;
             }
-        }
-
-        return null;
-    }
-
-    private static String elementToString(DashboardElement element) {
-        if (element != null) {
-            try {
-                return JsonMapperProvider.getInstance()
-                        .writeValueAsString(element);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
+            case DashboardItem.TYPE_EVENT_CHART: {
+                item.setEventChart(fromJson(element, DashboardElement.class));
+                break;
             }
-        }
-
-        return EMPTY_FIELD;
-    }
-
-    private static String elementsToString(List<DashboardElement> elements) {
-        if (elements != null && !elements.isEmpty()) {
-            try {
-                return JsonMapperProvider.getInstance()
-                        .writeValueAsString(elements);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
+            case DashboardItem.TYPE_MAP: {
+                item.setMap(fromJson(element, DashboardElement.class));
+                break;
             }
+            case DashboardItem.TYPE_REPORT_TABLE: {
+                item.setReportTable(fromJson(element, DashboardElement.class));
+                break;
+            }
+            case DashboardItem.TYPE_EVENT_REPORT: {
+                item.setEventReport(fromJson(element, DashboardElement.class));
+                break;
+            }
+            case DashboardItem.TYPE_USERS: {
+                item.setUsers(fromJson(element, typeReference));
+                break;
+            }
+            case DashboardItem.TYPE_REPORTS: {
+                item.setReports(fromJson(element, typeReference));
+                break;
+            }
+            case DashboardItem.TYPE_RESOURCES: {
+                item.setResources(fromJson(element, typeReference));
+                break;
+            }
+            case DashboardItem.TYPE_REPORT_TABLES: {
+                item.setReportTables(fromJson(element, typeReference));
+                break;
+            }
+            case DashboardItem.TYPE_MESSAGES: {
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported DashboardItem Type");
         }
-
-        return EMPTY_FIELD;
     }
 
     @Override public List<DashboardItem> map(Cursor cursor, boolean closeCursor) {

@@ -28,6 +28,7 @@
 
 package org.dhis2.android.dashboard.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Comparator;
@@ -41,44 +42,44 @@ public class Dashboard extends BaseIdentifiableModel {
     @JsonProperty("access") private Access access;
     @JsonProperty("dashboardItems") List<DashboardItem> dashboardItems;
 
-    public String getDisplayName() {
+    @JsonIgnore public String getDisplayName() {
         return displayName;
     }
 
-    public void setDisplayName(String displayName) {
+    @JsonIgnore public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
-    public long getItemCount() {
+    @JsonIgnore public long getItemCount() {
         return itemCount;
     }
 
-    public void setItemCount(long itemCount) {
+    @JsonIgnore public void setItemCount(long itemCount) {
         this.itemCount = itemCount;
     }
 
-    public Access getAccess() {
+    @JsonIgnore public Access getAccess() {
         return access;
     }
 
-    public void setAccess(Access access) {
+    @JsonIgnore public void setAccess(Access access) {
         this.access = access;
     }
 
-    public List<DashboardItem> getDashboardItems() {
+    @JsonIgnore public List<DashboardItem> getDashboardItems() {
         return dashboardItems;
     }
 
-    public void setDashboardItems(List<DashboardItem> dashboardItems) {
+    @JsonIgnore public void setDashboardItems(List<DashboardItem> dashboardItems) {
         this.dashboardItems = dashboardItems;
     }
 
-    @Override
+    @JsonIgnore @Override
     public boolean isItemComplete() {
         return super.isItemComplete() && access != null;
     }
 
-    @Override
+    @JsonIgnore @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
 

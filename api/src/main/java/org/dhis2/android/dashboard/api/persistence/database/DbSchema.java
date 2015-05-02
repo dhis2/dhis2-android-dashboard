@@ -62,16 +62,8 @@ public final class DbSchema {
             DashboardItems.READ + " INTEGER NOT NULL," +
             DashboardItems.UPDATE + " INTEGER NOT NULL," +
             DashboardItems.WRITE + " INTEGER NOT NULL," +
-            DashboardItems.CHART + " TEXT," +
-            DashboardItems.EVENT_CHART + " TEXT," +
-            DashboardItems.MAP + " TEXT," +
-            DashboardItems.REPORT_TABLE + " TEXT," +
-            DashboardItems.EVENT_REPORT + " TEXT," +
-            DashboardItems.USERS + " TEXT," +
-            DashboardItems.REPORTS + " TEXT," +
-            DashboardItems.RESOURCES + " TEXT," +
-            DashboardItems.REPORT_TABLES + " TEXT," +
-            DashboardItems.MESSAGES + " TEXT," +
+            DashboardItems.ELEMENT + " TEXT," +
+            DashboardItems.MESSAGES + " INTEGER," +
             DashboardItems.DASHBOARD_ID + " TEXT NOT NULL," +
             " FOREIGN KEY " + "(" + DashboardItems.DASHBOARD_ID + ")" +
             " REFERENCES " + Dashboards.TABLE_NAME + "(" + Dashboards.ID + ")" +

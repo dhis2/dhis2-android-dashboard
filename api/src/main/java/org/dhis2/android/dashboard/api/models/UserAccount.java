@@ -28,6 +28,7 @@
 
 package org.dhis2.android.dashboard.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public final class UserAccount {
@@ -52,139 +53,139 @@ public final class UserAccount {
     public UserAccount() {
     }
 
-    public String getId() {
+    @JsonIgnore public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    @JsonIgnore public void setId(String id) {
         this.id = id;
     }
 
-    public String getCreated() {
+    @JsonIgnore public String getCreated() {
         return created;
     }
 
-    public void setCreated(String created) {
+    @JsonIgnore public void setCreated(String created) {
         this.created = created;
     }
 
-    public String getLastUpdated() {
+    @JsonIgnore public String getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(String lastUpdated) {
+    @JsonIgnore public void setLastUpdated(String lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
-    public String getName() {
+    @JsonIgnore public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    @JsonIgnore public void setName(String name) {
         this.name = name;
     }
 
-    public String getDisplayName() {
+    @JsonIgnore public String getDisplayName() {
         return displayName;
     }
 
-    public void setDisplayName(String displayName) {
+    @JsonIgnore public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
-    public String getFirstName() {
+    @JsonIgnore public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    @JsonIgnore public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public String getSurname() {
+    @JsonIgnore public String getSurname() {
         return surname;
     }
 
-    public void setSurname(String surname) {
+    @JsonIgnore public void setSurname(String surname) {
         this.surname = surname;
     }
 
-    public String getGender() {
+    @JsonIgnore public String getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    @JsonIgnore public void setGender(String gender) {
         this.gender = gender;
     }
 
-    public String getBirthday() {
+    @JsonIgnore public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(String birthday) {
+    @JsonIgnore public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
-    public String getIntroduction() {
+    @JsonIgnore public String getIntroduction() {
         return introduction;
     }
 
-    public void setIntroduction(String introduction) {
+    @JsonIgnore public void setIntroduction(String introduction) {
         this.introduction = introduction;
     }
 
-    public String getEducation() {
+    @JsonIgnore public String getEducation() {
         return education;
     }
 
-    public void setEducation(String education) {
+    @JsonIgnore public void setEducation(String education) {
         this.education = education;
     }
 
-    public String getEmployer() {
+    @JsonIgnore public String getEmployer() {
         return employer;
     }
 
-    public void setEmployer(String employer) {
+    @JsonIgnore public void setEmployer(String employer) {
         this.employer = employer;
     }
 
-    public String getInterests() {
+    @JsonIgnore public String getInterests() {
         return interests;
     }
 
-    public void setInterests(String interests) {
+    @JsonIgnore public void setInterests(String interests) {
         this.interests = interests;
     }
 
-    public String getJobTitle() {
+    @JsonIgnore public String getJobTitle() {
         return jobTitle;
     }
 
-    public void setJobTitle(String jobTitle) {
+    @JsonIgnore public void setJobTitle(String jobTitle) {
         this.jobTitle = jobTitle;
     }
 
-    public String getLanguages() {
+    @JsonIgnore public String getLanguages() {
         return languages;
     }
 
-    public void setLanguages(String languages) {
+    @JsonIgnore public void setLanguages(String languages) {
         this.languages = languages;
     }
 
-    public String getEmail() {
+    @JsonIgnore public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    @JsonIgnore public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getPhoneNumber() {
+    @JsonIgnore public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    @JsonIgnore public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 }
