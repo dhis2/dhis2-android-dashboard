@@ -38,10 +38,8 @@ import org.dhis2.android.dashboard.api.persistence.DbManager;
 import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.dhis2.android.dashboard.api.utils.DbUtils.filter;
 import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
@@ -54,10 +52,6 @@ public final class DashboardSyncController implements IController<Object> {
         mDhisManager = dhisManager;
         mSessionHandler = handler;
     }
-
-
-    // TODO safely join tables (ignore empty rows)
-    // TODO revise updateDashboards() and updateDashboardItems()
 
     @Override
     public Object run() throws APIException {
@@ -89,19 +83,17 @@ public final class DashboardSyncController implements IController<Object> {
             return new ArrayList<>();
         }
 
-        Set<String> set = new HashSet<>();
+        List<String> ids = new ArrayList<>();
         for (Dashboard dashboard : dashboards) {
-            if (dashboard.getDashboardItems() == null ||
-                    dashboard.getDashboardItems().isEmpty()) {
-                continue;
-            }
-
-            for (DashboardItem dashboardItem : dashboard.getDashboardItems()) {
-                set.add(dashboardItem.getId());
+            if (dashboard.getDashboardItems() != null &&
+                    !dashboard.getDashboardItems().isEmpty()) {
+                for (DashboardItem item : dashboard.getDashboardItems()) {
+                    ids.add(item.getId());
+                }
             }
         }
         return (new GetDashboardItemsController(
-                mDhisManager, mSessionHandler.get(), new ArrayList<>(set))
+                mDhisManager, mSessionHandler.get(), ids)
         ).run();
     }
 

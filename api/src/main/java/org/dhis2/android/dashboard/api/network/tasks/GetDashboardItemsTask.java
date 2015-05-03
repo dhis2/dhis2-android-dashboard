@@ -66,8 +66,16 @@ public class GetDashboardItemsTask implements ITask<List<DashboardItem>> {
 
         String fields = "id,created,lastUpdated";
         if (!flat) {
-            fields += "," + "access,contentCount,type,shape,messages,chart,eventChart,map," +
-                    "reportTable,eventReport,users,reports,resources,reportTables";
+            fields += "," + "access,contentCount,type,shape,messages," +
+                    "chart[id,created,lastUpdated,name,displayName]," +
+                    "eventChart[id,created,lastUpdated,name,displayName]," +
+                    "map[id,created,lastUpdated,name,displayName]," +
+                    "reportTable[id,created,lastUpdated,name,displayName]," +
+                    "eventReport[id,created,lastUpdated,name,displayName]," +
+                    "users[id,created,lastUpdated,name,displayName]," +
+                    "reports[id,created,lastUpdated,name,displayName]," +
+                    "resources[id,created,lastUpdated,name,displayName]," +
+                    "reportTables[id,created,lastUpdated,name,displayName]";
         }
 
         builder.appendQueryParameter("fields", fields);

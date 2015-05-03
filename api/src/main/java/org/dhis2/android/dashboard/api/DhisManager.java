@@ -51,11 +51,25 @@ import java.net.HttpURLConnection;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public class DhisManager extends NetworkManager {
+    private static DhisManager mManager;
     private final Context mContext;
     private final SessionHandler mSessionHandler;
     private final UserAccountHandler mUserAccountHandler;
 
-    public DhisManager(Context context) {
+    public static void init(Context context) {
+        if (mManager == null) {
+            mManager = new DhisManager(context);
+        }
+    }
+
+    public static DhisManager getInstance() {
+        if (mManager == null) {
+            throw new IllegalArgumentException("You have to call init() first");
+        }
+        return mManager;
+    }
+
+    private DhisManager(Context context) {
         mContext = isNull(context, "Context object must not be null");
         mSessionHandler = new SessionHandler(context);
         mUserAccountHandler = new UserAccountHandler(context);

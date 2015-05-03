@@ -42,4 +42,14 @@
     <string name="title_activity_menu">MenuActivity</string>
     <string name="title_activity_confirm_user">ConfirmUserActivity</string>
     <!-- END -->
+
+    <!-- START DashboardFragment -->
+    <string name="refresh">Refresh</string>
+    <string name="delete">Delete</string>
+    <string name="share_interpretation">Share interpretation</string>
+
+    <string name="users">users</string>
+    <string name="resources">resources</string>
+    <string name="reports">reports</string>
+    <!-- END DashboardFragment -->
 </resources>

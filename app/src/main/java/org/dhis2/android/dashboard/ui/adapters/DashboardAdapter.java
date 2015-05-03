@@ -33,7 +33,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import org.dhis2.android.dashboard.api.models.Dashboard;
-import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
+import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardFragment;
 
 import java.util.List;
 
@@ -48,7 +48,8 @@ public class DashboardAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (mDashboards != null && mDashboards.size() > 0) {
-            return new BaseFragment();
+            return DashboardFragment.newInstance(
+                    getDashboard(position));
         } else {
             return null;
         }

@@ -43,8 +43,9 @@ public class DhisApplication extends Application {
 
         EventBusProvider.register(this);
         DbManager.init(this);
+        DhisManager.init(getBaseContext());
 
-        mDhisManager = new DhisManager(getBaseContext());
+        mDhisManager = DhisManager.getInstance();
         mDhisService = new DhisService(mDhisManager);
     }
 

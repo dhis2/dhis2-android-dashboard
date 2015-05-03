@@ -73,8 +73,7 @@ public class DashboardItem extends BaseIdentifiableModel {
     @JsonIgnore @Override
     public boolean isItemComplete() {
         return super.isItemComplete() &&
-                !(isEmpty(getType()) || isEmpty(getShape())
-                        || getAccess() == null);
+                !(isEmpty(getType()) || getAccess() == null);
     }
 
     @JsonIgnore public Access getAccess() {

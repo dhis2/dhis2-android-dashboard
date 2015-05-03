@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
 import static org.dhis2.android.dashboard.api.utils.JsonUtils.fromJson;
 import static org.dhis2.android.dashboard.api.utils.JsonUtils.toJson;
@@ -87,8 +88,8 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
     private static final int UPDATE = 10;
     private static final int WRITE = 11;
     private static final int MESSAGES = 12;
-    private static final int ELEMENT = 12;
-    private static final int DASHBOARD_ID = 13;
+    private static final int ELEMENT = 13;
+    private static final int DASHBOARD_ID = 14;
 
     private final Context mContext;
 
@@ -101,6 +102,7 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
 
         String created = item.getCreated().toString();
         String lastUpdated = item.getLastUpdated().toString();
+        String shape = isEmpty(item.getShape()) ? DashboardItem.SHAPE_NORMAL : item.getShape();
         Access access = item.getAccess();
 
         ContentValues values = new ContentValues();
@@ -108,7 +110,7 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         values.put(DashboardItems.CREATED, created);
         values.put(DashboardItems.LAST_UPDATED, lastUpdated);
         values.put(DashboardItems.TYPE, item.getType());
-        values.put(DashboardItems.SHAPE, item.getShape());
+        values.put(DashboardItems.SHAPE, shape);
         values.put(DashboardItems.CONTENT_COUNT, item.getContentCount());
         values.put(DashboardItems.DELETE, access.isDelete() ? 1 : 0);
         values.put(DashboardItems.EXTERNALIZE, access.isExternalize() ? 1 : 0);
