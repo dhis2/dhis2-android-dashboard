@@ -71,26 +71,9 @@ public class DashboardViewPagerFragment extends BaseFragment implements LoaderCa
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.inject(this, view);
 
-        final int blue = getResources().getColor(R.color.navy_blue);
-        final int gray = getResources().getColor(R.color.dark_grey);
-
         mDashboardAdapter = new DashboardAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mDashboardAdapter);
-
         mTabs.setViewPager(mViewPager);
-        mTabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-
-            @Override
-            public int getIndicatorColor(int position) {
-                return blue;
-            }
-
-            @Override
-            public int getDividerColor(int position) {
-                return gray;
-            }
-        });
-
         getService().syncDashboards();
     }
 

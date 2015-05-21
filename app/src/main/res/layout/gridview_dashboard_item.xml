@@ -35,14 +35,13 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="260dp"
+        android:layout_height="326dp"
         android:orientation="vertical"
-        android:padding="6dp">
+        android:padding="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginBottom="4dp"
+            android:layout_height="42dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:weightSum="1">
@@ -66,16 +65,20 @@
                 android:adjustViewBounds="true"
                 android:background="@drawable/transparent_selector"
                 android:contentDescription="@string/description"
+                android:padding="4dp"
                 android:src="@mipmap/ic_overflow"/>
         </LinearLayout>
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
             android:id="@+id/dashboard_item_name"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:singleLine="true"
+            android:layout_height="42dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp"
+            android:lines="2"
+            android:singleLine="false"
             android:textSize="16sp"
-            app:font="@string/light_font_name"/>
+            app:font="@string/condensed_font_name"/>
 
         <View
             android:layout_width="match_parent"
@@ -86,15 +89,14 @@
         <RelativeLayout
             android:id="@+id/dashboard_item_body_container"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
+            android:layout_height="200dp"
             android:background="@drawable/transparent_selector"
-            android:clickable="true"
-            android:padding="10dp">
+            android:clickable="true">
 
             <ImageView
                 android:id="@+id/dashboard_item_image"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
+                android:layout_height="200dp"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/description"
                 android:scaleType="centerCrop"/>
@@ -104,8 +106,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="5dp"
                 android:textColor="@color/navy_blue"
                 android:textSize="17sp"
                 app:font="@string/light_font_name"/>

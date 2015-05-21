@@ -29,18 +29,15 @@
 package org.dhis2.android.dashboard.ui.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.DhisManager;
@@ -58,21 +55,14 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
     private static final int MENU_SHARE_ITEM_ORDER = 100;
     private static final int MENU_DELETE_ITEM_ORDER = 110;
 
-    private String mServerUrl;
     private Access mDashboardAccess;
+    private Picasso mImageLoader;
 
     private OnItemClickListener mClickListener;
 
-    private Picasso mImageLoader;
-    private Transformation mImageTransformation;
-
     public DashboardItemAdapter(Context context) {
         super(context, LayoutInflater.from(context));
-
         mImageLoader = PicassoProvider.getInstance(context);
-        mImageTransformation = new ImgTransformation();
-        mServerUrl = DhisManager.getInstance()
-                .getServerUri().toString();
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -83,7 +73,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
         mDashboardAccess = access;
     }
 
-    @Override public long getItemId(int position) {
+    @Override
+    public long getItemId(int position) {
         return position;
     }
 
@@ -126,29 +117,29 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
     }
 
     // TODO Try to create only one Click Listener for each type of view and keep it inside of view holder
-    public void handleDashboardItems(final DashboardItem item,
-                                     final ViewHolder holder) {
+    public void handleDashboardItems(final DashboardItem item, final ViewHolder holder) {
         boolean isItemShareable = false;
         boolean isDashboardManageable = false;
         boolean isItemDeletable = false;
 
-        String lastUpdated = item.getLastUpdated()
-                .toString(DATE_FORMAT);
-        holder.lastUpdated.setText(lastUpdated);
+        holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
         if (DashboardItem.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
-            String request = mServerUrl + "/api/charts/" + item.getChart().getId() + "/data.png?width=480&height=320";
+            String request = buildImageUrl("api/charts/", item.getChart().getId());
             handleItemsWithImages(item.getChart().getName(), request, holder);
             isItemShareable = true;
         } else if (DashboardItem.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
-            String request = mServerUrl + "/api/maps/" + item.getMap().getId() + "/data.png?width=480&height=320";
+            String request = buildImageUrl("api/maps/", item.getMap().getId());
             handleItemsWithImages(item.getMap().getName(), request, holder);
             isItemShareable = true;
         } else if (DashboardItem.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
-            String request = mServerUrl + "/api/eventCharts/" + item.getEventChart().getId() + "/data.png?width=480&height=320";
+            String request = buildImageUrl("api/eventCharts/", item.getEventChart().getId());
             handleItemsWithImages(item.getEventChart().getName(), request, holder);
             isItemShareable = false;
         } else if (DashboardItem.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
             handleItemsWithoutImages(item.getReportTable().getName(), holder);
+            isItemShareable = true;
+        } else if (DashboardItem.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
+            handleItemsWithoutImages(item.getEventReport().getName(), holder);
             isItemShareable = true;
         } else if (DashboardItem.TYPE_USERS.equals(item.getType())) {
             handleItemsWithoutImages(getContext().getString(R.string.users), holder);
@@ -216,14 +207,21 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
         });
     }
 
+    private String buildImageUrl(String resource, String id) {
+        return DhisManager.getInstance().getServerUri().buildUpon()
+                .appendEncodedPath(resource).appendEncodedPath(id).appendEncodedPath("data.png")
+                .appendQueryParameter("width", "480").appendQueryParameter("height", "320")
+                .toString();
+    }
+
     private void handleItemsWithImages(String name, String request, ViewHolder holder) {
+        System.out.println("REQUEST_IMAGE: " + request);
         holder.itemName.setVisibility(View.VISIBLE);
         holder.itemImage.setVisibility(View.VISIBLE);
         holder.itemText.setVisibility(View.GONE);
 
         holder.itemName.setText(name);
         mImageLoader.load(request)
-                //.transform(mImageTransformation)
                 .placeholder(R.mipmap.stub_dashboard_background)
                 .into(holder.itemImage);
     }
@@ -253,14 +251,6 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
         final ImageView itemMenuButton;
         final PopupMenu popupMenu;
 
-        /*
-        view.findViewById(R.id.dashboard_item_body_container),
-                    (TextView) view.findViewById(R.id.dashboard_item_name),
-                    (ImageView) view.findViewById(R.id.dashboard_item_image),
-                    (TextView) view.findViewById(R.id.dashboard_item_text),
-                    (TextView) view.findViewById(R.id.dashboard_item_last_updated),
-                    (ImageButton) itemViewButton, menu
-         */
         ViewHolder(View itemBody,
                    TextView itemName,
                    ImageView itemImage,
@@ -275,35 +265,6 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
             this.lastUpdated = lastUpdated;
             this.itemMenuButton = itemMenuButton;
             this.popupMenu = popupMenu;
-        }
-    }
-
-    private static class ImgTransformation implements Transformation {
-        private static final String KEY = "imageResizeTransformation";
-
-        @Override
-        public Bitmap transform(Bitmap source) {
-            float initialArea = source.getHeight() * source.getWidth();
-            float compArea = calculateArea(initialArea, 10);
-            Double rate = Math.sqrt(compArea / initialArea);
-
-            int x = Math.round(source.getWidth() * rate.floatValue());
-            int y = Math.round(source.getHeight() * rate.floatValue());
-
-            Bitmap result = Bitmap.createScaledBitmap(source, x, y, false);
-            if (result != source) {
-                source.recycle();
-            }
-            return result;
-        }
-
-        @Override
-        public String key() {
-            return KEY;
-        }
-
-        private float calculateArea(float initialArea, int resizeRate) {
-            return (initialArea * resizeRate) / 100;
         }
     }
 }
