@@ -29,14 +29,14 @@
 package org.dhis2.android.dashboard.ui.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.widget.BaseAdapter;
 
 import java.util.List;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public abstract class AbsAdapter<T> extends BaseAdapter {
+public abstract class AbsAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     private final Context mContext;
     private final LayoutInflater mInflater;
     private List<T> mData;
@@ -47,7 +47,7 @@ public abstract class AbsAdapter<T> extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
+    public int getItemCount() {
         if (mData != null) {
             return mData.size();
         } else {
@@ -55,8 +55,7 @@ public abstract class AbsAdapter<T> extends BaseAdapter {
         }
     }
 
-    @Override
-    public Object getItem(int position) {
+    public T getItem(int position) {
         if (mData != null && mData.size() > position) {
             return mData.get(position);
         } else {

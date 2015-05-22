@@ -34,6 +34,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +53,7 @@ import org.dhis2.android.dashboard.api.persistence.loaders.CursorLoaderBuilder;
 import org.dhis2.android.dashboard.api.persistence.loaders.Transformation;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
+import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
 import java.util.List;
 
@@ -60,7 +64,7 @@ public class DashboardFragment extends BaseFragment
         implements LoaderManager.LoaderCallbacks<List<DashboardItem>> {
     private static final int LOADER_ID = 74734523;
 
-    @InjectView(R.id.grid) GridView mGridView;
+    @InjectView(R.id.grid) RecyclerView mGridView;
     DashboardItemAdapter mAdapter;
 
     public static DashboardFragment newInstance(Dashboard dashboard) {
@@ -104,6 +108,14 @@ public class DashboardFragment extends BaseFragment
 
         mAdapter = new DashboardItemAdapter(getActivity());
         mAdapter.setDashboardAccess(getAccessFromBundle(getArguments()));
+
+        int spanCount = getResources().getInteger(R.integer.column_nums);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), spanCount);
+        gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
+        mGridView.setLayoutManager(gridLayoutManager);
+        //mGridView.setItemAnimator(new DefaultItemAnimator());
+        mGridView.addItemDecoration(new GridDividerDecoration(getActivity()
+                .getApplicationContext()));
         mGridView.setAdapter(mAdapter);
     }
 

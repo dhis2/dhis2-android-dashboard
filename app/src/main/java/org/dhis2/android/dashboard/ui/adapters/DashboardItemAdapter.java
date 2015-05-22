@@ -30,6 +30,7 @@ package org.dhis2.android.dashboard.ui.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,8 +46,8 @@ import org.dhis2.android.dashboard.api.models.Access;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.utils.PicassoProvider;
 
-// TODO find bottleneck in performance of this adapter
-public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
+
+public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardItemAdapter.DashboardViewHolder> {
     private static final String DATE_FORMAT = "YYYY-MM-dd";
 
     private static final int MENU_GROUP_ID = 935482352;
@@ -74,50 +75,67 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
     }
 
     @Override
+    public DashboardViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+        View view = getLayoutInflater().inflate(
+                R.layout.gridview_dashboard_item, parent, false);
+
+        ImageView itemViewButton = (ImageView) view.findViewById(R.id.dashboard_item_menu);
+        PopupMenu menu = new PopupMenu(getContext(), itemViewButton);
+        menu.getMenu().add(MENU_GROUP_ID, MENU_SHARE_ITEM_ID,
+                MENU_SHARE_ITEM_ORDER, R.string.share_interpretation);
+        menu.getMenu().add(MENU_GROUP_ID, MENU_DELETE_ITEM_ID,
+                MENU_DELETE_ITEM_ORDER, R.string.delete);
+
+        return new DashboardViewHolder(
+                view, itemViewButton, menu
+        );
+    }
+
+    @Override
+    public void onBindViewHolder(DashboardViewHolder holder, int position) {
+        handleDashboardItems((getItem(position)), holder);
+    }
+
+    @Override
     public long getItemId(int position) {
         return position;
     }
 
-    @Override
+    /* @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         long start = System.currentTimeMillis();
         View view;
-        ViewHolder holder;
+        DashboardViewHolder holder;
 
         if (convertView == null) {
             view = getLayoutInflater().inflate(
                     R.layout.gridview_dashboard_item, parent, false);
 
-            View itemViewButton = view.findViewById(R.id.dashboard_item_menu);
+            ImageView itemViewButton = (ImageView) view.findViewById(R.id.dashboard_item_menu);
             PopupMenu menu = new PopupMenu(getContext(), itemViewButton);
             menu.getMenu().add(MENU_GROUP_ID, MENU_SHARE_ITEM_ID,
                     MENU_SHARE_ITEM_ORDER, R.string.share_interpretation);
             menu.getMenu().add(MENU_GROUP_ID, MENU_DELETE_ITEM_ID,
                     MENU_DELETE_ITEM_ORDER, R.string.delete);
 
-            holder = new ViewHolder(
-                    view.findViewById(R.id.dashboard_item_body_container),
-                    (TextView) view.findViewById(R.id.dashboard_item_name),
-                    (ImageView) view.findViewById(R.id.dashboard_item_image),
-                    (TextView) view.findViewById(R.id.dashboard_item_text),
-                    (TextView) view.findViewById(R.id.dashboard_item_last_updated),
-                    (ImageView) itemViewButton, menu
+            holder = new DashboardViewHolder(
+                    view, itemViewButton, menu
             );
 
             view.setTag(holder);
         } else {
             view = convertView;
-            holder = (ViewHolder) view.getTag();
+            holder = (DashboardViewHolder) view.getTag();
         }
 
-        handleDashboardItems(((DashboardItem) getItem(position)), holder);
+        handleDashboardItems((getItem(position)), holder);
         System.out.println("GET_VIEW: " + (System.currentTimeMillis() - start));
 
         return view;
-    }
+    } */
 
     // TODO Try to create only one Click Listener for each type of view and keep it inside of view holder
-    public void handleDashboardItems(final DashboardItem item, final ViewHolder holder) {
+    public void handleDashboardItems(final DashboardItem item, final DashboardViewHolder holder) {
         boolean isItemShareable = false;
         boolean isDashboardManageable = false;
         boolean isItemDeletable = false;
@@ -214,7 +232,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
                 .toString();
     }
 
-    private void handleItemsWithImages(String name, String request, ViewHolder holder) {
+    private void handleItemsWithImages(String name, String request, DashboardViewHolder holder) {
         System.out.println("REQUEST_IMAGE: " + request);
         holder.itemName.setVisibility(View.VISIBLE);
         holder.itemImage.setVisibility(View.VISIBLE);
@@ -226,7 +244,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
                 .into(holder.itemImage);
     }
 
-    private void handleItemsWithoutImages(String text, ViewHolder holder) {
+    private void handleItemsWithoutImages(String text, DashboardViewHolder holder) {
         holder.itemImage.setVisibility(View.GONE);
         holder.itemName.setVisibility(View.GONE);
         holder.itemText.setVisibility(View.VISIBLE);
@@ -242,7 +260,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
         void onItemDelete(DashboardItem item);
     }
 
-    private static class ViewHolder {
+    static class DashboardViewHolder extends RecyclerView.ViewHolder {
         final View itemBody;
         final TextView itemName;
         final ImageView itemImage;
@@ -251,20 +269,20 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem> {
         final ImageView itemMenuButton;
         final PopupMenu popupMenu;
 
-        ViewHolder(View itemBody,
-                   TextView itemName,
-                   ImageView itemImage,
-                   TextView itemText,
-                   TextView lastUpdated,
-                   ImageView itemMenuButton,
-                   PopupMenu popupMenu) {
-            this.itemBody = itemBody;
-            this.itemName = itemName;
-            this.itemImage = itemImage;
-            this.itemText = itemText;
-            this.lastUpdated = lastUpdated;
-            this.itemMenuButton = itemMenuButton;
-            this.popupMenu = popupMenu;
+        DashboardViewHolder(View view, ImageView menuButton, PopupMenu menu) {
+            super(view);
+            itemBody = view
+                    .findViewById(R.id.dashboard_item_body_container);
+            itemName = (TextView) view
+                    .findViewById(R.id.dashboard_item_name);
+            itemImage = (ImageView) view
+                    .findViewById(R.id.dashboard_item_image);
+            itemText = (TextView) view
+                    .findViewById(R.id.dashboard_item_text);
+            lastUpdated = (TextView) view
+                    .findViewById(R.id.dashboard_item_last_updated);
+            itemMenuButton = menuButton;
+            popupMenu = menu;
         }
     }
 }
