@@ -50,9 +50,9 @@ import org.dhis2.android.dashboard.api.utils.PicassoProvider;
 public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardItemAdapter.DashboardViewHolder> {
     private static final String DATE_FORMAT = "YYYY-MM-dd";
 
-    private static final int MENU_GROUP_ID = 935482352;
-    private static final int MENU_SHARE_ITEM_ID = 893226352;
-    private static final int MENU_DELETE_ITEM_ID = 14920632;
+    private static final int MENU_GROUP_ID = 9382352;
+    private static final int MENU_SHARE_ITEM_ID = 8936352;
+    private static final int MENU_DELETE_ITEM_ID = 149232;
     private static final int MENU_SHARE_ITEM_ORDER = 100;
     private static final int MENU_DELETE_ITEM_ORDER = 110;
 
@@ -79,7 +79,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         View view = getLayoutInflater().inflate(
                 R.layout.gridview_dashboard_item, parent, false);
 
-        ImageView itemViewButton = (ImageView) view.findViewById(R.id.dashboard_item_menu);
+        ImageView itemViewButton = (ImageView) view
+                .findViewById(R.id.dashboard_item_menu);
         PopupMenu menu = new PopupMenu(getContext(), itemViewButton);
         menu.getMenu().add(MENU_GROUP_ID, MENU_SHARE_ITEM_ID,
                 MENU_SHARE_ITEM_ORDER, R.string.share_interpretation);
@@ -93,7 +94,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
 
     @Override
     public void onBindViewHolder(DashboardViewHolder holder, int position) {
+        long start = System.currentTimeMillis();
         handleDashboardItems((getItem(position)), holder);
+        System.out.println("GET_VIEW: " + (System.currentTimeMillis() - start));
     }
 
     @Override
@@ -101,44 +104,11 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         return position;
     }
 
-    /* @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        long start = System.currentTimeMillis();
-        View view;
-        DashboardViewHolder holder;
-
-        if (convertView == null) {
-            view = getLayoutInflater().inflate(
-                    R.layout.gridview_dashboard_item, parent, false);
-
-            ImageView itemViewButton = (ImageView) view.findViewById(R.id.dashboard_item_menu);
-            PopupMenu menu = new PopupMenu(getContext(), itemViewButton);
-            menu.getMenu().add(MENU_GROUP_ID, MENU_SHARE_ITEM_ID,
-                    MENU_SHARE_ITEM_ORDER, R.string.share_interpretation);
-            menu.getMenu().add(MENU_GROUP_ID, MENU_DELETE_ITEM_ID,
-                    MENU_DELETE_ITEM_ORDER, R.string.delete);
-
-            holder = new DashboardViewHolder(
-                    view, itemViewButton, menu
-            );
-
-            view.setTag(holder);
-        } else {
-            view = convertView;
-            holder = (DashboardViewHolder) view.getTag();
-        }
-
-        handleDashboardItems((getItem(position)), holder);
-        System.out.println("GET_VIEW: " + (System.currentTimeMillis() - start));
-
-        return view;
-    } */
-
     // TODO Try to create only one Click Listener for each type of view and keep it inside of view holder
     public void handleDashboardItems(final DashboardItem item, final DashboardViewHolder holder) {
         boolean isItemShareable = false;
-        boolean isDashboardManageable = false;
-        boolean isItemDeletable = false;
+        boolean isDashboardManageable = mDashboardAccess.isManage();
+        boolean isItemDeletable = item.getAccess().isDelete();
 
         holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
         if (DashboardItem.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
@@ -169,9 +139,6 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             handleItemsWithoutImages(getContext().getString(R.string.resources), holder);
             isItemShareable = false;
         }
-
-        isDashboardManageable = mDashboardAccess.isManage();
-        isItemDeletable = item.getAccess().isDelete();
 
         boolean isMenuVisible = isItemShareable || (isDashboardManageable && isItemDeletable);
         if (isMenuVisible) {
@@ -232,8 +199,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
                 .toString();
     }
 
-    private void handleItemsWithImages(String name, String request, DashboardViewHolder holder) {
-        System.out.println("REQUEST_IMAGE: " + request);
+    private void handleItemsWithImages(String name, String request,
+                                       DashboardViewHolder holder) {
         holder.itemName.setVisibility(View.VISIBLE);
         holder.itemImage.setVisibility(View.VISIBLE);
         holder.itemText.setVisibility(View.GONE);
