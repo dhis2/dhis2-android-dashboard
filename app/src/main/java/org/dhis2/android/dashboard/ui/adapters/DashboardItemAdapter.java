@@ -50,53 +50,29 @@ import org.dhis2.android.dashboard.api.utils.PicassoProvider;
 public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardItemAdapter.DashboardViewHolder> {
     private static final String DATE_FORMAT = "YYYY-MM-dd";
 
-    private static final int MENU_GROUP_ID = 9382352;
-    private static final int MENU_SHARE_ITEM_ID = 8936352;
-    private static final int MENU_DELETE_ITEM_ID = 149232;
-    private static final int MENU_SHARE_ITEM_ORDER = 100;
-    private static final int MENU_DELETE_ITEM_ORDER = 110;
+    private final Access mDashboardAccess;
+    private final OnItemClickListener mClickListener;
 
-    private Access mDashboardAccess;
     private Picasso mImageLoader;
 
-    private OnItemClickListener mClickListener;
-
-    public DashboardItemAdapter(Context context) {
+    public DashboardItemAdapter(Context context, Access dashboardAccess,
+                                OnItemClickListener clickListener) {
         super(context, LayoutInflater.from(context));
+
+        mDashboardAccess = dashboardAccess;
+        mClickListener = clickListener;
         mImageLoader = PicassoProvider.getInstance(context);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        mClickListener = listener;
-    }
-
-    public void setDashboardAccess(Access access) {
-        mDashboardAccess = access;
     }
 
     @Override
     public DashboardViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-        View view = getLayoutInflater().inflate(
-                R.layout.gridview_dashboard_item, parent, false);
-
-        ImageView itemViewButton = (ImageView) view
-                .findViewById(R.id.dashboard_item_menu);
-        PopupMenu menu = new PopupMenu(getContext(), itemViewButton);
-        menu.getMenu().add(MENU_GROUP_ID, MENU_SHARE_ITEM_ID,
-                MENU_SHARE_ITEM_ORDER, R.string.share_interpretation);
-        menu.getMenu().add(MENU_GROUP_ID, MENU_DELETE_ITEM_ID,
-                MENU_DELETE_ITEM_ORDER, R.string.delete);
-
-        return new DashboardViewHolder(
-                view, itemViewButton, menu
-        );
+        return new DashboardViewHolder(getLayoutInflater().inflate(
+                R.layout.gridview_dashboard_item, parent, false), mDashboardAccess, mClickListener);
     }
 
     @Override
     public void onBindViewHolder(DashboardViewHolder holder, int position) {
-        long start = System.currentTimeMillis();
-        handleDashboardItems((getItem(position)), holder);
-        System.out.println("GET_VIEW: " + (System.currentTimeMillis() - start));
+        handleDashboardItems(position, holder);
     }
 
     @Override
@@ -104,92 +80,151 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         return position;
     }
 
-    // TODO Try to create only one Click Listener for each type of view and keep it inside of view holder
-    public void handleDashboardItems(final DashboardItem item, final DashboardViewHolder holder) {
-        boolean isItemShareable = false;
-        boolean isDashboardManageable = mDashboardAccess.isManage();
-        boolean isItemDeletable = item.getAccess().isDelete();
+    public void handleDashboardItems(int position, DashboardViewHolder holder) {
+        DashboardItem item = getItem(position);
+
+        holder.menuButtonHandler.setDashboardItem(item);
+        holder.menuButtonHandler.setPosition(position);
+        holder.onItemBodyClickListener.setDashboardItem(item);
+        holder.onItemBodyClickListener.setPosition(position);
 
         holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
+
         if (DashboardItem.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
             String request = buildImageUrl("api/charts/", item.getChart().getId());
             handleItemsWithImages(item.getChart().getName(), request, holder);
-            isItemShareable = true;
         } else if (DashboardItem.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
             String request = buildImageUrl("api/maps/", item.getMap().getId());
             handleItemsWithImages(item.getMap().getName(), request, holder);
-            isItemShareable = true;
         } else if (DashboardItem.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
             String request = buildImageUrl("api/eventCharts/", item.getEventChart().getId());
             handleItemsWithImages(item.getEventChart().getName(), request, holder);
-            isItemShareable = false;
         } else if (DashboardItem.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
             handleItemsWithoutImages(item.getReportTable().getName(), holder);
-            isItemShareable = true;
         } else if (DashboardItem.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
             handleItemsWithoutImages(item.getEventReport().getName(), holder);
-            isItemShareable = true;
         } else if (DashboardItem.TYPE_USERS.equals(item.getType())) {
             handleItemsWithoutImages(getContext().getString(R.string.users), holder);
-            isItemShareable = false;
         } else if (DashboardItem.TYPE_REPORTS.equals(item.getType())) {
             handleItemsWithoutImages(getContext().getString(R.string.reports), holder);
-            isItemShareable = false;
         } else if (DashboardItem.TYPE_RESOURCES.equals(item.getType())) {
             handleItemsWithoutImages(getContext().getString(R.string.resources), holder);
-            isItemShareable = false;
         }
 
-        boolean isMenuVisible = isItemShareable || (isDashboardManageable && isItemDeletable);
-        if (isMenuVisible) {
+        if (holder.menuButtonHandler.isMenuVisible()) {
             holder.itemMenuButton.setVisibility(View.VISIBLE);
-
-            MenuItem share = holder.popupMenu.getMenu().findItem(MENU_SHARE_ITEM_ID);
-            MenuItem delete = holder.popupMenu.getMenu().findItem(MENU_DELETE_ITEM_ID);
-
-            share.setVisible(isItemShareable);
-            delete.setVisible(isDashboardManageable && isItemDeletable);
         } else {
             holder.itemMenuButton.setVisibility(View.GONE);
         }
+    }
 
-        holder.itemMenuButton.setOnClickListener(new View.OnClickListener() {
+    private static class OnItemBodyClickListener implements View.OnClickListener {
+        private final OnItemClickListener mListener;
+        private DashboardItem mDashboardItem;
+        private int mPosition;
 
-            @Override
-            public void onClick(View view) {
-                if (holder.popupMenu != null) {
-                    holder.popupMenu.show();
-                }
+        public OnItemBodyClickListener(OnItemClickListener listener) {
+            mListener = listener;
+        }
+
+        public void setDashboardItem(DashboardItem dashboardItem) {
+            mDashboardItem = dashboardItem;
+        }
+
+        public void setPosition(int position) {
+            mPosition = position;
+        }
+
+        @Override public void onClick(View view) {
+            mListener.onItemClick(mPosition, mDashboardItem);
+        }
+    }
+
+    private static class MenuButtonHandler implements View.OnClickListener {
+        private static final int MENU_GROUP_ID = 9382352;
+        private static final int MENU_SHARE_ITEM_ID = 8936352;
+        private static final int MENU_DELETE_ITEM_ID = 149232;
+        private static final int MENU_SHARE_ITEM_ORDER = 100;
+        private static final int MENU_DELETE_ITEM_ORDER = 110;
+
+        private final Context mContext;
+        private final Access mDashboardAccess;
+        private final OnItemClickListener mListener;
+        private DashboardItem mDashboardItem;
+        private int mPosition;
+
+        public MenuButtonHandler(Context context, Access dashboardAccess,
+                                 OnItemClickListener listener) {
+            mContext = context;
+            mDashboardAccess = dashboardAccess;
+            mListener = listener;
+        }
+
+        public void setDashboardItem(DashboardItem dashboardItem) {
+            mDashboardItem = dashboardItem;
+        }
+
+        public void setPosition(int position) {
+            mPosition = position;
+        }
+
+        public boolean isMenuVisible() {
+            return isItemShareable() ||
+                    (isDashboardManageable() && isItemDeletable());
+        }
+
+        private boolean isItemShareable() {
+            return mDashboardItem != null && (
+                    DashboardItem.TYPE_CHART.equals(mDashboardItem.getType()) ||
+                            DashboardItem.TYPE_MAP.equals(mDashboardItem.getType()) ||
+                            DashboardItem.TYPE_REPORT_TABLE.equals(mDashboardItem.getType())
+            );
+        }
+
+        private boolean isDashboardManageable() {
+            return mDashboardAccess.isManage();
+        }
+
+        private boolean isItemDeletable() {
+            return mDashboardItem.getAccess().isDelete();
+        }
+
+        @Override
+        public void onClick(View view) {
+            PopupMenu popupMenu = new PopupMenu(mContext, view);
+
+            if (isItemShareable()) {
+                popupMenu.getMenu().add(MENU_GROUP_ID,
+                        MENU_SHARE_ITEM_ID, MENU_SHARE_ITEM_ORDER,
+                        R.string.share_interpretation);
             }
-        });
 
-        holder.itemBody.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                if (mClickListener != null) {
-                    mClickListener.onItemClick(item);
-                }
+            if (isItemDeletable()) {
+                popupMenu.getMenu().add(MENU_GROUP_ID,
+                        MENU_DELETE_ITEM_ID, MENU_DELETE_ITEM_ORDER,
+                        R.string.delete);
             }
-        });
 
-        holder.popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                if (mClickListener == null) {
-                    return false;
+                @Override
+                public boolean onMenuItemClick(MenuItem menuItem) {
+                    if (mListener == null) {
+                        return false;
+                    }
+
+                    if (menuItem.getItemId() == MENU_SHARE_ITEM_ID) {
+                        mListener.onItemShareInterpretation(mPosition, mDashboardItem);
+                    } else if (menuItem.getItemId() == MENU_DELETE_ITEM_ID) {
+                        mListener.onItemDelete(mPosition, mDashboardItem);
+                    }
+
+                    return true;
                 }
+            });
 
-                if (menuItem.getItemId() == MENU_SHARE_ITEM_ID) {
-                    mClickListener.onItemShareInterpretation(item);
-                } else if (menuItem.getItemId() == MENU_DELETE_ITEM_ID) {
-                    mClickListener.onItemDelete(item);
-                }
-
-                return true;
-            }
-        });
+            popupMenu.show();
+        }
     }
 
     private String buildImageUrl(String resource, String id) {
@@ -220,11 +255,11 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     }
 
     public interface OnItemClickListener {
-        void onItemClick(DashboardItem item);
+        void onItemClick(int position, DashboardItem item);
 
-        void onItemShareInterpretation(DashboardItem item);
+        void onItemShareInterpretation(int position, DashboardItem item);
 
-        void onItemDelete(DashboardItem item);
+        void onItemDelete(int position, DashboardItem item);
     }
 
     static class DashboardViewHolder extends RecyclerView.ViewHolder {
@@ -234,10 +269,13 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         final TextView itemText;
         final TextView lastUpdated;
         final ImageView itemMenuButton;
-        final PopupMenu popupMenu;
+        final MenuButtonHandler menuButtonHandler;
+        final OnItemBodyClickListener onItemBodyClickListener;
 
-        DashboardViewHolder(View view, ImageView menuButton, PopupMenu menu) {
+        DashboardViewHolder(View view, Access dashboardAccess,
+                            OnItemClickListener listener) {
             super(view);
+
             itemBody = view
                     .findViewById(R.id.dashboard_item_body_container);
             itemName = (TextView) view
@@ -248,8 +286,16 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
                     .findViewById(R.id.dashboard_item_text);
             lastUpdated = (TextView) view
                     .findViewById(R.id.dashboard_item_last_updated);
-            itemMenuButton = menuButton;
-            popupMenu = menu;
+            itemMenuButton = (ImageView) view
+                    .findViewById(R.id.dashboard_item_menu);
+
+            onItemBodyClickListener = new OnItemBodyClickListener(listener);
+            itemBody.setOnClickListener(onItemBodyClickListener);
+
+            // Overflow menu button click listener
+            menuButtonHandler = new MenuButtonHandler(
+                    view.getContext(), dashboardAccess, listener);
+            itemMenuButton.setOnClickListener(menuButtonHandler);
         }
     }
 }

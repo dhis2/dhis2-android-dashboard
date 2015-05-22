@@ -40,7 +40,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
+import android.widget.Toast;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Access;
@@ -52,6 +52,7 @@ import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboard
 import org.dhis2.android.dashboard.api.persistence.loaders.CursorLoaderBuilder;
 import org.dhis2.android.dashboard.api.persistence.loaders.Transformation;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter;
+import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter.OnItemClickListener;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
@@ -61,7 +62,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class DashboardFragment extends BaseFragment
-        implements LoaderManager.LoaderCallbacks<List<DashboardItem>> {
+        implements LoaderManager.LoaderCallbacks<List<DashboardItem>>, OnItemClickListener {
     private static final int LOADER_ID = 74734523;
 
     @InjectView(R.id.grid) RecyclerView mGridView;
@@ -106,14 +107,14 @@ public class DashboardFragment extends BaseFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.inject(this, view);
 
-        mAdapter = new DashboardItemAdapter(getActivity());
-        mAdapter.setDashboardAccess(getAccessFromBundle(getArguments()));
+        mAdapter = new DashboardItemAdapter(getActivity(),
+                getAccessFromBundle(getArguments()), this);
 
         int spanCount = getResources().getInteger(R.integer.column_nums);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), spanCount);
         gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
         mGridView.setLayoutManager(gridLayoutManager);
-        //mGridView.setItemAnimator(new DefaultItemAnimator());
+        mGridView.setItemAnimator(new DefaultItemAnimator());
         mGridView.addItemDecoration(new GridDividerDecoration(getActivity()
                 .getApplicationContext()));
         mGridView.setAdapter(mAdapter);
@@ -160,6 +161,26 @@ public class DashboardFragment extends BaseFragment
         if (loader.getId() == LOADER_ID) {
             mAdapter.swapData(null);
         }
+    }
+
+    @Override
+    public void onItemClick(int position, DashboardItem item) {
+        Toast.makeText(getActivity(), "BODY CLICK: " +
+                position, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onItemShareInterpretation(int position, DashboardItem item) {
+        Toast.makeText(getActivity(), "SHARE INTERPRETATION: " +
+                position, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onItemDelete(int position, DashboardItem item) {
+        Toast.makeText(getActivity(), "POSITION: " +
+                position, Toast.LENGTH_SHORT).show();
+        mAdapter.getData().remove(position);
+        mAdapter.notifyItemRemoved(position);
     }
 
     private static class Transform implements Transformation<List<DashboardItem>> {
