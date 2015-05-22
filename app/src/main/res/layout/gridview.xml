@@ -13,6 +13,4 @@
     android:scrollbarSize="5dp"
     android:scrollbarStyle="outsideInset"
     android:scrollbarThumbVertical="@drawable/scrollbar_shape"
-    android:scrollbars="vertical"
-    android:stretchMode="columnWidth"
-    android:verticalSpacing="4dp"/>
+    android:scrollbars="vertical"/>

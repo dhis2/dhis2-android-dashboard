@@ -74,17 +74,18 @@ public class DashboardViewPagerFragment extends BaseFragment implements LoaderCa
         mDashboardAdapter = new DashboardAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mDashboardAdapter);
         mTabs.setViewPager(mViewPager);
+
         getService().syncDashboards();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(LOADER_ID, getArguments(), this);
+        getLoaderManager().initLoader(LOADER_ID, savedInstanceState, this);
     }
 
     @Override
-    public Loader<List<Dashboard>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Dashboard>> onCreateLoader(int id, Bundle state) {
         if (id == LOADER_ID && isAdded()) {
             return CursorLoaderBuilder.forUri(DbContract.Dashboards.CONTENT_URI)
                     .projection(DashboardHandler.PROJECTION)
