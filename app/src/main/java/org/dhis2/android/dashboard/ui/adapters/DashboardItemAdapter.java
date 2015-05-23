@@ -84,9 +84,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         DashboardItem item = getItem(position);
 
         holder.menuButtonHandler.setDashboardItem(item);
-        holder.menuButtonHandler.setPosition(position);
+        holder.menuButtonHandler.setPosition(holder.getAdapterPosition());
         holder.onItemBodyClickListener.setDashboardItem(item);
-        holder.onItemBodyClickListener.setPosition(position);
+        holder.onItemBodyClickListener.setPosition(holder.getAdapterPosition());
 
         holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
 
@@ -256,9 +256,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
 
     public interface OnItemClickListener {
         void onItemClick(int position, DashboardItem item);
-
         void onItemShareInterpretation(int position, DashboardItem item);
-
         void onItemDelete(int position, DashboardItem item);
     }
 

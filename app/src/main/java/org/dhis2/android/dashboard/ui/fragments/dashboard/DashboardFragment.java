@@ -177,10 +177,9 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onItemDelete(int position, DashboardItem item) {
-        Toast.makeText(getActivity(), "POSITION: " +
-                position, Toast.LENGTH_SHORT).show();
-        mAdapter.getData().remove(position);
-        mAdapter.notifyItemRemoved(position);
+        int truePosition = mAdapter.getData().indexOf(item);
+        mAdapter.getData().remove(truePosition);
+        mAdapter.notifyItemRemoved(truePosition);
     }
 
     private static class Transform implements Transformation<List<DashboardItem>> {
