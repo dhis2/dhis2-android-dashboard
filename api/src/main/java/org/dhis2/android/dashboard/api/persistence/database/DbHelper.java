@@ -45,12 +45,14 @@ public final class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DbSchema.CREATE_DASHBOARD_TABLE);
         db.execSQL(DbSchema.CREATE_DASHBOARD_ITEMS_TABLE);
+        db.execSQL(DbSchema.CREATE_DASHBOARD_ELEMENTS_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(DbSchema.DROP_DASHBOARD_TABLE);
         db.execSQL(DbSchema.DROP_DASHBOARD_ITEMS_TABLE);
+        db.execSQL(DbSchema.DROP_DASHBOARD_ELEMENTS_TABLE);
         onCreate(db);
     }
 

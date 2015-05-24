@@ -33,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DashboardElement extends BaseIdentifiableModel {
     @JsonProperty("displayName") private String displayName;
+    @JsonIgnore private String type;
 
     @JsonIgnore public String getDisplayName() {
         return displayName;
@@ -40,5 +41,13 @@ public class DashboardElement extends BaseIdentifiableModel {
 
     @JsonIgnore public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    @JsonIgnore public String getType() {
+        return type;
+    }
+
+    @JsonIgnore public void setType(String type) {
+        this.type = type;
     }
 }

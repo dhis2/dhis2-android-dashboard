@@ -30,6 +30,7 @@ package org.dhis2.android.dashboard.api.persistence.database;
 
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardItems;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
+import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardElements;
 
 public final class DbSchema {
 
@@ -75,4 +76,14 @@ public final class DbSchema {
             Dashboards.TABLE_NAME + " LEFT OUTER JOIN " + DashboardItems.TABLE_NAME +
                     " ON " + Dashboards.TABLE_NAME + "." + Dashboards.ID +
                     " = " + DashboardItems.TABLE_NAME + "." + DashboardItems.DASHBOARD_ID;
+
+    public static final String CREATE_DASHBOARD_ELEMENTS_TABLE = "CREATE TABLE " + DashboardElements.TABLE_NAME + "(" +
+            DashboardElements.ID + " TEXT PRIMARY KEY " +
+            DashboardElements.CREATED + " TEXT NOT NULL," +
+            DashboardElements.LAST_UPDATED + " TEXT NOT NULL," +
+            DashboardElements.NAME + " TEXT," +
+            DashboardElements.DISPLAY_NAME + " TEXT," +
+            DashboardElements.TYPE + " TEXT NOT NULL" + ")";
+
+    public static final String DROP_DASHBOARD_ELEMENTS_TABLE = "DROP TABLE IF EXISTS " + DashboardElements.TABLE_NAME;
 }

@@ -35,12 +35,14 @@ import android.content.Context;
 import android.content.OperationApplicationException;
 import android.os.RemoteException;
 
+import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.DashboardElement;
+import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract;
+import org.dhis2.android.dashboard.api.persistence.handlers.DashboardElementHandler;
 import org.dhis2.android.dashboard.api.persistence.handlers.DashboardHandler;
 import org.dhis2.android.dashboard.api.persistence.handlers.DashboardItemHandler;
 import org.dhis2.android.dashboard.api.persistence.handlers.IModelHandler;
-import org.dhis2.android.dashboard.api.models.Dashboard;
-import org.dhis2.android.dashboard.api.models.DashboardItem;
 
 import java.util.ArrayList;
 
@@ -80,9 +82,9 @@ public final class DbManager {
             return (IModelHandler<T>) new DashboardHandler(getInstance().getContext());
         } else if (clazz == DashboardItem.class) {
             return (IModelHandler<T>) new DashboardItemHandler(getInstance().getContext());
-        } /* else if (clazz == DashboardToItem.class) {
-            return (IModelHandler<T>) new DashboardsToItemsHandler(getInstance().getContext());
-        } */ else {
+        } else if (clazz == DashboardElement.class) {
+            return (IModelHandler<T>) new DashboardElementHandler(getInstance().getContext());
+        } else {
             throw new IllegalArgumentException("Unsupported type");
         }
     }
@@ -107,9 +109,9 @@ public final class DbManager {
             resolver.notifyChange(DbContract.Dashboards.CONTENT_URI, null);
         } else if (clazz == DashboardItem.class) {
             resolver.notifyChange(DbContract.DashboardItems.CONTENT_URI, null);
-        } /* else if (clazz == DashboardToItem.class) {
-            resolver.notifyChange(DbContract.DashboardsToItems.CONTENT_URI, null);
-        } */ else {
+        } else if (clazz == DashboardElement.class) {
+            resolver.notifyChange(DbContract.DashboardElements.CONTENT_URI, null);
+        } else {
             throw new IllegalArgumentException("Unsupported type");
         }
     }

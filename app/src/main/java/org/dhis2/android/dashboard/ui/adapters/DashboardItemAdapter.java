@@ -80,14 +80,21 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         return position;
     }
 
-    public void handleDashboardItems(int position, DashboardViewHolder holder) {
+    public void removeItem(DashboardItem item) {
+        if (getData() != null) {
+            int truePosition = getData().indexOf(item);
+            if (!(truePosition < 0)) {
+                getData().remove(truePosition);
+                notifyItemRemoved(truePosition);
+            }
+        }
+    }
+
+    private void handleDashboardItems(int position, DashboardViewHolder holder) {
         DashboardItem item = getItem(position);
 
         holder.menuButtonHandler.setDashboardItem(item);
-        holder.menuButtonHandler.setPosition(holder.getAdapterPosition());
         holder.onItemBodyClickListener.setDashboardItem(item);
-        holder.onItemBodyClickListener.setPosition(holder.getAdapterPosition());
-
         holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
 
         if (DashboardItem.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
@@ -121,7 +128,6 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     private static class OnItemBodyClickListener implements View.OnClickListener {
         private final OnItemClickListener mListener;
         private DashboardItem mDashboardItem;
-        private int mPosition;
 
         public OnItemBodyClickListener(OnItemClickListener listener) {
             mListener = listener;
@@ -131,12 +137,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             mDashboardItem = dashboardItem;
         }
 
-        public void setPosition(int position) {
-            mPosition = position;
-        }
-
         @Override public void onClick(View view) {
-            mListener.onItemClick(mPosition, mDashboardItem);
+            mListener.onItemClick(mDashboardItem);
         }
     }
 
@@ -151,7 +153,6 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         private final Access mDashboardAccess;
         private final OnItemClickListener mListener;
         private DashboardItem mDashboardItem;
-        private int mPosition;
 
         public MenuButtonHandler(Context context, Access dashboardAccess,
                                  OnItemClickListener listener) {
@@ -162,10 +163,6 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
 
         public void setDashboardItem(DashboardItem dashboardItem) {
             mDashboardItem = dashboardItem;
-        }
-
-        public void setPosition(int position) {
-            mPosition = position;
         }
 
         public boolean isMenuVisible() {
@@ -214,9 +211,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
                     }
 
                     if (menuItem.getItemId() == MENU_SHARE_ITEM_ID) {
-                        mListener.onItemShareInterpretation(mPosition, mDashboardItem);
+                        mListener.onItemShareInterpretation(mDashboardItem);
                     } else if (menuItem.getItemId() == MENU_DELETE_ITEM_ID) {
-                        mListener.onItemDelete(mPosition, mDashboardItem);
+                        mListener.onItemDelete(mDashboardItem);
                     }
 
                     return true;
@@ -255,9 +252,11 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     }
 
     public interface OnItemClickListener {
-        void onItemClick(int position, DashboardItem item);
-        void onItemShareInterpretation(int position, DashboardItem item);
-        void onItemDelete(int position, DashboardItem item);
+        void onItemClick(DashboardItem item);
+
+        void onItemShareInterpretation(DashboardItem item);
+
+        void onItemDelete(DashboardItem item);
     }
 
     static class DashboardViewHolder extends RecyclerView.ViewHolder {

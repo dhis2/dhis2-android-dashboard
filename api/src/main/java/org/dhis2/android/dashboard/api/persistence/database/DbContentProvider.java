@@ -40,6 +40,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardItems;
+import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardElements;
 import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
 
 import java.util.ArrayList;
@@ -55,6 +56,9 @@ public final class DbContentProvider extends ContentProvider {
     private static final int DASHBOARD_ITEMS = 200;
     private static final int DASHBOARD_ITEM_ID = 201;
 
+    private static final int DASHBOARD_ELEMETS = 300;
+    private static final int DASHBOARD_ELEMENT_ID = 301;
+
     private static final UriMatcher URI_MATCHER = buildMatcher();
     private DbHelper mDbHelper;
 
@@ -67,6 +71,8 @@ public final class DbContentProvider extends ContentProvider {
         matcher.addURI(DbContract.AUTHORITY, DashboardItems.DASHBOARD_ITEMS_PATH, DASHBOARD_ITEMS);
         matcher.addURI(DbContract.AUTHORITY, DashboardItems.DASHBOARD_ITEM_ID_PATH, DASHBOARD_ITEM_ID);
 
+        matcher.addURI(DbContract.AUTHORITY, DashboardElements.DASHBOARD_ELEMENTS_PATH, DASHBOARD_ELEMETS);
+        matcher.addURI(DbContract.AUTHORITY, DashboardElements.DASHBOARD_ELEMENT_ID_PATH, DASHBOARD_ELEMENT_ID);
         return matcher;
     }
 
@@ -89,6 +95,10 @@ public final class DbContentProvider extends ContentProvider {
                 return DashboardItems.CONTENT_TYPE;
             case DASHBOARD_ITEM_ID:
                 return DashboardItems.CONTENT_ITEM_TYPE;
+            case DASHBOARD_ELEMETS:
+                return DashboardElements.CONTENT_TYPE;
+            case DASHBOARD_ELEMENT_ID:
+                return DashboardElements.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalArgumentException("No corresponding Uri type was found");
         }
@@ -122,6 +132,15 @@ public final class DbContentProvider extends ContentProvider {
                 return queryId(uri, DashboardItems.TABLE_NAME,
                         DashboardItems.ID, projection, selection, selectionArgs, sortOrder, id);
             }
+            case DASHBOARD_ELEMETS: {
+                return query(uri, DashboardElements.TABLE_NAME, projection,
+                        selection, selectionArgs, sortOrder);
+            }
+            case DASHBOARD_ELEMENT_ID: {
+                String id = DashboardElements.getId(uri);
+                return queryId(uri, DashboardElements.TABLE_NAME,
+                        DashboardElements.ID, projection, selection, selectionArgs, sortOrder, id);
+            }
 
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -136,6 +155,9 @@ public final class DbContentProvider extends ContentProvider {
             }
             case DASHBOARD_ITEMS: {
                 return insert(DashboardItems.TABLE_NAME, values, uri);
+            }
+            case DASHBOARD_ELEMETS: {
+                return insert(DashboardElements.TABLE_NAME, values, uri);
             }
             default:
                 throw new IllegalArgumentException("Unsupported URI for insertion: " + uri);
@@ -163,6 +185,15 @@ public final class DbContentProvider extends ContentProvider {
                 return deleteId(DashboardItems.TABLE_NAME,
                         DashboardItems.ID, selection, selectionArgs, id);
             }
+            case DASHBOARD_ELEMETS: {
+                return delete(DashboardElements.TABLE_NAME,
+                        selection, selectionArgs);
+            }
+            case DASHBOARD_ELEMENT_ID: {
+                String id = DashboardElements.getId(uri);
+                return deleteId(DashboardElements.TABLE_NAME,
+                        DashboardElements.ID, selection, selectionArgs, id);
+            }
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
@@ -189,6 +220,15 @@ public final class DbContentProvider extends ContentProvider {
                 String id = DashboardItems.getId(uri);
                 return updateId(DashboardItems.TABLE_NAME,
                         DashboardItems.ID, selection, selectionArgs, id, values);
+            }
+            case DASHBOARD_ELEMETS: {
+                return update(DashboardElements.TABLE_NAME,
+                        selection, selectionArgs, values);
+            }
+            case DASHBOARD_ELEMENT_ID: {
+                String id = DashboardElements.getId(uri);
+                return updateId(DashboardElements.TABLE_NAME,
+                        DashboardElements.ID, selection, selectionArgs, id, values);
             }
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);

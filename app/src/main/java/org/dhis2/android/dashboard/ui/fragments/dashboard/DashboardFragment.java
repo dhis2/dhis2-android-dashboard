@@ -164,22 +164,20 @@ public class DashboardFragment extends BaseFragment
     }
 
     @Override
-    public void onItemClick(int position, DashboardItem item) {
+    public void onItemClick(DashboardItem item) {
         Toast.makeText(getActivity(), "BODY CLICK: " +
-                position, Toast.LENGTH_SHORT).show();
+                item.getName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onItemShareInterpretation(int position, DashboardItem item) {
+    public void onItemShareInterpretation(DashboardItem item) {
         Toast.makeText(getActivity(), "SHARE INTERPRETATION: " +
-                position, Toast.LENGTH_SHORT).show();
+                item.getName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onItemDelete(int position, DashboardItem item) {
-        int truePosition = mAdapter.getData().indexOf(item);
-        mAdapter.getData().remove(truePosition);
-        mAdapter.notifyItemRemoved(truePosition);
+    public void onItemDelete(DashboardItem item) {
+        mAdapter.removeItem(item);
     }
 
     private static class Transform implements Transformation<List<DashboardItem>> {
