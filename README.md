@@ -1,5 +1,5 @@
 # dhis2-android-dashboard
-Android application for DHIS2 which implements basic dashboard functionality. 
+Android application for DHIS2 which provides basic dashboard functionality. 
 
 Get the APK from the release page:
 
