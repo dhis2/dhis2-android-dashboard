@@ -32,6 +32,7 @@ import android.content.ContentProviderOperation;
 
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.persistence.DbManager;
@@ -55,11 +56,13 @@ public final class DashboardSyncController implements IController<Object> {
 
     @Override
     public Object run() throws APIException {
+        List<DashboardElement> dashboardElements = updateDashboardElements();
         List<Dashboard> dashboards = filter(updateDashboards());
         List<DashboardItem> items = filter(updateDashboardItems(dashboards));
         buildRelationShip(dashboards, items);
 
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+        ops.addAll(DbManager.with(DashboardElement.class).sync(dashboardElements));
         ops.addAll(DbManager.with(Dashboard.class).sync(dashboards));
         ops.addAll(DbManager.with(DashboardItem.class).sync(items));
 
@@ -70,6 +73,12 @@ public final class DashboardSyncController implements IController<Object> {
         }
 
         return new Object();
+    }
+
+    private List<DashboardElement> updateDashboardElements() {
+        return (new GetDashboardElementsController(
+                mDhisManager, mSessionHandler.get())
+        ).run();
     }
 
     private List<Dashboard> updateDashboards() {

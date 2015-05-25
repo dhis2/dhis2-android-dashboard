@@ -36,17 +36,6 @@ import java.util.List;
 import static android.text.TextUtils.isEmpty;
 
 public class DashboardItem extends BaseIdentifiableModel {
-    public static final String TYPE_CHART = "chart";
-    public static final String TYPE_EVENT_CHART = "eventChart";
-    public static final String TYPE_MAP = "map";
-    public static final String TYPE_REPORT_TABLE = "reportTable";
-    public static final String TYPE_EVENT_REPORT = "eventReport";
-    public static final String TYPE_USERS = "users";
-    public static final String TYPE_REPORTS = "reports";
-    public static final String TYPE_RESOURCES = "resources";
-    public static final String TYPE_REPORT_TABLES = "reportTables";
-    public static final String TYPE_MESSAGES = "messages";
-
     // TODO think about using StaggeredView in DashboardFragment
     public static final String SHAPE_NORMAL = "normal";
     public static final String SHAPE_DOUBLE_WIDTH = "double_width";

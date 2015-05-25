@@ -26,19 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.network.managers;
+package org.dhis2.android.dashboard.api.network.converters;
 
-import org.dhis2.android.dashboard.api.models.Dashboard;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.dhis2.android.dashboard.api.models.DashboardElement;
-import org.dhis2.android.dashboard.api.models.DashboardItem;
-import org.dhis2.android.dashboard.api.models.UserAccount;
-import org.dhis2.android.dashboard.api.network.converters.IJsonConverter;
 
 import java.util.List;
 
-public interface IJsonManager {
-    IJsonConverter<UserAccount, UserAccount> getUserAccountConverter();
-    IJsonConverter<List<Dashboard>, List<Dashboard>> getDashboardConverter();
-    IJsonConverter<List<DashboardItem>, List<DashboardItem>> getDashboardItemConverter();
-    IJsonConverter<List<DashboardElement>, List<DashboardElement>> getDashboardElementConverter(String type);
+public final class DashboardElementConverter implements IJsonConverter<List<DashboardElement>, List<DashboardElement>> {
+    private final ObjectMapper mMapper;
+    private final String mResourceName;
+
+    public DashboardElementConverter(ObjectMapper objectMapper, String resourceName) {
+        mMapper = objectMapper;
+        mResourceName = resourceName;
+    }
+
+    @Override public List<DashboardElement> deserialize(String source) throws Throwable {
+        JsonNode rootNode = mMapper.readTree(source);
+        return mMapper.convertValue(rootNode.get(mResourceName),
+                new TypeReference<List<DashboardElement>>() { });
+    }
+
+    @Override public String serialize(List<DashboardElement> object) throws Throwable {
+        return null;
+    }
 }

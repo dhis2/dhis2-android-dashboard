@@ -32,6 +32,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DashboardElement extends BaseIdentifiableModel {
+    public static final String TYPE_CHART = "chart";
+    public static final String TYPE_EVENT_CHART = "eventChart";
+    public static final String TYPE_MAP = "map";
+    public static final String TYPE_REPORT_TABLE = "reportTable";
+    public static final String TYPE_EVENT_REPORT = "eventReport";
+    public static final String TYPE_USERS = "users";
+    public static final String TYPE_REPORTS = "reports";
+    public static final String TYPE_RESOURCES = "resources";
+    public static final String TYPE_REPORT_TABLES = "reportTables";
+    public static final String TYPE_MESSAGES = "messages";
+
     @JsonProperty("displayName") private String displayName;
     @JsonIgnore private String type;
 
@@ -49,5 +60,31 @@ public class DashboardElement extends BaseIdentifiableModel {
 
     @JsonIgnore public void setType(String type) {
         this.type = type;
+    }
+
+    public static String getResourceName(String type) {
+        switch (type) {
+            case DashboardElement.TYPE_CHART:
+                return "charts";
+            case DashboardElement.TYPE_EVENT_CHART:
+                return "eventCharts";
+            case DashboardElement.TYPE_MAP:
+                return "maps";
+            case DashboardElement.TYPE_REPORT_TABLE:
+                return "reportTables";
+            case DashboardElement.TYPE_EVENT_REPORT:
+                return "eventReports";
+            case DashboardElement.TYPE_USERS:
+                return "users";
+            case DashboardElement.TYPE_REPORTS:
+                return "reports";
+            case DashboardElement.TYPE_RESOURCES:
+                return "documents";
+            case DashboardElement.TYPE_REPORT_TABLES:
+                return "reportTables";
+            default: {
+                throw new IllegalArgumentException("Unsupported DashboardElement type");
+            }
+        }
     }
 }

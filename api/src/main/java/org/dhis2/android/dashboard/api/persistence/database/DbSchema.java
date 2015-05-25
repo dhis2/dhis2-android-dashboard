@@ -78,7 +78,7 @@ public final class DbSchema {
                     " = " + DashboardItems.TABLE_NAME + "." + DashboardItems.DASHBOARD_ID;
 
     public static final String CREATE_DASHBOARD_ELEMENTS_TABLE = "CREATE TABLE " + DashboardElements.TABLE_NAME + "(" +
-            DashboardElements.ID + " TEXT PRIMARY KEY " +
+            DashboardElements.ID + " TEXT PRIMARY KEY, " +
             DashboardElements.CREATED + " TEXT NOT NULL," +
             DashboardElements.LAST_UPDATED + " TEXT NOT NULL," +
             DashboardElements.NAME + " TEXT," +

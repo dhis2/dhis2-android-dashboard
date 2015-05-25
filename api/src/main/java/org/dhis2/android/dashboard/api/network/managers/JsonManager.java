@@ -30,7 +30,9 @@ package org.dhis2.android.dashboard.api.network.managers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.network.converters.DashboardConverter;
+import org.dhis2.android.dashboard.api.network.converters.DashboardElementConverter;
 import org.dhis2.android.dashboard.api.network.converters.DashboardItemConverter;
 import org.dhis2.android.dashboard.api.network.converters.IJsonConverter;
 import org.dhis2.android.dashboard.api.network.converters.UserAccountConverter;
@@ -62,5 +64,10 @@ public class JsonManager implements IJsonManager {
     @Override
     public IJsonConverter<List<DashboardItem>, List<DashboardItem>> getDashboardItemConverter() {
         return new DashboardItemConverter(mMapper);
+    }
+
+    @Override
+    public IJsonConverter<List<DashboardElement>, List<DashboardElement>> getDashboardElementConverter(String type) {
+        return new DashboardElementConverter(mMapper, type);
     }
 }

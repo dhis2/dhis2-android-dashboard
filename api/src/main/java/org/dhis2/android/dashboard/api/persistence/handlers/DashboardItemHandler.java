@@ -157,43 +157,43 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
     private static void putElementToValues(DashboardItem item, ContentValues values) {
         String element;
         switch (item.getType()) {
-            case DashboardItem.TYPE_CHART: {
+            case DashboardElement.TYPE_CHART: {
                 element = toJson(item.getChart());
                 break;
             }
-            case DashboardItem.TYPE_EVENT_CHART: {
+            case DashboardElement.TYPE_EVENT_CHART: {
                 element = toJson(item.getEventChart());
                 break;
             }
-            case DashboardItem.TYPE_MAP: {
+            case DashboardElement.TYPE_MAP: {
                 element = toJson(item.getMap());
                 break;
             }
-            case DashboardItem.TYPE_REPORT_TABLE: {
+            case DashboardElement.TYPE_REPORT_TABLE: {
                 element = toJson(item.getReportTable());
                 break;
             }
-            case DashboardItem.TYPE_EVENT_REPORT: {
+            case DashboardElement.TYPE_EVENT_REPORT: {
                 element = toJson(item.getEventReport());
                 break;
             }
-            case DashboardItem.TYPE_USERS: {
+            case DashboardElement.TYPE_USERS: {
                 element = toJson(item.getUsers());
                 break;
             }
-            case DashboardItem.TYPE_REPORTS: {
+            case DashboardElement.TYPE_REPORTS: {
                 element = toJson(item.getReports());
                 break;
             }
-            case DashboardItem.TYPE_RESOURCES: {
+            case DashboardElement.TYPE_RESOURCES: {
                 element = toJson(item.getResources());
                 break;
             }
-            case DashboardItem.TYPE_REPORT_TABLES: {
+            case DashboardElement.TYPE_REPORT_TABLES: {
                 element = toJson(item.getReportTables());
                 break;
             }
-            case DashboardItem.TYPE_MESSAGES: {
+            case DashboardElement.TYPE_MESSAGES: {
                 element = EMPTY_FIELD;
                 break;
             }
@@ -212,43 +212,43 @@ public final class DashboardItemHandler implements IModelHandler<DashboardItem> 
         };
 
         switch (type) {
-            case DashboardItem.TYPE_CHART: {
+            case DashboardElement.TYPE_CHART: {
                 item.setChart(fromJson(element, DashboardElement.class));
                 break;
             }
-            case DashboardItem.TYPE_EVENT_CHART: {
+            case DashboardElement.TYPE_EVENT_CHART: {
                 item.setEventChart(fromJson(element, DashboardElement.class));
                 break;
             }
-            case DashboardItem.TYPE_MAP: {
+            case DashboardElement.TYPE_MAP: {
                 item.setMap(fromJson(element, DashboardElement.class));
                 break;
             }
-            case DashboardItem.TYPE_REPORT_TABLE: {
+            case DashboardElement.TYPE_REPORT_TABLE: {
                 item.setReportTable(fromJson(element, DashboardElement.class));
                 break;
             }
-            case DashboardItem.TYPE_EVENT_REPORT: {
+            case DashboardElement.TYPE_EVENT_REPORT: {
                 item.setEventReport(fromJson(element, DashboardElement.class));
                 break;
             }
-            case DashboardItem.TYPE_USERS: {
+            case DashboardElement.TYPE_USERS: {
                 item.setUsers(fromJson(element, typeReference));
                 break;
             }
-            case DashboardItem.TYPE_REPORTS: {
+            case DashboardElement.TYPE_REPORTS: {
                 item.setReports(fromJson(element, typeReference));
                 break;
             }
-            case DashboardItem.TYPE_RESOURCES: {
+            case DashboardElement.TYPE_RESOURCES: {
                 item.setResources(fromJson(element, typeReference));
                 break;
             }
-            case DashboardItem.TYPE_REPORT_TABLES: {
+            case DashboardElement.TYPE_REPORT_TABLES: {
                 item.setReportTables(fromJson(element, typeReference));
                 break;
             }
-            case DashboardItem.TYPE_MESSAGES: {
+            case DashboardElement.TYPE_MESSAGES: {
                 break;
             }
             default:
