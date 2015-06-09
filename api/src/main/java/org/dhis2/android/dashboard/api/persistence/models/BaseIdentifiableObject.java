@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, University of Oslo
- * All rights reserved.
  *
+ * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice, this
@@ -26,35 +26,63 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api;
+package org.dhis2.android.dashboard.api.persistence.models;
 
-import android.app.Application;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.NotNull;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import com.raizlabs.android.dbflow.config.FlowManager;
+import org.joda.time.DateTime;
 
-import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+public abstract class BaseIdentifiableObject extends BaseModel implements TimeStampedModel {
+    @JsonProperty("id") @Column @PrimaryKey String id;
+    @JsonProperty("created") @Column @NotNull DateTime created;
+    @JsonProperty("lastUpdated") @Column @NotNull DateTime lastUpdated;
+    @JsonProperty("name") @Column String name;
 
-public class DhisApplication extends Application {
-    private DhisService mDhisService;
-    private DhisManager mDhisManager;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        EventBusProvider.register(this);
-        FlowManager.init(this);
-        DhisManager.init(getBaseContext());
-
-        mDhisManager = DhisManager.getInstance();
-        mDhisService = new DhisService(mDhisManager);
+    public BaseIdentifiableObject() {
     }
 
-    public DhisService getDhisService() {
-        return mDhisService;
+    @JsonIgnore @Override
+    public DateTime getCreated() {
+        return created;
     }
 
-    public DhisManager getDhisManager() {
-        return mDhisManager;
+    @JsonIgnore @Override
+    public void setCreated(DateTime created) {
+        this.created = created;
+    }
+
+    @JsonIgnore @Override
+    public DateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    @JsonIgnore @Override
+    public void setLastUpdated(DateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    @JsonIgnore
+    public String getId() {
+        return id;
+    }
+
+    @JsonIgnore
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @JsonIgnore
+    public String getName() {
+        return name;
+    }
+
+    @JsonIgnore
+    public void setName(String name) {
+        this.name = name;
     }
 }

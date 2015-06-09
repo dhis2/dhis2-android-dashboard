@@ -26,35 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api;
+package org.dhis2.android.dashboard.api.network.models;
 
-import android.app.Application;
+import static org.dhis2.mobile.sdk.utils.Preconditions.isNull;
 
-import com.raizlabs.android.dbflow.config.FlowManager;
+public final class Credentials {
+    private String username;
+    private String password;
 
-import org.dhis2.android.dashboard.api.utils.EventBusProvider;
-
-public class DhisApplication extends Application {
-    private DhisService mDhisService;
-    private DhisManager mDhisManager;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        EventBusProvider.register(this);
-        FlowManager.init(this);
-        DhisManager.init(getBaseContext());
-
-        mDhisManager = DhisManager.getInstance();
-        mDhisService = new DhisService(mDhisManager);
+    public Credentials(String username, String password) {
+        this.username = isNull(username, "Username must not be null");
+        this.password = isNull(password, "Password must not be null");
     }
 
-    public DhisService getDhisService() {
-        return mDhisService;
+    public String getUsername() {
+        return username;
     }
 
-    public DhisManager getDhisManager() {
-        return mDhisManager;
+    public String getPassword() {
+        return password;
     }
 }

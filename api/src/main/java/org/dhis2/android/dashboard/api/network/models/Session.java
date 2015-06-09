@@ -26,35 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api;
+package org.dhis2.android.dashboard.api.network.models;
 
-import android.app.Application;
+import com.squareup.okhttp.HttpUrl;
 
-import com.raizlabs.android.dbflow.config.FlowManager;
+public final class Session {
+    private final HttpUrl serverUrl;
+    private final Credentials credentials;
 
-import org.dhis2.android.dashboard.api.utils.EventBusProvider;
-
-public class DhisApplication extends Application {
-    private DhisService mDhisService;
-    private DhisManager mDhisManager;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        EventBusProvider.register(this);
-        FlowManager.init(this);
-        DhisManager.init(getBaseContext());
-
-        mDhisManager = DhisManager.getInstance();
-        mDhisService = new DhisService(mDhisManager);
+    public Session(HttpUrl serverUrl, Credentials credentials) {
+        this.serverUrl = serverUrl;
+        this.credentials = credentials;
     }
 
-    public DhisService getDhisService() {
-        return mDhisService;
+    public Credentials getCredentials() {
+        return credentials;
     }
 
-    public DhisManager getDhisManager() {
-        return mDhisManager;
+    public HttpUrl getServerUrl() {
+        return serverUrl;
     }
 }
