@@ -28,43 +28,56 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
-import org.dhis2.android.dashboard.api.DhisManager;
-import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.network.DhisApi;
-import org.dhis2.android.dashboard.api.network.RepoManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.UserAccountHandler;
-import org.dhis2.android.dashboard.api.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.BaseIdentifiableModel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public final class GetUserAccountController implements IController<UserAccount> {
-    private final UserAccountHandler mUserAccountHandler;
-    private final DhisApi mService;
+import retrofit.RetrofitError;
 
-    public GetUserAccountController(UserAccountHandler userAccountHandler) {
-        mUserAccountHandler = userAccountHandler;
-        mService = RepoManager.createService(
-                DhisManager.getInstance().getServerUrl(),
-                DhisManager.getInstance().getUserCredentials()
-        );
+import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
+
+public abstract class AbsBaseController<T extends BaseIdentifiableModel> implements IController<List<T>> {
+
+    @Override public List<T> run() throws RetrofitError {
+        List<T> existingItems = getExistingItems();
+        List<T> updatedItems = getUpdatedItems();
+        List<T> persistedItems = getPersistedItems();
+
+        Map<String, T> updatedItemsMap = toMap(updatedItems);
+        Map<String, T> persistedItemsMap = toMap(persistedItems);
+        Map<String, T> existingItemsMap = new HashMap<>();
+
+        if (existingItems == null || existingItems.isEmpty()) {
+            return new ArrayList<>(existingItemsMap.values());
+        }
+
+        for (T existingItem : existingItems) {
+            String id = existingItem.getId();
+            T updatedItem = updatedItemsMap.get(id);
+            T persistedItem = persistedItemsMap.get(id);
+
+            if (updatedItem != null) {
+                existingItemsMap.put(id, updatedItem);
+                continue;
+            }
+
+            if (persistedItem != null) {
+                existingItemsMap.put(id, persistedItem);
+                continue;
+            }
+
+            throw new IllegalArgumentException("MetaData element is absent");
+        }
+
+        return new ArrayList<>(existingItemsMap.values());
     }
 
-    @Override
-    public UserAccount run() throws APIException {
-        UserAccount userAccount = getUserAccount();
-        // update it in db
-        saveUserAccount(userAccount);
-        return userAccount;
-    }
+    public abstract List<T> getExistingItems();
 
-    private UserAccount getUserAccount() {
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("fields", UserAccount.ALL_USER_ACCOUNT_FIELDS);
-        return mService.getCurrentUserAccount(queryParams);
-    }
+    public abstract List<T> getUpdatedItems();
 
-    private void saveUserAccount(UserAccount userAccount) {
-        mUserAccountHandler.put(userAccount);
-    }
+    public abstract List<T> getPersistedItems();
 }

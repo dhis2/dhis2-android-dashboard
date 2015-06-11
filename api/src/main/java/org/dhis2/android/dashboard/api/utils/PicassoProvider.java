@@ -38,7 +38,7 @@ import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import org.dhis2.android.dashboard.api.DhisManager;
-import org.dhis2.android.dashboard.api.network.models.Credentials;
+import org.dhis2.android.dashboard.api.models.Credentials;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -74,9 +74,9 @@ public final class PicassoProvider {
 
         public AuthInterceptor() {
             Credentials credentials = DhisManager.getInstance()
-                    .getCredentials();
-            mToken = DhisManager.getInstance()
-                    .getBase64Manager().toBase64(credentials);
+                    .getUserCredentials();
+            mToken = com.squareup.okhttp.Credentials.basic(credentials.getUsername(),
+                    credentials.getPassword());
         }
 
         @Override public Response intercept(Chain chain) throws IOException {

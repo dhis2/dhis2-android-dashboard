@@ -26,16 +26,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.network.repository;
+package org.dhis2.android.dashboard.api.network;
 
-import org.dhis2.mobile.sdk.persistence.models.Category;
-import org.dhis2.mobile.sdk.persistence.models.CategoryCombo;
-import org.dhis2.mobile.sdk.persistence.models.CategoryOption;
-import org.dhis2.mobile.sdk.persistence.models.DataElement;
-import org.dhis2.mobile.sdk.persistence.models.DataSet;
-import org.dhis2.mobile.sdk.persistence.models.OrganisationUnit;
-import org.dhis2.mobile.sdk.persistence.models.SystemInfo;
-import org.dhis2.mobile.sdk.persistence.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.DashboardElement;
+import org.dhis2.android.dashboard.api.models.DashboardItem;
+import org.dhis2.android.dashboard.api.models.SystemInfo;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 
 import java.util.List;
 import java.util.Map;
@@ -44,22 +41,29 @@ import retrofit.http.GET;
 import retrofit.http.QueryMap;
 
 
-public interface DhisService {
+public interface DhisApi {
 
     @GET("/system/info/") SystemInfo getSystemInfo();
 
     @GET("/me/") UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
 
-    @GET("/organisationUnits?paging=false") Map<String, List<OrganisationUnit>> getOrganisationUnits(@QueryMap Map<String, String> queryParams);
+    @GET("/charts?paging=false") Map<String, List<DashboardElement>> getCharts(@QueryMap Map<String, String> queryParams);
 
-    @GET("/dataSets?paging=false") Map<String, List<DataSet>> getDataSets(@QueryMap Map<String, String> queryParams);
+    @GET("/eventCharts?paging=false") Map<String, List<DashboardElement>> getEventCharts(@QueryMap Map<String, String> queryParams);
 
-    @GET("/dataElements?paging=false") Map<String, List<DataElement>> getDataElements(@QueryMap Map<String, String> queryParams);
+    @GET("/maps?paging=false") Map<String, List<DashboardElement>> getMaps(@QueryMap Map<String, String> queryParams);
 
-    @GET("/categoryCombos?paging=false") Map<String, List<CategoryCombo>> getCategoryCombos(@QueryMap Map<String, String> queryParams);
+    @GET("/reportTables?paging=false") Map<String, List<DashboardElement>> getReportTables(@QueryMap Map<String, String> queryParams);
 
-    @GET("/categories?paging=false") Map<String, List<Category>> getCategories(@QueryMap Map<String, String> queryMap);
+    @GET("/eventReports?paging=false") Map<String, List<DashboardElement>> getEventReports(@QueryMap Map<String, String> queryParams);
 
-    @GET("/categoryOptions?paging=false") Map<String, List<CategoryOption>> getCategoryOptions(@QueryMap Map<String, String> queryMap);
+    @GET("/users?paging=false") Map<String, List<DashboardElement>> getUsers(@QueryMap Map<String, String> queryParams);
 
+    @GET("/reports?paging=false") Map<String, List<DashboardElement>> getReports(@QueryMap Map<String, String> queryMap);
+
+    @GET("/documents?paging=false") Map<String, List<DashboardElement>> getResources(@QueryMap Map<String, String> queryMap);
+
+    @GET("/dashboards?paging=false") Map<String, List<Dashboard>> getDashboards(@QueryMap Map<String, String> queryMap);
+
+    @GET("/dashboardItems?paging=false") Map<String, List<DashboardItem>> getDashboardItems(@QueryMap Map<String, String> queryMap);
 }

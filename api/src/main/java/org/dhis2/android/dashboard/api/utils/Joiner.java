@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static org.dhis2.mobile.sdk.utils.Preconditions.isNull;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 /**
  * An object which joins pieces of text (specified as an array, {@link Iterable}, varargs or even a

@@ -30,22 +30,45 @@ package org.dhis2.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ForeignKey;
+import com.raizlabs.android.dbflow.annotation.ForeignKeyAction;
+import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
+import com.raizlabs.android.dbflow.annotation.NotNull;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import org.dhis2.android.dashboard.api.persistence.DbDhis;
+import org.joda.time.DateTime;
+
+import java.util.ArrayList;
 import java.util.List;
 
-import static android.text.TextUtils.isEmpty;
+@Table(databaseName = DbDhis.NAME)
+public final class DashboardItem extends BaseModel implements BaseIdentifiableModel {
+    private static final String DASHBOARD_KEY = "dashboard";
 
-public class DashboardItem extends BaseIdentifiableModel {
-    // TODO think about using StaggeredView in DashboardFragment
     public static final String SHAPE_NORMAL = "normal";
     public static final String SHAPE_DOUBLE_WIDTH = "double_width";
     public static final String SHAPE_FULL_WIDTH = "full_width";
 
-    @JsonIgnore private String dashboardId;
-    @JsonProperty("access") private Access access;
-    @JsonProperty("contentCount") private int contentCount;
-    @JsonProperty("type") private String type;
-    @JsonProperty("shape") private String shape;
+    @JsonIgnore @Column @PrimaryKey(autoincrement = true) long localId;
+    @JsonIgnore @Column @NotNull State state;
+    @JsonProperty("id") @Column String id;
+    @JsonProperty("created") @Column @NotNull DateTime created;
+    @JsonProperty("lastUpdated") @Column @NotNull DateTime lastUpdated;
+    @JsonProperty("access") @Column @NotNull Access access;
+    @JsonProperty("type") @Column @NotNull String type;
+    @JsonProperty("shape") @Column String shape;
+
+    @JsonIgnore @Column @ForeignKey(
+            references = {
+                    @ForeignKeyReference(columnName = DASHBOARD_KEY, columnType = long.class, foreignColumnName = "localId")
+            }, saveForeignKeyModel = false, onDelete = ForeignKeyAction.CASCADE
+    ) Dashboard dashboard;
 
     // DashboardElements
     @JsonProperty("chart") private DashboardElement chart;
@@ -59,10 +82,65 @@ public class DashboardItem extends BaseIdentifiableModel {
     @JsonProperty("reportTables") private List<DashboardElement> reportTables;
     @JsonProperty("messages") private boolean messages;
 
-    @JsonIgnore @Override
-    public boolean isItemComplete() {
-        return super.isItemComplete() &&
-                !(isEmpty(getType()) || getAccess() == null);
+    @JsonIgnore public static void readElementsIntoItem(DashboardItem item) {
+        switch (item.getType()) {
+            case DashboardElement.TYPE_CHART: {
+                item.setChart(querySingleElement(item));
+                break;
+            }
+            case DashboardElement.TYPE_EVENT_CHART: {
+                item.setEventChart(querySingleElement(item));
+                break;
+            }
+            case DashboardElement.TYPE_MAP: {
+                item.setMap(querySingleElement(item));
+                break;
+            }
+            case DashboardElement.TYPE_REPORT_TABLE: {
+                item.setReportTable(querySingleElement(item));
+                break;
+            }
+            case DashboardElement.TYPE_EVENT_REPORT: {
+                item.setEventReport(querySingleElement(item));
+                break;
+            }
+            case DashboardElement.TYPE_USERS: {
+                item.setUsers(queryElements(item));
+                break;
+            }
+            case DashboardElement.TYPE_REPORTS: {
+                item.setReports(queryElements(item));
+                break;
+            }
+            case DashboardElement.TYPE_RESOURCES: {
+                item.setResources(queryElements(item));
+                break;
+            }
+            case DashboardElement.TYPE_REPORT_TABLES: {
+                item.setReportTables(queryElements(item));
+                break;
+            }
+        }
+    }
+
+    @JsonIgnore private static DashboardElement querySingleElement(DashboardItem item) {
+        ElementToItemRelation relation = new Select().from(ElementToItemRelation.class)
+                .where(Condition.column(ElementToItemRelation$Table
+                        .DASHBOARDITEM_DASHBOARDITEM).is(item.getLocalId()))
+                .querySingle();
+        return relation.getDashboardElement();
+    }
+
+    @JsonIgnore private static List<DashboardElement> queryElements(DashboardItem item) {
+        List<ElementToItemRelation> relations = new Select().from(ElementToItemRelation.class)
+                .where(Condition.column(ElementToItemRelation$Table
+                        .DASHBOARDITEM_DASHBOARDITEM).is(item.getLocalId()))
+                .queryList();
+        List<DashboardElement> dashboardElements = new ArrayList<>();
+        for (ElementToItemRelation relation : relations) {
+            dashboardElements.add(relation.getDashboardElement());
+        }
+        return dashboardElements;
     }
 
     @JsonIgnore public Access getAccess() {
@@ -71,14 +149,6 @@ public class DashboardItem extends BaseIdentifiableModel {
 
     @JsonIgnore public void setAccess(Access access) {
         this.access = access;
-    }
-
-    @JsonIgnore public int getContentCount() {
-        return contentCount;
-    }
-
-    @JsonIgnore public void setContentCount(int contentCount) {
-        this.contentCount = contentCount;
     }
 
     @JsonIgnore public String getType() {
@@ -97,12 +167,12 @@ public class DashboardItem extends BaseIdentifiableModel {
         this.shape = shape;
     }
 
-    @JsonIgnore public String getDashboardId() {
-        return dashboardId;
+    @JsonIgnore public Dashboard getDashboard() {
+        return dashboard;
     }
 
-    @JsonIgnore public void setDashboardId(String dashboardId) {
-        this.dashboardId = dashboardId;
+    @JsonIgnore public void setDashboard(Dashboard dashboard) {
+        this.dashboard = dashboard;
     }
 
     @JsonIgnore public List<DashboardElement> getUsers() {
@@ -183,5 +253,55 @@ public class DashboardItem extends BaseIdentifiableModel {
 
     @JsonIgnore public void setMessages(boolean messages) {
         this.messages = messages;
+    }
+
+    @JsonIgnore public long getLocalId() {
+        return localId;
+    }
+
+    @JsonIgnore public void setLocalId(long localId) {
+        this.localId = localId;
+    }
+
+    @JsonIgnore public State getState() {
+        return state;
+    }
+
+    @JsonIgnore public void setState(State state) {
+        this.state = state;
+    }
+
+
+    @JsonIgnore @Override public String getId() {
+        return id;
+    }
+
+    @JsonIgnore @Override public void setId(String id) {
+        this.id = id;
+    }
+
+    @JsonIgnore @Override public DateTime getCreated() {
+        return created;
+    }
+
+    @JsonIgnore @Override public void setCreated(DateTime created) {
+        this.created = created;
+    }
+
+    @JsonIgnore @Override public DateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    @JsonIgnore @Override public void setLastUpdated(DateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    @JsonIgnore @Override public String getName() {
+        // stub implementation
+        return null;
+    }
+
+    @JsonIgnore @Override public void setName(String name) {
+        // stub implementation
     }
 }

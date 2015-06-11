@@ -28,9 +28,36 @@
 
 package org.dhis2.android.dashboard.api.models;
 
-public interface BaseIdentifiableModel extends TimeStampedModel {
-    void setId(String id);
-    void setName(String name);
-    String getId();
-    String getName();
+import org.dhis2.android.dashboard.api.network.APIException;
+
+import retrofit.client.Response;
+
+public final class ResponseHolder<T> {
+    private Response mResponse;
+    private APIException mApiException;
+    private T mItem;
+
+    public Response getResponse() {
+        return mResponse;
+    }
+
+    public void setResponse(Response response) {
+        mResponse = response;
+    }
+
+    public APIException getApiException() {
+        return mApiException;
+    }
+
+    public void setApiException(APIException apiException) {
+        mApiException = apiException;
+    }
+
+    public T getItem() {
+        return mItem;
+    }
+
+    public void setItem(T item) {
+        mItem = item;
+    }
 }

@@ -31,10 +31,22 @@ package org.dhis2.android.dashboard.api.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.joda.time.DateTime;
+
 public final class UserAccount {
+    /**
+     * Value of 'fields' query parameter for getCurrentUserAccount() method
+     */
+    public static final String ALL_USER_ACCOUNT_FIELDS = "[id,created,lastUpdated,name,displayName," +
+            "firstName,surname," +
+            "gender,birthday,introduction," +
+            "education,employer,interests," +
+            "jobTitle,languages,email,phoneNumber," +
+            "organisationUnits[id]]";
+
     @JsonProperty("id") private String id;
-    @JsonProperty("created") private String created;
-    @JsonProperty("lastUpdated") private String lastUpdated;
+    @JsonProperty("created") private DateTime created;
+    @JsonProperty("lastUpdated") private DateTime lastUpdated;
     @JsonProperty("name") private String name;
     @JsonProperty("displayName") private String displayName;
     @JsonProperty("firstName") private String firstName;
@@ -53,139 +65,173 @@ public final class UserAccount {
     public UserAccount() {
     }
 
-    @JsonIgnore public String getId() {
+    @JsonIgnore
+    public String getId() {
         return id;
     }
 
-    @JsonIgnore public void setId(String id) {
+    @JsonIgnore
+    public void setId(String id) {
         this.id = id;
     }
 
-    @JsonIgnore public String getCreated() {
+    @JsonIgnore
+    public DateTime getCreated() {
         return created;
     }
 
-    @JsonIgnore public void setCreated(String created) {
+    @JsonIgnore
+    public void setCreated(DateTime created) {
         this.created = created;
     }
 
-    @JsonIgnore public String getLastUpdated() {
+    @JsonIgnore
+    public DateTime getLastUpdated() {
         return lastUpdated;
     }
 
-    @JsonIgnore public void setLastUpdated(String lastUpdated) {
+    @JsonIgnore
+    public void setLastUpdated(DateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
-    @JsonIgnore public String getName() {
+    @JsonIgnore
+    public String getName() {
         return name;
     }
 
-    @JsonIgnore public void setName(String name) {
+    @JsonIgnore
+    public void setName(String name) {
         this.name = name;
     }
 
-    @JsonIgnore public String getDisplayName() {
+    @JsonIgnore
+    public String getDisplayName() {
         return displayName;
     }
 
-    @JsonIgnore public void setDisplayName(String displayName) {
+    @JsonIgnore
+    public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
-    @JsonIgnore public String getFirstName() {
+    @JsonIgnore
+    public String getFirstName() {
         return firstName;
     }
 
-    @JsonIgnore public void setFirstName(String firstName) {
+    @JsonIgnore
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    @JsonIgnore public String getSurname() {
+    @JsonIgnore
+    public String getSurname() {
         return surname;
     }
 
-    @JsonIgnore public void setSurname(String surname) {
+    @JsonIgnore
+    public void setSurname(String surname) {
         this.surname = surname;
     }
 
-    @JsonIgnore public String getGender() {
+    @JsonIgnore
+    public String getGender() {
         return gender;
     }
 
-    @JsonIgnore public void setGender(String gender) {
+    @JsonIgnore
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
-    @JsonIgnore public String getBirthday() {
+    @JsonIgnore
+    public String getBirthday() {
         return birthday;
     }
 
-    @JsonIgnore public void setBirthday(String birthday) {
+    @JsonIgnore
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
-    @JsonIgnore public String getIntroduction() {
+    @JsonIgnore
+    public String getIntroduction() {
         return introduction;
     }
 
-    @JsonIgnore public void setIntroduction(String introduction) {
+    @JsonIgnore
+    public void setIntroduction(String introduction) {
         this.introduction = introduction;
     }
 
-    @JsonIgnore public String getEducation() {
+    @JsonIgnore
+    public String getEducation() {
         return education;
     }
 
-    @JsonIgnore public void setEducation(String education) {
+    @JsonIgnore
+    public void setEducation(String education) {
         this.education = education;
     }
 
-    @JsonIgnore public String getEmployer() {
+    @JsonIgnore
+    public String getEmployer() {
         return employer;
     }
 
-    @JsonIgnore public void setEmployer(String employer) {
+    @JsonIgnore
+    public void setEmployer(String employer) {
         this.employer = employer;
     }
 
-    @JsonIgnore public String getInterests() {
+    @JsonIgnore
+    public String getInterests() {
         return interests;
     }
 
-    @JsonIgnore public void setInterests(String interests) {
+    @JsonIgnore
+    public void setInterests(String interests) {
         this.interests = interests;
     }
 
-    @JsonIgnore public String getJobTitle() {
+    @JsonIgnore
+    public String getJobTitle() {
         return jobTitle;
     }
 
-    @JsonIgnore public void setJobTitle(String jobTitle) {
+    @JsonIgnore
+    public void setJobTitle(String jobTitle) {
         this.jobTitle = jobTitle;
     }
 
-    @JsonIgnore public String getLanguages() {
+    @JsonIgnore
+    public String getLanguages() {
         return languages;
     }
 
-    @JsonIgnore public void setLanguages(String languages) {
+    @JsonIgnore
+    public void setLanguages(String languages) {
         this.languages = languages;
     }
 
-    @JsonIgnore public String getEmail() {
+    @JsonIgnore
+    public String getEmail() {
         return email;
     }
 
-    @JsonIgnore public void setEmail(String email) {
+    @JsonIgnore
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    @JsonIgnore public String getPhoneNumber() {
+    @JsonIgnore
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    @JsonIgnore public void setPhoneNumber(String phoneNumber) {
+    @JsonIgnore
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 }

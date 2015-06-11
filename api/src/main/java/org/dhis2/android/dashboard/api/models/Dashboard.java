@@ -30,81 +30,129 @@ package org.dhis2.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.NotNull;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import java.util.Comparator;
+import org.dhis2.android.dashboard.api.persistence.DbDhis;
+import org.joda.time.DateTime;
+
 import java.util.List;
 
-public class Dashboard extends BaseIdentifiableModel {
-    public static final NameComparator NAME_COMPARATOR = new NameComparator();
-
-    @JsonProperty("displayName") private String displayName;
-    @JsonProperty("itemCount") private long itemCount;
-    @JsonProperty("access") private Access access;
+@Table(databaseName = DbDhis.NAME)
+public final class Dashboard extends BaseModel implements BaseIdentifiableModel {
+    @JsonIgnore @Column @PrimaryKey(autoincrement = true) long localId;
+    @JsonIgnore @Column @NotNull State state;
+    @JsonProperty("id") @Column String id;
+    @JsonProperty("created") @Column @NotNull DateTime created;
+    @JsonProperty("lastUpdated") @Column @NotNull DateTime lastUpdated;
+    @JsonProperty("access") @Column @NotNull Access access;
+    @JsonProperty("name") @Column String name;
+    @JsonProperty("displayName") @Column String displayName;
     @JsonProperty("dashboardItems") List<DashboardItem> dashboardItems;
 
-    @JsonIgnore public String getDisplayName() {
-        return displayName;
+    @JsonIgnore
+    public State getState() {
+        return state;
     }
 
-    @JsonIgnore public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    @JsonIgnore
+    public void setState(State state) {
+        this.state = state;
     }
 
-    @JsonIgnore public long getItemCount() {
-        return itemCount;
+    @JsonIgnore
+    public long getLocalId() {
+        return localId;
     }
 
-    @JsonIgnore public void setItemCount(long itemCount) {
-        this.itemCount = itemCount;
-    }
-
-    @JsonIgnore public Access getAccess() {
-        return access;
-    }
-
-    @JsonIgnore public void setAccess(Access access) {
-        this.access = access;
-    }
-
-    @JsonIgnore public List<DashboardItem> getDashboardItems() {
-        return dashboardItems;
-    }
-
-    @JsonIgnore public void setDashboardItems(List<DashboardItem> dashboardItems) {
-        this.dashboardItems = dashboardItems;
+    @JsonIgnore
+    public void setLocalId(long localId) {
+        this.localId = localId;
     }
 
     @JsonIgnore @Override
-    public boolean isItemComplete() {
-        return super.isItemComplete() && access != null;
+    public DateTime getCreated() {
+        return created;
+    }
+
+    @JsonIgnore @Override
+    public void setCreated(DateTime created) {
+        this.created = created;
+    }
+
+    @JsonIgnore @Override
+    public DateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    @JsonIgnore @Override
+    public void setLastUpdated(DateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    @JsonIgnore @Override
+    public String getId() {
+        return id;
+    }
+
+    @JsonIgnore @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @JsonIgnore @Override
+    public String getName() {
+        return name;
+    }
+
+    @JsonIgnore @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @JsonIgnore
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    @JsonIgnore
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    @JsonIgnore
+    public Access getAccess() {
+        return access;
+    }
+
+    @JsonIgnore
+    public void setAccess(Access access) {
+        this.access = access;
+    }
+
+    @JsonIgnore
+    public List<DashboardItem> getDashboardItems() {
+        return dashboardItems;
+    }
+
+    @JsonIgnore
+    public void setDashboardItems(List<DashboardItem> dashboardItems) {
+        this.dashboardItems = dashboardItems;
     }
 
     @JsonIgnore @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        String baseString = super.toString();
-        builder.append(baseString);
-
         builder.append(" displayName: ");
         builder.append(displayName);
-
-        builder.append(" itemCount: " );
-        builder.append(itemCount);
 
         builder.append(" access: ");
         builder.append(access == null ? "null" : access.toString());
 
         return builder.toString();
-    }
-
-    public static class NameComparator implements Comparator<Dashboard> {
-
-        @Override public int compare(Dashboard first, Dashboard second) {
-            if (first == null || second == null) {
-                return 0;
-            }
-            return String.CASE_INSENSITIVE_ORDER.compare(first.getName(), second.getName());
-        }
     }
 }

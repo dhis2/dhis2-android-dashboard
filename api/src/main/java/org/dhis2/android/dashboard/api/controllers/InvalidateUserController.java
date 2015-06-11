@@ -29,20 +29,16 @@
 package org.dhis2.android.dashboard.api.controllers;
 
 import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
-
-import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
+import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
 
 public class InvalidateUserController implements IController<Object> {
-    private final SessionHandler mSessionHandler;
 
-    public InvalidateUserController(SessionHandler sessionHandler) {
-        mSessionHandler = isNull(sessionHandler, "SessionHandler must not be null");
+    public InvalidateUserController() {
     }
 
     @Override
     public Object run() throws APIException {
-        mSessionHandler.invalidate();
+        SessionManager.getInstance().invalidate();
         return new Object();
     }
 }

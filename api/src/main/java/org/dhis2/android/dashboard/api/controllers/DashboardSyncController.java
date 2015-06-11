@@ -28,99 +28,371 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
-import android.content.ContentProviderOperation;
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.DashboardElement;
+import org.dhis2.android.dashboard.api.models.DashboardElement$Table;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
+import org.dhis2.android.dashboard.api.models.DashboardItem$Table;
+import org.dhis2.android.dashboard.api.models.DbOperation;
+import org.dhis2.android.dashboard.api.models.ElementToItemRelation;
+import org.dhis2.android.dashboard.api.models.State;
 import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.persistence.DbManager;
-import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
+import org.dhis2.android.dashboard.api.network.DhisApi;
+import org.dhis2.android.dashboard.api.network.RepoManager;
+import org.dhis2.android.dashboard.api.persistence.DbHelper;
+import org.dhis2.android.dashboard.api.persistence.preferences.LastUpdatedPreferences;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
-import static org.dhis2.android.dashboard.api.utils.DbUtils.filter;
+import retrofit.RetrofitError;
+
+import static android.text.TextUtils.isEmpty;
 import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
+import static org.dhis2.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
 public final class DashboardSyncController implements IController<Object> {
     private final DhisManager mDhisManager;
-    private final SessionHandler mSessionHandler;
+    private final LastUpdatedPreferences mLastUpdatedPreferences;
+    private final DhisApi mDhisApi;
 
-    public DashboardSyncController(DhisManager dhisManager, SessionHandler handler) {
+    public DashboardSyncController(DhisManager dhisManager, LastUpdatedPreferences preferences) {
         mDhisManager = dhisManager;
-        mSessionHandler = handler;
+        mLastUpdatedPreferences = preferences;
+        mDhisApi = RepoManager.createService(dhisManager.getServerUrl(),
+                dhisManager.getUserCredentials());
     }
 
     @Override
     public Object run() throws APIException {
-        List<DashboardElement> dashboardElements = updateDashboardElements();
-        List<Dashboard> dashboards = filter(updateDashboards());
-        List<DashboardItem> items = filter(updateDashboardItems(dashboards));
-        buildRelationShip(dashboards, items);
+        boolean isUpdating = mLastUpdatedPreferences.getLastUpdated() != null;
+        DateTime lastUpdated = DateTime.now(DateTimeZone
+                .forTimeZone(mLastUpdatedPreferences.getServerTimeZone()));
 
-        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-        ops.addAll(DbManager.with(DashboardElement.class).sync(dashboardElements));
-        ops.addAll(DbManager.with(Dashboard.class).sync(dashboards));
-        ops.addAll(DbManager.with(DashboardItem.class).sync(items));
+        List<Dashboard> dashboards =
+                updateDashboards(lastUpdated, isUpdating);
+        List<DashboardItem> dashboardItems =
+                updateDashboardItems(lastUpdated, isUpdating);
+        buildDashboardToItemRelations(dashboards, dashboardItems);
+        List<DashboardElement> dashboardElements =
+                updateDashboardElements(lastUpdated, isUpdating);
+        List<ElementToItemRelation> elementToItemRelations =
+                buildElementToItemRelation(dashboardItems);
 
-        if (!ops.isEmpty()) {
-            DbManager.applyBatch(ops);
-            DbManager.notifyChange(Dashboard.class);
-            DbManager.notifyChange(DashboardItem.class);
-        }
+        Queue<DbOperation> operations = new LinkedList<>();
+        operations.addAll(DbHelper.createOperations(new Select()
+                .from(Dashboard.class).queryList(), dashboards));
+        operations.addAll(DbHelper.createOperations(new Select()
+                .from(DashboardItem.class).queryList(), dashboardItems));
+        operations.addAll(DbHelper.createOperations(new Select()
+                .from(DashboardElement.class).queryList(), dashboardElements));
+        operations.addAll(DbHelper.syncRelationModels(new Select()
+                .from(ElementToItemRelation.class).queryList(), elementToItemRelations));
 
+        DbHelper.applyBatch(operations);
+
+        mLastUpdatedPreferences.setLastUpdated(lastUpdated);
         return new Object();
     }
 
-    private List<DashboardElement> updateDashboardElements() {
-        return (new GetDashboardElementsController(
-                mDhisManager, mSessionHandler.get())
-        ).run();
-    }
+    private void buildDashboardToItemRelations(List<Dashboard> dashboards, List<DashboardItem> items) {
+        Map<String, DashboardItem> itemsMap = toMap(items);
 
-    private List<Dashboard> updateDashboards() {
-        return (new GetDashboardsController(
-                mDhisManager, mSessionHandler.get())
-        ).run();
-    }
+        if (dashboards != null && !dashboards.isEmpty()) {
+            for (Dashboard dashboard : dashboards) {
+                if (dashboard.getDashboardItems() == null ||
+                        dashboard.getDashboardItems().isEmpty()) {
+                    continue;
+                }
 
-    private List<DashboardItem> updateDashboardItems(List<Dashboard> dashboards) {
-        if (dashboards == null || dashboards.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<String> ids = new ArrayList<>();
-        for (Dashboard dashboard : dashboards) {
-            if (dashboard.getDashboardItems() != null &&
-                    !dashboard.getDashboardItems().isEmpty()) {
                 for (DashboardItem item : dashboard.getDashboardItems()) {
-                    ids.add(item.getId());
+                    DashboardItem dashboardItem = itemsMap.get(item.getId());
+                    if (dashboardItem != null) {
+                        dashboardItem.setDashboard(dashboard);
+                    }
                 }
             }
         }
-        return (new GetDashboardItemsController(
-                mDhisManager, mSessionHandler.get(), ids)
-        ).run();
     }
 
-    private void buildRelationShip(List<Dashboard> dashboards,
-                                   List<DashboardItem> dashboardItems) {
-        Map<String, DashboardItem> itemsMap = toMap(dashboardItems);
-        for (Dashboard dashboard : dashboards) {
-            if (dashboard.getDashboardItems() == null ||
-                    dashboard.getDashboardItems().isEmpty()) {
-                continue;
-            }
+    private List<ElementToItemRelation> buildElementToItemRelation(List<DashboardItem> dashboardItems) {
+        List<ElementToItemRelation> relations = new ArrayList<>();
 
-            for (DashboardItem shortItem : dashboard.getDashboardItems()) {
-                DashboardItem fullItem = itemsMap.get(shortItem.getId());
-                if (fullItem != null) {
-                    fullItem.setDashboardId(dashboard.getId());
+        if (dashboardItems == null || dashboardItems.isEmpty()) {
+            return relations;
+        }
+
+        for (DashboardItem item : dashboardItems) {
+            switch (item.getType()) {
+                case DashboardElement.TYPE_CHART: {
+                    relations.add(createElementToItemRelation(item,
+                            item.getChart()));
+                    break;
+                }
+                case DashboardElement.TYPE_EVENT_CHART: {
+                    relations.add(createElementToItemRelation(item,
+                            item.getEventChart()));
+                    break;
+                }
+                case DashboardElement.TYPE_MAP: {
+                    relations.add(createElementToItemRelation(item,
+                            item.getMap()));
+                    break;
+                }
+                case DashboardElement.TYPE_REPORT_TABLE: {
+                    relations.add(createElementToItemRelation(item,
+                            item.getReportTable()));
+                    break;
+                }
+                case DashboardElement.TYPE_EVENT_REPORT: {
+                    relations.add(createElementToItemRelation(item,
+                            item.getEventReport()));
+                    break;
+                }
+                case DashboardElement.TYPE_USERS: {
+                    relations.addAll(createElementToItemRelations(item,
+                            item.getUsers()));
+                    break;
+                }
+                case DashboardElement.TYPE_REPORTS: {
+                    relations.addAll(createElementToItemRelations(item,
+                            item.getReports()));
+                    break;
+                }
+                case DashboardElement.TYPE_RESOURCES: {
+                    relations.addAll(createElementToItemRelations(item,
+                            item.getResources()));
+                    break;
+                }
+                case DashboardElement.TYPE_REPORT_TABLES: {
+                    relations.addAll(createElementToItemRelations(item,
+                            item.getReportTables()));
+                    break;
                 }
             }
+        }
+
+        return relations;
+    }
+
+    private ElementToItemRelation createElementToItemRelation(DashboardItem item, DashboardElement element) {
+        ElementToItemRelation relation = new ElementToItemRelation();
+        relation.setDashboardItem(item);
+        relation.setDashboardElement(element);
+        relation.setState(State.SYNCED);
+        return relation;
+    }
+
+    private List<ElementToItemRelation> createElementToItemRelations(DashboardItem item, List<DashboardElement> elements) {
+        List<ElementToItemRelation> relations = new ArrayList<>();
+
+        if (elements == null || elements.isEmpty()) {
+            return relations;
+        }
+
+        for (DashboardElement element : elements) {
+            relations.add(createElementToItemRelation(item, element));
+        }
+
+        return relations;
+    }
+
+    private List<Dashboard> updateDashboards(DateTime lastUpdated,
+                                             boolean isUpdating) throws RetrofitError {
+        final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
+        final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
+
+        QUERY_MAP_BASIC.put("fields", "id");
+        QUERY_MAP_FULL.put("fields", "id,created,lastUpdated,name," +
+                "displayName,access,dashboardItems[id]");
+
+        if (isUpdating) {
+            QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
+        }
+
+        return new AbsBaseController<Dashboard>() {
+
+            @Override public List<Dashboard> getExistingItems() {
+                return unwrapResponse(mDhisApi.getDashboards(QUERY_MAP_BASIC), "dashboards");
+            }
+
+            @Override public List<Dashboard> getUpdatedItems() {
+                List<Dashboard> dashboards = unwrapResponse(mDhisApi
+                        .getDashboards(QUERY_MAP_FULL), "dashboards");
+                if (dashboards != null && !dashboards.isEmpty()) {
+                    for (Dashboard dashboard : dashboards) {
+                        dashboard.setState(State.SYNCED);
+                    }
+                }
+                return dashboards;
+            }
+
+            @Override public List<Dashboard> getPersistedItems() {
+                List<Dashboard> dashboards = new Select()
+                        .from(Dashboard.class).queryList();
+                if (dashboards != null && !dashboards.isEmpty()) {
+                    for (Dashboard dashboard : dashboards) {
+                        List<DashboardItem> dashboardItems = new Select()
+                                .from(DashboardItem.class)
+                                .where(Condition.column(DashboardItem$Table
+                                        .DASHBOARD_DASHBOARD).is(dashboard.getLocalId()))
+                                .queryList();
+                        dashboard.setDashboardItems(dashboardItems);
+                    }
+                }
+                return dashboards;
+            }
+        }.run();
+    }
+
+    private List<DashboardItem> updateDashboardItems(DateTime lastUpdated,
+                                                     boolean isUpdating) throws RetrofitError {
+        final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
+        final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
+
+        QUERY_MAP_BASIC.put("fields", "id");
+        QUERY_MAP_FULL.put("fields", "id,created,lastUpdated,access," +
+                "type,shape,messages," +
+                "chart[id],eventChart[id],map[id]," +
+                "reportTable[id],eventReport[id],users[id],reports[id]," +
+                "resources[id],reportTables[id]");
+
+        if (isUpdating) {
+            QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
+        }
+
+        List<DashboardItem> items = new AbsBaseController<DashboardItem>() {
+
+            @Override public List<DashboardItem> getExistingItems() {
+                return unwrapResponse(mDhisApi.getDashboardItems(
+                        QUERY_MAP_BASIC), "dashboardItems");
+            }
+
+            @Override public List<DashboardItem> getUpdatedItems() {
+                List<DashboardItem> dashboardItems = unwrapResponse(mDhisApi
+                        .getDashboardItems(QUERY_MAP_FULL), "dashboardItems");
+                if (dashboardItems != null && !dashboardItems.isEmpty()) {
+                    for (DashboardItem dashboardItem : dashboardItems) {
+                        dashboardItem.setState(State.SYNCED);
+                    }
+                }
+                return dashboardItems;
+            }
+
+            @Override public List<DashboardItem> getPersistedItems() {
+                List<DashboardItem> dashboardItems = new Select()
+                        .from(DashboardItem.class).queryList();
+                if (dashboardItems != null && !dashboardItems.isEmpty()) {
+                    for (DashboardItem dashboardItem : dashboardItems) {
+                        DashboardItem.readElementsIntoItem(dashboardItem);
+                    }
+                }
+                return dashboardItems;
+            }
+        }.run();
+
+        /* In some cases we can get dashboard item with null type from server */
+        List<DashboardItem> filteredItems = new ArrayList<>();
+        if (items != null && !items.isEmpty()) {
+            for (DashboardItem item : items) {
+                if (!isEmpty(item.getType())) {
+                    filteredItems.add(item);
+                }
+            }
+        }
+        return filteredItems;
+    }
+
+    private List<DashboardElement> updateDashboardElements(DateTime lastUpdated,
+                                                           boolean isUpdating) throws RetrofitError {
+        List<DashboardElement> dashboardElements = new ArrayList<>();
+        dashboardElements.addAll(updateDashboardElementsByType(
+                DashboardElement.TYPE_CHART, lastUpdated, isUpdating));
+        dashboardElements.addAll(updateDashboardElementsByType(
+                DashboardElement.TYPE_EVENT_CHART, lastUpdated, isUpdating));
+        dashboardElements.addAll(updateDashboardElementsByType(
+                DashboardElement.TYPE_MAP, lastUpdated, isUpdating));
+        dashboardElements.addAll(updateDashboardElementsByType(
+                DashboardElement.TYPE_REPORT_TABLES, lastUpdated, isUpdating));
+        dashboardElements.addAll(updateDashboardElementsByType(
+                DashboardElement.TYPE_EVENT_REPORT, lastUpdated, isUpdating));
+        dashboardElements.addAll(updateDashboardElementsByType(
+                DashboardElement.TYPE_USERS, lastUpdated, isUpdating));
+        dashboardElements.addAll(updateDashboardElementsByType(
+                DashboardElement.TYPE_REPORTS, lastUpdated, isUpdating));
+        dashboardElements.addAll(updateDashboardElementsByType(
+                DashboardElement.TYPE_RESOURCES, lastUpdated, isUpdating));
+        return dashboardElements;
+    }
+
+    private List<DashboardElement> updateDashboardElementsByType(final String type, final DateTime lastUpdated,
+                                                                 final boolean isUpdating) throws RetrofitError {
+        final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
+        final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
+
+        QUERY_MAP_BASIC.put("fields", "id");
+        QUERY_MAP_FULL.put("fields", "id,created,lastUpdated,name,displayName");
+
+        if (isUpdating) {
+            QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
+        }
+
+        return new AbsBaseController<DashboardElement>() {
+
+            @Override public List<DashboardElement> getExistingItems() {
+                return getDashboardElementsByType(type, QUERY_MAP_BASIC);
+            }
+
+            @Override public List<DashboardElement> getUpdatedItems() {
+                List<DashboardElement> elements =
+                        getDashboardElementsByType(type, QUERY_MAP_FULL);
+                if (elements != null && !elements.isEmpty()) {
+                    for (DashboardElement element : elements) {
+                        element.setType(type);
+                    }
+                }
+                return elements;
+            }
+
+            @Override public List<DashboardElement> getPersistedItems() {
+                return new Select().from(DashboardElement.class)
+                        .where(Condition.column(DashboardElement$Table.TYPE).is(type))
+                        .queryList();
+            }
+        }.run();
+    }
+
+    private List<DashboardElement> getDashboardElementsByType(String type,
+                                                              Map<String, String> queryParams) throws RetrofitError {
+        switch (type) {
+            case DashboardElement.TYPE_CHART:
+                return unwrapResponse(mDhisApi.getCharts(queryParams), "charts");
+            case DashboardElement.TYPE_EVENT_CHART:
+                return unwrapResponse(mDhisApi.getEventCharts(queryParams), "eventCharts");
+            case DashboardElement.TYPE_MAP:
+                return unwrapResponse(mDhisApi.getMaps(queryParams), "maps");
+            case DashboardElement.TYPE_REPORT_TABLES:
+                return unwrapResponse(mDhisApi.getReportTables(queryParams), "reportTables");
+            case DashboardElement.TYPE_EVENT_REPORT:
+                return unwrapResponse(mDhisApi.getEventReports(queryParams), "eventReports");
+            case DashboardElement.TYPE_USERS:
+                return unwrapResponse(mDhisApi.getUsers(queryParams), "users");
+            case DashboardElement.TYPE_REPORTS:
+                return unwrapResponse(mDhisApi.getReports(queryParams), "reports");
+            case DashboardElement.TYPE_RESOURCES:
+                return unwrapResponse(mDhisApi.getResources(queryParams), "documents");
+            default:
+                throw new IllegalArgumentException("Unsupported DashboardElement type");
         }
     }
 }

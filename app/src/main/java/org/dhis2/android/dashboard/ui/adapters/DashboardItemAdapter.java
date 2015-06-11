@@ -226,9 +226,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     }
 
     private String buildImageUrl(String resource, String id) {
-        return DhisManager.getInstance().getServerUri().buildUpon()
-                .appendEncodedPath(resource).appendEncodedPath(id).appendEncodedPath("data.png")
-                .appendQueryParameter("width", "480").appendQueryParameter("height", "320")
+        return DhisManager.getInstance().getServerUrl().newBuilder()
+                .addEncodedPathSegment(resource).addEncodedPathSegment(id).addEncodedPathSegment("data.png")
+                .addEncodedQueryParameter("width", "480").addEncodedQueryParameter("height", "320")
                 .toString();
     }
 

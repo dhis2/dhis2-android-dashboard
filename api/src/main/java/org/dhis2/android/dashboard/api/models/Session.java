@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.network.models;
+package org.dhis2.android.dashboard.api.models;
 
 import com.squareup.okhttp.HttpUrl;
 

@@ -29,7 +29,6 @@
 package org.dhis2.android.dashboard.ui.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -37,12 +36,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.squareup.okhttp.HttpUrl;
 import com.squareup.otto.Subscribe;
 
 import org.dhis2.android.dashboard.R;
-import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.network.models.Credentials;
+import org.dhis2.android.dashboard.api.models.Credentials;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -110,12 +110,10 @@ public class LoginActivity extends BaseActivity {
         String username = mUsername.getText().toString();
         String password = mPassword.getText().toString();
 
-        if (serverUrl != null) {
-            Uri serverUri = Uri.parse(serverUrl);
-            getDhisService().logInUser(
-                    serverUri, new Credentials(username, password)
-            );
-        }
+        HttpUrl serverUri = HttpUrl.parse(serverUrl);
+        getDhisService().logInUser(
+                serverUri, new Credentials(username, password)
+        );
     }
 
     @Subscribe

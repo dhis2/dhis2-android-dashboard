@@ -26,17 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence;
+package org.dhis2.android.dashboard.api.persistence.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.squareup.okhttp.HttpUrl;
 
-import org.dhis2.mobile.sdk.network.models.Credentials;
-import org.dhis2.mobile.sdk.network.models.Session;
+import org.dhis2.android.dashboard.api.models.Credentials;
+import org.dhis2.android.dashboard.api.models.Session;
 
-import static org.dhis2.mobile.sdk.utils.Preconditions.isNull;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public final class SessionManager {
     private static final String PREFERENCES = "preferences:Session";

@@ -26,54 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.utils;
+package org.dhis2.android.dashboard.api.models;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-import java.io.IOException;
+public final class Credentials {
+    private String username;
+    private String password;
 
-/**
- * Created by araz on 02.05.2015.
- */
-public final class JsonUtils {
-    private static final String EMPTY_FIELD = "";
-
-    public static <T> T fromJson(String content, TypeReference<T> typeReference) {
-        if (content != null) {
-            try {
-                return JsonMapperProvider.getInstance()
-                        .readValue(content, typeReference);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
+    public Credentials(String username, String password) {
+        this.username = isNull(username, "Username must not be null");
+        this.password = isNull(password, "Password must not be null");
     }
 
-    public static <T> T fromJson(String source, Class<T> clazz) {
-        if (source != null) {
-            try {
-                return JsonMapperProvider.getInstance()
-                        .readValue(source, clazz);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return null;
+    public String getUsername() {
+        return username;
     }
 
-    public static <T> String toJson(T object) {
-        if (object != null) {
-            try {
-                return JsonMapperProvider.getInstance()
-                        .writeValueAsString(object);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return EMPTY_FIELD;
+    public String getPassword() {
+        return password;
     }
 }

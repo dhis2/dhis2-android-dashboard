@@ -29,8 +29,6 @@
 package org.dhis2.android.dashboard.ui.fragments.dashboard;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -42,20 +40,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.Model;
+
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Access;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
-import org.dhis2.android.dashboard.api.persistence.DbManager;
-import org.dhis2.android.dashboard.api.persistence.database.DbContract.DashboardItems;
-import org.dhis2.android.dashboard.api.persistence.database.DbContract.Dashboards;
-import org.dhis2.android.dashboard.api.persistence.loaders.CursorLoaderBuilder;
-import org.dhis2.android.dashboard.api.persistence.loaders.Transformation;
+import org.dhis2.android.dashboard.api.models.DashboardItem$Table;
+import org.dhis2.android.dashboard.api.models.ElementToItemRelation;
+import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
+import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter.OnItemClickListener;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -64,6 +66,13 @@ import butterknife.InjectView;
 public class DashboardFragment extends BaseFragment
         implements LoaderManager.LoaderCallbacks<List<DashboardItem>>, OnItemClickListener {
     private static final int LOADER_ID = 74734523;
+    private static final String DASHBOARD_ID = "arg:dashboardId";
+    private static final String DELETE = "arg:delete";
+    private static final String UPDATE = "arg:update";
+    private static final String READ = "arg:read";
+    private static final String WRITE = "arg:write";
+    private static final String MANAGE = "arg:manage";
+    private static final String EXTERNALIZE = "arg:externalize";
 
     @InjectView(R.id.grid) RecyclerView mGridView;
     DashboardItemAdapter mAdapter;
@@ -73,13 +82,13 @@ public class DashboardFragment extends BaseFragment
         Access access = dashboard.getAccess();
 
         Bundle args = new Bundle();
-        args.putString(Dashboards.ID, dashboard.getId());
-        args.putBoolean(Dashboards.DELETE, access.isDelete());
-        args.putBoolean(Dashboards.UPDATE, access.isUpdate());
-        args.putBoolean(Dashboards.READ, access.isRead());
-        args.putBoolean(Dashboards.WRITE, access.isWrite());
-        args.putBoolean(Dashboards.MANAGE, access.isManage());
-        args.putBoolean(Dashboards.EXTERNALIZE, access.isExternalize());
+        args.putLong(DASHBOARD_ID, dashboard.getLocalId());
+        args.putBoolean(DELETE, access.isDelete());
+        args.putBoolean(UPDATE, access.isUpdate());
+        args.putBoolean(READ, access.isRead());
+        args.putBoolean(WRITE, access.isWrite());
+        args.putBoolean(MANAGE, access.isManage());
+        args.putBoolean(EXTERNALIZE, access.isExternalize());
 
         fragment.setArguments(args);
         return fragment;
@@ -88,12 +97,12 @@ public class DashboardFragment extends BaseFragment
     private static Access getAccessFromBundle(Bundle args) {
         Access access = new Access();
 
-        access.setDelete(args.getBoolean(Dashboards.DELETE));
-        access.setUpdate(args.getBoolean(Dashboards.UPDATE));
-        access.setRead(args.getBoolean(Dashboards.READ));
-        access.setWrite(args.getBoolean(Dashboards.WRITE));
-        access.setManage(args.getBoolean(Dashboards.MANAGE));
-        access.setExternalize(args.getBoolean(Dashboards.EXTERNALIZE));
+        access.setDelete(args.getBoolean(DELETE));
+        access.setUpdate(args.getBoolean(UPDATE));
+        access.setRead(args.getBoolean(READ));
+        access.setWrite(args.getBoolean(WRITE));
+        access.setManage(args.getBoolean(MANAGE));
+        access.setExternalize(args.getBoolean(EXTERNALIZE));
 
         return access;
     }
@@ -135,15 +144,11 @@ public class DashboardFragment extends BaseFragment
             For example dashboard does not contain any dashboard items.
             In order to avoid strange bugs during table JOINs,
             we explicitly state that we want only not null values  */
-            final String NON_NULL_DASHBOARD_ITEMS = DashboardItems.TABLE_NAME + "." +
-                    DashboardItems.ID + " IS NOT NULL";
-            Uri uri = Dashboards.buildUriWithItems(
-                    args.getString(Dashboards.ID));
-            return CursorLoaderBuilder.forUri(uri)
-                    .projection(DbManager.with(DashboardItem.class).getProjection())
-                    .selection(NON_NULL_DASHBOARD_ITEMS)
-                    .transformation(new Transform())
-                    .build(getActivity().getApplicationContext());
+            List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
+            tablesToTrack.add(DashboardItem.class);
+            tablesToTrack.add(ElementToItemRelation.class);
+            return new DbLoader<>(getActivity().getApplicationContext(),
+                    tablesToTrack, new ItemsQuery(args.getLong(DASHBOARD_ID)));
         }
         return null;
     }
@@ -180,10 +185,25 @@ public class DashboardFragment extends BaseFragment
         mAdapter.removeItem(item);
     }
 
-    private static class Transform implements Transformation<List<DashboardItem>> {
+    private static class ItemsQuery implements Query<List<DashboardItem>> {
+        private final long mDashboardId;
 
-        @Override public List<DashboardItem> transform(Context context, Cursor cursor) {
-            return DbManager.with(DashboardItem.class).map(cursor, false);
+        public ItemsQuery(long dashboardId) {
+            mDashboardId = dashboardId;
+        }
+
+        @Override public List<DashboardItem> query(Context context) {
+            List<DashboardItem> dashboardItems = new Select()
+                    .from(DashboardItem.class)
+                    .where(Condition.column(DashboardItem$Table
+                            .DASHBOARD_DASHBOARD).is(mDashboardId))
+                    .queryList();
+            if (dashboardItems != null && !dashboardItems.isEmpty()) {
+                for (DashboardItem dashboardItem : dashboardItems) {
+                    DashboardItem.readElementsIntoItem(dashboardItem);
+                }
+            }
+            return dashboardItems;
         }
     }
 }

@@ -5,19 +5,18 @@ import android.util.Log;
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import org.dhis2.mobile.sdk.persistence.models.BaseIdentifiableObject;
-import org.dhis2.mobile.sdk.persistence.models.DbOperation;
-import org.dhis2.mobile.sdk.persistence.models.RelationModel;
+import org.dhis2.android.dashboard.api.models.BaseIdentifiableModel;
+import org.dhis2.android.dashboard.api.models.DbOperation;
+import org.dhis2.android.dashboard.api.models.RelationModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
-import static org.dhis2.mobile.sdk.utils.DbUtils.toMap;
-import static org.dhis2.mobile.sdk.utils.Preconditions.isNull;
+import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 /**
  * This class is intended to process list of DbOperations
@@ -74,8 +73,8 @@ public final class DbHelper {
      * @param oldModels List of models from local storage.
      * @param newModels List of models of distance instance of DHIS.
      */
-    public static <T extends BaseIdentifiableObject> List<DbOperation> createOperations(List<T> oldModels,
-                                                                                        List<T> newModels) {
+    public static <T extends BaseModel & BaseIdentifiableModel> List<DbOperation> createOperations(List<T> oldModels,
+                                                                                                   List<T> newModels) {
         List<DbOperation> ops = new ArrayList<>();
 
         Map<String, T> newModelsMap = toMap(newModels);
@@ -140,8 +139,8 @@ public final class DbHelper {
         return ops;
     }
 
-    public static <T extends BaseIdentifiableObject> List<DbOperation> createOperations(Collection<T> oldModels,
-                                                                                        Collection<T> newModels) {
+    public static <T extends BaseModel & BaseIdentifiableModel> List<DbOperation> createOperations(Collection<T> oldModels,
+                                                                                                   Collection<T> newModels) {
         List<DbOperation> ops = new ArrayList<>();
 
         Map<String, T> newModelsMap = toMap(newModels);

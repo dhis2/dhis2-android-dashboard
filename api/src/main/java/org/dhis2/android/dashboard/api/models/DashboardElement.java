@@ -30,8 +30,17 @@ package org.dhis2.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.NotNull;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
-public class DashboardElement extends BaseIdentifiableModel {
+import org.dhis2.android.dashboard.api.persistence.DbDhis;
+import org.joda.time.DateTime;
+
+@Table(databaseName = DbDhis.NAME)
+public final class DashboardElement extends BaseModel implements BaseIdentifiableModel, DisplayNameModel {
     public static final String TYPE_CHART = "chart";
     public static final String TYPE_EVENT_CHART = "eventChart";
     public static final String TYPE_MAP = "map";
@@ -43,8 +52,12 @@ public class DashboardElement extends BaseIdentifiableModel {
     public static final String TYPE_REPORT_TABLES = "reportTables";
     public static final String TYPE_MESSAGES = "messages";
 
-    @JsonProperty("displayName") private String displayName;
-    @JsonIgnore private String type;
+    @JsonProperty("id") @Column @PrimaryKey String id;
+    @JsonProperty("created") @Column @NotNull DateTime created;
+    @JsonProperty("lastUpdated") @Column @NotNull DateTime lastUpdated;
+    @JsonProperty("name") @Column String name;
+    @JsonProperty("displayName") @Column String displayName;
+    @JsonIgnore @Column @NotNull String type;
 
     @JsonIgnore public String getDisplayName() {
         return displayName;
@@ -62,7 +75,39 @@ public class DashboardElement extends BaseIdentifiableModel {
         this.type = type;
     }
 
-    public static String getResourceName(String type) {
+    @JsonIgnore @Override public String getId() {
+        return id;
+    }
+
+    @JsonIgnore @Override public void setId(String id) {
+        this.id = id;
+    }
+
+    @JsonIgnore @Override public DateTime getCreated() {
+        return created;
+    }
+
+    @JsonIgnore @Override public void setCreated(DateTime created) {
+        this.created = created;
+    }
+
+    @JsonIgnore @Override public DateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    @JsonIgnore @Override public void setLastUpdated(DateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    @JsonIgnore @Override public String getName() {
+        return name;
+    }
+
+    @JsonIgnore @Override public void setName(String name) {
+        this.name = name;
+    }
+
+    @JsonIgnore public static String getResourceName(String type) {
         switch (type) {
             case DashboardElement.TYPE_CHART:
                 return "charts";

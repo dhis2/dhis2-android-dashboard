@@ -26,14 +26,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.network.repository;
+package org.dhis2.android.dashboard.api.network;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 
-import org.dhis2.mobile.sdk.network.models.Credentials;
+import org.dhis2.android.dashboard.api.models.Credentials;
+import org.dhis2.android.dashboard.api.utils.ObjectMapperProvider;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -50,7 +51,7 @@ public final class RepoManager {
         // no instances
     }
 
-    public static DhisService createService(HttpUrl serverUrl, Credentials credentials) {
+    public static DhisApi createService(HttpUrl serverUrl, Credentials credentials) {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(provideServerUrl(serverUrl))
                 .setConverter(provideJacksonConverter())
@@ -58,7 +59,7 @@ public final class RepoManager {
                 .setRequestInterceptor(provideInterceptor(credentials))
                 .setLogLevel(RestAdapter.LogLevel.BASIC)
                 .build();
-        return restAdapter.create(DhisService.class);
+        return restAdapter.create(DhisApi.class);
     }
 
     private static String provideServerUrl(HttpUrl httpUrl) {
@@ -68,9 +69,7 @@ public final class RepoManager {
     }
 
     private static Converter provideJacksonConverter() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JodaModule());
-        return new JacksonConverter(mapper);
+        return new JacksonConverter(ObjectMapperProvider.getInstance());
     }
 
     private static OkClient provideOkClient() {

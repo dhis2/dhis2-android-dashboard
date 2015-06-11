@@ -28,13 +28,13 @@
 
 package org.dhis2.android.dashboard.api;
 
-import android.net.Uri;
+import com.squareup.okhttp.HttpUrl;
 
 import org.dhis2.android.dashboard.api.job.Job;
 import org.dhis2.android.dashboard.api.job.JobExecutor;
 import org.dhis2.android.dashboard.api.job.NetworkJob;
 import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.network.models.Credentials;
+import org.dhis2.android.dashboard.api.models.Credentials;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
@@ -53,12 +53,12 @@ public final class DhisService {
         mDhisManager = isNull(dhisManager, "DhisManager must not be null");
     }
 
-    public void logInUser(final Uri serverUri, final Credentials credentials) {
+    public void logInUser(final HttpUrl serverUrl, final Credentials credentials) {
         JobExecutor.enqueueJob(new NetworkJob<UserAccount>(LOG_IN_JOB_ID) {
 
             @Override
             public UserAccount execute() throws APIException {
-                return mDhisManager.logInUser(serverUri, credentials);
+                return mDhisManager.logInUser(serverUrl, credentials);
             }
         });
     }

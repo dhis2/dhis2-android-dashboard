@@ -26,30 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.controllers;
+package org.dhis2.android.dashboard.api.models;
 
-import android.content.Context;
-
-import org.dhis2.android.dashboard.api.DhisManager;
-import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
-import org.dhis2.android.dashboard.api.network.models.Session;
-
-public final class MetaDataController implements IController<Object> {
-    private final Context mContext;
-    private final DhisManager mDhisManager;
-    private final Session mSession;
-
-    public MetaDataController(Context context,
-                              DhisManager dhisManager,
-                              SessionHandler sessionHandler) {
-        mContext = context;
-        mDhisManager = dhisManager;
-        mSession = sessionHandler.get();
-    }
-
-    @Override
-    public Object run() throws APIException {
-        return new Object();
-    }
+public enum State {
+    SYNCED, TO_POST, TO_UPDATE, TO_DELETE,
 }

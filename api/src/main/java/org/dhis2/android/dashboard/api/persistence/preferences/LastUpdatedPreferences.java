@@ -1,4 +1,4 @@
-package org.dhis2.android.dashboard.api.persistence;
+package org.dhis2.android.dashboard.api.persistence.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 
 import java.util.TimeZone;
 
-import static org.dhis2.mobile.sdk.utils.Preconditions.isNull;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public final class LastUpdatedPreferences {
     private static final String PREFERENCES = "preferences:lastUpdated";

@@ -29,24 +29,24 @@
 package org.dhis2.android.dashboard.api.controllers;
 
 import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
-import org.dhis2.android.dashboard.api.persistence.handlers.UserAccountHandler;
+import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
+import org.dhis2.android.dashboard.api.persistence.preferences.UserAccountHandler;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public final class LogOutUserController implements IController<Object> {
-    private final SessionHandler mSessionHandler;
     private final UserAccountHandler mUserAccountHandler;
 
-    public LogOutUserController(SessionHandler sessionHandler,
-                                UserAccountHandler userAccountHandler) {
-        mSessionHandler = isNull(sessionHandler, "SessionHandler must not be null");
-        mUserAccountHandler = isNull(userAccountHandler, "UserAccountHandler must not be null");
+    public LogOutUserController(UserAccountHandler userAccountHandler) {
+        mUserAccountHandler = isNull(userAccountHandler,
+                "UserAccountHandler must not be null");
     }
 
     @Override
     public Object run() throws APIException {
-        mSessionHandler.delete();
+        SessionManager sessionManager = SessionManager
+                .getInstance();
+        sessionManager.delete();
         mUserAccountHandler.delete();
         return new Object();
     }

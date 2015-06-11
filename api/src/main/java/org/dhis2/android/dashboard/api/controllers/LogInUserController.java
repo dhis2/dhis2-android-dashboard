@@ -28,63 +28,66 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
-import android.net.Uri;
+import com.squareup.okhttp.HttpUrl;
 
-import org.dhis2.android.dashboard.api.DhisManager;
-import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.network.models.Credentials;
-import org.dhis2.android.dashboard.api.network.tasks.ITask;
-import org.dhis2.android.dashboard.api.network.tasks.LoginUserTask;
-import org.dhis2.android.dashboard.api.persistence.handlers.SessionHandler;
-import org.dhis2.android.dashboard.api.persistence.handlers.UserAccountHandler;
-import org.dhis2.android.dashboard.api.network.models.Session;
+import org.dhis2.android.dashboard.api.models.Credentials;
+import org.dhis2.android.dashboard.api.models.Session;
+import org.dhis2.android.dashboard.api.network.DhisApi;
+import org.dhis2.android.dashboard.api.network.RepoManager;
+import org.dhis2.android.dashboard.api.persistence.preferences.LastUpdatedPreferences;
+import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
+import org.dhis2.android.dashboard.api.persistence.preferences.UserAccountHandler;
+import org.dhis2.android.dashboard.api.models.SystemInfo;
+import org.dhis2.android.dashboard.api.models.UserAccount;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public final class LogInUserController implements IController<UserAccount> {
-    private final DhisManager mDhisManager;
-    private final Uri mServerUri;
+    private final HttpUrl mServerUrl;
     private final Credentials mCredentials;
-    private final SessionHandler mSessionHandler;
     private final UserAccountHandler mUserAccountHandler;
+    private final LastUpdatedPreferences mLastUpdatedPreferences;
+    private final DhisApi mService;
 
-    public LogInUserController(DhisManager dhisManager,
-                               SessionHandler sessionHandler,
-                               UserAccountHandler userAccountHandler,
-                               Uri serverUri, Credentials credentials) {
-        mDhisManager = isNull(dhisManager, "DhisManager must not be null");
-        mSessionHandler = isNull(sessionHandler, "SessionHandler must not be null");
+    public LogInUserController(UserAccountHandler userAccountHandler,
+                               LastUpdatedPreferences lastUpdatedPreferences,
+                               HttpUrl serverUrl, Credentials credentials) {
         mUserAccountHandler = isNull(userAccountHandler, "UserAccountHandler must not be null");
-        mServerUri = isNull(serverUri, "Server URI must not be null");
+        mLastUpdatedPreferences = isNull(lastUpdatedPreferences, "LastUpdatedPreferences must not be null");
+        mServerUrl = isNull(serverUrl, "Server URI must not be null");
         mCredentials = isNull(credentials, "User credentials must not be null");
+        mService = RepoManager.createService(mServerUrl, mCredentials);
     }
 
     @Override
     public UserAccount run() throws APIException {
-        UserAccount userAccount = getUserAccount();
+        // First, we need to get UserAccount
+        final Map<String, String> QUERY_PARAMS = new HashMap<>();
+        QUERY_PARAMS.put("fields", UserAccount.ALL_USER_ACCOUNT_FIELDS);
+        UserAccount userAccount = mService.getCurrentUserAccount(QUERY_PARAMS);
+
+        // Second, we need to get SystemInfo about server.
+        SystemInfo systemInfo = mService.getSystemInfo();
+
         // if we got here, it means http
         // request was executed successfully
-        saveMetaData();
-        saveUserAccount(userAccount);
-        return userAccount;
-    }
 
-    private UserAccount getUserAccount() {
-        ITask<UserAccount> task = new LoginUserTask(
-                mDhisManager, mServerUri, mCredentials
-        );
-        return task.run();
-    }
+        /* save user credentials */
+        Session session = new Session(mServerUrl, mCredentials);
+        SessionManager.getInstance().put(session);
 
-    private void saveMetaData() {
-        Session session = new Session(
-                mServerUri, mCredentials
-        );
-        mSessionHandler.put(session);
-    }
-
-    private void saveUserAccount(UserAccount userAccount) {
+        /* save user account details */
         mUserAccountHandler.put(userAccount);
+
+        /* get server time zone and save it */
+        TimeZone serverTimeZone = systemInfo.getServerDate()
+                .getZone().toTimeZone();
+        mLastUpdatedPreferences.setServerTimeZone(serverTimeZone);
+        return userAccount;
     }
 }

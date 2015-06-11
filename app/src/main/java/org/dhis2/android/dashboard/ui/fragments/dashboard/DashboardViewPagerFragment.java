@@ -29,7 +29,6 @@
 package org.dhis2.android.dashboard.ui.fragments.dashboard;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -38,18 +37,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.Model;
+
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Dashboard;
-import org.dhis2.android.dashboard.api.persistence.DbManager;
-import org.dhis2.android.dashboard.api.persistence.database.DbContract;
-import org.dhis2.android.dashboard.api.persistence.handlers.DashboardHandler;
-import org.dhis2.android.dashboard.api.persistence.loaders.CursorLoaderBuilder;
-import org.dhis2.android.dashboard.api.persistence.loaders.Transformation;
+import org.dhis2.android.dashboard.api.models.Dashboard$Table;
+import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
+import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.views.SlidingTabLayout;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -87,10 +88,10 @@ public class DashboardViewPagerFragment extends BaseFragment implements LoaderCa
     @Override
     public Loader<List<Dashboard>> onCreateLoader(int id, Bundle state) {
         if (id == LOADER_ID && isAdded()) {
-            return CursorLoaderBuilder.forUri(DbContract.Dashboards.CONTENT_URI)
-                    .projection(DashboardHandler.PROJECTION)
-                    .transformation(new DbTransformer())
-                    .build(getActivity().getApplicationContext());
+            List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
+            tablesToTrack.add(Dashboard.class);
+            return new DbLoader<>(getActivity().getApplicationContext(),
+                    tablesToTrack, new DashboardQuery());
         }
         return null;
     }
@@ -110,12 +111,10 @@ public class DashboardViewPagerFragment extends BaseFragment implements LoaderCa
         }
     }
 
-    static class DbTransformer implements Transformation<List<Dashboard>> {
+    private static class DashboardQuery implements Query<List<Dashboard>> {
 
-        @Override public List<Dashboard> transform(Context context, Cursor cursor) {
-            List<Dashboard> dashboards = DbManager.with(Dashboard.class).map(cursor, false);
-            Collections.sort(dashboards, Dashboard.NAME_COMPARATOR);
-            return dashboards;
+        @Override public List<Dashboard> query(Context context) {
+            return new Select().from(Dashboard.class).queryList();
         }
     }
 }

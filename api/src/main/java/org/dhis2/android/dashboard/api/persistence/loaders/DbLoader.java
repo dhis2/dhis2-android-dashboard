@@ -37,7 +37,7 @@ import com.raizlabs.android.dbflow.structure.Model;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.dhis2.mobile.sdk.utils.Preconditions.isNull;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 
 public class DbLoader<T> extends AsyncTaskLoader<T> {

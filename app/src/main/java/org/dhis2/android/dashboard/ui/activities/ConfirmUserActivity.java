@@ -40,9 +40,9 @@ import android.widget.EditText;
 import com.squareup.otto.Subscribe;
 
 import org.dhis2.android.dashboard.R;
-import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.network.models.Credentials;
+import org.dhis2.android.dashboard.api.models.Credentials;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

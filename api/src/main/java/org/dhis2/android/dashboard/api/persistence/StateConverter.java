@@ -26,24 +26,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.network.models;
+package org.dhis2.android.dashboard.api.persistence;
 
-import static org.dhis2.mobile.sdk.utils.Preconditions.isNull;
+import com.raizlabs.android.dbflow.converter.TypeConverter;
 
-public final class Credentials {
-    private String username;
-    private String password;
+import org.dhis2.android.dashboard.api.models.State;
 
-    public Credentials(String username, String password) {
-        this.username = isNull(username, "Username must not be null");
-        this.password = isNull(password, "Password must not be null");
+@com.raizlabs.android.dbflow.annotation.TypeConverter
+public final class StateConverter extends TypeConverter<String, State> {
+
+    @Override public String getDBValue(State model) {
+        return model.toString();
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
+    @Override public State getModelValue(String data) {
+        return State.valueOf(data);
     }
 }

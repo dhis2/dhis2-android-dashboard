@@ -26,15 +26,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence;
+package org.dhis2.android.dashboard.api.persistence.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.dhis2.mobile.sdk.persistence.DateTimeConverter;
-import org.dhis2.mobile.sdk.persistence.models.UserAccount;
+import org.dhis2.android.dashboard.api.persistence.DateTimeConverter;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 
-import static org.dhis2.mobile.sdk.utils.Preconditions.isNull;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public final class UserAccountHandler {
     private static final String USER_ACCOUNT_PREFERENCES = "userAccountPreferences";

@@ -31,6 +31,7 @@ package org.dhis2.android.dashboard.api.utils;
 import org.dhis2.android.dashboard.api.models.BaseIdentifiableModel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,39 +39,48 @@ import java.util.Map;
 import java.util.Set;
 
 public final class DbUtils {
+
     private DbUtils() {
         // no instances
     }
 
-    public static <T extends BaseIdentifiableModel> Map<String, T> toMap(List<T> items) {
+    public static <T extends BaseIdentifiableModel> Map<String, T> toMap(Collection<T> objects) {
         Map<String, T> map = new HashMap<>();
-        if (items != null && items.size() > 0) {
-            for (T item : items) {
-                map.put(item.getId(), item);
+        if (objects != null && objects.size() > 0) {
+            for (T object : objects) {
+                if (object.getId() != null) {
+                    map.put(object.getId(), object);
+                }
             }
         }
         return map;
     }
 
-    public static <T extends BaseIdentifiableModel> Set<String> getIds(List<T> items) {
-        Set<String> set = new HashSet<>();
-        if (items != null && !items.isEmpty()) {
-            for (T item : items) {
-                set.add(item.getId());
+    public static <T extends BaseIdentifiableModel> List<String> toListIds(List<T> objects) {
+        List<String> ids = new ArrayList<>();
+        if (objects != null && objects.size() > 0) {
+            for (T object : objects) {
+                ids.add(object.getId());
             }
         }
-        return set;
+        return ids;
     }
 
-    public static <T extends BaseIdentifiableModel> List<T> filter(List<T> items) {
-        List<T> filteredItems = new ArrayList<>();
-        if (items != null && !items.isEmpty()) {
-            for (T item : items) {
-                if (item.isItemComplete()) {
-                    filteredItems.add(item);
-                }
+    public static <T extends BaseIdentifiableModel> Set<String> toSetIds(List<T> objects) {
+        Set<String> ids = new HashSet<>();
+        if (objects != null && objects.size() > 0) {
+            for (T object : objects) {
+                ids.add(object.getId());
             }
         }
-        return filteredItems;
+        return ids;
+    }
+
+    public static <T extends BaseIdentifiableModel> void print(List<T> items) {
+        if (items != null && items.size() > 0) {
+            for (BaseIdentifiableModel item : items) {
+                System.out.println("Name: " + item.getName());
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-package org.dhis2.android.dashboard.api.persistence.models;
+package org.dhis2.android.dashboard.api.models;
 
 
 import org.joda.time.DateTime;

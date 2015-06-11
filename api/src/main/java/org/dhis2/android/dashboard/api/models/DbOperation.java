@@ -1,8 +1,8 @@
-package org.dhis2.android.dashboard.api.persistence.models;
+package org.dhis2.android.dashboard.api.models;
 
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import static org.dhis2.mobile.sdk.utils.Preconditions.isNull;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 /**
  * This class is intended to implement partial
