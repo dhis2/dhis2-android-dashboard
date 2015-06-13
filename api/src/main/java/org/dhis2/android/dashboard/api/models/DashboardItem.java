@@ -28,6 +28,8 @@
 
 package org.dhis2.android.dashboard.api.models;
 
+import android.util.Log;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -42,13 +44,19 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
+import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.text.TextUtils.isEmpty;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
+
 @Table(databaseName = DbDhis.NAME)
 public final class DashboardItem extends BaseModel implements BaseIdentifiableModel {
+    private static final String TAG = DashboardItem.class.getSimpleName();
+
     private static final String DASHBOARD_KEY = "dashboard";
 
     public static final String SHAPE_NORMAL = "normal";
@@ -61,7 +69,7 @@ public final class DashboardItem extends BaseModel implements BaseIdentifiableMo
     @JsonProperty("created") @Column @NotNull DateTime created;
     @JsonProperty("lastUpdated") @Column @NotNull DateTime lastUpdated;
     @JsonProperty("access") @Column @NotNull Access access;
-    @JsonProperty("type") @Column @NotNull String type;
+    @JsonProperty("type") @Column String type;
     @JsonProperty("shape") @Column String shape;
 
     @JsonIgnore @Column @ForeignKey(
@@ -71,76 +79,264 @@ public final class DashboardItem extends BaseModel implements BaseIdentifiableMo
     ) Dashboard dashboard;
 
     // DashboardElements
-    @JsonProperty("chart") private DashboardElement chart;
-    @JsonProperty("eventChart") private DashboardElement eventChart;
-    @JsonProperty("map") private DashboardElement map;
-    @JsonProperty("reportTable") private DashboardElement reportTable;
-    @JsonProperty("eventReport") private DashboardElement eventReport;
-    @JsonProperty("users") private List<DashboardElement> users;
-    @JsonProperty("reports") private List<DashboardElement> reports;
-    @JsonProperty("resources") private List<DashboardElement> resources;
-    @JsonProperty("reportTables") private List<DashboardElement> reportTables;
-    @JsonProperty("messages") private boolean messages;
+    @JsonProperty("chart") DashboardElement chart;
+    @JsonProperty("eventChart") DashboardElement eventChart;
+    @JsonProperty("map") DashboardElement map;
+    @JsonProperty("reportTable") DashboardElement reportTable;
+    @JsonProperty("eventReport") DashboardElement eventReport;
+    @JsonProperty("users") List<DashboardElement> users;
+    @JsonProperty("reports") List<DashboardElement> reports;
+    @JsonProperty("resources") List<DashboardElement> resources;
+    @JsonProperty("reportTables") List<DashboardElement> reportTables;
+    @JsonProperty("messages") boolean messages;
+
+    public DashboardItem() {
+        state = State.SYNCED;
+        shape = SHAPE_NORMAL;
+    }
+
+    /**
+     * This method will change the state of the model to TO_DELETE if the model was already synced to the server.
+     * If model was created only locally, it will delete it from embedded database.
+     */
+    @JsonIgnore public void softDelete() {
+        if (state == State.TO_POST) {
+            super.delete();
+        } else {
+            state = State.TO_DELETE;
+            super.save();
+        }
+    }
+
+    @JsonIgnore public boolean addDashboardElement(ApiResource resource) {
+        isNull(resource, "ApiResource object must not be null");
+
+        if (!resource.getType().equals(getType())) {
+            throw new IllegalArgumentException("ApiResource is not compatible " +
+                    "with this DashboardItem");
+        }
+
+        switch (resource.getType()) {
+            case ApiResource.TYPE_USERS:
+            case ApiResource.TYPE_REPORTS:
+            case ApiResource.TYPE_RESOURCES:
+            case ApiResource.TYPE_REPORT_TABLES: {
+                if (getElementsCount() > 8) {
+                    return false;
+                }
+
+                DashboardElement element = new DashboardElement();
+                element.setId(resource.getId());
+                element.setName(resource.getName());
+                element.setCreated(resource.getCreated());
+                element.setLastUpdated(resource.getLastUpdated());
+                element.setDisplayName(resource.getDisplayName());
+                element.setState(State.TO_POST);
+                element.setDashboardItem(this);
+                element.save();
+
+                return true;
+            }
+            default:
+                throw new IllegalArgumentException("You cannot add " + resource.getType() +
+                        " resource more that once to DashboardItem");
+        }
+    }
+
+    @JsonIgnore public boolean removeDashboardElement(DashboardElement element) {
+        isNull(element, "DashboardElement object must not be null");
+
+        long elementsCount = getElementsCount();
+
+        DashboardElement assignedElement = new Select()
+                .from(DashboardElement.class)
+                .where(
+                        Condition.column(DashboardElement$Table.DASHBOARDITEM_DASHBOARDITEM).is(localId),
+                        Condition.column(DashboardElement$Table.LOCALID).is(element.getLocalId()))
+                .querySingle();
+
+        if (assignedElement == null) {
+            Log.d(TAG, "Could not find DashboardElement to remove");
+            return false;
+        }
+
+        if (assignedElement.getState().equals(State.TO_POST)) {
+            assignedElement.delete();
+        } else {
+            assignedElement.setState(State.TO_DELETE);
+            assignedElement.save();
+        }
+
+        if (elementsCount <= 1) {
+            if (getState() == State.TO_POST) {
+                delete();
+            } else {
+                setState(State.TO_DELETE);
+                save();
+            }
+        }
+
+        return true;
+    }
+
+    @JsonIgnore private long getElementsCount() {
+        return new Select().from(DashboardElement.class)
+                .where(
+                        Condition.column(DashboardElement$Table.DASHBOARDITEM_DASHBOARDITEM).is(localId),
+                        Condition.column(DashboardElement$Table.STATE).isNot(State.TO_DELETE.toString()))
+                .count();
+    }
+
+    /**
+     * @param dashboard Dashboard object to which we want to bind dashboard item
+     * @param resource  ApiResource which will be the content of our item.
+     * @return DashboardItem
+     */
+    @JsonIgnore public static DashboardItem createAndSaveDashboardItem(Dashboard dashboard,
+                                                                       ApiResource resource) {
+        isNull(dashboard, "Dashboard object must not be null");
+        isNull(resource, "ApiResource object must not be null");
+
+        /* first we need to create dashboard item itself and tight it to Dashboard */
+        DashboardItem item = new DashboardItem();
+        DateTime currentTime = DateTimeManager.getInstance()
+                .getCurrentDateTimeInServerTimeZone();
+        item.setCreated(currentTime);
+        item.setLastUpdated(currentTime);
+        item.setAccess(Access.provideDefaultAccess());
+        item.setType(resource.getType());
+        item.setDashboard(dashboard);
+        item.setState(State.TO_POST);
+        item.setShape(SHAPE_NORMAL);
+        item.save();
+
+        /* reach dashboard item requires to contain at least one
+        dashboard resource assigned to it */
+        DashboardElement assignedElement = new DashboardElement();
+        assignedElement.setId(resource.getId());
+        assignedElement.setName(resource.getName());
+        assignedElement.setCreated(resource.getCreated());
+        assignedElement.setLastUpdated(resource.getLastUpdated());
+        assignedElement.setDisplayName(resource.getDisplayName());
+        assignedElement.setState(State.TO_POST);
+        assignedElement.setDashboardItem(item);
+        assignedElement.save();
+
+        return item;
+    }
 
     @JsonIgnore public static void readElementsIntoItem(DashboardItem item) {
+        if (isEmpty(item.getType())) {
+            return;
+        }
+
         switch (item.getType()) {
-            case DashboardElement.TYPE_CHART: {
-                item.setChart(querySingleElement(item));
+            case ApiResource.TYPE_CHART: {
+                item.setChart(queryRelatedDashboardElementFromDb(item));
                 break;
             }
-            case DashboardElement.TYPE_EVENT_CHART: {
-                item.setEventChart(querySingleElement(item));
+            case ApiResource.TYPE_EVENT_CHART: {
+                item.setEventChart(queryRelatedDashboardElementFromDb(item));
                 break;
             }
-            case DashboardElement.TYPE_MAP: {
-                item.setMap(querySingleElement(item));
+            case ApiResource.TYPE_MAP: {
+                item.setMap(queryRelatedDashboardElementFromDb(item));
                 break;
             }
-            case DashboardElement.TYPE_REPORT_TABLE: {
-                item.setReportTable(querySingleElement(item));
+            case ApiResource.TYPE_REPORT_TABLE: {
+                item.setReportTable(queryRelatedDashboardElementFromDb(item));
                 break;
             }
-            case DashboardElement.TYPE_EVENT_REPORT: {
-                item.setEventReport(querySingleElement(item));
+            case ApiResource.TYPE_EVENT_REPORT: {
+                item.setEventReport(queryRelatedDashboardElementFromDb(item));
                 break;
             }
-            case DashboardElement.TYPE_USERS: {
-                item.setUsers(queryElements(item));
+            case ApiResource.TYPE_USERS: {
+                item.setUsers(queryRelatedDashboardElementsFromDb(item));
                 break;
             }
-            case DashboardElement.TYPE_REPORTS: {
-                item.setReports(queryElements(item));
+            case ApiResource.TYPE_REPORTS: {
+                item.setReports(queryRelatedDashboardElementsFromDb(item));
                 break;
             }
-            case DashboardElement.TYPE_RESOURCES: {
-                item.setResources(queryElements(item));
+            case ApiResource.TYPE_RESOURCES: {
+                item.setResources(queryRelatedDashboardElementsFromDb(item));
                 break;
             }
-            case DashboardElement.TYPE_REPORT_TABLES: {
-                item.setReportTables(queryElements(item));
+            case ApiResource.TYPE_REPORT_TABLES: {
+                item.setReportTables(queryRelatedDashboardElementsFromDb(item));
                 break;
             }
         }
     }
 
-    @JsonIgnore private static DashboardElement querySingleElement(DashboardItem item) {
-        ElementToItemRelation relation = new Select().from(ElementToItemRelation.class)
-                .where(Condition.column(ElementToItemRelation$Table
+    @JsonIgnore public static List<DashboardElement> getDashboardElementsFromItem(DashboardItem item) {
+        isNull(item, "DashboardItem object must not be null");
+
+        List<DashboardElement> elements = new ArrayList<>();
+        if (isEmpty(item.getType())) {
+            return elements;
+        }
+
+        switch (item.getType()) {
+            case ApiResource.TYPE_CHART: {
+                elements.add(item.getChart());
+                break;
+            }
+            case ApiResource.TYPE_EVENT_CHART: {
+                elements.add(item.getEventChart());
+                break;
+            }
+            case ApiResource.TYPE_MAP: {
+                elements.add(item.getMap());
+                break;
+            }
+            case ApiResource.TYPE_REPORT_TABLE: {
+                elements.add(item.getReportTable());
+                break;
+            }
+            case ApiResource.TYPE_EVENT_REPORT: {
+                elements.add(item.getEventReport());
+                break;
+            }
+            case ApiResource.TYPE_USERS: {
+                elements.addAll(item.getUsers());
+                break;
+            }
+            case ApiResource.TYPE_REPORTS: {
+                elements.addAll(item.getReports());
+                break;
+            }
+            case ApiResource.TYPE_RESOURCES: {
+                elements.addAll(item.getResources());
+                break;
+            }
+            case ApiResource.TYPE_REPORT_TABLES: {
+                elements.addAll(item.getReportTables());
+                break;
+            }
+        }
+
+        return elements;
+    }
+
+    @JsonIgnore public static DashboardElement queryRelatedDashboardElementFromDb(DashboardItem item) {
+        return new Select().from(DashboardElement.class)
+                .where(Condition.column(DashboardElement$Table
                         .DASHBOARDITEM_DASHBOARDITEM).is(item.getLocalId()))
                 .querySingle();
-        return relation.getDashboardElement();
     }
 
-    @JsonIgnore private static List<DashboardElement> queryElements(DashboardItem item) {
-        List<ElementToItemRelation> relations = new Select().from(ElementToItemRelation.class)
-                .where(Condition.column(ElementToItemRelation$Table
+    @JsonIgnore public static List<DashboardElement> queryRelatedDashboardElementsFromDb(DashboardItem item) {
+        List<DashboardElement> elements = new Select().from(DashboardElement.class)
+                .where(Condition.column(DashboardElement$Table
                         .DASHBOARDITEM_DASHBOARDITEM).is(item.getLocalId()))
                 .queryList();
-        List<DashboardElement> dashboardElements = new ArrayList<>();
-        for (ElementToItemRelation relation : relations) {
-            dashboardElements.add(relation.getDashboardElement());
+        if (elements == null) {
+            elements = new ArrayList<>();
         }
-        return dashboardElements;
+
+        return elements;
     }
 
     @JsonIgnore public Access getAccess() {
@@ -255,11 +451,13 @@ public final class DashboardItem extends BaseModel implements BaseIdentifiableMo
         this.messages = messages;
     }
 
-    @JsonIgnore public long getLocalId() {
+    @JsonIgnore @Override
+    public long getLocalId() {
         return localId;
     }
 
-    @JsonIgnore public void setLocalId(long localId) {
+    @JsonIgnore @Override
+    public void setLocalId(long localId) {
         this.localId = localId;
     }
 

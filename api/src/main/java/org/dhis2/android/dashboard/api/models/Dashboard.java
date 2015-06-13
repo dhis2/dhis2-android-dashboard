@@ -34,9 +34,12 @@ import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
+import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.joda.time.DateTime;
 
 import java.util.List;
@@ -53,22 +56,78 @@ public final class Dashboard extends BaseModel implements BaseIdentifiableModel 
     @JsonProperty("displayName") @Column String displayName;
     @JsonProperty("dashboardItems") List<DashboardItem> dashboardItems;
 
-    @JsonIgnore
-    public State getState() {
+    public Dashboard() {
+        state = State.SYNCED;
+    }
+
+    @JsonIgnore public static List<DashboardItem> queryRelatedDashboardItems(Dashboard dashboard) {
+        return new Select().from(DashboardItem.class)
+                .where(Condition.column(DashboardItem$Table
+                        .DASHBOARD_DASHBOARD).is(dashboard.getLocalId()))
+                .queryList();
+    }
+
+    /**
+     * Note! This method will change the name and state of model.
+     * <p/>
+     * If the current state of model is State.TO_DELETE or State.TO_POST,
+     * state won't be changed.
+     */
+    @JsonIgnore public void modifyName(String newName) {
+        name = newName;
+        displayName = newName;
+
+        if (state != State.TO_DELETE && state != State.TO_POST) {
+            state = State.TO_UPDATE;
+        }
+
+        super.save();
+    }
+
+    /**
+     * This method will change the state of the model to TO_DELETE if the model was already synced to the server.
+     * If model was created only locally, it will delete it from embedded database.
+     */
+    @JsonIgnore public void softDelete() {
+        if (state == State.TO_POST) {
+            super.delete();
+        } else {
+            state = State.TO_DELETE;
+            super.save();
+        }
+    }
+
+    /**
+     * @param name Name and display name of new dashboard.
+     */
+    @JsonIgnore public static Dashboard createAndSaveDashboard(String name) {
+        DateTime currentDateTime = DateTimeManager.getInstance()
+                .getCurrentDateTimeInServerTimeZone();
+        Dashboard dashboard = new Dashboard();
+        dashboard.setState(State.TO_POST);
+        dashboard.setName(name);
+        dashboard.setDisplayName(name);
+        dashboard.setCreated(currentDateTime);
+        dashboard.setLastUpdated(currentDateTime);
+        dashboard.setAccess(Access.provideDefaultAccess());
+        dashboard.save();
+        return dashboard;
+    }
+
+    @JsonIgnore public State getState() {
         return state;
     }
 
-    @JsonIgnore
-    public void setState(State state) {
+    @JsonIgnore public void setState(State state) {
         this.state = state;
     }
 
-    @JsonIgnore
+    @JsonIgnore @Override
     public long getLocalId() {
         return localId;
     }
 
-    @JsonIgnore
+    @JsonIgnore @Override
     public void setLocalId(long localId) {
         this.localId = localId;
     }

@@ -35,7 +35,7 @@ import org.dhis2.android.dashboard.api.models.Credentials;
 import org.dhis2.android.dashboard.api.models.Session;
 import org.dhis2.android.dashboard.api.network.DhisApi;
 import org.dhis2.android.dashboard.api.network.RepoManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.LastUpdatedPreferences;
+import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.UserAccountHandler;
 import org.dhis2.android.dashboard.api.models.SystemInfo;
@@ -51,14 +51,11 @@ public final class LogInUserController implements IController<UserAccount> {
     private final HttpUrl mServerUrl;
     private final Credentials mCredentials;
     private final UserAccountHandler mUserAccountHandler;
-    private final LastUpdatedPreferences mLastUpdatedPreferences;
     private final DhisApi mService;
 
     public LogInUserController(UserAccountHandler userAccountHandler,
-                               LastUpdatedPreferences lastUpdatedPreferences,
                                HttpUrl serverUrl, Credentials credentials) {
         mUserAccountHandler = isNull(userAccountHandler, "UserAccountHandler must not be null");
-        mLastUpdatedPreferences = isNull(lastUpdatedPreferences, "LastUpdatedPreferences must not be null");
         mServerUrl = isNull(serverUrl, "Server URI must not be null");
         mCredentials = isNull(credentials, "User credentials must not be null");
         mService = RepoManager.createService(mServerUrl, mCredentials);
@@ -87,7 +84,8 @@ public final class LogInUserController implements IController<UserAccount> {
         /* get server time zone and save it */
         TimeZone serverTimeZone = systemInfo.getServerDate()
                 .getZone().toTimeZone();
-        mLastUpdatedPreferences.setServerTimeZone(serverTimeZone);
+        DateTimeManager.getInstance()
+                .setServerTimeZone(serverTimeZone);
         return userAccount;
     }
 }

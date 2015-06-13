@@ -29,8 +29,10 @@
 package org.dhis2.android.dashboard.api.models;
 
 public interface BaseIdentifiableModel extends TimeStampedModel {
+    void setLocalId(long id);
     void setId(String id);
     void setName(String name);
+    long getLocalId();
     String getId();
     String getName();
 }

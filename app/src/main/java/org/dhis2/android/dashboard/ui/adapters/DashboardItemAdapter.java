@@ -43,7 +43,7 @@ import com.squareup.picasso.Picasso;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.models.Access;
-import org.dhis2.android.dashboard.api.models.DashboardElement;
+import org.dhis2.android.dashboard.api.models.ApiResource;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.utils.PicassoProvider;
 
@@ -98,24 +98,24 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         holder.onItemBodyClickListener.setDashboardItem(item);
         holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
 
-        if (DashboardElement.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
+        if (ApiResource.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
             String request = buildImageUrl("api/charts/", item.getChart().getId());
             handleItemsWithImages(item.getChart().getName(), request, holder);
-        } else if (DashboardElement.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
+        } else if (ApiResource.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
             String request = buildImageUrl("api/maps/", item.getMap().getId());
             handleItemsWithImages(item.getMap().getName(), request, holder);
-        } else if (DashboardElement.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
+        } else if (ApiResource.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
             String request = buildImageUrl("api/eventCharts/", item.getEventChart().getId());
             handleItemsWithImages(item.getEventChart().getName(), request, holder);
-        } else if (DashboardElement.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
+        } else if (ApiResource.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
             handleItemsWithoutImages(item.getReportTable().getName(), holder);
-        } else if (DashboardElement.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
+        } else if (ApiResource.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
             handleItemsWithoutImages(item.getEventReport().getName(), holder);
-        } else if (DashboardElement.TYPE_USERS.equals(item.getType())) {
+        } else if (ApiResource.TYPE_USERS.equals(item.getType())) {
             handleItemsWithoutImages(getContext().getString(R.string.users), holder);
-        } else if (DashboardElement.TYPE_REPORTS.equals(item.getType())) {
+        } else if (ApiResource.TYPE_REPORTS.equals(item.getType())) {
             handleItemsWithoutImages(getContext().getString(R.string.reports), holder);
-        } else if (DashboardElement.TYPE_RESOURCES.equals(item.getType())) {
+        } else if (ApiResource.TYPE_RESOURCES.equals(item.getType())) {
             handleItemsWithoutImages(getContext().getString(R.string.resources), holder);
         }
 
@@ -173,9 +173,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
 
         private boolean isItemShareable() {
             return mDashboardItem != null && (
-                    DashboardElement.TYPE_CHART.equals(mDashboardItem.getType()) ||
-                            DashboardElement.TYPE_MAP.equals(mDashboardItem.getType()) ||
-                            DashboardElement.TYPE_REPORT_TABLE.equals(mDashboardItem.getType())
+                    ApiResource.TYPE_CHART.equals(mDashboardItem.getType()) ||
+                            ApiResource.TYPE_MAP.equals(mDashboardItem.getType()) ||
+                            ApiResource.TYPE_REPORT_TABLE.equals(mDashboardItem.getType())
             );
         }
 

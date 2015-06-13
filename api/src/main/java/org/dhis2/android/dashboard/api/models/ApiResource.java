@@ -31,9 +31,6 @@ package org.dhis2.android.dashboard.api.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.ForeignKey;
-import com.raizlabs.android.dbflow.annotation.ForeignKeyAction;
-import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
@@ -43,68 +40,52 @@ import org.dhis2.android.dashboard.api.persistence.DbDhis;
 import org.joda.time.DateTime;
 
 @Table(databaseName = DbDhis.NAME)
-public final class DashboardElement extends BaseModel implements BaseIdentifiableModel {
-    static final String DASHBOARD_ITEM_KEY = "dashboardItem";
+public final class ApiResource extends BaseModel implements BaseIdentifiableModel, DisplayNameModel {
+    public static final String TYPE_CHART = "chart";
+    public static final String TYPE_EVENT_CHART = "eventChart";
+    public static final String TYPE_MAP = "map";
+    public static final String TYPE_REPORT_TABLE = "reportTable";
+    public static final String TYPE_EVENT_REPORT = "eventReport";
+    public static final String TYPE_USERS = "users";
+    public static final String TYPE_REPORTS = "reports";
+    public static final String TYPE_RESOURCES = "resources";
+    public static final String TYPE_REPORT_TABLES = "reportTables";
+    public static final String TYPE_MESSAGES = "messages";
 
-    @JsonIgnore @Column @PrimaryKey(autoincrement = true) long localId;
-    @JsonIgnore @Column @NotNull State state;
-
-    @JsonIgnore @Column @NotNull @ForeignKey(
-            references = {
-                    @ForeignKeyReference(columnName = DASHBOARD_ITEM_KEY, columnType = long.class, foreignColumnName = "localId")
-            }, saveForeignKeyModel = false, onDelete = ForeignKeyAction.CASCADE
-    ) DashboardItem dashboardItem;
-
-    @JsonProperty("id") @Column String id;
+    @JsonProperty("id") @Column @PrimaryKey String id;
+    @JsonProperty("created") @Column @NotNull DateTime created;
+    @JsonProperty("lastUpdated") @Column @NotNull DateTime lastUpdated;
     @JsonProperty("name") @Column String name;
-    @JsonProperty("created") @Column DateTime created;
-    @JsonProperty("lastUpdated") @Column DateTime lastUpdated;
     @JsonProperty("displayName") @Column String displayName;
+    @JsonIgnore @Column @NotNull String type;
 
-    public DashboardElement() {
-        state = State.SYNCED;
+
+    @JsonIgnore public String getDisplayName() {
+        return displayName;
     }
 
-    @JsonIgnore @Override
-    public long getLocalId() {
-        return localId;
+    @JsonIgnore public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
-    @JsonIgnore @Override
-    public void setLocalId(long localId) {
-        this.localId = localId;
+    @JsonIgnore public String getType() {
+        return type;
     }
 
-    @JsonIgnore public State getState() {
-        return state;
-    }
-
-    @JsonIgnore public void setState(State state) {
-        this.state = state;
-    }
-
-    @JsonIgnore public DashboardItem getDashboardItem() {
-        return dashboardItem;
-    }
-
-    @JsonIgnore public void setDashboardItem(DashboardItem dashboardItem) {
-        this.dashboardItem = dashboardItem;
+    @JsonIgnore public void setType(String type) {
+        this.type = type;
     }
 
     @JsonIgnore @Override public String getId() {
         return id;
     }
 
+    @JsonIgnore @Override public void setLocalId(long id) {
+        // stub implementation
+    }
+
     @JsonIgnore @Override public void setId(String id) {
         this.id = id;
-    }
-
-    @JsonIgnore @Override public String getName() {
-        return name;
-    }
-
-    @JsonIgnore @Override public void setName(String name) {
-        this.name = name;
     }
 
     @JsonIgnore @Override public DateTime getCreated() {
@@ -123,11 +104,42 @@ public final class DashboardElement extends BaseModel implements BaseIdentifiabl
         this.lastUpdated = lastUpdated;
     }
 
-    @JsonIgnore public String getDisplayName() {
-        return displayName;
+    @JsonIgnore @Override public String getName() {
+        return name;
     }
 
-    @JsonIgnore public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    @JsonIgnore @Override public void setName(String name) {
+        this.name = name;
+    }
+
+    @JsonIgnore @Override public long getLocalId() {
+        // stub implementation
+        return 0;
+    }
+
+    @JsonIgnore public static String getResourceName(String type) {
+        switch (type) {
+            case ApiResource.TYPE_CHART:
+                return "charts";
+            case ApiResource.TYPE_EVENT_CHART:
+                return "eventCharts";
+            case ApiResource.TYPE_MAP:
+                return "maps";
+            case ApiResource.TYPE_REPORT_TABLE:
+                return "reportTables";
+            case ApiResource.TYPE_EVENT_REPORT:
+                return "eventReports";
+            case ApiResource.TYPE_USERS:
+                return "users";
+            case ApiResource.TYPE_REPORTS:
+                return "reports";
+            case ApiResource.TYPE_RESOURCES:
+                return "documents";
+            case ApiResource.TYPE_REPORT_TABLES:
+                return "reportTables";
+            default: {
+                throw new IllegalArgumentException("Unsupported ApiResource type");
+            }
+        }
     }
 }

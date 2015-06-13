@@ -37,7 +37,7 @@ import java.util.Map;
 
 import retrofit.RetrofitError;
 
-import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
+import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toMap;
 
 public abstract class AbsBaseController<T extends BaseIdentifiableModel> implements IController<List<T>> {
 
@@ -60,16 +60,16 @@ public abstract class AbsBaseController<T extends BaseIdentifiableModel> impleme
             T persistedItem = persistedItemsMap.get(id);
 
             if (updatedItem != null) {
+                if (persistedItem != null) {
+                    updatedItem.setLocalId(persistedItem.getLocalId());
+                }
                 existingItemsMap.put(id, updatedItem);
                 continue;
             }
 
             if (persistedItem != null) {
                 existingItemsMap.put(id, persistedItem);
-                continue;
             }
-
-            throw new IllegalArgumentException("MetaData element is absent");
         }
 
         return new ArrayList<>(existingItemsMap.values());

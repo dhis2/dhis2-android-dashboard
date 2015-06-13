@@ -47,9 +47,9 @@ import com.raizlabs.android.dbflow.structure.Model;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Access;
 import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.models.DashboardItem$Table;
-import org.dhis2.android.dashboard.api.models.ElementToItemRelation;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter;
@@ -146,7 +146,7 @@ public class DashboardFragment extends BaseFragment
             we explicitly state that we want only not null values  */
             List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
             tablesToTrack.add(DashboardItem.class);
-            tablesToTrack.add(ElementToItemRelation.class);
+            tablesToTrack.add(DashboardElement.class);
             return new DbLoader<>(getActivity().getApplicationContext(),
                     tablesToTrack, new ItemsQuery(args.getLong(DASHBOARD_ID)));
         }

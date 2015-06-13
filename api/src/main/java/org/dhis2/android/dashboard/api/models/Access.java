@@ -39,6 +39,21 @@ public final class Access {
     @JsonProperty("update") private boolean update;
     @JsonProperty("write") private boolean write;
 
+    /**
+     * Method which returns Access objects with
+     * all rights set to true
+     */
+    @JsonIgnore public static Access provideDefaultAccess() {
+        Access access = new Access();
+        access.setDelete(true);
+        access.setExternalize(true);
+        access.setManage(true);
+        access.setRead(true);
+        access.setWrite(true);
+        access.setUpdate(true);
+        return access;
+    }
+
     @JsonIgnore public boolean isDelete() {
         return delete;
     }

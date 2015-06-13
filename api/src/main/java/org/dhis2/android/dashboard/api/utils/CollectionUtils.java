@@ -38,9 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public final class DbUtils {
+public final class CollectionUtils {
 
-    private DbUtils() {
+    private CollectionUtils() {
         // no instances
     }
 

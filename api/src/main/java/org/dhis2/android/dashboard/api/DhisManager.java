@@ -40,7 +40,7 @@ import org.dhis2.android.dashboard.api.controllers.LogOutUserController;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.models.Credentials;
 import org.dhis2.android.dashboard.api.models.Session;
-import org.dhis2.android.dashboard.api.persistence.preferences.LastUpdatedPreferences;
+import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.UserAccountHandler;
 import org.dhis2.android.dashboard.api.models.UserAccount;
@@ -54,7 +54,6 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 public class DhisManager {
     private static DhisManager mDhisManager;
     private final UserAccountHandler mUserAccountHandler;
-    private final LastUpdatedPreferences mLastUpdatedPreferences;
     private Session mSession;
 
     public static void init(Context context) {
@@ -74,8 +73,8 @@ public class DhisManager {
 
     private DhisManager(Context context) {
         SessionManager.init(context);
+        DateTimeManager.init(context);
         mUserAccountHandler = new UserAccountHandler(context);
-        mLastUpdatedPreferences = new LastUpdatedPreferences(context);
 
         // fetch meta data from disk
         readSession();
@@ -103,7 +102,7 @@ public class DhisManager {
     private UserAccount signInUser(HttpUrl serverUrl,
                                    Credentials credentials) throws APIException {
         IController<UserAccount> controller = new LogInUserController(
-                mUserAccountHandler, mLastUpdatedPreferences, serverUrl, credentials);
+                mUserAccountHandler, serverUrl, credentials);
         UserAccount userAccount = controller.run();
 
         // fetch meta data from disk
@@ -139,7 +138,7 @@ public class DhisManager {
     }
 
     public void syncDashboards() throws APIException {
-        runController(new DashboardSyncController(this, mLastUpdatedPreferences));
+        runController(new DashboardSyncController(this));
     }
 
     public HttpUrl getServerUrl() {

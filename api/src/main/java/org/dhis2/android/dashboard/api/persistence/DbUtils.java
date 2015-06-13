@@ -15,17 +15,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.dhis2.android.dashboard.api.utils.DbUtils.toMap;
+import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toMap;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 /**
  * This class is intended to process list of DbOperations
  * during single database transaction
  */
-public final class DbHelper {
-    private static final String TAG = DbHelper.class.getSimpleName();
+public final class DbUtils {
+    private static final String TAG = DbUtils.class.getSimpleName();
 
-    private DbHelper() {
+    private DbUtils() {
         // no instances
     }
 
