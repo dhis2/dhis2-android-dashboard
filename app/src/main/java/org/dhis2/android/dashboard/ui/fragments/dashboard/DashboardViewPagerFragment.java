@@ -37,6 +37,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -52,13 +53,14 @@ import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class DashboardViewPagerFragment extends BaseFragment
-        implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener {
+        implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener, Toolbar.OnMenuItemClickListener {
     private static final int LOADER_ID = 1233432;
 
     private DashboardAdapter mDashboardAdapter;
@@ -99,13 +101,12 @@ public class DashboardViewPagerFragment extends BaseFragment
 
         mToolbar.setNavigationIcon(R.mipmap.ic_menu);
         mToolbar.setNavigationOnClickListener(this);
-        mToolbar.inflateMenu(R.menu.menu_menu);
         mToolbar.setTitle(R.string.dashboard);
+        mToolbar.inflateMenu(R.menu.menu_dashboard_fragment);
+        mToolbar.setOnMenuItemClickListener(this);
 
         mDashboardAdapter = new DashboardAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mDashboardAdapter);
-
-        getService().syncDashboards();
     }
 
     @Override
@@ -150,10 +151,24 @@ public class DashboardViewPagerFragment extends BaseFragment
         mTabs.setupWithViewPager(mViewPager);
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh: {
+                getService().syncDashboards();
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static class DashboardQuery implements Query<List<Dashboard>> {
 
         @Override public List<Dashboard> query(Context context) {
-            return new Select().from(Dashboard.class).queryList();
+            List<Dashboard> dashboards = new Select()
+                    .from(Dashboard.class).queryList();
+            Collections.sort(dashboards, Dashboard.DISPLAY_NAME_MODEL_COMPARATOR);
+            return dashboards;
         }
     }
 }

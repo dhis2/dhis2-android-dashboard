@@ -54,13 +54,15 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     private final Access mDashboardAccess;
     private final OnItemClickListener mClickListener;
 
-    private Picasso mImageLoader;
+    private final Picasso mImageLoader;
+    private final int mMaxSpanCount;
 
-    public DashboardItemAdapter(Context context, Access dashboardAccess,
+    public DashboardItemAdapter(Context context, Access dashboardAccess, int maxSpanCount,
                                 OnItemClickListener clickListener) {
         super(context, LayoutInflater.from(context));
 
         mDashboardAccess = dashboardAccess;
+        mMaxSpanCount = maxSpanCount;
         mClickListener = clickListener;
         mImageLoader = PicassoProvider.getInstance(context);
     }
@@ -99,13 +101,13 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
 
         if (ApiResource.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
-            String request = buildImageUrl("api/charts/", item.getChart().getId());
+            String request = buildImageUrl("charts", item.getChart().getId());
             handleItemsWithImages(item.getChart().getName(), request, holder);
         } else if (ApiResource.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
-            String request = buildImageUrl("api/maps/", item.getMap().getId());
+            String request = buildImageUrl("maps", item.getMap().getId());
             handleItemsWithImages(item.getMap().getName(), request, holder);
         } else if (ApiResource.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
-            String request = buildImageUrl("api/eventCharts/", item.getEventChart().getId());
+            String request = buildImageUrl("eventCharts", item.getEventChart().getId());
             handleItemsWithImages(item.getEventChart().getName(), request, holder);
         } else if (ApiResource.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
             handleItemsWithoutImages(item.getReportTable().getName(), holder);
@@ -227,8 +229,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
 
     private String buildImageUrl(String resource, String id) {
         return DhisManager.getInstance().getServerUrl().newBuilder()
-                .addEncodedPathSegment(resource).addEncodedPathSegment(id).addEncodedPathSegment("data.png")
-                .addEncodedQueryParameter("width", "480").addEncodedQueryParameter("height", "320")
+                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
+                .addQueryParameter("width", "480").addQueryParameter("height", "320")
                 .toString();
     }
 
@@ -250,6 +252,54 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         holder.itemText.setVisibility(View.VISIBLE);
 
         holder.itemText.setText(text);
+    }
+
+    public int getSpanSize(int position) {
+        if (getItemCount() > position) {
+            DashboardItem dashboardItem = getItem(position);
+
+            String itemShape = dashboardItem.getShape();
+            if (itemShape == null) {
+                itemShape = DashboardItem.SHAPE_NORMAL;
+            }
+
+            switch (itemShape) {
+                case DashboardItem.SHAPE_NORMAL: {
+                    return getSpanSizeNormal();
+                }
+                case DashboardItem.SHAPE_FULL_WIDTH: {
+                    return getSpanSizeFull();
+                }
+                case DashboardItem.SHAPE_DOUBLE_WIDTH: {
+                    return getSpandSizeDouble();
+                }
+            }
+        }
+
+        return 1;
+    }
+
+    private int getSpanSizeNormal() {
+        return 1;
+    }
+
+    private int getSpandSizeDouble() {
+        switch (mMaxSpanCount) {
+            case 1:
+                return 1;
+            case 2:
+                return 1;
+            case 3:
+                return 2;
+            case 4:
+                return 2;
+            default:
+                return 1;
+        }
+    }
+
+    private int getSpanSizeFull() {
+        return mMaxSpanCount;
     }
 
     public interface OnItemClickListener {

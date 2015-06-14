@@ -44,6 +44,7 @@
     <!-- END -->
 
     <!-- START DashboardFragment -->
+    <string name="add_dashboard">Add dashboard</string>
     <string name="refresh">Refresh</string>
     <string name="delete">Delete</string>
     <string name="share_interpretation">Share interpretation</string>

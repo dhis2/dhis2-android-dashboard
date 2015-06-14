@@ -45,7 +45,7 @@ import org.joda.time.DateTime;
 import java.util.List;
 
 @Table(databaseName = DbDhis.NAME)
-public final class Dashboard extends BaseModel implements BaseIdentifiableModel {
+public final class Dashboard extends BaseModel implements BaseIdentifiableModel, DisplayNameModel {
     @JsonIgnore @Column @PrimaryKey(autoincrement = true) long localId;
     @JsonIgnore @Column @NotNull State state;
     @JsonProperty("id") @Column String id;
@@ -172,12 +172,12 @@ public final class Dashboard extends BaseModel implements BaseIdentifiableModel 
         this.name = name;
     }
 
-    @JsonIgnore
+    @JsonIgnore @Override
     public String getDisplayName() {
         return displayName;
     }
 
-    @JsonIgnore
+    @JsonIgnore @Override
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }

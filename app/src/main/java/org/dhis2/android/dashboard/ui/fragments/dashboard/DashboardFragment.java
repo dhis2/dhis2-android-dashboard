@@ -116,12 +116,20 @@ public class DashboardFragment extends BaseFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.inject(this, view);
 
-        mAdapter = new DashboardItemAdapter(getActivity(),
-                getAccessFromBundle(getArguments()), this);
+        final int spanCount = getResources().getInteger(R.integer.column_nums);
 
-        int spanCount = getResources().getInteger(R.integer.column_nums);
+        mAdapter = new DashboardItemAdapter(getActivity(),
+                getAccessFromBundle(getArguments()), spanCount, this);
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), spanCount);
         gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+
+            @Override public int getSpanSize(int position) {
+                return mAdapter.getSpanSize(position);
+            }
+        });
+
         mGridView.setLayoutManager(gridLayoutManager);
         mGridView.setItemAnimator(new DefaultItemAnimator());
         mGridView.addItemDecoration(new GridDividerDecoration(getActivity()
