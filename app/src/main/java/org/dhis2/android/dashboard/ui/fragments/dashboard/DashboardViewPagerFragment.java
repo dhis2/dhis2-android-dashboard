@@ -28,27 +28,28 @@
 
 package org.dhis2.android.dashboard.ui.fragments.dashboard;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Dashboard;
-import org.dhis2.android.dashboard.api.models.Dashboard$Table;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
+import org.dhis2.android.dashboard.ui.activities.INavigationCallback;
 import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
-import org.dhis2.android.dashboard.ui.views.SlidingTabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,12 +57,36 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class DashboardViewPagerFragment extends BaseFragment implements LoaderCallbacks<List<Dashboard>> {
+public class DashboardViewPagerFragment extends BaseFragment
+        implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener {
     private static final int LOADER_ID = 1233432;
+
     private DashboardAdapter mDashboardAdapter;
 
-    @InjectView(R.id.dashboard_tabs) SlidingTabLayout mTabs;
+    @InjectView(R.id.dashboard_tabs) TabLayout mTabs;
     @InjectView(R.id.dashboard_view_pager) ViewPager mViewPager;
+    @InjectView(R.id.toolbar) Toolbar mToolbar;
+
+    INavigationCallback mNavCallback;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (activity instanceof INavigationCallback) {
+            mNavCallback = (INavigationCallback) activity;
+        } else {
+            throw new UnsupportedOperationException("Parent activity must " +
+                    "implement INavigationCallback");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        mNavCallback = null;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -72,9 +97,13 @@ public class DashboardViewPagerFragment extends BaseFragment implements LoaderCa
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.inject(this, view);
 
+        mToolbar.setNavigationIcon(R.mipmap.ic_menu);
+        mToolbar.setNavigationOnClickListener(this);
+        mToolbar.inflateMenu(R.menu.menu_menu);
+        mToolbar.setTitle(R.string.dashboard);
+
         mDashboardAdapter = new DashboardAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mDashboardAdapter);
-        mTabs.setViewPager(mViewPager);
 
         getService().syncDashboards();
     }
@@ -99,16 +128,26 @@ public class DashboardViewPagerFragment extends BaseFragment implements LoaderCa
     @Override
     public void onLoadFinished(Loader<List<Dashboard>> loader, List<Dashboard> data) {
         if (loader.getId() == LOADER_ID && data != null) {
-            mDashboardAdapter.swapData(data);
-            mTabs.setViewPager(mViewPager);
+            setDashboards(data);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<List<Dashboard>> loader) {
         if (loader.getId() == LOADER_ID) {
-            mDashboardAdapter.swapData(null);
+            setDashboards(null);
         }
+    }
+
+    @Override
+    public void onClick(View view) {
+        mNavCallback.toggleNavigationDrawer();
+    }
+
+    private void setDashboards(List<Dashboard> dashboards) {
+        mDashboardAdapter.swapData(dashboards);
+        mTabs.removeAllTabs();
+        mTabs.setupWithViewPager(mViewPager);
     }
 
     private static class DashboardQuery implements Query<List<Dashboard>> {

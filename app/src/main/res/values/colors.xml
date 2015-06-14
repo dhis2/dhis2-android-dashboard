@@ -28,10 +28,10 @@
   -->
 
 <resources>
+    <color name="transparent_white">#CCFFFFFF</color>
     <color name="white">#FFFFFFFF</color>
 
     <color name="transparent">#00000000</color>
-    <color name="transparent_white">#CCFFFFFF</color>
     <color name="navy_blue">#FF1F70C3</color>
     <color name="dark_navy_blue">#FF1D5288</color>
 

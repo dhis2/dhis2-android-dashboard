@@ -40,6 +40,7 @@ import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardViewPagerFragment;
@@ -130,12 +131,10 @@ public class MenuActivity extends BaseActivity
 
     @Override
     public void toggleNavigationDrawer() {
-        if (mDrawerLayout != null) {
-            if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
-                mDrawerLayout.openDrawer(Gravity.LEFT);
-            } else {
-                mDrawerLayout.closeDrawer(Gravity.LEFT);
-            }
+        if (!mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
+            mDrawerLayout.openDrawer(Gravity.LEFT);
+        } else {
+            mDrawerLayout.closeDrawer(Gravity.LEFT);
         }
     }
 
