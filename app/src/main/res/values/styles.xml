@@ -1,13 +1,15 @@
 <resources>
 
+    <style name="LightTheme" parent="Base.Theme.App" />
+
     <!-- Base application theme. -->
-    <style name="LightTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Base.Theme.App" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/navy_blue</item>
         <item name="colorPrimaryDark">@color/dark_navy_blue</item>
         <item name="android:windowBackground">@color/light_grey</item>
     </style>
 
-    <style name="DarkTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Base.Theme.App.Dark" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/navy_blue</item>
         <item name="colorPrimaryDark">@color/dark_navy_blue</item>
         <item name="android:windowBackground">@color/dark_navy_blue</item>

@@ -26,23 +26,30 @@
   ~ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_dashboard_item"
+            android:checked="true"
+            android:icon="@mipmap/ic_dashboard"
+            android:title="@string/dashboard"/>
+        <item
+            android:id="@+id/menu_interpretations_item"
+            android:icon="@mipmap/ic_interpretations"
+            android:title="@string/interpretations"/>
+        <item
+            android:id="@+id/menu_account_item"
+            android:icon="@mipmap/ic_username"
+            android:title="@string/my_account"/>
+        <item
+            android:id="@+id/menu_settings_item"
+            android:icon="@mipmap/ic_settings"
+            android:title="@string/settings"/>
+        <item
+            android:id="@+id/menu_about_item"
+            android:icon="@mipmap/ic_about"
+            android:title="@string/about"/>
+    </group>
 
-    <include layout="@layout/toolbar"/>
-
-    <org.dhis2.android.dashboard.ui.views.SlidingTabLayout
-        android:id="@+id/dashboard_tabs"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"/>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/dashboard_view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-</LinearLayout>
+</menu>

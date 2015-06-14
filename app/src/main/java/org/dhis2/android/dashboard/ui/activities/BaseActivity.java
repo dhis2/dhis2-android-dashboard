@@ -28,13 +28,13 @@
 
 package org.dhis2.android.dashboard.ui.activities;
 
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import org.dhis2.android.dashboard.api.DhisApplication;
-import org.dhis2.android.dashboard.api.DhisService;
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.DhisApplication;
 import org.dhis2.android.dashboard.api.DhisManager;
+import org.dhis2.android.dashboard.api.DhisService;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 
@@ -42,7 +42,7 @@ import static android.widget.Toast.LENGTH_SHORT;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
-public class BaseActivity extends ActionBarActivity {
+public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {

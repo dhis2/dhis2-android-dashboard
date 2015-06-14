@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ Copyright (c) 2015, University of Oslo
   ~ All rights reserved.
@@ -27,22 +28,11 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<resources>
 
-    <include layout="@layout/toolbar"/>
+    <style name="LightTheme" parent="Base.Theme.App">
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 
-    <org.dhis2.android.dashboard.ui.views.SlidingTabLayout
-        android:id="@+id/dashboard_tabs"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"/>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/dashboard_view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-</LinearLayout>
+</resources>

@@ -29,56 +29,32 @@
 package org.dhis2.android.dashboard.ui.activities;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
+import android.support.v4.widget.DrawerLayout.DrawerListener;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardViewPagerFragment;
-import org.dhis2.android.dashboard.ui.navigation.NavigationAdapter;
-import org.dhis2.android.dashboard.ui.navigation.NavigationItem;
-import org.dhis2.android.dashboard.ui.navigation.NavigationMenuItem;
-import org.dhis2.android.dashboard.ui.navigation.NavigationSection;
-
-import java.util.Arrays;
-import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnItemClick;
-import butterknife.Optional;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public class MenuActivity extends BaseActivity {
-    private static final int ANALYTICS = 200;
-    private static final int DASHBOARD = 201;
-    private static final int INTERPRETATIONS = 202;
+public class MenuActivity extends BaseActivity
+        implements OnNavigationItemSelectedListener, DrawerListener, INavigationCallback {
 
-    private static final int PROFILE_SECTION = 300;
-    private static final int MY_ACCOUNT_MENU_ITEM = 301;
-    private static final int LOG_OUT_MENU_ITEM = 302;
+    @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @InjectView(R.id.navigation_view) NavigationView mNavigationView;
 
-    private static final int OTHER_SECTION = 400;
-    private static final int SETTINGS_MENU_ITEM = 401;
-    private static final int ABOUT_MENU_ITEM = 402;
-
-    @InjectView(R.id.toolbar) Toolbar mToolbar;
-    @InjectView(R.id.drawer_layout) @Optional DrawerLayout mDrawerLayout;
-    @InjectView(R.id.left_drawer) ListView mNavigationListView;
-
-    ActionBarDrawerToggle mDrawerToggle;
     Runnable mPendingRunnable;
 
     @Override
@@ -87,149 +63,97 @@ public class MenuActivity extends BaseActivity {
         setContentView(R.layout.activity_menu);
         ButterKnife.inject(this);
 
-        setSupportActionBar(mToolbar);
-        setTitle(R.string.toolbar_title);
-
-        List<NavigationItem> items = buildNavigationItems();
-        mNavigationListView.setAdapter(new NavigationAdapter(items));
-        if (mDrawerLayout != null) {
-            mDrawerToggle = createToggle();
-            mDrawerLayout.setDrawerListener(mDrawerToggle);
-            mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        }
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(mDrawerLayout != null);
-        getSupportActionBar().setHomeButtonEnabled(mDrawerLayout != null);
+        mDrawerLayout.setDrawerListener(this);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        mNavigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if (mDrawerLayout != null && mDrawerToggle != null) {
-            mDrawerToggle.syncState();
-        }
 
         if (savedInstanceState == null) {
-            setDefaultMenuItemSelected();
+            attachFragment(new DashboardViewPagerFragment());
         }
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return (mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected(item)) ||
-                super.onOptionsItemSelected(item);
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+        switch (menuItem.getItemId()) {
+            case R.id.menu_dashboard_item: {
+                attachFragmentDelayed(new DashboardViewPagerFragment());
+                break;
+            }
+
+            case R.id.menu_settings_item: {
+                getDhisService().logOutUser();
+                startActivity(new Intent(this, LauncherActivity.class));
+                finish();
+                break;
+            }
+
+            case R.id.menu_about_item: {
+                getDhisManager().invalidateMetaData();
+                startActivity(new Intent(this, LauncherActivity.class));
+                finish();
+                break;
+            }
+        }
+        menuItem.setChecked(true);
+        mDrawerLayout.closeDrawers();
+        return true;
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (mDrawerLayout != null && mDrawerToggle != null) {
-            mDrawerToggle.onConfigurationChanged(newConfig);
-        }
+    public void onDrawerOpened(View drawerView) {
+        mPendingRunnable = null;
     }
 
-    @OnItemClick(R.id.left_drawer)
-    public void onMenuItemClick(long id) {
-        Toast.makeText(getBaseContext(), "" + id, Toast.LENGTH_SHORT).show();
-        final Fragment fragment = findFragmentById(id);
-
-        if (id == LOG_OUT_MENU_ITEM) {
-            getDhisService().logOutUser();
-            startActivity(new Intent(this, LauncherActivity.class));
-            finish();
+    @Override
+    public void onDrawerClosed(View drawerView) {
+        if (mPendingRunnable != null) {
+            new Handler().post(mPendingRunnable);
         }
+        mPendingRunnable = null;
+    }
 
-        if (id == ABOUT_MENU_ITEM) {
-            getDhisManager().invalidateMetaData();
-            startActivity(new Intent(this, LauncherActivity.class));
-            finish();
-        }
+    @Override
+    public void onDrawerSlide(View drawerView, float slideOffset) {
+        // stub implementation
+    }
 
+    @Override
+    public void onDrawerStateChanged(int newState) {
+        // stub implementation
+    }
+
+    @Override
+    public void toggleNavigationDrawer() {
         if (mDrawerLayout != null) {
-            mPendingRunnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    attachFragment(fragment);
-                }
-            };
-            mDrawerLayout.closeDrawer(mNavigationListView);
-        } else {
-            attachFragment(fragment);
-            supportInvalidateOptionsMenu();
+            if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
+                mDrawerLayout.openDrawer(Gravity.LEFT);
+            } else {
+                mDrawerLayout.closeDrawer(Gravity.LEFT);
+            }
         }
+    }
+
+    private void attachFragmentDelayed(final Fragment fragment) {
+        isNull(fragment, "Fragment must not be null");
+
+        mPendingRunnable = new Runnable() {
+
+            @Override
+            public void run() {
+                attachFragment(fragment);
+            }
+        };
     }
 
     private void attachFragment(Fragment fragment) {
-        isNull(fragment, "Fragment must not be null");
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();
-    }
-
-    private void setDefaultMenuItemSelected() {
-        if (mNavigationListView != null && mNavigationListView.getAdapter() != null) {
-            ListAdapter adapter = mNavigationListView.getAdapter();
-            for (int position = 0; position < adapter.getCount(); position++) {
-                if (adapter.isEnabled(position)) {
-                    mNavigationListView.setItemChecked(position, true);
-                    Fragment fragment = findFragmentById(adapter.getItemId(position));
-                    attachFragment(fragment);
-                    break;
-                }
-            }
-        }
-    }
-
-    private Fragment findFragmentById(long id) {
-        if (id == DASHBOARD) {
-            return new DashboardViewPagerFragment();
-        }
-        return new Fragment();
-    }
-
-    private List<NavigationItem> buildNavigationItems() {
-        LayoutInflater inflater = LayoutInflater.from(this);
-        return Arrays.asList(
-                new NavigationSection(inflater, ANALYTICS,
-                        R.string.analytics),
-                new NavigationMenuItem(inflater, DASHBOARD,
-                        R.string.dashboard, R.mipmap.ic_dashboard),
-                new NavigationMenuItem(inflater, INTERPRETATIONS,
-                        R.string.interpretations, R.mipmap.ic_interpretations),
-
-                new NavigationSection(inflater, PROFILE_SECTION,
-                        R.string.profile_section),
-                new NavigationMenuItem(inflater, MY_ACCOUNT_MENU_ITEM,
-                        R.string.my_account, R.mipmap.ic_username),
-                new NavigationMenuItem(inflater, LOG_OUT_MENU_ITEM,
-                        R.string.log_out, R.mipmap.ic_log_out),
-
-                new NavigationSection(inflater, OTHER_SECTION,
-                        R.string.other),
-                new NavigationMenuItem(inflater, SETTINGS_MENU_ITEM,
-                        R.string.settings, R.mipmap.ic_settings),
-                new NavigationMenuItem(inflater, ABOUT_MENU_ITEM,
-                        R.string.about, R.mipmap.ic_about)
-        );
-    }
-
-    private ActionBarDrawerToggle createToggle() {
-        return new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
-                R.string.drawer_open, R.string.drawer_close) {
-
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                if (mPendingRunnable != null) {
-                    new Handler().post(mPendingRunnable);
-                }
-                mPendingRunnable = null;
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                mPendingRunnable = null;
-            }
-        };
     }
 }

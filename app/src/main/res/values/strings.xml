@@ -23,7 +23,7 @@
     <!-- END -->
 
     <!-- START MenuActivity resources -->
-    <string name="analytics">ANALYTICS</string>
+    <string name="analytics_section">ANALYTICS</string>
     <string name="dashboard">Dashboard</string>
     <string name="interpretations">Interpretations</string>
     <string name="profile_section">PROFILE</string>
