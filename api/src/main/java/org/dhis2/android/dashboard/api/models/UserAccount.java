@@ -30,10 +30,16 @@ package org.dhis2.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import org.dhis2.android.dashboard.api.persistence.DbDhis;
 import org.joda.time.DateTime;
 
-public final class UserAccount {
+@Table(databaseName = DbDhis.NAME)
+public final class UserAccount extends BaseModel {
     /**
      * Value of 'fields' query parameter for getCurrentUserAccount() method
      */
@@ -44,25 +50,42 @@ public final class UserAccount {
             "jobTitle,languages,email,phoneNumber," +
             "organisationUnits[id]]";
 
-    @JsonProperty("id") private String id;
-    @JsonProperty("created") private DateTime created;
-    @JsonProperty("lastUpdated") private DateTime lastUpdated;
-    @JsonProperty("name") private String name;
-    @JsonProperty("displayName") private String displayName;
-    @JsonProperty("firstName") private String firstName;
-    @JsonProperty("surname") private String surname;
-    @JsonProperty("gender") private String gender;
-    @JsonProperty("birthday") private String birthday;
-    @JsonProperty("introduction") private String introduction;
-    @JsonProperty("education") private String education;
-    @JsonProperty("employer") private String employer;
-    @JsonProperty("interests") private String interests;
-    @JsonProperty("jobTitle") private String jobTitle;
-    @JsonProperty("languages") private String languages;
-    @JsonProperty("email") private String email;
-    @JsonProperty("phoneNumber") private String phoneNumber;
+    private static final int LOCAL_ID = 1;
+
+    // As we have only one user account, the id will be constant
+    @JsonIgnore @Column @PrimaryKey long localId = LOCAL_ID;
+    @JsonIgnore @Column State state;
+
+    @JsonProperty("id") @Column String id;
+    @JsonProperty("created") @Column DateTime created;
+    @JsonProperty("lastUpdated") @Column DateTime lastUpdated;
+    @JsonProperty("name") @Column String name;
+    @JsonProperty("displayName") @Column String displayName;
+    @JsonProperty("firstName") @Column String firstName;
+    @JsonProperty("surname") @Column String surname;
+    @JsonProperty("gender") @Column String gender;
+    @JsonProperty("birthday") @Column String birthday;
+    @JsonProperty("introduction") @Column String introduction;
+    @JsonProperty("education") @Column String education;
+    @JsonProperty("employer") @Column String employer;
+    @JsonProperty("interests") @Column String interests;
+    @JsonProperty("jobTitle") @Column String jobTitle;
+    @JsonProperty("languages") @Column String languages;
+    @JsonProperty("email") @Column String email;
+    @JsonProperty("phoneNumber") @Column String phoneNumber;
 
     public UserAccount() {
+        state = State.SYNCED;
+    }
+
+    @JsonIgnore
+    public State getState() {
+        return state;
+    }
+
+    @JsonIgnore
+    public void setState(State state) {
+        this.state = state;
     }
 
     @JsonIgnore

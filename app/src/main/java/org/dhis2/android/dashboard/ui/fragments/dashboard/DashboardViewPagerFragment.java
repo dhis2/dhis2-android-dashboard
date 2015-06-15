@@ -31,6 +31,7 @@ package org.dhis2.android.dashboard.ui.fragments.dashboard;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -60,7 +61,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class DashboardViewPagerFragment extends BaseFragment
-        implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener, Toolbar.OnMenuItemClickListener {
+        implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener,
+        Toolbar.OnMenuItemClickListener, ViewPager.OnPageChangeListener {
     private static final int LOADER_ID = 1233432;
 
     private DashboardAdapter mDashboardAdapter;
@@ -68,6 +70,7 @@ public class DashboardViewPagerFragment extends BaseFragment
     @InjectView(R.id.dashboard_tabs) TabLayout mTabs;
     @InjectView(R.id.dashboard_view_pager) ViewPager mViewPager;
     @InjectView(R.id.toolbar) Toolbar mToolbar;
+    @InjectView(R.id.edit_dashboard_button) FloatingActionButton mFab;
 
     INavigationCallback mNavCallback;
 
@@ -107,6 +110,7 @@ public class DashboardViewPagerFragment extends BaseFragment
 
         mDashboardAdapter = new DashboardAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mDashboardAdapter);
+        mViewPager.addOnPageChangeListener(this);
     }
 
     @Override
@@ -143,6 +147,32 @@ public class DashboardViewPagerFragment extends BaseFragment
     @Override
     public void onClick(View view) {
         mNavCallback.toggleNavigationDrawer();
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        // stub implementation
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        Dashboard dashboard = mDashboardAdapter.getDashboard(position);
+        if (dashboard != null) {
+            boolean isDashboardEditable = dashboard.getAccess().isManage();
+            setEditButtonVisibility(isDashboardEditable);
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
+
+    private void setEditButtonVisibility(boolean isEditable) {
+        if (isEditable) {
+            mFab.setVisibility(View.VISIBLE);
+        } else {
+            mFab.setVisibility(View.GONE);
+        }
     }
 
     private void setDashboards(List<Dashboard> dashboards) {
