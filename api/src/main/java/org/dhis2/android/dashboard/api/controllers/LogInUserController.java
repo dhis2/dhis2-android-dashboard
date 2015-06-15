@@ -30,16 +30,15 @@ package org.dhis2.android.dashboard.api.controllers;
 
 import com.squareup.okhttp.HttpUrl;
 
-import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.models.Credentials;
 import org.dhis2.android.dashboard.api.models.Session;
+import org.dhis2.android.dashboard.api.models.SystemInfo;
+import org.dhis2.android.dashboard.api.models.UserAccount;
+import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
 import org.dhis2.android.dashboard.api.network.RepoManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.UserAccountHandler;
-import org.dhis2.android.dashboard.api.models.SystemInfo;
-import org.dhis2.android.dashboard.api.models.UserAccount;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,12 +49,9 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 public final class LogInUserController implements IController<UserAccount> {
     private final HttpUrl mServerUrl;
     private final Credentials mCredentials;
-    private final UserAccountHandler mUserAccountHandler;
     private final DhisApi mService;
 
-    public LogInUserController(UserAccountHandler userAccountHandler,
-                               HttpUrl serverUrl, Credentials credentials) {
-        mUserAccountHandler = isNull(userAccountHandler, "UserAccountHandler must not be null");
+    public LogInUserController(HttpUrl serverUrl, Credentials credentials) {
         mServerUrl = isNull(serverUrl, "Server URI must not be null");
         mCredentials = isNull(credentials, "User credentials must not be null");
         mService = RepoManager.createService(mServerUrl, mCredentials);
@@ -79,7 +75,8 @@ public final class LogInUserController implements IController<UserAccount> {
         SessionManager.getInstance().put(session);
 
         /* save user account details */
-        mUserAccountHandler.put(userAccount);
+        //mUserAccountHandler.put(userAccount);
+        userAccount.save();
 
         /* get server time zone and save it */
         TimeZone serverTimeZone = systemInfo.getServerDate()

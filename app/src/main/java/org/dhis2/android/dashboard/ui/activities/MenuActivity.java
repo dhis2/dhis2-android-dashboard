@@ -40,9 +40,11 @@ import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardViewPagerFragment;
 
 import butterknife.ButterKnife;
@@ -55,6 +57,8 @@ public class MenuActivity extends BaseActivity
 
     @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
     @InjectView(R.id.navigation_view) NavigationView mNavigationView;
+    @InjectView(R.id.drawer_user_name) TextView mUsername;
+    @InjectView(R.id.drawer_user_info) TextView mUserInfo;
 
     Runnable mPendingRunnable;
 
@@ -67,6 +71,10 @@ public class MenuActivity extends BaseActivity
         mDrawerLayout.setDrawerListener(this);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mNavigationView.setNavigationItemSelectedListener(this);
+
+        UserAccount userAccount = UserAccount.getUserAccountFromDb();
+        mUsername.setText(userAccount.getDisplayName());
+        mUserInfo.setText(userAccount.getEmail());
     }
 
     @Override

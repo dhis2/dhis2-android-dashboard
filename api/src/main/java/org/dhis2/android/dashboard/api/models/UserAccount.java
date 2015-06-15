@@ -29,26 +29,30 @@
 package org.dhis2.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
 import org.joda.time.DateTime;
 
 @Table(databaseName = DbDhis.NAME)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class UserAccount extends BaseModel {
     /**
      * Value of 'fields' query parameter for getCurrentUserAccount() method
      */
-    public static final String ALL_USER_ACCOUNT_FIELDS = "[id,created,lastUpdated,name,displayName," +
+    public static final String ALL_USER_ACCOUNT_FIELDS = "id,created,lastUpdated,name,displayName," +
             "firstName,surname," +
             "gender,birthday,introduction," +
             "education,employer,interests," +
             "jobTitle,languages,email,phoneNumber," +
-            "organisationUnits[id]]";
+            "organisationUnits[id]";
 
     private static final int LOCAL_ID = 1;
 
@@ -76,6 +80,13 @@ public final class UserAccount extends BaseModel {
 
     public UserAccount() {
         state = State.SYNCED;
+    }
+
+    @JsonIgnore
+    public static UserAccount getUserAccountFromDb() {
+        return new Select().from(UserAccount.class)
+                .where(Condition.column(UserAccount$Table.LOCALID).is(LOCAL_ID))
+                .querySingle();
     }
 
     @JsonIgnore

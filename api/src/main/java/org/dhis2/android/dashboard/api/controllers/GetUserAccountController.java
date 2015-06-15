@@ -29,21 +29,19 @@
 package org.dhis2.android.dashboard.api.controllers;
 
 import org.dhis2.android.dashboard.api.DhisManager;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
 import org.dhis2.android.dashboard.api.network.RepoManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.UserAccountHandler;
-import org.dhis2.android.dashboard.api.models.UserAccount;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public final class GetUserAccountController implements IController<UserAccount> {
-    private final UserAccountHandler mUserAccountHandler;
     private final DhisApi mService;
 
     public GetUserAccountController(UserAccountHandler userAccountHandler) {
-        mUserAccountHandler = userAccountHandler;
         mService = RepoManager.createService(
                 DhisManager.getInstance().getServerUrl(),
                 DhisManager.getInstance().getUserCredentials()
@@ -54,7 +52,7 @@ public final class GetUserAccountController implements IController<UserAccount> 
     public UserAccount run() throws APIException {
         UserAccount userAccount = getUserAccount();
         // update it in db
-        saveUserAccount(userAccount);
+        userAccount.save();
         return userAccount;
     }
 
@@ -62,9 +60,5 @@ public final class GetUserAccountController implements IController<UserAccount> 
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("fields", UserAccount.ALL_USER_ACCOUNT_FIELDS);
         return mService.getCurrentUserAccount(queryParams);
-    }
-
-    private void saveUserAccount(UserAccount userAccount) {
-        mUserAccountHandler.put(userAccount);
     }
 }

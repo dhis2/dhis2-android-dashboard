@@ -92,7 +92,7 @@ public class DhisManager {
 
     public void logOutUser() throws APIException {
         IController<Object> controller =
-                new LogOutUserController(mUserAccountHandler);
+                new LogOutUserController();
         controller.run();
 
         // fetch meta data from disk
@@ -101,8 +101,8 @@ public class DhisManager {
 
     private UserAccount signInUser(HttpUrl serverUrl,
                                    Credentials credentials) throws APIException {
-        IController<UserAccount> controller = new LogInUserController(
-                mUserAccountHandler, serverUrl, credentials);
+        IController<UserAccount> controller
+                = new LogInUserController(serverUrl, credentials);
         UserAccount userAccount = controller.run();
 
         // fetch meta data from disk

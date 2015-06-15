@@ -28,18 +28,13 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
+import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.UserAccountHandler;
-
-import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public final class LogOutUserController implements IController<Object> {
-    private final UserAccountHandler mUserAccountHandler;
 
-    public LogOutUserController(UserAccountHandler userAccountHandler) {
-        mUserAccountHandler = isNull(userAccountHandler,
-                "UserAccountHandler must not be null");
+    public LogOutUserController() {
     }
 
     @Override
@@ -47,7 +42,12 @@ public final class LogOutUserController implements IController<Object> {
         SessionManager sessionManager = SessionManager
                 .getInstance();
         sessionManager.delete();
-        mUserAccountHandler.delete();
+        //mUserAccountHandler.delete();
+        UserAccount userAccount
+                = UserAccount.getUserAccountFromDb();
+        if (userAccount != null) {
+            userAccount.delete();
+        }
         return new Object();
     }
 }
