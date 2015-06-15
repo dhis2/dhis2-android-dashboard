@@ -36,6 +36,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -44,43 +45,275 @@ import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.models.Access;
 import org.dhis2.android.dashboard.api.models.ApiResource;
+import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.utils.PicassoProvider;
 
+import java.util.List;
 
-public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardItemAdapter.DashboardViewHolder> {
+public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardItemAdapter.ItemViewHolder> {
     private static final String DATE_FORMAT = "YYYY-MM-dd";
+    private static final String EMPTY_FIELD = "";
+
+    private static final int ITEM_WITH_IMAGE_TYPE = 0;
+    private static final int ITEM_WITH_TABLE_TYPE = 1;
+    private static final int ITEM_WITH_LIST_TYPE = 2;
 
     private final Access mDashboardAccess;
     private final OnItemClickListener mClickListener;
-
-    private final Picasso mImageLoader;
     private final int mMaxSpanCount;
 
-    public DashboardItemAdapter(Context context, Access dashboardAccess, int maxSpanCount,
-                                OnItemClickListener clickListener) {
+    private final String mUsersName;
+    private final String mReportsName;
+    private final String mResourcesName;
+
+    private final Picasso mImageLoader;
+
+    public DashboardItemAdapter(Context context, Access dashboardAccess,
+                                int maxSpanCount, OnItemClickListener clickListener) {
         super(context, LayoutInflater.from(context));
 
         mDashboardAccess = dashboardAccess;
         mMaxSpanCount = maxSpanCount;
         mClickListener = clickListener;
+
+        mUsersName = context.getString(R.string.users);
+        mReportsName = context.getString(R.string.reports);
+        mResourcesName = context.getString(R.string.resources);
+
         mImageLoader = PicassoProvider.getInstance(context);
     }
 
     @Override
-    public DashboardViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-        return new DashboardViewHolder(getLayoutInflater().inflate(
-                R.layout.gridview_dashboard_item, parent, false), mDashboardAccess, mClickListener);
+    public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View rootView = getLayoutInflater().inflate(
+                R.layout.gridview_dashboard_item, parent, false);
+
+        LinearLayout itemBody = (LinearLayout) rootView
+                .findViewById(R.id.dashboard_item_body_container);
+        TextView itemName = (TextView) rootView
+                .findViewById(R.id.dashboard_item_name);
+        TextView lastUpdated = (TextView) rootView
+                .findViewById(R.id.dashboard_item_last_updated);
+        ImageView itemMenuButton = (ImageView) rootView
+                .findViewById(R.id.dashboard_item_menu);
+        IElementContentViewHolder elementContentViewHolder
+                = onCreateElementContentViewHolder(itemBody, viewType);
+            /* attaching custom view */
+        itemBody.addView(elementContentViewHolder.getView());
+
+        // Overflow menu button click listener
+        MenuButtonHandler menuButtonHandler = new MenuButtonHandler(
+                rootView.getContext(), mDashboardAccess, mClickListener);
+        itemMenuButton.setOnClickListener(menuButtonHandler);
+
+        return new ItemViewHolder(
+                rootView, itemBody, itemName, lastUpdated,
+                itemMenuButton, menuButtonHandler, elementContentViewHolder
+        );
     }
 
     @Override
-    public void onBindViewHolder(DashboardViewHolder holder, int position) {
-        handleDashboardItems(position, holder);
+    public void onBindViewHolder(ItemViewHolder holder, int position) {
+        DashboardItem item = getItem(holder.getAdapterPosition());
+
+        holder.menuButtonHandler.setDashboardItem(item);
+        holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
+
+        if (ApiResource.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
+            holder.itemName.setText(item.getChart().getDisplayName());
+        } else if (ApiResource.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
+            holder.itemName.setText(item.getMap().getDisplayName());
+        } else if (ApiResource.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
+            holder.itemName.setText(item.getEventChart().getDisplayName());
+        } else if (ApiResource.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
+            holder.itemName.setText(item.getReportTable().getDisplayName());
+        } else if (ApiResource.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
+            holder.itemName.setText(item.getEventReport().getDisplayName());
+        } else if (ApiResource.TYPE_USERS.equals(item.getType())) {
+            holder.itemName.setText(mUsersName);
+        } else if (ApiResource.TYPE_REPORTS.equals(item.getType())) {
+            holder.itemName.setText(mReportsName);
+        } else if (ApiResource.TYPE_RESOURCES.equals(item.getType())) {
+            holder.itemName.setText(mResourcesName);
+        }
+
+        if (holder.menuButtonHandler.isMenuVisible()) {
+            holder.itemMenuButton.setVisibility(View.VISIBLE);
+        } else {
+            holder.itemMenuButton.setVisibility(View.GONE);
+        }
+
+        onBindElementContentViewHolder(holder.contentViewHolder,
+                holder.getItemViewType(), holder.getAdapterPosition());
+    }
+
+    public IElementContentViewHolder onCreateElementContentViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case ITEM_WITH_IMAGE_TYPE: {
+                ImageView imageView = (ImageView) getLayoutInflater()
+                        .inflate(R.layout.gridview_dashboard_item_imageview, parent, false);
+                return new ImageItemViewHolder(imageView);
+            }
+            case ITEM_WITH_TABLE_TYPE: {
+                TextView textView = (TextView) getLayoutInflater()
+                        .inflate(R.layout.gridview_dashboard_item_textview, parent, false);
+                return new TextItemViewHolder(textView);
+            }
+            case ITEM_WITH_LIST_TYPE: {
+                LinearLayout textViewContainer = (LinearLayout) getLayoutInflater()
+                        .inflate(R.layout.gridview_dashboard_item_list, parent, false);
+                return new ListItemViewHolder(textViewContainer);
+            }
+        }
+        return null;
+    }
+
+    public void onBindElementContentViewHolder(IElementContentViewHolder holder, int viewType, int position) {
+        switch (viewType) {
+            case ITEM_WITH_IMAGE_TYPE: {
+                handleItemsWithImages((ImageItemViewHolder) holder, getItem(position));
+                break;
+            }
+            case ITEM_WITH_TABLE_TYPE: {
+                handleItemsWithTables((TextItemViewHolder) holder, getItem(position));
+                break;
+            }
+            case ITEM_WITH_LIST_TYPE: {
+                handleItemsWithLists((ListItemViewHolder) holder, getItem(position));
+                break;
+            }
+        }
+    }
+
+    private void handleItemsWithImages(ImageItemViewHolder holder, DashboardItem item) {
+        String request = null;
+        if (ApiResource.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
+            request = buildImageUrl("charts", item.getChart().getId());
+        } else if (ApiResource.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
+            request = buildImageUrl("maps", item.getMap().getId());
+        } else if (ApiResource.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
+            request = buildImageUrl("eventCharts", item.getEventChart().getId());
+        }
+
+        mImageLoader.load(request)
+                .placeholder(R.mipmap.stub_dashboard_background)
+                .into(holder.imageView);
+    }
+
+    private static String buildImageUrl(String resource, String id) {
+        return DhisManager.getInstance().getServerUrl().newBuilder()
+                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
+                .addQueryParameter("width", "480").addQueryParameter("height", "320")
+                .toString();
+    }
+
+    private void handleItemsWithTables(TextItemViewHolder holder, DashboardItem item) {
+        if (ApiResource.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
+            holder.textView.setText(item.getReportTable().getDisplayName());
+        } else if (ApiResource.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
+            holder.textView.setText(item.getEventReport().getDisplayName());
+        }
+    }
+
+    private void handleItemsWithLists(ListItemViewHolder holder, DashboardItem item) {
+        List<DashboardElement> elementList = null;
+        if (ApiResource.TYPE_USERS.equals(item.getType())) {
+            elementList = item.getUsers();
+        } else if (ApiResource.TYPE_REPORTS.equals(item.getType())) {
+            elementList = item.getReports();
+        } else if (ApiResource.TYPE_RESOURCES.equals(item.getType())) {
+            elementList = item.getResources();
+        }
+
+        holder.itemElement0.setText(getElementFromListSafely(elementList, 0));
+        holder.itemElement1.setText(getElementFromListSafely(elementList, 1));
+        holder.itemElement2.setText(getElementFromListSafely(elementList, 2));
+        holder.itemElement3.setText(getElementFromListSafely(elementList, 3));
+        holder.itemElement4.setText(getElementFromListSafely(elementList, 4));
+        holder.itemElement5.setText(getElementFromListSafely(elementList, 5));
+        holder.itemElement6.setText(getElementFromListSafely(elementList, 6));
+        holder.itemElement7.setText(getElementFromListSafely(elementList, 7));
+    }
+
+    private static String getElementFromListSafely(List<DashboardElement> elements, int position) {
+        if (elements != null && elements.size() > position) {
+            DashboardElement element = elements.get(position);
+
+            if (element != null) {
+                return element.getDisplayName();
+            }
+        }
+
+        return EMPTY_FIELD;
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
+    public int getItemViewType(int position) {
+
+        switch (getItem(position).getType()) {
+            case ApiResource.TYPE_CHART:
+            case ApiResource.TYPE_EVENT_CHART:
+            case ApiResource.TYPE_MAP:
+                return ITEM_WITH_IMAGE_TYPE;
+            case ApiResource.TYPE_REPORT_TABLE:
+            case ApiResource.TYPE_EVENT_REPORT:
+                return ITEM_WITH_TABLE_TYPE;
+            case ApiResource.TYPE_USERS:
+            case ApiResource.TYPE_REPORTS:
+            case ApiResource.TYPE_RESOURCES:
+                return ITEM_WITH_LIST_TYPE;
+        }
+
+        throw new IllegalArgumentException();
+    }
+
+    public final int getSpanSize(int position) {
+        if (getItemCount() > position) {
+            DashboardItem dashboardItem = getItem(position);
+
+            String itemShape = dashboardItem.getShape();
+            if (itemShape == null) {
+                itemShape = DashboardItem.SHAPE_NORMAL;
+            }
+
+            switch (itemShape) {
+                case DashboardItem.SHAPE_NORMAL: {
+                    return getSpanSizeNormal();
+                }
+                case DashboardItem.SHAPE_FULL_WIDTH: {
+                    return getSpanSizeFull();
+                }
+                case DashboardItem.SHAPE_DOUBLE_WIDTH: {
+                    return getSpanSizeDouble();
+                }
+            }
+        }
+
+        return 1;
+    }
+
+    private int getSpanSizeNormal() {
+        return 1;
+    }
+
+    private int getSpanSizeDouble() {
+        switch (mMaxSpanCount) {
+            case 1:
+                return 1;
+            case 2:
+                return 1;
+            case 3:
+                return 2;
+            case 4:
+                return 2;
+            default:
+                return 1;
+        }
+    }
+
+    private int getSpanSizeFull() {
+        return mMaxSpanCount;
     }
 
     public void removeItem(DashboardItem item) {
@@ -93,55 +326,92 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         }
     }
 
-    private void handleDashboardItems(int position, DashboardViewHolder holder) {
-        DashboardItem item = getItem(position);
+    interface IElementContentViewHolder {
+        View getView();
+    }
 
-        holder.menuButtonHandler.setDashboardItem(item);
-        holder.onItemBodyClickListener.setDashboardItem(item);
-        holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
+    public interface OnItemClickListener {
+        void onItemClick(DashboardItem item);
 
-        if (ApiResource.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
-            String request = buildImageUrl("charts", item.getChart().getId());
-            handleItemsWithImages(item.getChart().getName(), request, holder);
-        } else if (ApiResource.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
-            String request = buildImageUrl("maps", item.getMap().getId());
-            handleItemsWithImages(item.getMap().getName(), request, holder);
-        } else if (ApiResource.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
-            String request = buildImageUrl("eventCharts", item.getEventChart().getId());
-            handleItemsWithImages(item.getEventChart().getName(), request, holder);
-        } else if (ApiResource.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
-            handleItemsWithoutImages(item.getReportTable().getName(), holder);
-        } else if (ApiResource.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
-            handleItemsWithoutImages(item.getEventReport().getName(), holder);
-        } else if (ApiResource.TYPE_USERS.equals(item.getType())) {
-            handleItemsWithoutImages(getContext().getString(R.string.users), holder);
-        } else if (ApiResource.TYPE_REPORTS.equals(item.getType())) {
-            handleItemsWithoutImages(getContext().getString(R.string.reports), holder);
-        } else if (ApiResource.TYPE_RESOURCES.equals(item.getType())) {
-            handleItemsWithoutImages(getContext().getString(R.string.resources), holder);
+        void onItemElementClick(DashboardElement element);
+
+        void onItemShareInterpretation(DashboardItem item);
+
+        void onItemDelete(DashboardItem item);
+    }
+
+    static class ImageItemViewHolder implements IElementContentViewHolder {
+        final ImageView imageView;
+
+        public ImageItemViewHolder(ImageView imageView) {
+            this.imageView = imageView;
         }
 
-        if (holder.menuButtonHandler.isMenuVisible()) {
-            holder.itemMenuButton.setVisibility(View.VISIBLE);
-        } else {
-            holder.itemMenuButton.setVisibility(View.GONE);
+        @Override public View getView() {
+            return imageView;
         }
     }
 
-    private static class OnItemBodyClickListener implements View.OnClickListener {
-        private final OnItemClickListener mListener;
-        private DashboardItem mDashboardItem;
+    static class TextItemViewHolder implements IElementContentViewHolder {
+        final TextView textView;
 
-        public OnItemBodyClickListener(OnItemClickListener listener) {
-            mListener = listener;
+        public TextItemViewHolder(TextView textView) {
+            this.textView = textView;
         }
 
-        public void setDashboardItem(DashboardItem dashboardItem) {
-            mDashboardItem = dashboardItem;
+        @Override public View getView() {
+            return textView;
+        }
+    }
+
+    static class ListItemViewHolder implements IElementContentViewHolder {
+        final View itemElementsContainer;
+        final TextView itemElement0;
+        final TextView itemElement1;
+        final TextView itemElement2;
+        final TextView itemElement3;
+        final TextView itemElement4;
+        final TextView itemElement5;
+        final TextView itemElement6;
+        final TextView itemElement7;
+
+        public ListItemViewHolder(View view) {
+            itemElementsContainer = view;
+
+            itemElement0 = (TextView) view.findViewById(R.id.element_item_0);
+            itemElement1 = (TextView) view.findViewById(R.id.element_item_1);
+            itemElement2 = (TextView) view.findViewById(R.id.element_item_2);
+            itemElement3 = (TextView) view.findViewById(R.id.element_item_3);
+            itemElement4 = (TextView) view.findViewById(R.id.element_item_4);
+            itemElement5 = (TextView) view.findViewById(R.id.element_item_5);
+            itemElement6 = (TextView) view.findViewById(R.id.element_item_6);
+            itemElement7 = (TextView) view.findViewById(R.id.element_item_7);
         }
 
-        @Override public void onClick(View view) {
-            mListener.onItemClick(mDashboardItem);
+        @Override public View getView() {
+            return itemElementsContainer;
+        }
+    }
+
+    static class ItemViewHolder extends RecyclerView.ViewHolder {
+        final View itemBody;
+        final TextView itemName;
+        final TextView lastUpdated;
+        final ImageView itemMenuButton;
+        final MenuButtonHandler menuButtonHandler;
+        final IElementContentViewHolder contentViewHolder;
+
+        public ItemViewHolder(View itemView, View itemBody,
+                              TextView itemName, TextView lastUpdated,
+                              ImageView itemMenuButton, MenuButtonHandler menuButtonHandler,
+                              IElementContentViewHolder elementContentViewHolder) {
+            super(itemView);
+            this.itemBody = itemBody;
+            this.itemName = itemName;
+            this.lastUpdated = lastUpdated;
+            this.itemMenuButton = itemMenuButton;
+            this.menuButtonHandler = menuButtonHandler;
+            this.contentViewHolder = elementContentViewHolder;
         }
     }
 
@@ -227,123 +497,20 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         }
     }
 
-    private String buildImageUrl(String resource, String id) {
-        return DhisManager.getInstance().getServerUrl().newBuilder()
-                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
-                .toString();
-    }
+    private static class OnItemBodyClickListener implements View.OnClickListener {
+        private final OnItemClickListener mListener;
+        private DashboardItem mDashboardItem;
 
-    private void handleItemsWithImages(String name, String request,
-                                       DashboardViewHolder holder) {
-        holder.itemName.setVisibility(View.VISIBLE);
-        holder.itemImage.setVisibility(View.VISIBLE);
-        holder.itemText.setVisibility(View.GONE);
-
-        holder.itemName.setText(name);
-        mImageLoader.load(request)
-                .placeholder(R.mipmap.stub_dashboard_background)
-                .into(holder.itemImage);
-    }
-
-    private void handleItemsWithoutImages(String text, DashboardViewHolder holder) {
-        holder.itemImage.setVisibility(View.GONE);
-        holder.itemName.setVisibility(View.GONE);
-        holder.itemText.setVisibility(View.VISIBLE);
-
-        holder.itemText.setText(text);
-    }
-
-    public int getSpanSize(int position) {
-        if (getItemCount() > position) {
-            DashboardItem dashboardItem = getItem(position);
-
-            String itemShape = dashboardItem.getShape();
-            if (itemShape == null) {
-                itemShape = DashboardItem.SHAPE_NORMAL;
-            }
-
-            switch (itemShape) {
-                case DashboardItem.SHAPE_NORMAL: {
-                    return getSpanSizeNormal();
-                }
-                case DashboardItem.SHAPE_FULL_WIDTH: {
-                    return getSpanSizeFull();
-                }
-                case DashboardItem.SHAPE_DOUBLE_WIDTH: {
-                    return getSpandSizeDouble();
-                }
-            }
+        public OnItemBodyClickListener(OnItemClickListener listener) {
+            mListener = listener;
         }
 
-        return 1;
-    }
-
-    private int getSpanSizeNormal() {
-        return 1;
-    }
-
-    private int getSpandSizeDouble() {
-        switch (mMaxSpanCount) {
-            case 1:
-                return 1;
-            case 2:
-                return 1;
-            case 3:
-                return 2;
-            case 4:
-                return 2;
-            default:
-                return 1;
+        public void setDashboardItem(DashboardItem dashboardItem) {
+            mDashboardItem = dashboardItem;
         }
-    }
 
-    private int getSpanSizeFull() {
-        return mMaxSpanCount;
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(DashboardItem item);
-
-        void onItemShareInterpretation(DashboardItem item);
-
-        void onItemDelete(DashboardItem item);
-    }
-
-    static class DashboardViewHolder extends RecyclerView.ViewHolder {
-        final View itemBody;
-        final TextView itemName;
-        final ImageView itemImage;
-        final TextView itemText;
-        final TextView lastUpdated;
-        final ImageView itemMenuButton;
-        final MenuButtonHandler menuButtonHandler;
-        final OnItemBodyClickListener onItemBodyClickListener;
-
-        DashboardViewHolder(View view, Access dashboardAccess,
-                            OnItemClickListener listener) {
-            super(view);
-
-            itemBody = view
-                    .findViewById(R.id.dashboard_item_body_container);
-            itemName = (TextView) view
-                    .findViewById(R.id.dashboard_item_name);
-            itemImage = (ImageView) view
-                    .findViewById(R.id.dashboard_item_image);
-            itemText = (TextView) view
-                    .findViewById(R.id.dashboard_item_text);
-            lastUpdated = (TextView) view
-                    .findViewById(R.id.dashboard_item_last_updated);
-            itemMenuButton = (ImageView) view
-                    .findViewById(R.id.dashboard_item_menu);
-
-            onItemBodyClickListener = new OnItemBodyClickListener(listener);
-            itemBody.setOnClickListener(onItemBodyClickListener);
-
-            // Overflow menu button click listener
-            menuButtonHandler = new MenuButtonHandler(
-                    view.getContext(), dashboardAccess, listener);
-            itemMenuButton.setOnClickListener(menuButtonHandler);
+        @Override public void onClick(View view) {
+            mListener.onItemClick(mDashboardItem);
         }
     }
 }

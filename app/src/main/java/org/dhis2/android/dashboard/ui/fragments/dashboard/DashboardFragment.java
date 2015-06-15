@@ -46,6 +46,7 @@ import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Access;
+import org.dhis2.android.dashboard.api.models.ApiResource;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
@@ -53,7 +54,6 @@ import org.dhis2.android.dashboard.api.models.DashboardItem$Table;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter;
-import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter.OnItemClickListener;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
@@ -64,7 +64,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class DashboardFragment extends BaseFragment
-        implements LoaderManager.LoaderCallbacks<List<DashboardItem>>, OnItemClickListener {
+        implements LoaderManager.LoaderCallbacks<List<DashboardItem>>, DashboardItemAdapter.OnItemClickListener {
     private static final int LOADER_ID = 74734523;
     private static final String DASHBOARD_ID = "arg:dashboardId";
     private static final String DELETE = "arg:delete";
@@ -182,6 +182,10 @@ public class DashboardFragment extends BaseFragment
                 item.getName(), Toast.LENGTH_SHORT).show();
     }
 
+    @Override public void onItemElementClick(DashboardElement element) {
+
+    }
+
     @Override
     public void onItemShareInterpretation(DashboardItem item) {
         Toast.makeText(getActivity(), "SHARE INTERPRETATION: " +
@@ -203,8 +207,10 @@ public class DashboardFragment extends BaseFragment
         @Override public List<DashboardItem> query(Context context) {
             List<DashboardItem> dashboardItems = new Select()
                     .from(DashboardItem.class)
-                    .where(Condition.column(DashboardItem$Table
-                            .DASHBOARD_DASHBOARD).is(mDashboardId))
+                    .where(
+                            Condition.column(DashboardItem$Table.DASHBOARD_DASHBOARD).is(mDashboardId),
+                            Condition.column(DashboardItem$Table.TYPE).isNot(ApiResource.TYPE_MESSAGES)
+                    )
                     .queryList();
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {
