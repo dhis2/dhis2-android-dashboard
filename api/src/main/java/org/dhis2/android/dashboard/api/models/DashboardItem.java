@@ -270,7 +270,8 @@ public final class DashboardItem extends BaseModel implements BaseIdentifiableMo
         }
     }
 
-    @JsonIgnore public static List<DashboardElement> getDashboardElementsFromItem(DashboardItem item) {
+    @JsonIgnore
+    public static List<DashboardElement> getDashboardElementsFromItem(DashboardItem item) {
         isNull(item, "DashboardItem object must not be null");
 
         List<DashboardElement> elements = new ArrayList<>();
@@ -320,14 +321,16 @@ public final class DashboardItem extends BaseModel implements BaseIdentifiableMo
         return elements;
     }
 
-    @JsonIgnore public static DashboardElement queryRelatedDashboardElementFromDb(DashboardItem item) {
+    @JsonIgnore
+    public static DashboardElement queryRelatedDashboardElementFromDb(DashboardItem item) {
         return new Select().from(DashboardElement.class)
                 .where(Condition.column(DashboardElement$Table
                         .DASHBOARDITEM_DASHBOARDITEM).is(item.getLocalId()))
                 .querySingle();
     }
 
-    @JsonIgnore public static List<DashboardElement> queryRelatedDashboardElementsFromDb(DashboardItem item) {
+    @JsonIgnore
+    public static List<DashboardElement> queryRelatedDashboardElementsFromDb(DashboardItem item) {
         List<DashboardElement> elements = new Select().from(DashboardElement.class)
                 .where(Condition.column(DashboardElement$Table
                         .DASHBOARDITEM_DASHBOARDITEM).is(item.getLocalId()))

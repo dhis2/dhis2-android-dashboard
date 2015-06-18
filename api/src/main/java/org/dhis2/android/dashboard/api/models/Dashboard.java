@@ -44,6 +44,8 @@ import org.joda.time.DateTime;
 
 import java.util.List;
 
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
+
 @Table(databaseName = DbDhis.NAME)
 public final class Dashboard extends BaseModel implements BaseIdentifiableModel, DisplayNameModel {
     @JsonIgnore @Column @PrimaryKey(autoincrement = true) long localId;
@@ -65,6 +67,76 @@ public final class Dashboard extends BaseModel implements BaseIdentifiableModel,
                 .where(Condition.column(DashboardItem$Table
                         .DASHBOARD_DASHBOARD).is(dashboard.getLocalId()))
                 .queryList();
+    }
+
+    @JsonIgnore public void addDashboardItem(ApiResource resource) {
+        isNull(resource, "ApiResource object must not be null");
+
+        switch (resource.getType()) {
+            case ApiResource.TYPE_CHART:
+            case ApiResource.TYPE_EVENT_CHART:
+            case ApiResource.TYPE_MAP:
+            case ApiResource.TYPE_EVENT_REPORT:
+            case ApiResource.TYPE_REPORT_TABLE: {
+                createAndSaveDashboardItem(resource);
+                break;
+            }
+            case ApiResource.TYPE_USERS:
+            case ApiResource.TYPE_REPORTS:
+            case ApiResource.TYPE_RESOURCES:
+            case ApiResource.TYPE_REPORT_TABLES: {
+                if (!tryToAddElementToItems(resource)) {
+                    createAndSaveDashboardItem(resource);
+                }
+                break;
+            }
+        }
+    }
+
+    private void createAndSaveDashboardItem(ApiResource resource) {
+        DashboardItem item
+                = new DashboardItem();
+        item.setCreated(DateTimeManager.getInstance()
+                .getCurrentDateTimeInServerTimeZone());
+        item.setLastUpdated(DateTimeManager.getInstance()
+                .getCurrentDateTimeInServerTimeZone());
+        item.setState(State.TO_POST);
+        item.setDashboard(this);
+        item.setAccess(Access.provideDefaultAccess());
+        item.setType(resource.getType());
+        item.save();
+
+        DashboardElement element = new DashboardElement();
+        element.setId(resource.getId());
+        element.setName(resource.getName());
+        element.setCreated(resource.getCreated());
+        element.setLastUpdated(resource.getLastUpdated());
+        element.setDisplayName(resource.getDisplayName());
+        element.setState(State.TO_POST);
+        element.setDashboardItem(item);
+        element.save();
+
+        System.out.println("TYPE: " + item.getType());
+    }
+
+    private boolean tryToAddElementToItems(ApiResource resource) {
+        List<DashboardItem> items = new Select()
+                .from(DashboardItem.class)
+                .where(Condition.column(DashboardItem$Table.DASHBOARD_DASHBOARD).is(localId))
+                .and(Condition.column(DashboardItem$Table.TYPE).is(resource.getType()))
+                .queryList();
+
+        if (items == null || items.isEmpty()) {
+            return false;
+        }
+
+        for (DashboardItem item : items) {
+            if (item.addDashboardElement(resource)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

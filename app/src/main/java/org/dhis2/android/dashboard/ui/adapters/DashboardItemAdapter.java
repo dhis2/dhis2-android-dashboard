@@ -197,7 +197,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         }
 
         mImageLoader.load(request)
-                .placeholder(R.mipmap.stub_dashboard_background)
+                .placeholder(R.mipmap.ic_stub_dashboard_item)
                 .into(holder.imageView);
     }
 

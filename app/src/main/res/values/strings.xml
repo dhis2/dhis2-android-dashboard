@@ -44,15 +44,21 @@
     <!-- END -->
 
     <!-- START DashboardFragment -->
-    <string name="add_dashboard">Add</string>
+    <string name="add">Add</string>
+    <string name="add_dashboard_item">Add dashboard item</string>
     <string name="manage_dashboard">Manage</string>
     <string name="search">Search</string>
     <string name="refresh">Refresh</string>
     <string name="delete">Delete</string>
     <string name="share_interpretation">Share interpretation</string>
 
-    <string name="users">users</string>
-    <string name="resources">resources</string>
-    <string name="reports">reports</string>
+    <string name="charts">Charts</string>
+    <string name="event_charts">Event charts</string>
+    <string name="maps">Maps</string>
+    <string name="report_tables">Pivot tables</string>
+    <string name="event_reports">Event reports</string>
+    <string name="users">Users</string>
+    <string name="reports">Reports</string>
+    <string name="resources">Resources</string>
     <!-- END DashboardFragment -->
 </resources>

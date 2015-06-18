@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2015, University of Oslo
   ~ All rights reserved.
   ~
@@ -27,8 +26,7 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -45,7 +43,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/dashboard_tabs"
@@ -55,7 +53,7 @@
             app:tabIndicatorHeight="2dp"
             app:tabMode="scrollable"
             app:tabSelectedTextColor="@color/white"
-            app:tabTextColor="@color/transparent_white"/>
+            app:tabTextColor="@color/transparent_white" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -63,19 +61,6 @@
         android:id="@+id/dashboard_view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/edit_dashboard_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:src="@mipmap/ic_edit"
-        app:backgroundTint="@color/navy_blue"
-        app:elevation="6dp"
-        app:fabSize="normal"
-        app:pressedTranslationZ="12dp"
-        app:rippleColor="@color/dark_navy_blue"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </android.support.design.widget.CoordinatorLayout>

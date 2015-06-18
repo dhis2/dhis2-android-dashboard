@@ -31,7 +31,6 @@ package org.dhis2.android.dashboard.ui.fragments.dashboard;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -42,15 +41,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.models.ApiResource;
+import org.dhis2.android.dashboard.api.models.ApiResource$Table;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.activities.INavigationCallback;
 import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
+import org.dhis2.android.dashboard.ui.fragments.AutoCompleteDialogFragment;
+import org.dhis2.android.dashboard.ui.fragments.AutoCompleteDialogFragment.OnOptionSelectedListener;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 
 import java.util.ArrayList;
@@ -62,7 +66,7 @@ import butterknife.InjectView;
 
 public class DashboardViewPagerFragment extends BaseFragment
         implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener,
-        Toolbar.OnMenuItemClickListener, ViewPager.OnPageChangeListener {
+        Toolbar.OnMenuItemClickListener, ViewPager.OnPageChangeListener, OnOptionSelectedListener {
     private static final int LOADER_ID = 1233432;
 
     private DashboardAdapter mDashboardAdapter;
@@ -70,7 +74,6 @@ public class DashboardViewPagerFragment extends BaseFragment
     @InjectView(R.id.dashboard_tabs) TabLayout mTabs;
     @InjectView(R.id.dashboard_view_pager) ViewPager mViewPager;
     @InjectView(R.id.toolbar) Toolbar mToolbar;
-    @InjectView(R.id.edit_dashboard_button) FloatingActionButton mFab;
 
     INavigationCallback mNavCallback;
 
@@ -159,20 +162,11 @@ public class DashboardViewPagerFragment extends BaseFragment
         Dashboard dashboard = mDashboardAdapter.getDashboard(position);
         if (dashboard != null) {
             boolean isDashboardEditable = dashboard.getAccess().isManage();
-            setEditButtonVisibility(isDashboardEditable);
         }
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
-    }
-
-    private void setEditButtonVisibility(boolean isEditable) {
-        if (isEditable) {
-            mFab.setVisibility(View.VISIBLE);
-        } else {
-            mFab.setVisibility(View.GONE);
-        }
     }
 
     private void setDashboards(List<Dashboard> dashboards) {
@@ -184,17 +178,41 @@ public class DashboardViewPagerFragment extends BaseFragment
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.add_dashboard_item: {
+                AutoCompleteDialogFragment.newInstance(this)
+                        .show(getChildFragmentManager());
+                return true;
+            }
             case R.id.refresh: {
                 getService().syncDashboards();
+                return true;
+            }
+            case R.id.add_dashboard: {
+                return true;
+            }
+            case R.id.manage_dashboard: {
                 return true;
             }
         }
         return false;
     }
 
+    @Override
+    public void onOptionSelected(int dialogId, int position, String id, String name) {
+        if (dialogId == AutoCompleteDialogFragment.DIALOG_ID) {
+            ApiResource resource = new Select().from(ApiResource.class)
+                    .where(Condition.column(ApiResource$Table.ID).is(id))
+                    .querySingle();
+            Dashboard dashboard = mDashboardAdapter
+                    .getDashboard(mViewPager.getCurrentItem());
+            dashboard.addDashboardItem(resource);
+        }
+    }
+
     private static class DashboardQuery implements Query<List<Dashboard>> {
 
-        @Override public List<Dashboard> query(Context context) {
+        @Override
+        public List<Dashboard> query(Context context) {
             List<Dashboard> dashboards = new Select()
                     .from(Dashboard.class).queryList();
             Collections.sort(dashboards, Dashboard.DISPLAY_NAME_MODEL_COMPARATOR);
