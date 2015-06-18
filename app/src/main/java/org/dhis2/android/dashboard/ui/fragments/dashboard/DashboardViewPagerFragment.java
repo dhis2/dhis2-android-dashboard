@@ -53,6 +53,7 @@ import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.activities.INavigationCallback;
 import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
+import org.dhis2.android.dashboard.ui.fragments.AddDashboardFragment;
 import org.dhis2.android.dashboard.ui.fragments.AutoCompleteDialogFragment;
 import org.dhis2.android.dashboard.ui.fragments.AutoCompleteDialogFragment.OnOptionSelectedListener;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
@@ -188,6 +189,9 @@ public class DashboardViewPagerFragment extends BaseFragment
                 return true;
             }
             case R.id.add_dashboard: {
+                AddDashboardFragment fragment
+                        = new AddDashboardFragment();
+                fragment.show(getChildFragmentManager(), "someFragment");
                 return true;
             }
             case R.id.manage_dashboard: {

@@ -30,55 +30,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minHeight="520dp"
+    android:minHeight="260dp"
     android:minWidth="320dp"
     android:orientation="vertical">
 
     <include layout="@layout/fragment_bar" />
 
-    <View
+    <org.dhis2.android.dashboard.ui.views.FontEditText
+        android:id="@+id/dashboard_name"
         android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/dark_navy_blue" />
+        android:layout_height="56dp"
+        android:layout_margin="16dp"
+        android:textSize="17sp"
+        app:font="@string/medium_font_name" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         android:orientation="horizontal"
         android:weightSum="1">
 
-        <org.dhis2.android.dashboard.ui.views.FontEditText
-            android:id="@+id/filter_options"
+        <org.dhis2.android.dashboard.ui.views.FontButton
             android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_margin="16dp"
-            android:layout_weight="1"
-            android:drawableLeft="@mipmap/ic_search_dark"
-            android:drawablePadding="4dp"
-            android:hint="@string/search"
-            app:font="@string/light_font_name" />
-
-        <ImageView
-            android:id="@+id/filter_resources"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginBottom="12dp"
-            android:layout_marginTop="12dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/transparent_selector"
-            android:clickable="true"
-            android:contentDescription="@string/description"
-            android:padding="8dp"
-            android:src="@mipmap/ic_filter" />
-
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:textColor="@color/navy_blue"
+            android:textSize="15sp" />
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/simple_listview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:cacheColorHint="@color/transparent"
-        android:divider="@color/dark_grey"
-        android:dividerHeight="1px" />
 
 </LinearLayout>
