@@ -54,21 +54,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/dashboard_name"
+                android:maxLines="2"
                 android:textSize="17sp"
                 app:font="@string/regular_font_name"/>
         </android.support.design.widget.TextInputLayout>
 
-        <org.hisp.dhis.android.sdk.utils.ui.views.FontButton
+        <org.dhis2.android.dashboard.ui.views.FontButton
             android:id="@+id/delete_dashboard_button"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="40dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="6dp"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="16dp"
             android:background="@drawable/button_red_selector"
             android:singleLine="true"
-            android:text="@string/manage_dashboard"
+            android:text="@string/delete"
             android:textColor="@color/white"
-            android:textSize="@dimen/medium_text_size"
+            android:textSize="15sp"
             app:font="@string/medium_font_name"/>
 
     </RelativeLayout>

@@ -57,6 +57,7 @@ import org.dhis2.android.dashboard.ui.fragments.AddDashboardFragment;
 import org.dhis2.android.dashboard.ui.fragments.AutoCompleteDialogFragment;
 import org.dhis2.android.dashboard.ui.fragments.AutoCompleteDialogFragment.OnOptionSelectedListener;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
+import org.dhis2.android.dashboard.ui.fragments.ManageDashboardFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -195,6 +196,11 @@ public class DashboardViewPagerFragment extends BaseFragment
                 return true;
             }
             case R.id.manage_dashboard: {
+                Dashboard dashboard = mDashboardAdapter
+                        .getDashboard(mViewPager.getCurrentItem());
+                ManageDashboardFragment fragment
+                        = ManageDashboardFragment.newInstance(dashboard);
+                fragment.show(getChildFragmentManager(), "someFragment2");
                 return true;
             }
         }
