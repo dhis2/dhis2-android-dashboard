@@ -37,13 +37,12 @@ import org.dhis2.android.dashboard.api.controllers.IController;
 import org.dhis2.android.dashboard.api.controllers.InvalidateUserController;
 import org.dhis2.android.dashboard.api.controllers.LogInUserController;
 import org.dhis2.android.dashboard.api.controllers.LogOutUserController;
-import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.models.Credentials;
 import org.dhis2.android.dashboard.api.models.Session;
+import org.dhis2.android.dashboard.api.models.UserAccount;
+import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.UserAccountHandler;
-import org.dhis2.android.dashboard.api.models.UserAccount;
 
 import java.net.HttpURLConnection;
 
@@ -53,7 +52,6 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public class DhisManager {
     private static DhisManager mDhisManager;
-    private final UserAccountHandler mUserAccountHandler;
     private Session mSession;
 
     public static void init(Context context) {
@@ -74,7 +72,6 @@ public class DhisManager {
     private DhisManager(Context context) {
         SessionManager.init(context);
         DateTimeManager.init(context);
-        mUserAccountHandler = new UserAccountHandler(context);
 
         // fetch meta data from disk
         readSession();

@@ -33,7 +33,6 @@ import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
 import org.dhis2.android.dashboard.api.network.RepoManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.UserAccountHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +40,7 @@ import java.util.Map;
 public final class GetUserAccountController implements IController<UserAccount> {
     private final DhisApi mService;
 
-    public GetUserAccountController(UserAccountHandler userAccountHandler) {
+    public GetUserAccountController() {
         mService = RepoManager.createService(
                 DhisManager.getInstance().getServerUrl(),
                 DhisManager.getInstance().getUserCredentials()
