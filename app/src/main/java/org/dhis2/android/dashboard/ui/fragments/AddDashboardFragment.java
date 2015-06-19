@@ -34,9 +34,11 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.models.Dashboard;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -44,6 +46,7 @@ import butterknife.OnClick;
 
 public final class AddDashboardFragment extends DialogFragment {
     @InjectView(R.id.dialog_label) TextView mDialogLabel;
+    @InjectView(R.id.dashboard_name) EditText mDashboardName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,10 +62,14 @@ public final class AddDashboardFragment extends DialogFragment {
 
     @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.inject(this, view);
+        mDialogLabel.setText(getString(R.string.add_dashboard));
     }
 
-    @OnClick(R.id.close_dialog_button)
-    public void onCloseDialog() {
+    @OnClick({R.id.close_dialog_button, R.id.cancel_dashboard_add, R.id.save_dashboard})
+    public void onButtonClicked(View view) {
+        if (view.getId() == R.id.save_dashboard) {
+            Dashboard.createAndSaveDashboard(mDashboardName.getText().toString());
+        }
         dismiss();
     }
 }

@@ -52,7 +52,7 @@
     <item
         android:id="@+id/manage_dashboard"
         android:orderInCategory="120"
-        android:title="@string/manage_dashboard"
+        android:title="@string/manage"
         app:showAsAction="never" />
 
 </menu>

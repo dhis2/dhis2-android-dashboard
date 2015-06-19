@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) 2015, University of Oslo
   ~
   ~ All rights reserved.
@@ -57,37 +58,18 @@
                 app:font="@string/regular_font_name"/>
         </android.support.design.widget.TextInputLayout>
 
-        <LinearLayout
+        <org.hisp.dhis.android.sdk.utils.ui.views.FontButton
+            android:id="@+id/delete_dashboard_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_alignParentBottom="true"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <org.dhis2.android.dashboard.ui.views.FontButton
-                android:id="@+id/cancel_dashboard_add"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:background="@drawable/transparent_selector"
-                android:gravity="center"
-                android:text="@string/cancel"
-                android:textColor="@color/navy_blue"
-                android:textSize="12sp"
-                app:font="@string/medium_font_name"/>
-
-            <org.dhis2.android.dashboard.ui.views.FontButton
-                android:id="@+id/save_dashboard"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:background="@drawable/transparent_selector"
-                android:gravity="center"
-                android:text="@string/save"
-                android:textColor="@color/navy_blue"
-                android:textSize="12sp"
-                app:font="@string/medium_font_name"/>
-        </LinearLayout>
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/button_red_selector"
+            android:singleLine="true"
+            android:text="@string/manage_dashboard"
+            android:textColor="@color/white"
+            android:textSize="@dimen/medium_text_size"
+            app:font="@string/medium_font_name"/>
 
     </RelativeLayout>
 
