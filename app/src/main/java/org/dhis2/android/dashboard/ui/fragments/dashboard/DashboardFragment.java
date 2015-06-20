@@ -46,11 +46,11 @@ import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Access;
-import org.dhis2.android.dashboard.api.models.ApiResource;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.models.DashboardItem$Table;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter;
@@ -74,7 +74,8 @@ public class DashboardFragment extends BaseFragment
     private static final String MANAGE = "arg:manage";
     private static final String EXTERNALIZE = "arg:externalize";
 
-    @InjectView(R.id.grid) RecyclerView mGridView;
+    @InjectView(R.id.grid)
+    RecyclerView mGridView;
     DashboardItemAdapter mAdapter;
 
     public static DashboardFragment newInstance(Dashboard dashboard) {
@@ -82,7 +83,7 @@ public class DashboardFragment extends BaseFragment
         Access access = dashboard.getAccess();
 
         Bundle args = new Bundle();
-        args.putLong(DASHBOARD_ID, dashboard.getLocalId());
+        args.putLong(DASHBOARD_ID, dashboard.getId());
         args.putBoolean(DELETE, access.isDelete());
         args.putBoolean(UPDATE, access.isUpdate());
         args.putBoolean(READ, access.isRead());
@@ -125,7 +126,8 @@ public class DashboardFragment extends BaseFragment
         gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
 
-            @Override public int getSpanSize(int position) {
+            @Override
+            public int getSpanSize(int position) {
                 return mAdapter.getSpanSize(position);
             }
         });
@@ -165,6 +167,7 @@ public class DashboardFragment extends BaseFragment
     public void onLoadFinished(Loader<List<DashboardItem>> loader,
                                List<DashboardItem> dashboardItems) {
         if (loader.getId() == LOADER_ID) {
+            System.out.println("DASHBOARD_ITEMS: " + dashboardItems.size());
             mAdapter.swapData(dashboardItems);
         }
     }
@@ -182,7 +185,8 @@ public class DashboardFragment extends BaseFragment
                 item.getName(), Toast.LENGTH_SHORT).show();
     }
 
-    @Override public void onItemElementClick(DashboardElement element) {
+    @Override
+    public void onItemElementClick(DashboardElement element) {
 
     }
 
@@ -204,12 +208,13 @@ public class DashboardFragment extends BaseFragment
             mDashboardId = dashboardId;
         }
 
-        @Override public List<DashboardItem> query(Context context) {
+        @Override
+        public List<DashboardItem> query(Context context) {
             List<DashboardItem> dashboardItems = new Select()
                     .from(DashboardItem.class)
                     .where(
                             Condition.column(DashboardItem$Table.DASHBOARD_DASHBOARD).is(mDashboardId),
-                            Condition.column(DashboardItem$Table.TYPE).isNot(ApiResource.TYPE_MESSAGES)
+                            Condition.column(DashboardItem$Table.TYPE).isNot(DashboardItemContent.TYPE_MESSAGES)
                     )
                     .queryList();
             if (dashboardItems != null && !dashboardItems.isEmpty()) {

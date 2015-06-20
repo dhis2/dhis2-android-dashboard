@@ -26,13 +26,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.models;
+package org.dhis2.android.dashboard.api.persistence.converters;
 
-public interface BaseIdentifiableModel extends TimeStampedModel {
-    void setLocalId(long id);
-    void setId(String id);
-    void setName(String name);
-    long getLocalId();
-    String getId();
-    String getName();
+import com.raizlabs.android.dbflow.converter.TypeConverter;
+
+import org.dhis2.android.dashboard.api.models.State;
+
+@com.raizlabs.android.dbflow.annotation.TypeConverter
+public final class StateConverter extends TypeConverter<String, State> {
+
+    @Override public String getDBValue(State model) {
+        return model.toString();
+    }
+
+    @Override public State getModelValue(String data) {
+        return State.valueOf(data);
+    }
 }

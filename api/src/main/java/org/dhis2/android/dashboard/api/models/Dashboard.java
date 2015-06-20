@@ -32,11 +32,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.NotNull;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
@@ -47,44 +45,110 @@ import java.util.List;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 @Table(databaseName = DbDhis.NAME)
-public final class Dashboard extends BaseModel implements BaseIdentifiableModel, DisplayNameModel {
-    @JsonIgnore @Column @PrimaryKey(autoincrement = true) long localId;
-    @JsonIgnore @Column @NotNull State state;
-    @JsonProperty("id") @Column String id;
-    @JsonProperty("created") @Column @NotNull DateTime created;
-    @JsonProperty("lastUpdated") @Column @NotNull DateTime lastUpdated;
-    @JsonProperty("access") @Column @NotNull Access access;
-    @JsonProperty("name") @Column String name;
-    @JsonProperty("displayName") @Column String displayName;
-    @JsonProperty("dashboardItems") List<DashboardItem> dashboardItems;
+public final class Dashboard extends BaseIdentifiableObject {
+
+    @JsonIgnore
+    @Column(name = "state")
+    @NotNull
+    State state;
+
+    @JsonProperty("dashboardItems")
+    List<DashboardItem> dashboardItems;
 
     public Dashboard() {
         state = State.SYNCED;
     }
 
-    @JsonIgnore public static List<DashboardItem> queryRelatedDashboardItems(Dashboard dashboard) {
+    /////////////////////////////////////////////////////////////////////////
+    // Dashboard logic
+    /////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Creates and saves Dashboard with given name to the local database.
+     *
+     * @param name Name of new dashboard.
+     */
+    @JsonIgnore
+    public static Dashboard createDashboard(String name) {
+        DateTime currentDateTime = DateTimeManager.getInstance()
+                .getCurrentDateTimeInServerTimeZone();
+
+        Dashboard dashboard = new Dashboard();
+        dashboard.setState(State.TO_POST);
+        dashboard.setName(name);
+        dashboard.setDisplayName(name);
+        dashboard.setCreated(currentDateTime);
+        dashboard.setLastUpdated(currentDateTime);
+        dashboard.setAccess(provideDefaultAccess());
+        dashboard.save();
+
+        return dashboard;
+    }
+
+    /**
+     * This method will change the name and the State of dashboard.
+     * <p/>
+     * If the current state of model is State.TO_DELETE or State.TO_POST,
+     * state won't be changed. Otherwise, it will be changed to State.TO_UPDATE.
+     */
+    @JsonIgnore
+    public void modifyName(String newName) {
+        setName(newName);
+        setDisplayName(newName);
+
+        if (state != State.TO_DELETE && state != State.TO_POST) {
+            state = State.TO_UPDATE;
+        }
+
+        super.save();
+    }
+
+    /**
+     * This method will change the state of the model to State.TO_DELETE
+     * if the model was already synced to the server.
+     * <p/>
+     * If model was created only locally, it will delete it
+     * from local database.
+     */
+    @JsonIgnore
+    public void softDelete() {
+        if (state == State.TO_POST) {
+            super.delete();
+        } else {
+            state = State.TO_DELETE;
+            super.save();
+        }
+    }
+
+    @JsonIgnore
+    public static List<DashboardItem> queryRelatedDashboardItems(Dashboard dashboard) {
         return new Select().from(DashboardItem.class)
                 .where(Condition.column(DashboardItem$Table
-                        .DASHBOARD_DASHBOARD).is(dashboard.getLocalId()))
+                        .DASHBOARD_DASHBOARD).is(dashboard.getId()))
                 .queryList();
     }
 
-    @JsonIgnore public void addDashboardItem(ApiResource resource) {
-        isNull(resource, "ApiResource object must not be null");
+    /////////////////////////////////////////////////////////////////////////
+    // DashboardItem logic
+    /////////////////////////////////////////////////////////////////////////
+
+    @JsonIgnore
+    public void addDashboardItem(DashboardItemContent resource) {
+        isNull(resource, "DashboardItemContent object must not be null");
 
         switch (resource.getType()) {
-            case ApiResource.TYPE_CHART:
-            case ApiResource.TYPE_EVENT_CHART:
-            case ApiResource.TYPE_MAP:
-            case ApiResource.TYPE_EVENT_REPORT:
-            case ApiResource.TYPE_REPORT_TABLE: {
+            case DashboardItemContent.TYPE_CHART:
+            case DashboardItemContent.TYPE_EVENT_CHART:
+            case DashboardItemContent.TYPE_MAP:
+            case DashboardItemContent.TYPE_EVENT_REPORT:
+            case DashboardItemContent.TYPE_REPORT_TABLE: {
                 createAndSaveDashboardItem(resource);
                 break;
             }
-            case ApiResource.TYPE_USERS:
-            case ApiResource.TYPE_REPORTS:
-            case ApiResource.TYPE_RESOURCES:
-            case ApiResource.TYPE_REPORT_TABLES: {
+            case DashboardItemContent.TYPE_USERS:
+            case DashboardItemContent.TYPE_REPORTS:
+            case DashboardItemContent.TYPE_RESOURCES:
+            case DashboardItemContent.TYPE_REPORT_TABLES: {
                 if (!tryToAddElementToItems(resource)) {
                     createAndSaveDashboardItem(resource);
                 }
@@ -93,7 +157,7 @@ public final class Dashboard extends BaseModel implements BaseIdentifiableModel,
         }
     }
 
-    private void createAndSaveDashboardItem(ApiResource resource) {
+    private void createAndSaveDashboardItem(DashboardItemContent resource) {
         DashboardItem item
                 = new DashboardItem();
         item.setCreated(DateTimeManager.getInstance()
@@ -102,12 +166,12 @@ public final class Dashboard extends BaseModel implements BaseIdentifiableModel,
                 .getCurrentDateTimeInServerTimeZone());
         item.setState(State.TO_POST);
         item.setDashboard(this);
-        item.setAccess(Access.provideDefaultAccess());
+        item.setAccess(provideDefaultAccess());
         item.setType(resource.getType());
         item.save();
 
         DashboardElement element = new DashboardElement();
-        element.setId(resource.getId());
+        element.setUId(resource.getUId());
         element.setName(resource.getName());
         element.setCreated(resource.getCreated());
         element.setLastUpdated(resource.getLastUpdated());
@@ -119,10 +183,10 @@ public final class Dashboard extends BaseModel implements BaseIdentifiableModel,
         System.out.println("TYPE: " + item.getType());
     }
 
-    private boolean tryToAddElementToItems(ApiResource resource) {
+    private boolean tryToAddElementToItems(DashboardItemContent resource) {
         List<DashboardItem> items = new Select()
                 .from(DashboardItem.class)
-                .where(Condition.column(DashboardItem$Table.DASHBOARD_DASHBOARD).is(localId))
+                .where(Condition.column(DashboardItem$Table.DASHBOARD_DASHBOARD).is(getId()))
                 .and(Condition.column(DashboardItem$Table.TYPE).is(resource.getType()))
                 .queryList();
 
@@ -139,129 +203,18 @@ public final class Dashboard extends BaseModel implements BaseIdentifiableModel,
         return false;
     }
 
-    /**
-     * Note! This method will change the name and state of model.
-     * <p/>
-     * If the current state of model is State.TO_DELETE or State.TO_POST,
-     * state won't be changed.
-     */
-    @JsonIgnore public void modifyName(String newName) {
-        name = newName;
-        displayName = newName;
+    /////////////////////////////////////////////////////////////////////////
+    // Getters and setters
+    /////////////////////////////////////////////////////////////////////////
 
-        if (state != State.TO_DELETE && state != State.TO_POST) {
-            state = State.TO_UPDATE;
-        }
-
-        super.save();
-    }
-
-    /**
-     * This method will change the state of the model to TO_DELETE if the model was already synced to the server.
-     * If model was created only locally, it will delete it from embedded database.
-     */
-    @JsonIgnore public void softDelete() {
-        if (state == State.TO_POST) {
-            super.delete();
-        } else {
-            state = State.TO_DELETE;
-            super.save();
-        }
-    }
-
-    /**
-     * @param name Name and display name of new dashboard.
-     */
-    @JsonIgnore public static Dashboard createAndSaveDashboard(String name) {
-        DateTime currentDateTime = DateTimeManager.getInstance()
-                .getCurrentDateTimeInServerTimeZone();
-        Dashboard dashboard = new Dashboard();
-        dashboard.setState(State.TO_POST);
-        dashboard.setName(name);
-        dashboard.setDisplayName(name);
-        dashboard.setCreated(currentDateTime);
-        dashboard.setLastUpdated(currentDateTime);
-        dashboard.setAccess(Access.provideDefaultAccess());
-        dashboard.save();
-        return dashboard;
-    }
-
-    @JsonIgnore public State getState() {
+    @JsonIgnore
+    public State getState() {
         return state;
     }
 
-    @JsonIgnore public void setState(State state) {
+    @JsonIgnore
+    public void setState(State state) {
         this.state = state;
-    }
-
-    @JsonIgnore @Override
-    public long getLocalId() {
-        return localId;
-    }
-
-    @JsonIgnore @Override
-    public void setLocalId(long localId) {
-        this.localId = localId;
-    }
-
-    @JsonIgnore @Override
-    public DateTime getCreated() {
-        return created;
-    }
-
-    @JsonIgnore @Override
-    public void setCreated(DateTime created) {
-        this.created = created;
-    }
-
-    @JsonIgnore @Override
-    public DateTime getLastUpdated() {
-        return lastUpdated;
-    }
-
-    @JsonIgnore @Override
-    public void setLastUpdated(DateTime lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
-    @JsonIgnore @Override
-    public String getId() {
-        return id;
-    }
-
-    @JsonIgnore @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @JsonIgnore @Override
-    public String getName() {
-        return name;
-    }
-
-    @JsonIgnore @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @JsonIgnore @Override
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    @JsonIgnore @Override
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    @JsonIgnore
-    public Access getAccess() {
-        return access;
-    }
-
-    @JsonIgnore
-    public void setAccess(Access access) {
-        this.access = access;
     }
 
     @JsonIgnore
@@ -274,16 +227,14 @@ public final class Dashboard extends BaseModel implements BaseIdentifiableModel,
         this.dashboardItems = dashboardItems;
     }
 
-    @JsonIgnore @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append(" displayName: ");
-        builder.append(displayName);
-
-        builder.append(" access: ");
-        builder.append(access == null ? "null" : access.toString());
-
-        return builder.toString();
+    static Access provideDefaultAccess() {
+        Access access = new Access();
+        access.setManage(true);
+        access.setExternalize(true);
+        access.setWrite(true);
+        access.setUpdate(true);
+        access.setRead(true);
+        access.setDelete(true);
+        return access;
     }
 }

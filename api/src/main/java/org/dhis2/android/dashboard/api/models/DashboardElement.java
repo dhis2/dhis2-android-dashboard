@@ -29,105 +29,55 @@
 package org.dhis2.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyAction;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.NotNull;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
-import org.joda.time.DateTime;
 
 @Table(databaseName = DbDhis.NAME)
-public final class DashboardElement extends BaseModel implements BaseIdentifiableModel {
+public final class DashboardElement extends BaseIdentifiableObject {
     static final String DASHBOARD_ITEM_KEY = "dashboardItem";
 
-    @JsonIgnore @Column @PrimaryKey(autoincrement = true) long localId;
-    @JsonIgnore @Column @NotNull State state;
+    @JsonIgnore
+    @Column
+    @NotNull
+    State state;
 
-    @JsonIgnore @Column @NotNull @ForeignKey(
+    @JsonIgnore
+    @Column
+    @NotNull
+    @ForeignKey(
             references = {
-                    @ForeignKeyReference(columnName = DASHBOARD_ITEM_KEY, columnType = long.class, foreignColumnName = "localId")
+                    @ForeignKeyReference(columnName = DASHBOARD_ITEM_KEY, columnType = long.class, foreignColumnName = "id")
             }, saveForeignKeyModel = false, onDelete = ForeignKeyAction.CASCADE
-    ) DashboardItem dashboardItem;
-
-    @JsonProperty("id") @Column String id;
-    @JsonProperty("name") @Column String name;
-    @JsonProperty("created") @Column DateTime created;
-    @JsonProperty("lastUpdated") @Column DateTime lastUpdated;
-    @JsonProperty("displayName") @Column String displayName;
+    )
+    DashboardItem dashboardItem;
 
     public DashboardElement() {
         state = State.SYNCED;
     }
 
-    @JsonIgnore @Override
-    public long getLocalId() {
-        return localId;
-    }
-
-    @JsonIgnore @Override
-    public void setLocalId(long localId) {
-        this.localId = localId;
-    }
-
-    @JsonIgnore public State getState() {
+    @JsonIgnore
+    public State getState() {
         return state;
     }
 
-    @JsonIgnore public void setState(State state) {
+    @JsonIgnore
+    public void setState(State state) {
         this.state = state;
     }
 
-    @JsonIgnore public DashboardItem getDashboardItem() {
+    @JsonIgnore
+    public DashboardItem getDashboardItem() {
         return dashboardItem;
     }
 
-    @JsonIgnore public void setDashboardItem(DashboardItem dashboardItem) {
+    @JsonIgnore
+    public void setDashboardItem(DashboardItem dashboardItem) {
         this.dashboardItem = dashboardItem;
-    }
-
-    @JsonIgnore @Override public String getId() {
-        return id;
-    }
-
-    @JsonIgnore @Override public void setId(String id) {
-        this.id = id;
-    }
-
-    @JsonIgnore @Override public String getName() {
-        return name;
-    }
-
-    @JsonIgnore @Override public void setName(String name) {
-        this.name = name;
-    }
-
-    @JsonIgnore @Override public DateTime getCreated() {
-        return created;
-    }
-
-    @JsonIgnore @Override public void setCreated(DateTime created) {
-        this.created = created;
-    }
-
-    @JsonIgnore @Override public DateTime getLastUpdated() {
-        return lastUpdated;
-    }
-
-    @JsonIgnore @Override public void setLastUpdated(DateTime lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
-    @JsonIgnore public String getDisplayName() {
-        return displayName;
-    }
-
-    @JsonIgnore public void setDisplayName(String displayName) {
-        this.displayName = displayName;
     }
 }

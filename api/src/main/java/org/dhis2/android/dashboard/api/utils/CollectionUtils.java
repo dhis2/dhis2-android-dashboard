@@ -28,15 +28,13 @@
 
 package org.dhis2.android.dashboard.api.utils;
 
-import org.dhis2.android.dashboard.api.models.BaseIdentifiableModel;
+import org.dhis2.android.dashboard.api.models.BaseIdentifiableObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public final class CollectionUtils {
 
@@ -44,43 +42,25 @@ public final class CollectionUtils {
         // no instances
     }
 
-    public static <T extends BaseIdentifiableModel> Map<String, T> toMap(Collection<T> objects) {
+    public static <T extends BaseIdentifiableObject> Map<String, T> toMap(Collection<T> objects) {
         Map<String, T> map = new HashMap<>();
         if (objects != null && objects.size() > 0) {
             for (T object : objects) {
-                if (object.getId() != null) {
-                    map.put(object.getId(), object);
+                if (object.getUId() != null) {
+                    map.put(object.getUId(), object);
                 }
             }
         }
         return map;
     }
 
-    public static <T extends BaseIdentifiableModel> List<String> toListIds(List<T> objects) {
+    public static <T extends BaseIdentifiableObject> List<String> toListIds(List<T> objects) {
         List<String> ids = new ArrayList<>();
         if (objects != null && objects.size() > 0) {
             for (T object : objects) {
-                ids.add(object.getId());
+                ids.add(object.getUId());
             }
         }
         return ids;
-    }
-
-    public static <T extends BaseIdentifiableModel> Set<String> toSetIds(List<T> objects) {
-        Set<String> ids = new HashSet<>();
-        if (objects != null && objects.size() > 0) {
-            for (T object : objects) {
-                ids.add(object.getId());
-            }
-        }
-        return ids;
-    }
-
-    public static <T extends BaseIdentifiableModel> void print(List<T> items) {
-        if (items != null && items.size() > 0) {
-            for (BaseIdentifiableModel item : items) {
-                System.out.println("Name: " + item.getName());
-            }
-        }
     }
 }

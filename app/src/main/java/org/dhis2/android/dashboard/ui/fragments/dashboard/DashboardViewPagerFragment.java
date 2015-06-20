@@ -46,18 +46,15 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
-import org.dhis2.android.dashboard.api.models.ApiResource;
-import org.dhis2.android.dashboard.api.models.ApiResource$Table;
 import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent$Table;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.activities.INavigationCallback;
 import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
-import org.dhis2.android.dashboard.ui.fragments.AddDashboardFragment;
-import org.dhis2.android.dashboard.ui.fragments.AutoCompleteDialogFragment;
-import org.dhis2.android.dashboard.ui.fragments.AutoCompleteDialogFragment.OnOptionSelectedListener;
+import org.dhis2.android.dashboard.ui.fragments.dashboard.AutoCompleteDialogFragment.OnOptionSelectedListener;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
-import org.dhis2.android.dashboard.ui.fragments.ManageDashboardFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,9 +70,12 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     private DashboardAdapter mDashboardAdapter;
 
-    @InjectView(R.id.dashboard_tabs) TabLayout mTabs;
-    @InjectView(R.id.dashboard_view_pager) ViewPager mViewPager;
-    @InjectView(R.id.toolbar) Toolbar mToolbar;
+    @InjectView(R.id.dashboard_tabs)
+    TabLayout mTabs;
+    @InjectView(R.id.dashboard_view_pager)
+    ViewPager mViewPager;
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
 
     INavigationCallback mNavCallback;
 
@@ -210,8 +210,8 @@ public class DashboardViewPagerFragment extends BaseFragment
     @Override
     public void onOptionSelected(int dialogId, int position, String id, String name) {
         if (dialogId == AutoCompleteDialogFragment.DIALOG_ID) {
-            ApiResource resource = new Select().from(ApiResource.class)
-                    .where(Condition.column(ApiResource$Table.ID).is(id))
+            DashboardItemContent resource = new Select().from(DashboardItemContent.class)
+                    .where(Condition.column(DashboardItemContent$Table.UID).is(id))
                     .querySingle();
             Dashboard dashboard = mDashboardAdapter
                     .getDashboard(mViewPager.getCurrentItem());
@@ -225,7 +225,7 @@ public class DashboardViewPagerFragment extends BaseFragment
         public List<Dashboard> query(Context context) {
             List<Dashboard> dashboards = new Select()
                     .from(Dashboard.class).queryList();
-            Collections.sort(dashboards, Dashboard.DISPLAY_NAME_MODEL_COMPARATOR);
+            Collections.sort(dashboards, Dashboard.DISPLAY_NAME_COMPARATOR);
             return dashboards;
         }
     }

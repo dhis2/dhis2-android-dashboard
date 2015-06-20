@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.dhis2.android.dashboard.ui.fragments;
+package org.dhis2.android.dashboard.ui.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;

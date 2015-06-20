@@ -26,46 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence;
+package org.dhis2.android.dashboard.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.NotNull;
+import com.raizlabs.android.dbflow.annotation.Table;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.raizlabs.android.dbflow.converter.TypeConverter;
+import org.dhis2.android.dashboard.api.persistence.DbDhis;
 
-import org.dhis2.android.dashboard.api.models.Access;
-import org.dhis2.android.dashboard.api.utils.ObjectMapperProvider;
+@Table(databaseName = DbDhis.NAME)
+public final class DashboardItemContent extends BaseIdentifiableObject {
+    public static final String TYPE_CHART = "chart";
+    public static final String TYPE_EVENT_CHART = "eventChart";
+    public static final String TYPE_MAP = "map";
+    public static final String TYPE_REPORT_TABLE = "reportTable";
+    public static final String TYPE_EVENT_REPORT = "eventReport";
+    public static final String TYPE_USERS = "users";
+    public static final String TYPE_REPORTS = "reports";
+    public static final String TYPE_RESOURCES = "resources";
+    public static final String TYPE_REPORT_TABLES = "reportTables";
+    public static final String TYPE_MESSAGES = "messages";
 
-import java.io.IOException;
-
-@com.raizlabs.android.dbflow.annotation.TypeConverter
-public final class AccessConverter extends TypeConverter<String, Access>{
-
-    @Override public String getDBValue(Access model) {
-        String access = null;
-        try {
-            access = ObjectMapperProvider.getInstance()
-                    .writeValueAsString(model);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return access;
+    public DashboardItemContent() {
     }
 
-    @Override public Access getModelValue(String data) {
-        Access access = null;
-        try {
-            access = ObjectMapperProvider.getInstance()
-                    .readValue(data, Access.class);
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
-        } catch (JsonParseException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @JsonIgnore
+    @Column(name = "type")
+    @NotNull
+    String type;
 
-        return access;
+    @JsonIgnore
+    public String getType() {
+        return type;
+    }
+
+    @JsonIgnore
+    public void setType(String type) {
+        this.type = type;
     }
 }

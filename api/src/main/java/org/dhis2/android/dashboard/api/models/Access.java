@@ -31,98 +31,100 @@ package org.dhis2.android.dashboard.api.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.dhis2.android.dashboard.api.utils.StringUtils;
+
 public final class Access {
-    @JsonProperty("delete") private boolean delete;
-    @JsonProperty("externalize") private boolean externalize;
-    @JsonProperty("manage") private boolean manage;
-    @JsonProperty("read") private boolean read;
-    @JsonProperty("update") private boolean update;
-    @JsonProperty("write") private boolean write;
 
-    /**
-     * Method which returns Access objects with
-     * all rights set to true
-     */
-    @JsonIgnore public static Access provideDefaultAccess() {
-        Access access = new Access();
-        access.setDelete(true);
-        access.setExternalize(true);
-        access.setManage(true);
-        access.setRead(true);
-        access.setWrite(true);
-        access.setUpdate(true);
-        return access;
-    }
+    @JsonProperty("manage")
+    boolean manage;
 
-    @JsonIgnore public boolean isDelete() {
+    @JsonProperty("externalize")
+    boolean externalize;
+
+    @JsonProperty("write")
+    boolean write;
+
+    @JsonProperty("read")
+    boolean read;
+
+    @JsonProperty("update")
+    boolean update;
+
+    @JsonProperty("delete")
+    boolean delete;
+
+    @JsonIgnore
+    public boolean isDelete() {
         return delete;
     }
 
-    @JsonIgnore public void setDelete(boolean delete) {
+    @JsonIgnore
+    public void setDelete(boolean delete) {
         this.delete = delete;
     }
 
-    @JsonIgnore public boolean isExternalize() {
+    @JsonIgnore
+    public boolean isExternalize() {
         return externalize;
     }
 
-    @JsonIgnore public void setExternalize(boolean externalize) {
+    @JsonIgnore
+    public void setExternalize(boolean externalize) {
         this.externalize = externalize;
     }
 
-    @JsonIgnore public boolean isManage() {
+    @JsonIgnore
+    public boolean isManage() {
         return manage;
     }
 
-    @JsonIgnore public void setManage(boolean manage) {
+    @JsonIgnore
+    public void setManage(boolean manage) {
         this.manage = manage;
     }
 
-    @JsonIgnore public boolean isRead() {
+    @JsonIgnore
+    public boolean isRead() {
         return read;
     }
 
-    @JsonIgnore public void setRead(boolean read) {
+    @JsonIgnore
+    public void setRead(boolean read) {
         this.read = read;
     }
 
-    @JsonIgnore public boolean isUpdate() {
+    @JsonIgnore
+    public boolean isUpdate() {
         return update;
     }
 
-    @JsonIgnore public void setUpdate(boolean update) {
+    @JsonIgnore
+    public void setUpdate(boolean update) {
         this.update = update;
     }
 
-    @JsonIgnore public boolean isWrite() {
+    @JsonIgnore
+    public boolean isWrite() {
         return write;
     }
 
-    @JsonIgnore public void setWrite(boolean write) {
+    @JsonIgnore
+    public void setWrite(boolean write) {
         this.write = write;
     }
 
-    @JsonIgnore @Override
+    @JsonIgnore
+    @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(" delete: ");
-        builder.append(delete);
-
-        builder.append(" externalize: ");
-        builder.append(externalize);
-
-        builder.append(" manage: ");
-        builder.append(manage);
-
-        builder.append(" read: ");
-        builder.append(read);
-
-        builder.append(" update: ");
-        builder.append(update);
-
-        builder.append(" write: ");
-        builder.append(write);
-
-        return builder.toString();
+        return StringUtils.create()
+                .append("Access {")
+                .append("manage=").append(manage)
+                .append(", externalize=").append(externalize)
+                .append(", write=").append(write)
+                .append(", read=").append(read)
+                .append(", update=").append(update)
+                .append(", delete=").append(delete)
+                .append("}")
+                .build();
     }
 }

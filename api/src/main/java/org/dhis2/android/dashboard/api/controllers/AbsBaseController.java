@@ -28,7 +28,7 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
-import org.dhis2.android.dashboard.api.models.BaseIdentifiableModel;
+import org.dhis2.android.dashboard.api.models.BaseIdentifiableObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,9 +39,10 @@ import retrofit.RetrofitError;
 
 import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toMap;
 
-public abstract class AbsBaseController<T extends BaseIdentifiableModel> implements IController<List<T>> {
+public abstract class AbsBaseController<T extends BaseIdentifiableObject> implements IController<List<T>> {
 
-    @Override public List<T> run() throws RetrofitError {
+    @Override
+    public List<T> run() throws RetrofitError {
         List<T> existingItems = getExistingItems();
         List<T> updatedItems = getUpdatedItems();
         List<T> persistedItems = getPersistedItems();
@@ -55,13 +56,13 @@ public abstract class AbsBaseController<T extends BaseIdentifiableModel> impleme
         }
 
         for (T existingItem : existingItems) {
-            String id = existingItem.getId();
+            String id = existingItem.getUId();
             T updatedItem = updatedItemsMap.get(id);
             T persistedItem = persistedItemsMap.get(id);
 
             if (updatedItem != null) {
                 if (persistedItem != null) {
-                    updatedItem.setLocalId(persistedItem.getLocalId());
+                    updatedItem.setId(persistedItem.getId());
                 }
                 existingItemsMap.put(id, updatedItem);
                 continue;

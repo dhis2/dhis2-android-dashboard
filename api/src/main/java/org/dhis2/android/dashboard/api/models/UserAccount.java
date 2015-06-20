@@ -32,60 +32,80 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
-import org.joda.time.DateTime;
 
 @Table(databaseName = DbDhis.NAME)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public final class UserAccount extends BaseModel {
-    /**
-     * Value of 'fields' query parameter for getCurrentUserAccount() method
-     */
-    public static final String ALL_USER_ACCOUNT_FIELDS = "id,created,lastUpdated,name,displayName," +
-            "firstName,surname," +
-            "gender,birthday,introduction," +
-            "education,employer,interests," +
-            "jobTitle,languages,email,phoneNumber," +
-            "organisationUnits[id]";
-
-    private static final int LOCAL_ID = 1;
+public final class UserAccount extends BaseIdentifiableObject {
 
     // As we have only one user account, the id will be constant
-    @JsonIgnore @Column @PrimaryKey long localId = LOCAL_ID;
-    @JsonIgnore @Column State state;
+    private static final int LOCAL_ID = 1;
 
-    @JsonProperty("id") @Column String id;
-    @JsonProperty("created") @Column DateTime created;
-    @JsonProperty("lastUpdated") @Column DateTime lastUpdated;
-    @JsonProperty("name") @Column String name;
-    @JsonProperty("displayName") @Column String displayName;
-    @JsonProperty("firstName") @Column String firstName;
-    @JsonProperty("surname") @Column String surname;
-    @JsonProperty("gender") @Column String gender;
-    @JsonProperty("birthday") @Column String birthday;
-    @JsonProperty("introduction") @Column String introduction;
-    @JsonProperty("education") @Column String education;
-    @JsonProperty("employer") @Column String employer;
-    @JsonProperty("interests") @Column String interests;
-    @JsonProperty("jobTitle") @Column String jobTitle;
-    @JsonProperty("languages") @Column String languages;
-    @JsonProperty("email") @Column String email;
-    @JsonProperty("phoneNumber") @Column String phoneNumber;
+    @JsonIgnore
+    @Column(name = "state")
+    State state;
+
+    @JsonProperty("firstName")
+    @Column(name = "firstName")
+    String firstName;
+
+    @JsonProperty("surname")
+    @Column(name = "surname")
+    String surname;
+
+    @JsonProperty("gender")
+    @Column(name = "gender")
+    String gender;
+
+    @JsonProperty("birthday")
+    @Column(name = "birthday")
+    String birthday;
+
+    @JsonProperty("introduction")
+    @Column(name = "introduction")
+    String introduction;
+
+    @JsonProperty("education")
+    @Column(name = "education")
+    String education;
+
+    @JsonProperty("employer")
+    @Column(name = "employer")
+    String employer;
+
+    @JsonProperty("interests")
+    @Column(name = "interests")
+    String interests;
+
+    @JsonProperty("jobTitle")
+    @Column(name = "jobTitle")
+    String jobTitle;
+
+    @JsonProperty("languages")
+    @Column(name = "languages")
+    String languages;
+
+    @JsonProperty("email")
+    @Column(name = "email")
+    String email;
+
+    @JsonProperty("phoneNumber")
+    @Column(name = "phoneNumber")
+    String phoneNumber;
 
     public UserAccount() {
         state = State.SYNCED;
+        setId(LOCAL_ID);
     }
 
     @JsonIgnore
     public static UserAccount getUserAccountFromDb() {
         return new Select().from(UserAccount.class)
-                .where(Condition.column(UserAccount$Table.LOCALID).is(LOCAL_ID))
+                .where(Condition.column(UserAccount$Table.ID).is(LOCAL_ID))
                 .querySingle();
     }
 
@@ -97,56 +117,6 @@ public final class UserAccount extends BaseModel {
     @JsonIgnore
     public void setState(State state) {
         this.state = state;
-    }
-
-    @JsonIgnore
-    public String getId() {
-        return id;
-    }
-
-    @JsonIgnore
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @JsonIgnore
-    public DateTime getCreated() {
-        return created;
-    }
-
-    @JsonIgnore
-    public void setCreated(DateTime created) {
-        this.created = created;
-    }
-
-    @JsonIgnore
-    public DateTime getLastUpdated() {
-        return lastUpdated;
-    }
-
-    @JsonIgnore
-    public void setLastUpdated(DateTime lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
-    @JsonIgnore
-    public String getName() {
-        return name;
-    }
-
-    @JsonIgnore
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @JsonIgnore
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    @JsonIgnore
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
     }
 
     @JsonIgnore

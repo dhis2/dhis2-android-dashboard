@@ -44,9 +44,9 @@ import com.squareup.picasso.Picasso;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.models.Access;
-import org.dhis2.android.dashboard.api.models.ApiResource;
 import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent;
 import org.dhis2.android.dashboard.api.utils.PicassoProvider;
 
 import java.util.List;
@@ -120,21 +120,21 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         holder.menuButtonHandler.setDashboardItem(item);
         holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
 
-        if (ApiResource.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
+        if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
             holder.itemName.setText(item.getChart().getDisplayName());
-        } else if (ApiResource.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
+        } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
             holder.itemName.setText(item.getMap().getDisplayName());
-        } else if (ApiResource.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
+        } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
             holder.itemName.setText(item.getEventChart().getDisplayName());
-        } else if (ApiResource.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
+        } else if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
             holder.itemName.setText(item.getReportTable().getDisplayName());
-        } else if (ApiResource.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
+        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
             holder.itemName.setText(item.getEventReport().getDisplayName());
-        } else if (ApiResource.TYPE_USERS.equals(item.getType())) {
+        } else if (DashboardItemContent.TYPE_USERS.equals(item.getType())) {
             holder.itemName.setText(mUsersName);
-        } else if (ApiResource.TYPE_REPORTS.equals(item.getType())) {
+        } else if (DashboardItemContent.TYPE_REPORTS.equals(item.getType())) {
             holder.itemName.setText(mReportsName);
-        } else if (ApiResource.TYPE_RESOURCES.equals(item.getType())) {
+        } else if (DashboardItemContent.TYPE_RESOURCES.equals(item.getType())) {
             holder.itemName.setText(mResourcesName);
         }
 
@@ -188,12 +188,12 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
 
     private void handleItemsWithImages(ImageItemViewHolder holder, DashboardItem item) {
         String request = null;
-        if (ApiResource.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
-            request = buildImageUrl("charts", item.getChart().getId());
-        } else if (ApiResource.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
-            request = buildImageUrl("maps", item.getMap().getId());
-        } else if (ApiResource.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
-            request = buildImageUrl("eventCharts", item.getEventChart().getId());
+        if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
+            request = buildImageUrl("charts", item.getChart().getUId());
+        } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
+            request = buildImageUrl("maps", item.getMap().getUId());
+        } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
+            request = buildImageUrl("eventCharts", item.getEventChart().getUId());
         }
 
         mImageLoader.load(request)
@@ -209,20 +209,20 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     }
 
     private void handleItemsWithTables(TextItemViewHolder holder, DashboardItem item) {
-        if (ApiResource.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
+        if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
             holder.textView.setText(item.getReportTable().getDisplayName());
-        } else if (ApiResource.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
+        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
             holder.textView.setText(item.getEventReport().getDisplayName());
         }
     }
 
     private void handleItemsWithLists(ListItemViewHolder holder, DashboardItem item) {
         List<DashboardElement> elementList = null;
-        if (ApiResource.TYPE_USERS.equals(item.getType())) {
+        if (DashboardItemContent.TYPE_USERS.equals(item.getType())) {
             elementList = item.getUsers();
-        } else if (ApiResource.TYPE_REPORTS.equals(item.getType())) {
+        } else if (DashboardItemContent.TYPE_REPORTS.equals(item.getType())) {
             elementList = item.getReports();
-        } else if (ApiResource.TYPE_RESOURCES.equals(item.getType())) {
+        } else if (DashboardItemContent.TYPE_RESOURCES.equals(item.getType())) {
             elementList = item.getResources();
         }
 
@@ -252,16 +252,16 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     public int getItemViewType(int position) {
 
         switch (getItem(position).getType()) {
-            case ApiResource.TYPE_CHART:
-            case ApiResource.TYPE_EVENT_CHART:
-            case ApiResource.TYPE_MAP:
+            case DashboardItemContent.TYPE_CHART:
+            case DashboardItemContent.TYPE_EVENT_CHART:
+            case DashboardItemContent.TYPE_MAP:
                 return ITEM_WITH_IMAGE_TYPE;
-            case ApiResource.TYPE_REPORT_TABLE:
-            case ApiResource.TYPE_EVENT_REPORT:
+            case DashboardItemContent.TYPE_REPORT_TABLE:
+            case DashboardItemContent.TYPE_EVENT_REPORT:
                 return ITEM_WITH_TABLE_TYPE;
-            case ApiResource.TYPE_USERS:
-            case ApiResource.TYPE_REPORTS:
-            case ApiResource.TYPE_RESOURCES:
+            case DashboardItemContent.TYPE_USERS:
+            case DashboardItemContent.TYPE_REPORTS:
+            case DashboardItemContent.TYPE_RESOURCES:
                 return ITEM_WITH_LIST_TYPE;
         }
 
@@ -347,7 +347,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             this.imageView = imageView;
         }
 
-        @Override public View getView() {
+        @Override
+        public View getView() {
             return imageView;
         }
     }
@@ -359,7 +360,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             this.textView = textView;
         }
 
-        @Override public View getView() {
+        @Override
+        public View getView() {
             return textView;
         }
     }
@@ -388,7 +390,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             itemElement7 = (TextView) view.findViewById(R.id.element_item_7);
         }
 
-        @Override public View getView() {
+        @Override
+        public View getView() {
             return itemElementsContainer;
         }
     }
@@ -445,9 +448,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
 
         private boolean isItemShareable() {
             return mDashboardItem != null && (
-                    ApiResource.TYPE_CHART.equals(mDashboardItem.getType()) ||
-                            ApiResource.TYPE_MAP.equals(mDashboardItem.getType()) ||
-                            ApiResource.TYPE_REPORT_TABLE.equals(mDashboardItem.getType())
+                    DashboardItemContent.TYPE_CHART.equals(mDashboardItem.getType()) ||
+                            DashboardItemContent.TYPE_MAP.equals(mDashboardItem.getType()) ||
+                            DashboardItemContent.TYPE_REPORT_TABLE.equals(mDashboardItem.getType())
             );
         }
 
@@ -509,7 +512,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             mDashboardItem = dashboardItem;
         }
 
-        @Override public void onClick(View view) {
+        @Override
+        public void onClick(View view) {
             mListener.onItemClick(mDashboardItem);
         }
     }

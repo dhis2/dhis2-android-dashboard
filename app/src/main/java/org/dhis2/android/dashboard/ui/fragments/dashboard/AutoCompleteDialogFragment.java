@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.ui.fragments;
+package org.dhis2.android.dashboard.ui.fragments.dashboard;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -52,12 +52,12 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
-import org.dhis2.android.dashboard.api.models.ApiResource;
-import org.dhis2.android.dashboard.api.models.ApiResource$Table;
-import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent$Table;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
-import org.dhis2.android.dashboard.ui.fragments.AutoCompleteDialogAdapter.OptionAdapterValue;
+import org.dhis2.android.dashboard.ui.adapters.AutoCompleteDialogAdapter;
+import org.dhis2.android.dashboard.ui.adapters.AutoCompleteDialogAdapter.OptionAdapterValue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -172,7 +172,7 @@ public class AutoCompleteDialogFragment extends DialogFragment
     @Override
     public Loader<List<OptionAdapterValue>> onCreateLoader(int id, Bundle args) {
         List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
-        tablesToTrack.add(ApiResource.class);
+        tablesToTrack.add(DashboardItemContent.class);
         return new DbLoader<>(getActivity().getApplicationContext(),
                 tablesToTrack, new DbQuery(getTypesToInclude()));
     }
@@ -199,28 +199,28 @@ public class AutoCompleteDialogFragment extends DialogFragment
     private List<String> getTypesToInclude() {
         List<String> typesToInclude = new ArrayList<>();
         if (isItemChecked(R.id.type_charts)) {
-            typesToInclude.add(ApiResource.TYPE_CHART);
+            typesToInclude.add(DashboardItemContent.TYPE_CHART);
         }
         if (isItemChecked(R.id.type_event_charts)) {
-            typesToInclude.add(ApiResource.TYPE_EVENT_CHART);
+            typesToInclude.add(DashboardItemContent.TYPE_EVENT_CHART);
         }
         if (isItemChecked(R.id.type_maps)) {
-            typesToInclude.add(ApiResource.TYPE_MAP);
+            typesToInclude.add(DashboardItemContent.TYPE_MAP);
         }
         if (isItemChecked(R.id.type_report_tables)) {
-            typesToInclude.add(ApiResource.TYPE_REPORT_TABLES);
+            typesToInclude.add(DashboardItemContent.TYPE_REPORT_TABLES);
         }
         if (isItemChecked(R.id.type_event_reports)) {
-            typesToInclude.add(ApiResource.TYPE_EVENT_REPORT);
+            typesToInclude.add(DashboardItemContent.TYPE_EVENT_REPORT);
         }
         if (isItemChecked(R.id.type_users)) {
-            typesToInclude.add(ApiResource.TYPE_USERS);
+            typesToInclude.add(DashboardItemContent.TYPE_USERS);
         }
         if (isItemChecked(R.id.type_reports)) {
-            typesToInclude.add(ApiResource.TYPE_REPORTS);
+            typesToInclude.add(DashboardItemContent.TYPE_REPORTS);
         }
         if (isItemChecked(R.id.type_resources)) {
-            typesToInclude.add(ApiResource.TYPE_RESOURCES);
+            typesToInclude.add(DashboardItemContent.TYPE_RESOURCES);
         }
 
         return typesToInclude;
@@ -244,27 +244,27 @@ public class AutoCompleteDialogFragment extends DialogFragment
             }
 
             CombinedCondition generalCondition =
-                    CombinedCondition.begin(column(ApiResource$Table.TYPE).isNotNull());
+                    CombinedCondition.begin(column(DashboardItemContent$Table.TYPE).isNotNull());
             CombinedCondition columnConditions = null;
             for (String type : mTypes) {
                 if (columnConditions == null) {
                     columnConditions = CombinedCondition
-                            .begin(column(ApiResource$Table.TYPE).is(type));
+                            .begin(column(DashboardItemContent$Table.TYPE).is(type));
                 } else {
                     columnConditions = columnConditions
-                            .or(column(ApiResource$Table.TYPE).is(type));
+                            .or(column(DashboardItemContent$Table.TYPE).is(type));
                 }
             }
             generalCondition.and(columnConditions);
 
-            List<ApiResource> resources = new Select().from(ApiResource.class)
+            List<DashboardItemContent> resources = new Select().from(DashboardItemContent.class)
                     .where(generalCondition).queryList();
-            Collections.sort(resources, ApiResource.DISPLAY_NAME_MODEL_COMPARATOR);
+            Collections.sort(resources, DashboardItemContent.DISPLAY_NAME_COMPARATOR);
 
             List<OptionAdapterValue> adapterValues = new ArrayList<>();
-            for (ApiResource apiResource : resources) {
-                adapterValues.add(new OptionAdapterValue(apiResource.getId(),
-                        apiResource.getDisplayName()));
+            for (DashboardItemContent dashboardItemContent : resources) {
+                adapterValues.add(new OptionAdapterValue(dashboardItemContent.getUId(),
+                        dashboardItemContent.getDisplayName()));
             }
 
             return adapterValues;

@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.ui.fragments;
+package org.dhis2.android.dashboard.ui.fragments.dashboard;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

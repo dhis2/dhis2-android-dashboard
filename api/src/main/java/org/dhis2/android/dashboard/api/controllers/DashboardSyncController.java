@@ -34,11 +34,11 @@ import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.dhis2.android.dashboard.api.DhisManager;
-import org.dhis2.android.dashboard.api.models.ApiResource;
-import org.dhis2.android.dashboard.api.models.ApiResource$Table;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent$Table;
 import org.dhis2.android.dashboard.api.models.DbOperation;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
@@ -90,7 +90,7 @@ public final class DashboardSyncController implements IController<Object> {
 
         /* first we need to update api resources, dashboards
         and dashboard items */
-        List<ApiResource> apiResources =
+        List<DashboardItemContent> dashboardItemContent =
                 updateApiResources(lastUpdated, isUpdating);
         List<Dashboard> dashboards =
                 updateDashboards(lastUpdated, isUpdating);
@@ -104,7 +104,7 @@ public final class DashboardSyncController implements IController<Object> {
 
         Queue<DbOperation> operations = new LinkedList<>();
         operations.addAll(DbUtils.createOperations(new Select()
-                .from(ApiResource.class).queryList(), apiResources));
+                .from(DashboardItemContent.class).queryList(), dashboardItemContent));
         operations.addAll(DbUtils.createOperations(new Select()
                 .from(Dashboard.class).queryList(), dashboards));
         operations.addAll(DbUtils.createOperations(new Select()
@@ -131,16 +131,19 @@ public final class DashboardSyncController implements IController<Object> {
 
         return new AbsBaseController<Dashboard>() {
 
-            @Override public List<Dashboard> getExistingItems() {
+            @Override
+            public List<Dashboard> getExistingItems() {
                 return unwrapResponse(mDhisApi.getDashboards(QUERY_MAP_BASIC), "dashboards");
             }
 
-            @Override public List<Dashboard> getUpdatedItems() {
+            @Override
+            public List<Dashboard> getUpdatedItems() {
                 return unwrapResponse(mDhisApi
                         .getDashboards(QUERY_MAP_FULL), "dashboards");
             }
 
-            @Override public List<Dashboard> getPersistedItems() {
+            @Override
+            public List<Dashboard> getPersistedItems() {
                 List<Dashboard> dashboards = new Select()
                         .from(Dashboard.class).queryList();
                 if (dashboards != null && !dashboards.isEmpty()) {
@@ -177,17 +180,20 @@ public final class DashboardSyncController implements IController<Object> {
 
         return new AbsBaseController<DashboardItem>() {
 
-            @Override public List<DashboardItem> getExistingItems() {
+            @Override
+            public List<DashboardItem> getExistingItems() {
                 return unwrapResponse(mDhisApi.getDashboardItems(
                         QUERY_MAP_BASIC), "dashboardItems");
             }
 
-            @Override public List<DashboardItem> getUpdatedItems() {
+            @Override
+            public List<DashboardItem> getUpdatedItems() {
                 return unwrapResponse(mDhisApi
                         .getDashboardItems(QUERY_MAP_FULL), "dashboardItems");
             }
 
-            @Override public List<DashboardItem> getPersistedItems() {
+            @Override
+            public List<DashboardItem> getPersistedItems() {
                 List<DashboardItem> dashboardItems = new Select()
                         .from(DashboardItem.class).queryList();
                 if (dashboardItems != null && !dashboardItems.isEmpty()) {
@@ -211,7 +217,7 @@ public final class DashboardSyncController implements IController<Object> {
                 }
 
                 for (DashboardItem item : dashboard.getDashboardItems()) {
-                    DashboardItem dashboardItem = itemsMap.get(item.getId());
+                    DashboardItem dashboardItem = itemsMap.get(item.getUId());
                     if (dashboardItem != null) {
                         dashboardItem.setDashboard(dashboard);
                     }
@@ -238,29 +244,29 @@ public final class DashboardSyncController implements IController<Object> {
         }
     }
 
-    private List<ApiResource> updateApiResources(DateTime lastUpdated, boolean isUpdating) throws RetrofitError {
-        List<ApiResource> apiResources = new ArrayList<>();
-        apiResources.addAll(updateApiResourceByType(
-                ApiResource.TYPE_CHART, lastUpdated, isUpdating));
-        apiResources.addAll(updateApiResourceByType(
-                ApiResource.TYPE_EVENT_CHART, lastUpdated, isUpdating));
-        apiResources.addAll(updateApiResourceByType(
-                ApiResource.TYPE_MAP, lastUpdated, isUpdating));
-        apiResources.addAll(updateApiResourceByType(
-                ApiResource.TYPE_REPORT_TABLES, lastUpdated, isUpdating));
-        apiResources.addAll(updateApiResourceByType(
-                ApiResource.TYPE_EVENT_REPORT, lastUpdated, isUpdating));
-        apiResources.addAll(updateApiResourceByType(
-                ApiResource.TYPE_USERS, lastUpdated, isUpdating));
-        apiResources.addAll(updateApiResourceByType(
-                ApiResource.TYPE_REPORTS, lastUpdated, isUpdating));
-        apiResources.addAll(updateApiResourceByType(
-                ApiResource.TYPE_RESOURCES, lastUpdated, isUpdating));
-        return apiResources;
+    private List<DashboardItemContent> updateApiResources(DateTime lastUpdated, boolean isUpdating) throws RetrofitError {
+        List<DashboardItemContent> dashboardItemContent = new ArrayList<>();
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_CHART, lastUpdated, isUpdating));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_EVENT_CHART, lastUpdated, isUpdating));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_MAP, lastUpdated, isUpdating));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_REPORT_TABLES, lastUpdated, isUpdating));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_EVENT_REPORT, lastUpdated, isUpdating));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_USERS, lastUpdated, isUpdating));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_REPORTS, lastUpdated, isUpdating));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_RESOURCES, lastUpdated, isUpdating));
+        return dashboardItemContent;
     }
 
-    private List<ApiResource> updateApiResourceByType(final String type, final DateTime lastUpdated,
-                                                      final boolean isUpdating) throws RetrofitError {
+    private List<DashboardItemContent> updateApiResourceByType(final String type, final DateTime lastUpdated,
+                                                               final boolean isUpdating) throws RetrofitError {
         final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
         final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
 
@@ -271,51 +277,54 @@ public final class DashboardSyncController implements IController<Object> {
             QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
         }
 
-        return new AbsBaseController<ApiResource>() {
+        return new AbsBaseController<DashboardItemContent>() {
 
-            @Override public List<ApiResource> getExistingItems() {
+            @Override
+            public List<DashboardItemContent> getExistingItems() {
                 return getApiResourceByType(type, QUERY_MAP_BASIC);
             }
 
-            @Override public List<ApiResource> getUpdatedItems() {
-                List<ApiResource> elements =
+            @Override
+            public List<DashboardItemContent> getUpdatedItems() {
+                List<DashboardItemContent> elements =
                         getApiResourceByType(type, QUERY_MAP_FULL);
                 if (elements != null && !elements.isEmpty()) {
-                    for (ApiResource element : elements) {
+                    for (DashboardItemContent element : elements) {
                         element.setType(type);
                     }
                 }
                 return elements;
             }
 
-            @Override public List<ApiResource> getPersistedItems() {
-                return new Select().from(ApiResource.class)
-                        .where(Condition.column(ApiResource$Table.TYPE).is(type))
+            @Override
+            public List<DashboardItemContent> getPersistedItems() {
+                return new Select().from(DashboardItemContent.class)
+                        .where(Condition.column(DashboardItemContent$Table.TYPE).is(type))
                         .queryList();
             }
         }.run();
     }
 
-    private List<ApiResource> getApiResourceByType(String type, Map<String, String> queryParams) throws RetrofitError {
+    private List<DashboardItemContent> getApiResourceByType(String type, Map<String, String> queryParams) throws RetrofitError {
         switch (type) {
-            case ApiResource.TYPE_CHART:
+            case DashboardItemContent.TYPE_CHART:
                 return unwrapResponse(mDhisApi.getCharts(queryParams), "charts");
-            case ApiResource.TYPE_EVENT_CHART:
+            case DashboardItemContent.TYPE_EVENT_CHART:
                 return unwrapResponse(mDhisApi.getEventCharts(queryParams), "eventCharts");
-            case ApiResource.TYPE_MAP:
+            case DashboardItemContent.TYPE_MAP:
                 return unwrapResponse(mDhisApi.getMaps(queryParams), "maps");
-            case ApiResource.TYPE_REPORT_TABLES:
+            case DashboardItemContent.TYPE_REPORT_TABLES:
                 return unwrapResponse(mDhisApi.getReportTables(queryParams), "reportTables");
-            case ApiResource.TYPE_EVENT_REPORT:
+            case DashboardItemContent.TYPE_EVENT_REPORT:
                 return unwrapResponse(mDhisApi.getEventReports(queryParams), "eventReports");
-            case ApiResource.TYPE_USERS:
+            case DashboardItemContent.TYPE_USERS:
                 return unwrapResponse(mDhisApi.getUsers(queryParams), "users");
-            case ApiResource.TYPE_REPORTS:
+            case DashboardItemContent.TYPE_REPORTS:
                 return unwrapResponse(mDhisApi.getReports(queryParams), "reports");
-            case ApiResource.TYPE_RESOURCES:
+            case DashboardItemContent.TYPE_RESOURCES:
                 return unwrapResponse(mDhisApi.getResources(queryParams), "documents");
             default:
-                throw new IllegalArgumentException("Unsupported ApiResource type");
+                throw new IllegalArgumentException("Unsupported DashboardItemContent type");
         }
     }
 

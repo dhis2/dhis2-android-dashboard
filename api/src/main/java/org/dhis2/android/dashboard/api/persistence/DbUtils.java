@@ -3,15 +3,12 @@ package org.dhis2.android.dashboard.api.persistence;
 import android.util.Log;
 
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import org.dhis2.android.dashboard.api.models.BaseIdentifiableModel;
 import org.dhis2.android.dashboard.api.models.DbOperation;
-import org.dhis2.android.dashboard.api.models.RelationModel;
+import org.dhis2.android.dashboard.api.models.BaseIdentifiableObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +39,8 @@ public final class DbUtils {
         }
 
         TransactionManager.transact(DbDhis.NAME, new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 for (DbOperation operation : operations) {
                     switch (operation.getOperationType()) {
                         case INSERT: {
@@ -73,8 +71,8 @@ public final class DbUtils {
      * @param oldModels List of models from local storage.
      * @param newModels List of models of distance instance of DHIS.
      */
-    public static <T extends BaseModel & BaseIdentifiableModel> List<DbOperation> createOperations(List<T> oldModels,
-                                                                                                   List<T> newModels) {
+    public static <T extends BaseIdentifiableObject> List<DbOperation> createOperations(List<T> oldModels,
+                                                                                        List<T> newModels) {
         List<DbOperation> ops = new ArrayList<>();
 
         Map<String, T> newModelsMap = toMap(newModels);
@@ -107,40 +105,8 @@ public final class DbUtils {
         return ops;
     }
 
-    // TODO The problem here is that each relation model does not contain orgUnit and dataSet keys (in case if it was not saved before)
-    // TODO you need to find a new way to store keys in Relation Models
-    public static <T extends BaseModel & RelationModel> List<DbOperation> syncRelationModels(List<T> oldRelationsList,
-                                                                                             List<T> newRelationsList) {
-        System.out.println("OldRelations: " + oldRelationsList.size());
-        System.out.println("NewRelations: " + newRelationsList.size());
-
-        List<DbOperation> ops = new ArrayList<>();
-        Map<String, T> oldRelations = relationModelListToMap(oldRelationsList);
-        Map<String, T> newRelations = relationModelListToMap(newRelationsList);
-
-        for (String oldRelationKey : oldRelations.keySet()) {
-            T oldRelation = oldRelations.get(oldRelationKey);
-            T newRelation = newRelations.get(oldRelationKey);
-
-            if (newRelation == null) {
-                ops.add(DbOperation.delete(oldRelation));
-                System.out.println("DELETING_OLD_RELATION: " + oldRelationKey);
-                continue;
-            }
-
-            newRelations.remove(oldRelationKey);
-        }
-
-        for (String newRelationKey : newRelations.keySet()) {
-            ops.add(DbOperation.insert(newRelations.get(newRelationKey)));
-            System.out.println("INSERTING_NEW_RELATION: " + newRelationKey);
-        }
-
-        return ops;
-    }
-
-    public static <T extends BaseModel & BaseIdentifiableModel> List<DbOperation> createOperations(Collection<T> oldModels,
-                                                                                                   Collection<T> newModels) {
+    public static <T extends BaseIdentifiableObject> List<DbOperation> createOperations(Collection<T> oldModels,
+                                                                                        Collection<T> newModels) {
         List<DbOperation> ops = new ArrayList<>();
 
         Map<String, T> newModelsMap = toMap(newModels);
@@ -176,25 +142,5 @@ public final class DbUtils {
         }
 
         return ops;
-    }
-
-    public static <T extends BaseModel> List<DbOperation> save(List<T> models) {
-        List<DbOperation> operations = new ArrayList<>();
-        if (models != null && !models.isEmpty()) {
-            for (T model : models) {
-                operations.add(DbOperation.save(model));
-            }
-        }
-        return operations;
-    }
-
-    private static <T extends RelationModel> Map<String, T> relationModelListToMap(List<T> relations) {
-        Map<String, T> relationMap = new HashMap<>();
-        if (relations != null && !relations.isEmpty()) {
-            for (T relation : relations) {
-                relationMap.put(relation.getFirstKey() + relation.getSecondKey(), relation);
-            }
-        }
-        return relationMap;
     }
 }

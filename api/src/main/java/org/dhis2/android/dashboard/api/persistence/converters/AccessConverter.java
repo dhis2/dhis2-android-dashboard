@@ -26,20 +26,46 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence;
+package org.dhis2.android.dashboard.api.persistence.converters;
 
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.raizlabs.android.dbflow.converter.TypeConverter;
 
-import org.dhis2.android.dashboard.api.models.State;
+import org.dhis2.android.dashboard.api.models.Access;
+import org.dhis2.android.dashboard.api.utils.ObjectMapperProvider;
+
+import java.io.IOException;
 
 @com.raizlabs.android.dbflow.annotation.TypeConverter
-public final class StateConverter extends TypeConverter<String, State> {
+public final class AccessConverter extends TypeConverter<String, Access>{
 
-    @Override public String getDBValue(State model) {
-        return model.toString();
+    @Override public String getDBValue(Access model) {
+        String access = null;
+        try {
+            access = ObjectMapperProvider.getInstance()
+                    .writeValueAsString(model);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return access;
     }
 
-    @Override public State getModelValue(String data) {
-        return State.valueOf(data);
+    @Override public Access getModelValue(String data) {
+        Access access = null;
+        try {
+            access = ObjectMapperProvider.getInstance()
+                    .readValue(data, Access.class);
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return access;
     }
 }

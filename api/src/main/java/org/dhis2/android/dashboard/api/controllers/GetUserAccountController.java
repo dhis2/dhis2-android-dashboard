@@ -56,8 +56,11 @@ public final class GetUserAccountController implements IController<UserAccount> 
     }
 
     private UserAccount getUserAccount() {
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("fields", UserAccount.ALL_USER_ACCOUNT_FIELDS);
-        return mService.getCurrentUserAccount(queryParams);
+        final Map<String, String> QUERY_PARAMS = new HashMap<>();
+        QUERY_PARAMS.put("fields", "id,created,lastUpdated,name,displayName," +
+                "firstName,surname,gender,birthday,introduction," +
+                "education,employer,interests,jobTitle,languages,email,phoneNumber," +
+                "organisationUnits[id]");
+        return mService.getCurrentUserAccount(QUERY_PARAMS);
     }
 }

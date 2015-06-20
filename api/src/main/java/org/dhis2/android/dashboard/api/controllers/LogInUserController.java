@@ -61,7 +61,10 @@ public final class LogInUserController implements IController<UserAccount> {
     public UserAccount run() throws APIException {
         // First, we need to get UserAccount
         final Map<String, String> QUERY_PARAMS = new HashMap<>();
-        QUERY_PARAMS.put("fields", UserAccount.ALL_USER_ACCOUNT_FIELDS);
+        QUERY_PARAMS.put("fields", "id,created,lastUpdated,name,displayName," +
+                "firstName,surname,gender,birthday,introduction," +
+                "education,employer,interests,jobTitle,languages,email,phoneNumber," +
+                "organisationUnits[id]");
         UserAccount userAccount = mService.getCurrentUserAccount(QUERY_PARAMS);
 
         // Second, we need to get SystemInfo about server.

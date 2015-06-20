@@ -1,4 +1,4 @@
-package org.dhis2.android.dashboard.api.persistence;
+package org.dhis2.android.dashboard.api.persistence.converters;
 
 import com.raizlabs.android.dbflow.converter.TypeConverter;
 

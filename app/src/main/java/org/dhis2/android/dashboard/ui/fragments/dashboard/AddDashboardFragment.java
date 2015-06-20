@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.ui.fragments;
+package org.dhis2.android.dashboard.ui.fragments.dashboard;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -68,7 +68,7 @@ public final class AddDashboardFragment extends DialogFragment {
     @OnClick({R.id.close_dialog_button, R.id.cancel_dashboard_add, R.id.save_dashboard})
     public void onButtonClicked(View view) {
         if (view.getId() == R.id.save_dashboard) {
-            Dashboard.createAndSaveDashboard(mDashboardName.getText().toString());
+            Dashboard.createDashboard(mDashboardName.getText().toString());
         }
         dismiss();
     }

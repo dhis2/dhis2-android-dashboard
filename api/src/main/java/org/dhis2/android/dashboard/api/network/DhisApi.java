@@ -28,7 +28,7 @@
 
 package org.dhis2.android.dashboard.api.network;
 
-import org.dhis2.android.dashboard.api.models.ApiResource;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.models.SystemInfo;
@@ -43,27 +43,53 @@ import retrofit.http.QueryMap;
 
 public interface DhisApi {
 
-    @GET("/system/info/") SystemInfo getSystemInfo();
+    /////////////////////////////////////////////////////////////////////////
+    // Methods for getting user information
+    /////////////////////////////////////////////////////////////////////////
 
-    @GET("/me/") UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
+    @GET("/system/info/")
+    SystemInfo getSystemInfo();
 
-    @GET("/charts?paging=false") Map<String, List<ApiResource>> getCharts(@QueryMap Map<String, String> queryParams);
+    @GET("/me/")
+    UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
 
-    @GET("/eventCharts?paging=false") Map<String, List<ApiResource>> getEventCharts(@QueryMap Map<String, String> queryParams);
 
-    @GET("/maps?paging=false") Map<String, List<ApiResource>> getMaps(@QueryMap Map<String, String> queryParams);
+    /////////////////////////////////////////////////////////////////////////
+    // Methods for getting Dashboard and DashboardItems
+    /////////////////////////////////////////////////////////////////////////
 
-    @GET("/reportTables?paging=false") Map<String, List<ApiResource>> getReportTables(@QueryMap Map<String, String> queryParams);
+    @GET("/dashboards?paging=false")
+    Map<String, List<Dashboard>> getDashboards(@QueryMap Map<String, String> queryMap);
 
-    @GET("/eventReports?paging=false") Map<String, List<ApiResource>> getEventReports(@QueryMap Map<String, String> queryParams);
+    @GET("/dashboardItems?paging=false")
+    Map<String, List<DashboardItem>> getDashboardItems(@QueryMap Map<String, String> queryMap);
 
-    @GET("/users?paging=false") Map<String, List<ApiResource>> getUsers(@QueryMap Map<String, String> queryParams);
 
-    @GET("/reports?paging=false") Map<String, List<ApiResource>> getReports(@QueryMap Map<String, String> queryMap);
+    /////////////////////////////////////////////////////////////////////////
+    // Methods for getting DashboardItemContent
+    /////////////////////////////////////////////////////////////////////////
 
-    @GET("/documents?paging=false") Map<String, List<ApiResource>> getResources(@QueryMap Map<String, String> queryMap);
+    @GET("/charts?paging=false")
+    Map<String, List<DashboardItemContent>> getCharts(@QueryMap Map<String, String> queryParams);
 
-    @GET("/dashboards?paging=false") Map<String, List<Dashboard>> getDashboards(@QueryMap Map<String, String> queryMap);
+    @GET("/eventCharts?paging=false")
+    Map<String, List<DashboardItemContent>> getEventCharts(@QueryMap Map<String, String> queryParams);
 
-    @GET("/dashboardItems?paging=false") Map<String, List<DashboardItem>> getDashboardItems(@QueryMap Map<String, String> queryMap);
+    @GET("/maps?paging=false")
+    Map<String, List<DashboardItemContent>> getMaps(@QueryMap Map<String, String> queryParams);
+
+    @GET("/reportTables?paging=false")
+    Map<String, List<DashboardItemContent>> getReportTables(@QueryMap Map<String, String> queryParams);
+
+    @GET("/eventReports?paging=false")
+    Map<String, List<DashboardItemContent>> getEventReports(@QueryMap Map<String, String> queryParams);
+
+    @GET("/users?paging=false")
+    Map<String, List<DashboardItemContent>> getUsers(@QueryMap Map<String, String> queryParams);
+
+    @GET("/reports?paging=false")
+    Map<String, List<DashboardItemContent>> getReports(@QueryMap Map<String, String> queryMap);
+
+    @GET("/documents?paging=false")
+    Map<String, List<DashboardItemContent>> getResources(@QueryMap Map<String, String> queryMap);
 }
