@@ -156,7 +156,7 @@ public class DashboardFragment extends BaseFragment
             we explicitly state that we want only not null values  */
             List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
             tablesToTrack.add(DashboardItem.class);
-            tablesToTrack.add(DashboardElement.class);
+            // tablesToTrack.add(DashboardElement.class);
             return new DbLoader<>(getActivity().getApplicationContext(),
                     tablesToTrack, new ItemsQuery(args.getLong(DASHBOARD_ID)));
         }
