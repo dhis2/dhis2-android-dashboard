@@ -28,8 +28,6 @@
 
 package org.dhis2.android.dashboard.api.models;
 
-import android.util.Log;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -41,6 +39,7 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
+import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.joda.time.DateTime;
@@ -49,13 +48,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
-import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 @Table(databaseName = DbDhis.NAME)
 public final class DashboardItem extends BaseIdentifiableObject {
     private static final String TAG = DashboardItem.class.getSimpleName();
 
-    private static final String DASHBOARD_KEY = "dashboard";
+    public static final int MAX_CONTENT = 8;
 
     public static final String SHAPE_NORMAL = "normal";
     public static final String SHAPE_DOUBLE_WIDTH = "double_width";
@@ -78,7 +76,7 @@ public final class DashboardItem extends BaseIdentifiableObject {
     @Column
     @ForeignKey(
             references = {
-                    @ForeignKeyReference(columnName = DASHBOARD_KEY, columnType = long.class, foreignColumnName = "id")
+                    @ForeignKeyReference(columnName = "dashboard", columnType = long.class, foreignColumnName = "id")
             }, saveForeignKeyModel = false, onDelete = ForeignKeyAction.CASCADE
     )
     Dashboard dashboard;
@@ -108,9 +106,6 @@ public final class DashboardItem extends BaseIdentifiableObject {
     @JsonProperty("resources")
     List<DashboardElement> resources;
 
-    @JsonProperty("reportTables")
-    List<DashboardElement> reportTables;
-
     @JsonProperty("messages")
     boolean messages;
 
@@ -120,11 +115,38 @@ public final class DashboardItem extends BaseIdentifiableObject {
     }
 
     /**
-     * This method will change the state of the model to TO_DELETE if the model was already synced to the server.
-     * If model was created only locally, it will delete it from embedded database.
+     * Factory method which creates and returns DashboardItem.
+     *
+     * @param dashboard Dashboard to associate with item.
+     * @param content   Content for dashboard item.
+     * @return new item.
      */
     @JsonIgnore
-    public void softDelete() {
+    public static DashboardItem createDashboardItem(Dashboard dashboard,
+                                                    DashboardItemContent content) {
+        DateTime currentDate = DateTimeManager.getInstance()
+                .getCurrentDateTimeInServerTimeZone();
+
+        DashboardItem item = new DashboardItem();
+        item.setCreated(currentDate);
+        item.setLastUpdated(currentDate);
+        item.setState(State.TO_POST);
+        item.setDashboard(dashboard);
+        item.setAccess(Dashboard.provideDefaultAccess());
+        item.setType(content.getType());
+
+        return item;
+    }
+
+    /**
+     * This method will change the state of the model to TO_DELETE
+     * if the model was already synced to the server.
+     * <p/>
+     * If model was created only locally, it will delete it
+     * from embedded database.
+     */
+    @JsonIgnore
+    public void deleteDashboardItem() {
         if (state == State.TO_POST) {
             super.delete();
         } else {
@@ -133,244 +155,139 @@ public final class DashboardItem extends BaseIdentifiableObject {
         }
     }
 
-    @JsonIgnore
-    public boolean addDashboardElement(DashboardItemContent resource) {
-        isNull(resource, "DashboardItemContent object must not be null");
-
-        if (!resource.getType().equals(getType())) {
-            throw new IllegalArgumentException("DashboardItemContent is not compatible " +
-                    "with this DashboardItem");
-        }
-
-        switch (resource.getType()) {
-            case DashboardItemContent.TYPE_USERS:
-            case DashboardItemContent.TYPE_REPORTS:
-            case DashboardItemContent.TYPE_RESOURCES:
-            case DashboardItemContent.TYPE_REPORT_TABLES: {
-                if (getElementsCount() > 8) {
-                    return false;
-                }
-
-                DashboardElement element = new DashboardElement();
-                element.setUId(resource.getUId());
-                element.setName(resource.getName());
-                element.setCreated(resource.getCreated());
-                element.setLastUpdated(resource.getLastUpdated());
-                element.setDisplayName(resource.getDisplayName());
-                element.setState(State.TO_POST);
-                element.setDashboardItem(this);
-                element.save();
-
-                return true;
-            }
-            default:
-                throw new IllegalArgumentException("You cannot add " + resource.getType() +
-                        " resource more that once to DashboardItem");
-        }
-    }
-
-    @JsonIgnore
-    public boolean removeDashboardElement(DashboardElement element) {
-        isNull(element, "DashboardElement object must not be null");
-
-        long elementsCount = getElementsCount();
-
-        DashboardElement assignedElement = new Select()
-                .from(DashboardElement.class)
-                .where(
-                        Condition.column(DashboardElement$Table.DASHBOARDITEM_DASHBOARDITEM).is(getId()),
-                        Condition.column(DashboardElement$Table.ID).is(element.getId()))
-                .querySingle();
-
-        if (assignedElement == null) {
-            Log.d(TAG, "Could not find DashboardElement to remove");
-            return false;
-        }
-
-        if (assignedElement.getState().equals(State.TO_POST)) {
-            assignedElement.delete();
-        } else {
-            assignedElement.setState(State.TO_DELETE);
-            assignedElement.save();
-        }
-
-        if (elementsCount <= 1) {
-            if (getState() == State.TO_POST) {
-                delete();
-            } else {
-                setState(State.TO_DELETE);
-                save();
-            }
-        }
-
-        return true;
-    }
-
-    @JsonIgnore
-    private long getElementsCount() {
-        return new Select().from(DashboardElement.class)
-                .where(
-                        Condition.column(DashboardElement$Table.DASHBOARDITEM_DASHBOARDITEM).is(getId()),
-                        Condition.column(DashboardElement$Table.STATE).isNot(State.TO_DELETE.toString()))
-                .count();
-    }
-
     /**
-     * @param dashboard Dashboard object to which we want to bind dashboard item
-     * @param resource  DashboardItemContent which will be the content of our item.
-     * @return DashboardItem
+     * Returns related to item DashboardElements.
+     *
+     * @return list of dashboard elements
      */
     @JsonIgnore
-    public static DashboardItem createAndSaveDashboardItem(Dashboard dashboard,
-                                                           DashboardItemContent resource) {
-        isNull(dashboard, "Dashboard object must not be null");
-        isNull(resource, "DashboardItemContent object must not be null");
-
-        /* first we need to create dashboard item itself and tight it to Dashboard */
-        DashboardItem item = new DashboardItem();
-        DateTime currentTime = DateTimeManager.getInstance()
-                .getCurrentDateTimeInServerTimeZone();
-        item.setCreated(currentTime);
-        item.setLastUpdated(currentTime);
-        item.setAccess(Dashboard.provideDefaultAccess());
-        item.setType(resource.getType());
-        item.setDashboard(dashboard);
-        item.setState(State.TO_POST);
-        item.setShape(SHAPE_NORMAL);
-        item.save();
-
-        /* reach dashboard item requires to contain at least one
-        dashboard resource assigned to it */
-        DashboardElement assignedElement = new DashboardElement();
-        assignedElement.setUId(resource.getUId());
-        assignedElement.setName(resource.getName());
-        assignedElement.setCreated(resource.getCreated());
-        assignedElement.setLastUpdated(resource.getLastUpdated());
-        assignedElement.setDisplayName(resource.getDisplayName());
-        assignedElement.setState(State.TO_POST);
-        assignedElement.setDashboardItem(item);
-        assignedElement.save();
-
-        return item;
-    }
-
-    @JsonIgnore
-    public static void readElementsIntoItem(DashboardItem item) {
-        if (isEmpty(item.getType())) {
-            return;
-        }
-
-        switch (item.getType()) {
-            case DashboardItemContent.TYPE_CHART: {
-                item.setChart(queryRelatedDashboardElementFromDb(item));
-                break;
-            }
-            case DashboardItemContent.TYPE_EVENT_CHART: {
-                item.setEventChart(queryRelatedDashboardElementFromDb(item));
-                break;
-            }
-            case DashboardItemContent.TYPE_MAP: {
-                item.setMap(queryRelatedDashboardElementFromDb(item));
-                break;
-            }
-            case DashboardItemContent.TYPE_REPORT_TABLE: {
-                item.setReportTable(queryRelatedDashboardElementFromDb(item));
-                break;
-            }
-            case DashboardItemContent.TYPE_EVENT_REPORT: {
-                item.setEventReport(queryRelatedDashboardElementFromDb(item));
-                break;
-            }
-            case DashboardItemContent.TYPE_USERS: {
-                item.setUsers(queryRelatedDashboardElementsFromDb(item));
-                break;
-            }
-            case DashboardItemContent.TYPE_REPORTS: {
-                item.setReports(queryRelatedDashboardElementsFromDb(item));
-                break;
-            }
-            case DashboardItemContent.TYPE_RESOURCES: {
-                item.setResources(queryRelatedDashboardElementsFromDb(item));
-                break;
-            }
-            case DashboardItemContent.TYPE_REPORT_TABLES: {
-                item.setReportTables(queryRelatedDashboardElementsFromDb(item));
-                break;
-            }
-        }
-    }
-
-    @JsonIgnore
-    public static List<DashboardElement> getDashboardElementsFromItem(DashboardItem item) {
-        isNull(item, "DashboardItem object must not be null");
-
-        List<DashboardElement> elements = new ArrayList<>();
-        if (isEmpty(item.getType())) {
-            return elements;
-        }
-
-        switch (item.getType()) {
-            case DashboardItemContent.TYPE_CHART: {
-                elements.add(item.getChart());
-                break;
-            }
-            case DashboardItemContent.TYPE_EVENT_CHART: {
-                elements.add(item.getEventChart());
-                break;
-            }
-            case DashboardItemContent.TYPE_MAP: {
-                elements.add(item.getMap());
-                break;
-            }
-            case DashboardItemContent.TYPE_REPORT_TABLE: {
-                elements.add(item.getReportTable());
-                break;
-            }
-            case DashboardItemContent.TYPE_EVENT_REPORT: {
-                elements.add(item.getEventReport());
-                break;
-            }
-            case DashboardItemContent.TYPE_USERS: {
-                elements.addAll(item.getUsers());
-                break;
-            }
-            case DashboardItemContent.TYPE_REPORTS: {
-                elements.addAll(item.getReports());
-                break;
-            }
-            case DashboardItemContent.TYPE_RESOURCES: {
-                elements.addAll(item.getResources());
-                break;
-            }
-            case DashboardItemContent.TYPE_REPORT_TABLES: {
-                elements.addAll(item.getReportTables());
-                break;
-            }
-        }
-
-        return elements;
-    }
-
-    @JsonIgnore
-    public static DashboardElement queryRelatedDashboardElementFromDb(DashboardItem item) {
-        return new Select().from(DashboardElement.class)
-                .where(Condition.column(DashboardElement$Table
-                        .DASHBOARDITEM_DASHBOARDITEM).is(item.getId()))
-                .querySingle();
-    }
-
-    @JsonIgnore
-    public static List<DashboardElement> queryRelatedDashboardElementsFromDb(DashboardItem item) {
+    public long getContentCount() {
         List<DashboardElement> elements = new Select().from(DashboardElement.class)
-                .where(Condition.column(DashboardElement$Table
-                        .DASHBOARDITEM_DASHBOARDITEM).is(item.getId()))
+                .where(Condition.column(DashboardElement$Table.DASHBOARDITEM_DASHBOARDITEM).is(getId()))
+                .and(Condition.column(DashboardElement$Table.STATE).isNot(State.TO_DELETE.toString()))
                 .queryList();
+        return elements == null ? 0 : elements.size();
+    }
+
+    @JsonIgnore
+    public List<DashboardElement> queryRelatedDashboardElements() {
+        if (isEmpty(getType())) {
+            return new ArrayList<>();
+        }
+
+        List<DashboardElement> elements = new Select().from(DashboardElement.class)
+                .where(Condition.column(DashboardElement$Table.DASHBOARDITEM_DASHBOARDITEM).is(getId()))
+                .and(Condition.column(DashboardElement$Table.STATE).isNot(State.TO_DELETE.toString()))
+                .queryList();
+
         if (elements == null) {
             elements = new ArrayList<>();
         }
 
         return elements;
     }
+
+    @JsonIgnore
+    public void setDashboardElements(List<DashboardElement> dashboardElements) {
+        if (isEmpty(getType())) {
+            return;
+        }
+
+        if (dashboardElements == null || dashboardElements.isEmpty()) {
+            return;
+        }
+
+        switch (getType()) {
+            case DashboardItemContent.TYPE_CHART: {
+                setChart(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_EVENT_CHART: {
+                setEventChart(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_MAP: {
+                setMap(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_REPORT_TABLE: {
+                setReportTable(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
+                setEventReport(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_USERS: {
+                setUsers(dashboardElements);
+                break;
+            }
+            case DashboardItemContent.TYPE_REPORTS: {
+                setReports(dashboardElements);
+                break;
+            }
+            case DashboardItemContent.TYPE_RESOURCES: {
+                setResources(dashboardElements);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Convenience method for retrieving DashboardElements from item.
+     *
+     * @return dashboard elements.
+     */
+    @JsonIgnore
+    public List<DashboardElement> getDashboardElements() {
+
+        List<DashboardElement> elements = new ArrayList<>();
+        if (isEmpty(getType())) {
+            return elements;
+        }
+
+        switch (getType()) {
+            case DashboardItemContent.TYPE_CHART: {
+                elements.add(getChart());
+                break;
+            }
+            case DashboardItemContent.TYPE_EVENT_CHART: {
+                elements.add(getEventChart());
+                break;
+            }
+            case DashboardItemContent.TYPE_MAP: {
+                elements.add(getMap());
+                break;
+            }
+            case DashboardItemContent.TYPE_REPORT_TABLE: {
+                elements.add(getReportTable());
+                break;
+            }
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
+                elements.add(getEventReport());
+                break;
+            }
+            case DashboardItemContent.TYPE_USERS: {
+                elements.addAll(getUsers());
+                break;
+            }
+            case DashboardItemContent.TYPE_REPORTS: {
+                elements.addAll(getReports());
+                break;
+            }
+            case DashboardItemContent.TYPE_RESOURCES: {
+                elements.addAll(getResources());
+                break;
+            }
+        }
+
+        return elements;
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////
+    // Getters and setters
+    /////////////////////////////////////////////////////////////////////////
 
     @JsonIgnore
     public String getType() {
@@ -402,6 +319,10 @@ public final class DashboardItem extends BaseIdentifiableObject {
         this.dashboard = dashboard;
     }
 
+    /////////////////////////////////////////////////////////////////////////
+    // Getters and setters for link type elements
+    /////////////////////////////////////////////////////////////////////////
+
     @JsonIgnore
     public List<DashboardElement> getUsers() {
         return users;
@@ -432,15 +353,9 @@ public final class DashboardItem extends BaseIdentifiableObject {
         this.resources = resources;
     }
 
-    @JsonIgnore
-    public List<DashboardElement> getReportTables() {
-        return reportTables;
-    }
-
-    @JsonIgnore
-    public void setReportTables(List<DashboardElement> reportTables) {
-        this.reportTables = reportTables;
-    }
+    /////////////////////////////////////////////////////////////////////////
+    // Getters and setters for embedded type elements
+    /////////////////////////////////////////////////////////////////////////
 
     @JsonIgnore
     public DashboardElement getChart() {

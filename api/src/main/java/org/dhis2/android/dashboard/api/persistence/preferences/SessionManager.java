@@ -33,8 +33,8 @@ import android.content.SharedPreferences;
 
 import com.squareup.okhttp.HttpUrl;
 
-import org.dhis2.android.dashboard.api.models.Credentials;
-import org.dhis2.android.dashboard.api.models.Session;
+import org.dhis2.android.dashboard.api.models.meta.Credentials;
+import org.dhis2.android.dashboard.api.models.meta.Session;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 

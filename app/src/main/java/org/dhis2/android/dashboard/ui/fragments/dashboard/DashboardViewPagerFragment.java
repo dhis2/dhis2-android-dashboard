@@ -215,7 +215,7 @@ public class DashboardViewPagerFragment extends BaseFragment
                     .querySingle();
             Dashboard dashboard = mDashboardAdapter
                     .getDashboard(mViewPager.getCurrentItem());
-            dashboard.addDashboardItem(resource);
+            dashboard.addItemContent(resource);
         }
     }
 

@@ -39,12 +39,12 @@ import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent$Table;
-import org.dhis2.android.dashboard.api.models.DbOperation;
+import org.dhis2.android.dashboard.api.models.meta.DbOperation;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
 import org.dhis2.android.dashboard.api.network.RepoManager;
-import org.dhis2.android.dashboard.api.persistence.DbUtils;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
+import org.dhis2.android.dashboard.api.utils.DbUtils;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -148,8 +148,8 @@ public final class DashboardSyncController implements IController<Object> {
                         .from(Dashboard.class).queryList();
                 if (dashboards != null && !dashboards.isEmpty()) {
                     for (Dashboard dashboard : dashboards) {
-                        dashboard.setDashboardItems(Dashboard
-                                .queryRelatedDashboardItems(dashboard));
+                        dashboard.setDashboardItems(dashboard
+                                .queryRelatedDashboardItems());
                     }
                 }
                 return dashboards;
@@ -198,7 +198,9 @@ public final class DashboardSyncController implements IController<Object> {
                         .from(DashboardItem.class).queryList();
                 if (dashboardItems != null && !dashboardItems.isEmpty()) {
                     for (DashboardItem dashboardItem : dashboardItems) {
-                        DashboardItem.readElementsIntoItem(dashboardItem);
+                        List<DashboardElement> elements
+                                = dashboardItem.queryRelatedDashboardElements();
+                        dashboardItem.setDashboardElements(elements);
                     }
                 }
                 return dashboardItems;
@@ -233,7 +235,7 @@ public final class DashboardSyncController implements IController<Object> {
 
         for (DashboardItem item : items) {
             List<DashboardElement> elements =
-                    DashboardItem.getDashboardElementsFromItem(item);
+                    item.getDashboardElements();
             if (elements == null || elements.isEmpty()) {
                 continue;
             }
@@ -332,9 +334,9 @@ public final class DashboardSyncController implements IController<Object> {
         List<DbOperation> dbOperations = new ArrayList<>();
         for (DashboardItem refreshedItem : refreshedItems) {
             List<DashboardElement> persistedElementList =
-                    DashboardItem.queryRelatedDashboardElementsFromDb(refreshedItem);
+                    refreshedItem.queryRelatedDashboardElements();
             List<DashboardElement> refreshedElementList =
-                    DashboardItem.getDashboardElementsFromItem(refreshedItem);
+                    refreshedItem.getDashboardElements();
 
             List<String> persistedElementIds = toListIds(persistedElementList);
             List<String> refreshedElementIds = toListIds(refreshedElementList);

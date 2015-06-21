@@ -30,8 +30,8 @@ package org.dhis2.android.dashboard.api.controllers;
 
 import com.squareup.okhttp.HttpUrl;
 
-import org.dhis2.android.dashboard.api.models.Credentials;
-import org.dhis2.android.dashboard.api.models.Session;
+import org.dhis2.android.dashboard.api.models.meta.Credentials;
+import org.dhis2.android.dashboard.api.models.meta.Session;
 import org.dhis2.android.dashboard.api.models.SystemInfo;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;

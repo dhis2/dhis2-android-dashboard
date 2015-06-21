@@ -32,6 +32,7 @@ import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import org.dhis2.android.dashboard.api.utils.StringUtils;
 import org.joda.time.DateTime;
 
 public class BaseIdentifiableObject extends BaseModel implements IdentifiableObject {
@@ -145,5 +146,20 @@ public class BaseIdentifiableObject extends BaseModel implements IdentifiableObj
     @Override
     public void setAccess(Access access) {
         this.access = access;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtils.create()
+                .append("BaseIdentifiableObject {")
+                .append("id=").append(id)
+                .append(", uId=").append(uId)
+                .append(", name=").append(name)
+                .append(", displayName=").append(displayName)
+                .append(", created=").append(created == null ? "" : created.toString())
+                .append(", lastUpdated=").append(lastUpdated == null ? "" : lastUpdated.toString())
+                .append(", access=").append(access == null ? "" : access.toString())
+                .append("}")
+                .build();
     }
 }

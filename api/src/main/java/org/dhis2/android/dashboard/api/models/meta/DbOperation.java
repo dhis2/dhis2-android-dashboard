@@ -1,4 +1,4 @@
-package org.dhis2.android.dashboard.api.models;
+package org.dhis2.android.dashboard.api.models.meta;
 
 import com.raizlabs.android.dbflow.structure.BaseModel;
 

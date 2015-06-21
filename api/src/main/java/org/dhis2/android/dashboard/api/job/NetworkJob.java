@@ -28,7 +28,7 @@
 
 package org.dhis2.android.dashboard.api.job;
 
-import org.dhis2.android.dashboard.api.models.ResponseHolder;
+import org.dhis2.android.dashboard.api.models.meta.ResponseHolder;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 

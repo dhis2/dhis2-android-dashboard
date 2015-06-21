@@ -26,24 +26,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.models;
+package org.dhis2.android.dashboard.api.models.meta;
 
-import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
+import org.dhis2.android.dashboard.api.network.APIException;
 
-public final class Credentials {
-    private String username;
-    private String password;
+import retrofit.client.Response;
 
-    public Credentials(String username, String password) {
-        this.username = isNull(username, "Username must not be null");
-        this.password = isNull(password, "Password must not be null");
+public final class ResponseHolder<T> {
+    private Response mResponse;
+    private APIException mApiException;
+    private T mItem;
+
+    public Response getResponse() {
+        return mResponse;
     }
 
-    public String getUsername() {
-        return username;
+    public void setResponse(Response response) {
+        mResponse = response;
     }
 
-    public String getPassword() {
-        return password;
+    public APIException getApiException() {
+        return mApiException;
+    }
+
+    public void setApiException(APIException apiException) {
+        mApiException = apiException;
+    }
+
+    public T getItem() {
+        return mItem;
+    }
+
+    public void setItem(T item) {
+        mItem = item;
     }
 }

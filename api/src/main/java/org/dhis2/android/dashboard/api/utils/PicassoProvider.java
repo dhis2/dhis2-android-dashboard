@@ -38,7 +38,7 @@ import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import org.dhis2.android.dashboard.api.DhisManager;
-import org.dhis2.android.dashboard.api.models.Credentials;
+import org.dhis2.android.dashboard.api.models.meta.Credentials;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

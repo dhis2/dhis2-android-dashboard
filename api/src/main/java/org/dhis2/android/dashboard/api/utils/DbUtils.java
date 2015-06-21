@@ -1,11 +1,12 @@
-package org.dhis2.android.dashboard.api.persistence;
+package org.dhis2.android.dashboard.api.utils;
 
 import android.util.Log;
 
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 
-import org.dhis2.android.dashboard.api.models.DbOperation;
+import org.dhis2.android.dashboard.api.models.meta.DbOperation;
 import org.dhis2.android.dashboard.api.models.BaseIdentifiableObject;
+import org.dhis2.android.dashboard.api.persistence.DbDhis;
 
 import java.util.ArrayList;
 import java.util.Collection;

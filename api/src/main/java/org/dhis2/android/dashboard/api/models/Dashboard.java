@@ -36,6 +36,7 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
+import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.joda.time.DateTime;
@@ -46,6 +47,10 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 @Table(databaseName = DbDhis.NAME)
 public final class Dashboard extends BaseIdentifiableObject {
+    /**
+     * Maximum amount of items dashboard can hold.
+     */
+    public static int MAX_ITEMS = 40;
 
     @JsonIgnore
     @Column(name = "state")
@@ -64,9 +69,10 @@ public final class Dashboard extends BaseIdentifiableObject {
     /////////////////////////////////////////////////////////////////////////
 
     /**
-     * Creates and saves Dashboard with given name to the local database.
+     * Creates and returns new Dashboard with given name.
      *
      * @param name Name of new dashboard.
+     * @return a dashboard.
      */
     @JsonIgnore
     public static Dashboard createDashboard(String name) {
@@ -80,19 +86,20 @@ public final class Dashboard extends BaseIdentifiableObject {
         dashboard.setCreated(currentDateTime);
         dashboard.setLastUpdated(currentDateTime);
         dashboard.setAccess(provideDefaultAccess());
-        dashboard.save();
 
         return dashboard;
     }
 
     /**
-     * This method will change the name and the State of dashboard.
+     * This method will change the name of dashboard along with the State.
      * <p/>
      * If the current state of model is State.TO_DELETE or State.TO_POST,
-     * state won't be changed. Otherwise, it will be changed to State.TO_UPDATE.
+     * state won't be changed. Otherwise, it will be set to State.TO_UPDATE.
+     *
+     * @param newName New name for dashboard.
      */
     @JsonIgnore
-    public void modifyName(String newName) {
+    public void updateDashboard(String newName) {
         setName(newName);
         setDisplayName(newName);
 
@@ -105,13 +112,13 @@ public final class Dashboard extends BaseIdentifiableObject {
 
     /**
      * This method will change the state of the model to State.TO_DELETE
-     * if the model was already synced to the server.
+     * if the model is synced to the server.
      * <p/>
      * If model was created only locally, it will delete it
-     * from local database.
+     * from database.
      */
     @JsonIgnore
-    public void softDelete() {
+    public void deleteDashboard() {
         if (state == State.TO_POST) {
             super.delete();
         } else {
@@ -120,87 +127,124 @@ public final class Dashboard extends BaseIdentifiableObject {
         }
     }
 
+    /**
+     * Returns list of DashboardItems associated with dashboard.
+     * NOTE! Items will be read from database.
+     *
+     * @return list of items.
+     */
     @JsonIgnore
-    public static List<DashboardItem> queryRelatedDashboardItems(Dashboard dashboard) {
+    public List<DashboardItem> queryRelatedDashboardItems() {
         return new Select().from(DashboardItem.class)
                 .where(Condition.column(DashboardItem$Table
-                        .DASHBOARD_DASHBOARD).is(dashboard.getId()))
+                        .DASHBOARD_DASHBOARD).is(getId()))
+                .and(Condition.column(DashboardItem$Table
+                        .STATE).isNot(State.TO_DELETE.toString()))
                 .queryList();
+    }
+
+    /**
+     * Returns an item from this dashboard of the given type which number of
+     * content is less than max. Returns null if no item matches the criteria.
+     *
+     * @param type the type of content to return.
+     * @return an item.
+     */
+    @JsonIgnore
+    public DashboardItem getAvailableItemByType(String type) {
+        List<DashboardItem> items = queryRelatedDashboardItems();
+
+        if (items == null || items.isEmpty()) {
+            return null;
+        }
+
+        for (DashboardItem item : items) {
+            if (type.equals(item.getType()) &&
+                    item.getContentCount() < DashboardItem.MAX_CONTENT) {
+                return item;
+            }
+        }
+
+        return null;
     }
 
     /////////////////////////////////////////////////////////////////////////
     // DashboardItem logic
     /////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Will try to append DashboardItemContent to current dashboard.
+     * If the type of DashboardItemContent is embedded (chart, eventChart, map, eventReport, reportTable),
+     * method will create a new item and append it to dashboard.
+     * <p/>
+     * If the type of DashboardItemContent is link type (users, reports, resources),
+     * method will try to append content to existing item. Otherwise it will create a new dashboard item.
+     * <p/>
+     * If the overall count of items in dashboard is bigger that Dashboard.MAX_ITEMS, method will not
+     * add content and return false;
+     *
+     * @param content
+     * @return false if item count is bigger than MAX_ITEMS.
+     */
     @JsonIgnore
-    public void addDashboardItem(DashboardItemContent resource) {
-        isNull(resource, "DashboardItemContent object must not be null");
+    public boolean addItemContent(DashboardItemContent content) {
+        isNull(content, "DashboardItemContent object must not be null");
 
-        switch (resource.getType()) {
+        DashboardItem item;
+        DashboardElement element;
+        int itemsCount = getDashboardItemCount();
+
+        if (isItemContentTypeEmbedded(content)) {
+            item = DashboardItem.createDashboardItem(this, content);
+            element = DashboardElement.createDashboardElement(item, content);
+            itemsCount += 1;
+        } else {
+            item = getAvailableItemByType(content.getType());
+            if (item == null) {
+                item = DashboardItem.createDashboardItem(this, content);
+                itemsCount += 1;
+            }
+            element = DashboardElement.createDashboardElement(item, content);
+        }
+
+        if (itemsCount > MAX_ITEMS) {
+            return false;
+        }
+
+        item.save();
+        element.save();
+
+        return true;
+    }
+
+    private boolean isItemContentTypeEmbedded(DashboardItemContent content) {
+        switch (content.getType()) {
             case DashboardItemContent.TYPE_CHART:
             case DashboardItemContent.TYPE_EVENT_CHART:
             case DashboardItemContent.TYPE_MAP:
             case DashboardItemContent.TYPE_EVENT_REPORT:
             case DashboardItemContent.TYPE_REPORT_TABLE: {
-                createAndSaveDashboardItem(resource);
-                break;
+                return true;
             }
             case DashboardItemContent.TYPE_USERS:
             case DashboardItemContent.TYPE_REPORTS:
-            case DashboardItemContent.TYPE_RESOURCES:
-            case DashboardItemContent.TYPE_REPORT_TABLES: {
-                if (!tryToAddElementToItems(resource)) {
-                    createAndSaveDashboardItem(resource);
-                }
-                break;
-            }
-        }
-    }
-
-    private void createAndSaveDashboardItem(DashboardItemContent resource) {
-        DashboardItem item
-                = new DashboardItem();
-        item.setCreated(DateTimeManager.getInstance()
-                .getCurrentDateTimeInServerTimeZone());
-        item.setLastUpdated(DateTimeManager.getInstance()
-                .getCurrentDateTimeInServerTimeZone());
-        item.setState(State.TO_POST);
-        item.setDashboard(this);
-        item.setAccess(provideDefaultAccess());
-        item.setType(resource.getType());
-        item.save();
-
-        DashboardElement element = new DashboardElement();
-        element.setUId(resource.getUId());
-        element.setName(resource.getName());
-        element.setCreated(resource.getCreated());
-        element.setLastUpdated(resource.getLastUpdated());
-        element.setDisplayName(resource.getDisplayName());
-        element.setState(State.TO_POST);
-        element.setDashboardItem(item);
-        element.save();
-
-        System.out.println("TYPE: " + item.getType());
-    }
-
-    private boolean tryToAddElementToItems(DashboardItemContent resource) {
-        List<DashboardItem> items = new Select()
-                .from(DashboardItem.class)
-                .where(Condition.column(DashboardItem$Table.DASHBOARD_DASHBOARD).is(getId()))
-                .and(Condition.column(DashboardItem$Table.TYPE).is(resource.getType()))
-                .queryList();
-
-        if (items == null || items.isEmpty()) {
-            return false;
-        }
-
-        for (DashboardItem item : items) {
-            if (item.addDashboardElement(resource)) {
-                return true;
+            case DashboardItemContent.TYPE_RESOURCES: {
+                return false;
             }
         }
 
-        return false;
+        throw new IllegalArgumentException("Unsupported DashboardItemContent type");
+    }
+
+    static Access provideDefaultAccess() {
+        Access access = new Access();
+        access.setManage(true);
+        access.setExternalize(true);
+        access.setWrite(true);
+        access.setUpdate(true);
+        access.setRead(true);
+        access.setDelete(true);
+        return access;
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -227,14 +271,15 @@ public final class Dashboard extends BaseIdentifiableObject {
         this.dashboardItems = dashboardItems;
     }
 
-    static Access provideDefaultAccess() {
-        Access access = new Access();
-        access.setManage(true);
-        access.setExternalize(true);
-        access.setWrite(true);
-        access.setUpdate(true);
-        access.setRead(true);
-        access.setDelete(true);
-        return access;
+    @JsonIgnore
+    public boolean hasItems() {
+        return getDashboardItemCount() > 0;
+    }
+
+    @JsonIgnore
+    public int getDashboardItemCount() {
+        List<DashboardItem> items
+                = queryRelatedDashboardItems();
+        return items == null ? 0 : items.size();
     }
 }

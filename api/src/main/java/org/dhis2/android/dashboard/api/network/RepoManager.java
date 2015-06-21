@@ -28,12 +28,10 @@
 
 package org.dhis2.android.dashboard.api.network;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 
-import org.dhis2.android.dashboard.api.models.Credentials;
+import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.utils.ObjectMapperProvider;
 
 import retrofit.RequestInterceptor;

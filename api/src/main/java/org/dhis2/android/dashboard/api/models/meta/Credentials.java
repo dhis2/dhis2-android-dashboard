@@ -26,24 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.models;
+package org.dhis2.android.dashboard.api.models.meta;
 
-import com.squareup.okhttp.HttpUrl;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public final class Session {
-    private final HttpUrl serverUrl;
-    private final Credentials credentials;
+public final class Credentials {
+    private String username;
+    private String password;
 
-    public Session(HttpUrl serverUrl, Credentials credentials) {
-        this.serverUrl = serverUrl;
-        this.credentials = credentials;
+    public Credentials(String username, String password) {
+        this.username = isNull(username, "Username must not be null");
+        this.password = isNull(password, "Password must not be null");
     }
 
-    public Credentials getCredentials() {
-        return credentials;
+    public String getUsername() {
+        return username;
     }
 
-    public HttpUrl getServerUrl() {
-        return serverUrl;
+    public String getPassword() {
+        return password;
     }
 }

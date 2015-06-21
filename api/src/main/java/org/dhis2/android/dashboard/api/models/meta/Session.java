@@ -26,38 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.models;
+package org.dhis2.android.dashboard.api.models.meta;
 
-import org.dhis2.android.dashboard.api.network.APIException;
+import com.squareup.okhttp.HttpUrl;
 
-import retrofit.client.Response;
+public final class Session {
+    private final HttpUrl serverUrl;
+    private final Credentials credentials;
 
-public final class ResponseHolder<T> {
-    private Response mResponse;
-    private APIException mApiException;
-    private T mItem;
-
-    public Response getResponse() {
-        return mResponse;
+    public Session(HttpUrl serverUrl, Credentials credentials) {
+        this.serverUrl = serverUrl;
+        this.credentials = credentials;
     }
 
-    public void setResponse(Response response) {
-        mResponse = response;
+    public Credentials getCredentials() {
+        return credentials;
     }
 
-    public APIException getApiException() {
-        return mApiException;
-    }
-
-    public void setApiException(APIException apiException) {
-        mApiException = apiException;
-    }
-
-    public T getItem() {
-        return mItem;
-    }
-
-    public void setItem(T item) {
-        mItem = item;
+    public HttpUrl getServerUrl() {
+        return serverUrl;
     }
 }

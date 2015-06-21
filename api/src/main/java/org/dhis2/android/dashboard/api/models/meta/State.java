@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.models;
+package org.dhis2.android.dashboard.api.models.meta;
 
 public enum State {
     SYNCED, TO_POST, TO_UPDATE, TO_DELETE,

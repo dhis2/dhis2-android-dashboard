@@ -219,7 +219,9 @@ public class DashboardFragment extends BaseFragment
                     .queryList();
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {
-                    DashboardItem.readElementsIntoItem(dashboardItem);
+                    List<DashboardElement> dashboardElements
+                            = dashboardItem.queryRelatedDashboardElements();
+                    dashboardItem.setDashboardElements(dashboardElements);
                 }
             }
             return dashboardItems;

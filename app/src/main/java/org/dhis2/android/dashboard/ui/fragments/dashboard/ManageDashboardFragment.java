@@ -82,11 +82,11 @@ public final class ManageDashboardFragment extends DialogFragment {
     public void onButtonClick(View view) {
 
         if (view.getId() == R.id.delete_dashboard_button) {
-            mDashboard.softDelete();
+            mDashboard.deleteDashboard();
         }
 
         /* if (mDashboard != null) {
-            mDashboard.modifyName(mDashboardName.getText().toString());
+            mDashboard.updateDashboard(mDashboardName.getText().toString());
         } */
 
         dismiss();

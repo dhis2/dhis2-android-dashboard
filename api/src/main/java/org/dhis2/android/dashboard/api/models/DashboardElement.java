@@ -36,6 +36,7 @@ import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.Table;
 
+import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
 
 @Table(databaseName = DbDhis.NAME)
@@ -59,6 +60,44 @@ public final class DashboardElement extends BaseIdentifiableObject {
 
     public DashboardElement() {
         state = State.SYNCED;
+    }
+
+    /**
+     * Factory method for creating DashboardElement.
+     *
+     * @param item    DashboardItem to associate with element.
+     * @param content Content from which element will be created.
+     * @return new element.
+     */
+    @JsonIgnore
+    public static DashboardElement createDashboardElement(DashboardItem item,
+                                                          DashboardItemContent content) {
+        DashboardElement element = new DashboardElement();
+        element.setUId(content.getUId());
+        element.setName(content.getName());
+        element.setCreated(content.getCreated());
+        element.setLastUpdated(content.getLastUpdated());
+        element.setDisplayName(content.getDisplayName());
+        element.setState(State.TO_POST);
+        element.setDashboardItem(item);
+
+        return element;
+    }
+
+    @JsonIgnore
+    public void deleteDashboardElement() {
+        if (State.TO_POST.equals(getState())) {
+            super.delete();
+        } else {
+            setState(State.TO_DELETE);
+            super.save();
+        }
+
+        /* if count of elements in item is zero, it means
+        we don't need this item anymore */
+        if (!(dashboardItem.getContentCount() > 0)) {
+            dashboardItem.deleteDashboardItem();
+        }
     }
 
     @JsonIgnore
