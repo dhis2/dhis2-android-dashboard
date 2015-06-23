@@ -29,7 +29,7 @@ android {
     }
 
     lintOptions {
-        disable 'RtlSymmetry', 'RtlHardcoded'
+        disable 'RtlSymmetry', 'RtlHardcoded', 'ContentDescription'
     }
 }
 

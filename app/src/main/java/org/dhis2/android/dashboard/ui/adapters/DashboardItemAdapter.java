@@ -226,26 +226,31 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             elementList = item.getResources();
         }
 
-        holder.itemElement0.setText(getElementFromListSafely(elementList, 0));
-        holder.itemElement1.setText(getElementFromListSafely(elementList, 1));
-        holder.itemElement2.setText(getElementFromListSafely(elementList, 2));
-        holder.itemElement3.setText(getElementFromListSafely(elementList, 3));
-        holder.itemElement4.setText(getElementFromListSafely(elementList, 4));
-        holder.itemElement5.setText(getElementFromListSafely(elementList, 5));
-        holder.itemElement6.setText(getElementFromListSafely(elementList, 6));
-        holder.itemElement7.setText(getElementFromListSafely(elementList, 7));
+        holder.onElementClickListener.setElements(elementList);
+
+        handleItem(holder.itemElement0, holder.itemDeleteButton0, getElement(elementList, 0));
+        handleItem(holder.itemElement1, holder.itemDeleteButton1, getElement(elementList, 1));
+        handleItem(holder.itemElement2, holder.itemDeleteButton2, getElement(elementList, 2));
+        handleItem(holder.itemElement3, holder.itemDeleteButton3, getElement(elementList, 3));
+        handleItem(holder.itemElement4, holder.itemDeleteButton4, getElement(elementList, 4));
+        handleItem(holder.itemElement5, holder.itemDeleteButton5, getElement(elementList, 5));
+        handleItem(holder.itemElement6, holder.itemDeleteButton6, getElement(elementList, 6));
+        handleItem(holder.itemElement7, holder.itemDeleteButton7, getElement(elementList, 7));
     }
 
-    private static String getElementFromListSafely(List<DashboardElement> elements, int position) {
-        if (elements != null && elements.size() > position) {
-            DashboardElement element = elements.get(position);
+    private static void handleItem(TextView textView, ImageView button, DashboardElement element) {
+        button.setVisibility(element == null ? View.INVISIBLE : View.VISIBLE);
+        textView.setVisibility(element == null ? View.INVISIBLE : View.VISIBLE);
+        textView.setText(element == null ? EMPTY_FIELD : element.getDisplayName());
+    }
 
-            if (element != null) {
-                return element.getDisplayName();
-            }
+    private static DashboardElement getElement(
+            List<DashboardElement> elements, int position) {
+        if (elements != null && elements.size() > position) {
+            return elements.get(position);
         }
 
-        return EMPTY_FIELD;
+        return null;
     }
 
     @Override
@@ -367,7 +372,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     }
 
     static class ListItemViewHolder implements IElementContentViewHolder {
+        final OnElementClickListener onElementClickListener;
         final View itemElementsContainer;
+
         final TextView itemElement0;
         final TextView itemElement1;
         final TextView itemElement2;
@@ -377,7 +384,17 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         final TextView itemElement6;
         final TextView itemElement7;
 
+        final ImageView itemDeleteButton0;
+        final ImageView itemDeleteButton1;
+        final ImageView itemDeleteButton2;
+        final ImageView itemDeleteButton3;
+        final ImageView itemDeleteButton4;
+        final ImageView itemDeleteButton5;
+        final ImageView itemDeleteButton6;
+        final ImageView itemDeleteButton7;
+
         public ListItemViewHolder(View view) {
+            onElementClickListener = new OnElementClickListener();
             itemElementsContainer = view;
 
             itemElement0 = (TextView) view.findViewById(R.id.element_item_0);
@@ -388,6 +405,24 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             itemElement5 = (TextView) view.findViewById(R.id.element_item_5);
             itemElement6 = (TextView) view.findViewById(R.id.element_item_6);
             itemElement7 = (TextView) view.findViewById(R.id.element_item_7);
+
+            itemDeleteButton0 = (ImageView) view.findViewById(R.id.element_item_0_delete_button);
+            itemDeleteButton1 = (ImageView) view.findViewById(R.id.element_item_1_delete_button);
+            itemDeleteButton2 = (ImageView) view.findViewById(R.id.element_item_2_delete_button);
+            itemDeleteButton3 = (ImageView) view.findViewById(R.id.element_item_3_delete_button);
+            itemDeleteButton4 = (ImageView) view.findViewById(R.id.element_item_4_delete_button);
+            itemDeleteButton5 = (ImageView) view.findViewById(R.id.element_item_5_delete_button);
+            itemDeleteButton6 = (ImageView) view.findViewById(R.id.element_item_6_delete_button);
+            itemDeleteButton7 = (ImageView) view.findViewById(R.id.element_item_7_delete_button);
+
+            itemDeleteButton0.setOnClickListener(onElementClickListener);
+            itemDeleteButton1.setOnClickListener(onElementClickListener);
+            itemDeleteButton2.setOnClickListener(onElementClickListener);
+            itemDeleteButton3.setOnClickListener(onElementClickListener);
+            itemDeleteButton4.setOnClickListener(onElementClickListener);
+            itemDeleteButton5.setOnClickListener(onElementClickListener);
+            itemDeleteButton6.setOnClickListener(onElementClickListener);
+            itemDeleteButton7.setOnClickListener(onElementClickListener);
         }
 
         @Override
@@ -497,6 +532,61 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             });
 
             popupMenu.show();
+        }
+    }
+
+    private static class OnElementClickListener implements View.OnClickListener {
+        private List<DashboardElement> mElements;
+
+        public void setElements(List<DashboardElement> elements) {
+            mElements = elements;
+        }
+
+        @Override public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.element_item_0_delete_button: {
+                    removeElement(0);
+                    break;
+                }
+                case R.id.element_item_1_delete_button: {
+                    removeElement(1);
+                    break;
+                }
+                case R.id.element_item_2_delete_button: {
+                    removeElement(2);
+                    break;
+                }
+                case R.id.element_item_3_delete_button: {
+                    removeElement(3);
+                    break;
+                }
+                case R.id.element_item_4_delete_button: {
+                    removeElement(4);
+                    break;
+                }
+                case R.id.element_item_5_delete_button: {
+                    removeElement(5);
+                    break;
+                }
+                case R.id.element_item_6_delete_button: {
+                    removeElement(6);
+                    break;
+                }
+                case R.id.element_item_7_delete_button: {
+                    removeElement(7);
+                    break;
+                }
+            }
+        }
+
+        void removeElement(int position) {
+            if (mElements != null && mElements.size() > position) {
+                DashboardElement element = mElements.get(position);
+
+                if (element != null) {
+                    element.deleteDashboardElement();
+                }
+            }
         }
     }
 

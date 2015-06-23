@@ -26,292 +26,122 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:orientation="vertical"
-    android:paddingBottom="4dp"
-    android:paddingTop="4dp">
+    android:layout_height="280dp"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginBottom="3dp"
-        android:background="@drawable/transparent_selector"
-        android:clickable="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="1">
+    <!-- 1 element in list -->
+    <LinearLayout style="@style/ListElementContainerStyle">
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
             android:id="@+id/element_item_0"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:singleLine="true"
-            android:textColor="@color/navy_blue"
-            android:textSize="15sp"
-            app:font="@string/light_font_name" />
+            style="@style/ListElementTextViewStyle"/>
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/transparent_selector"
-            android:clickable="true"
-            android:contentDescription="@string/description"
-            android:src="@mipmap/ic_cancel" />
+            android:id="@+id/element_item_0_delete_button"
+            style="@style/ListElementButtonStyle"/>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/light_grey" />
+    <View style="@style/ListElementVerticalSeparatorStyle"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginBottom="3dp"
-        android:background="@drawable/transparent_selector"
-        android:clickable="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="1">
+    <!-- 2 element in list -->
+    <LinearLayout style="@style/ListElementContainerStyle">
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
             android:id="@+id/element_item_1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:singleLine="true"
-            android:textColor="@color/navy_blue"
-            android:textSize="15sp"
-            app:font="@string/light_font_name" />
+            style="@style/ListElementTextViewStyle"/>
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/transparent_selector"
-            android:clickable="true"
-            android:contentDescription="@string/description"
-            android:src="@mipmap/ic_cancel" />
+            android:id="@+id/element_item_1_delete_button"
+            style="@style/ListElementButtonStyle"/>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/light_grey" />
+    <View style="@style/ListElementVerticalSeparatorStyle"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginBottom="3dp"
-        android:background="@drawable/transparent_selector"
-        android:clickable="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="1">
+    <!-- 3 element in list -->
+    <LinearLayout style="@style/ListElementContainerStyle">
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
             android:id="@+id/element_item_2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:singleLine="true"
-            android:textColor="@color/navy_blue"
-            android:textSize="15sp"
-            app:font="@string/light_font_name" />
+            style="@style/ListElementTextViewStyle"/>
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/transparent_selector"
-            android:clickable="true"
-            android:contentDescription="@string/description"
-            android:src="@mipmap/ic_cancel" />
+            android:id="@+id/element_item_2_delete_button"
+            style="@style/ListElementButtonStyle"/>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/light_grey" />
+    <View style="@style/ListElementVerticalSeparatorStyle"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginBottom="3dp"
-        android:background="@drawable/transparent_selector"
-        android:clickable="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="1">
+    <!-- 4 element in list -->
+    <LinearLayout style="@style/ListElementContainerStyle">
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
             android:id="@+id/element_item_3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:singleLine="true"
-            android:textColor="@color/navy_blue"
-            android:textSize="15sp"
-            app:font="@string/light_font_name" />
+            style="@style/ListElementTextViewStyle"/>
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/transparent_selector"
-            android:clickable="true"
-            android:contentDescription="@string/description"
-            android:src="@mipmap/ic_cancel" />
+            android:id="@+id/element_item_3_delete_button"
+            style="@style/ListElementButtonStyle"/>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/light_grey" />
+    <View style="@style/ListElementVerticalSeparatorStyle"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginBottom="3dp"
-        android:background="@drawable/transparent_selector"
-        android:clickable="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="1">
+    <!-- 5 element in list -->
+    <LinearLayout style="@style/ListElementContainerStyle">
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
             android:id="@+id/element_item_4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:singleLine="true"
-            android:textColor="@color/navy_blue"
-            android:textSize="15sp"
-            app:font="@string/light_font_name" />
+            style="@style/ListElementTextViewStyle"/>
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/transparent_selector"
-            android:clickable="true"
-            android:contentDescription="@string/description"
-            android:src="@mipmap/ic_cancel" />
+            android:id="@+id/element_item_4_delete_button"
+            style="@style/ListElementButtonStyle"/>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/light_grey" />
+    <View style="@style/ListElementVerticalSeparatorStyle"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginBottom="3dp"
-        android:background="@drawable/transparent_selector"
-        android:clickable="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="1">
+    <!-- 6 element in list -->
+    <LinearLayout style="@style/ListElementContainerStyle">
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
             android:id="@+id/element_item_5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:singleLine="true"
-            android:textColor="@color/navy_blue"
-            android:textSize="15sp"
-            app:font="@string/light_font_name" />
+            style="@style/ListElementTextViewStyle"/>
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/transparent_selector"
-            android:clickable="true"
-            android:contentDescription="@string/description"
-            android:src="@mipmap/ic_cancel" />
+            android:id="@+id/element_item_5_delete_button"
+            style="@style/ListElementButtonStyle"/>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/light_grey" />
+    <View style="@style/ListElementVerticalSeparatorStyle"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginBottom="3dp"
-        android:background="@drawable/transparent_selector"
-        android:clickable="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="1">
+    <!-- 7 element in list -->
+    <LinearLayout style="@style/ListElementContainerStyle">
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
             android:id="@+id/element_item_6"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:singleLine="true"
-            android:textColor="@color/navy_blue"
-            android:textSize="15sp"
-            app:font="@string/light_font_name" />
+            style="@style/ListElementTextViewStyle"/>
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/transparent_selector"
-            android:clickable="true"
-            android:contentDescription="@string/description"
-            android:src="@mipmap/ic_cancel" />
+            android:id="@+id/element_item_6_delete_button"
+            style="@style/ListElementButtonStyle"/>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/light_grey" />
+    <View style="@style/ListElementVerticalSeparatorStyle"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginBottom="3dp"
-        android:background="@drawable/transparent_selector"
-        android:clickable="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="1">
+    <!-- 8 element in list -->
+    <LinearLayout style="@style/ListElementContainerStyle">
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
             android:id="@+id/element_item_7"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:singleLine="true"
-            android:textColor="@color/navy_blue"
-            android:textSize="15sp"
-            app:font="@string/light_font_name" />
+            style="@style/ListElementTextViewStyle"/>
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/transparent_selector"
-            android:clickable="true"
-            android:contentDescription="@string/description"
-            android:src="@mipmap/ic_cancel" />
+            android:id="@+id/element_item_7_delete_button"
+            style="@style/ListElementButtonStyle"/>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/light_grey" />
+    <View style="@style/ListElementVerticalSeparatorStyle"/>
 
 </LinearLayout>

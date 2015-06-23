@@ -51,6 +51,7 @@ import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.models.DashboardItem$Table;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent;
+import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter;
@@ -156,7 +157,7 @@ public class DashboardFragment extends BaseFragment
             we explicitly state that we want only not null values  */
             List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
             tablesToTrack.add(DashboardItem.class);
-            // tablesToTrack.add(DashboardElement.class);
+            tablesToTrack.add(DashboardElement.class);
             return new DbLoader<>(getActivity().getApplicationContext(),
                     tablesToTrack, new ItemsQuery(args.getLong(DASHBOARD_ID)));
         }
@@ -198,7 +199,10 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onItemDelete(DashboardItem item) {
-        mAdapter.removeItem(item);
+        if (item != null) {
+            item.deleteDashboardItem();
+        }
+        // mAdapter.removeItem(item);
     }
 
     private static class ItemsQuery implements Query<List<DashboardItem>> {
@@ -214,8 +218,8 @@ public class DashboardFragment extends BaseFragment
                     .from(DashboardItem.class)
                     .where(
                             Condition.column(DashboardItem$Table.DASHBOARD_DASHBOARD).is(mDashboardId),
-                            Condition.column(DashboardItem$Table.TYPE).isNot(DashboardItemContent.TYPE_MESSAGES)
-                    )
+                            Condition.column(DashboardItem$Table.STATE).isNot(State.TO_DELETE.toString()),
+                            Condition.column(DashboardItem$Table.TYPE).isNot(DashboardItemContent.TYPE_MESSAGES))
                     .queryList();
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {
