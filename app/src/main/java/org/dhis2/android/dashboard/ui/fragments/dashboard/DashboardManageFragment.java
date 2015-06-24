@@ -44,14 +44,14 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public final class ManageDashboardFragment extends DialogFragment {
+public final class DashboardManageFragment extends DialogFragment {
     @InjectView(R.id.dialog_label) TextView mDialogLabel;
     @InjectView(R.id.dashboard_name) EditText mDashboardName;
 
     Dashboard mDashboard;
 
-    public static ManageDashboardFragment newInstance(Dashboard dashboard) {
-        ManageDashboardFragment fragment = new ManageDashboardFragment();
+    public static DashboardManageFragment newInstance(Dashboard dashboard) {
+        DashboardManageFragment fragment = new DashboardManageFragment();
         fragment.mDashboard = dashboard;
         return fragment;
     }

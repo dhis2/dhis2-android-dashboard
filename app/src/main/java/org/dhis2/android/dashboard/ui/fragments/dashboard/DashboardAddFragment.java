@@ -44,7 +44,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public final class AddDashboardFragment extends DialogFragment {
+public final class DashboardAddFragment extends DialogFragment {
     @InjectView(R.id.dialog_label) TextView mDialogLabel;
     @InjectView(R.id.dashboard_name) EditText mDashboardName;
 

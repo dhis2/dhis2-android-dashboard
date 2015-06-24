@@ -56,8 +56,8 @@ import org.dhis2.android.dashboard.api.models.DashboardItemContent;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent$Table;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
-import org.dhis2.android.dashboard.ui.adapters.AutoCompleteDialogAdapter;
-import org.dhis2.android.dashboard.ui.adapters.AutoCompleteDialogAdapter.OptionAdapterValue;
+import org.dhis2.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter;
+import org.dhis2.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter.OptionAdapterValue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,9 +71,9 @@ import butterknife.OnTextChanged;
 
 import static com.raizlabs.android.dbflow.sql.builder.Condition.column;
 
-public class AutoCompleteDialogFragment extends DialogFragment
+public class DashboardItemAddFragment extends DialogFragment
         implements PopupMenu.OnMenuItemClickListener, LoaderCallbacks<List<OptionAdapterValue>> {
-    private static final String TAG = AutoCompleteDialogFragment.class.getSimpleName();
+    private static final String TAG = DashboardItemAddFragment.class.getSimpleName();
     private static final int LOADER_ID = 3451234;
 
     public static final int DIALOG_ID = 234235;
@@ -84,12 +84,12 @@ public class AutoCompleteDialogFragment extends DialogFragment
     @InjectView(R.id.filter_resources) ImageView mFilterResources;
 
     PopupMenu mResourcesMenu;
-    AutoCompleteDialogAdapter mAdapter;
+    DashboardItemSearchDialogAdapter mAdapter;
     OnOptionSelectedListener mListener;
 
-    public static AutoCompleteDialogFragment newInstance(OnOptionSelectedListener listener) {
-        AutoCompleteDialogFragment fragment
-                = new AutoCompleteDialogFragment();
+    public static DashboardItemAddFragment newInstance(OnOptionSelectedListener listener) {
+        DashboardItemAddFragment fragment
+                = new DashboardItemAddFragment();
         fragment.mListener = listener;
         return fragment;
     }
@@ -104,7 +104,7 @@ public class AutoCompleteDialogFragment extends DialogFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_dialog_auto_complete, container, false);
+        return inflater.inflate(R.layout.fragment_dialog_dashboard_item_add, container, false);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class AutoCompleteDialogFragment extends DialogFragment
                 getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mFilter.getWindowToken(), 0);
 
-        mAdapter = new AutoCompleteDialogAdapter(
+        mAdapter = new DashboardItemSearchDialogAdapter(
                 LayoutInflater.from(getActivity()));
         mListView.setAdapter(mAdapter);
         mDialogLabel.setText(getString(R.string.add_dashboard_item));
@@ -146,10 +146,11 @@ public class AutoCompleteDialogFragment extends DialogFragment
         }
     }
 
+    @SuppressWarnings("unused")
     @OnItemClick(R.id.simple_listview)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (mListener != null) {
-            AutoCompleteDialogAdapter.OptionAdapterValue value = mAdapter.getItem(position);
+            DashboardItemSearchDialogAdapter.OptionAdapterValue value = mAdapter.getItem(position);
             if (value != null) {
                 mListener.onOptionSelected(DIALOG_ID, position, value.id, value.label);
             }

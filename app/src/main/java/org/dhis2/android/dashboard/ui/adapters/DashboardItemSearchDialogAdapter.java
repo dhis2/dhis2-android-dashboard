@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 
 
-public class AutoCompleteDialogAdapter extends BaseAdapter implements Filterable {
+public class DashboardItemSearchDialogAdapter extends BaseAdapter implements Filterable {
     /**
      * Lock used to modify the content of {@link #mObjects}. Any write operation
      * performed on the array should be synchronized on this lock. This lock is also
@@ -52,7 +52,7 @@ public class AutoCompleteDialogAdapter extends BaseAdapter implements Filterable
 
     private final LayoutInflater mInflater;
 
-    public AutoCompleteDialogAdapter(LayoutInflater inflater) {
+    public DashboardItemSearchDialogAdapter(LayoutInflater inflater) {
         mInflater = inflater;
         mObjects = new ArrayList<>();
     }
@@ -103,7 +103,7 @@ public class AutoCompleteDialogAdapter extends BaseAdapter implements Filterable
 
         if (convertView == null) {
             view = mInflater.inflate(
-                    R.layout.fragment_dialog_listview_option_item, parent, false);
+                    R.layout.fragment_dialog_dashboard_item_option, parent, false);
             holder = new ViewHolder(view);
             view.setTag(holder);
         } else {
@@ -142,6 +142,7 @@ public class AutoCompleteDialogAdapter extends BaseAdapter implements Filterable
      * is removed from the list.</p>
      */
     private class ArrayFilter extends Filter {
+
         @Override
         protected FilterResults performFiltering(CharSequence prefix) {
             FilterResults results = new FilterResults();

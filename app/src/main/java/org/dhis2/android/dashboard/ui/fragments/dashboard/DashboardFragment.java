@@ -168,7 +168,6 @@ public class DashboardFragment extends BaseFragment
     public void onLoadFinished(Loader<List<DashboardItem>> loader,
                                List<DashboardItem> dashboardItems) {
         if (loader.getId() == LOADER_ID) {
-            System.out.println("DASHBOARD_ITEMS: " + dashboardItems.size());
             mAdapter.swapData(dashboardItems);
         }
     }
@@ -181,28 +180,27 @@ public class DashboardFragment extends BaseFragment
     }
 
     @Override
-    public void onItemClick(DashboardItem item) {
-        Toast.makeText(getActivity(), "BODY CLICK: " +
-                item.getName(), Toast.LENGTH_SHORT).show();
+    public void onContentClick(DashboardElement element) {
+        Toast.makeText(getActivity(), "ON CONTENT CLICK: " +
+                element.getName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onItemElementClick(DashboardElement element) {
-
+    public void onContentDeleteClick(DashboardElement element) {
+        Toast.makeText(getActivity(), "ON CONTENT DELETE CLICK: " +
+                element.getName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onItemShareInterpretation(DashboardItem item) {
-        Toast.makeText(getActivity(), "SHARE INTERPRETATION: " +
-                item.getName(), Toast.LENGTH_SHORT).show();
+    public void onItemDeleteClick(DashboardItem item) {
+        Toast.makeText(getActivity(), "ON ITEM DELETE CLICK: " +
+                item.getId(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onItemDelete(DashboardItem item) {
-        if (item != null) {
-            item.deleteDashboardItem();
-        }
-        // mAdapter.removeItem(item);
+    public void onItemShareClick(DashboardItem item) {
+        Toast.makeText(getActivity(), "ON ITEM SHARE CLICK: " +
+                item.getUId(), Toast.LENGTH_SHORT).show();
     }
 
     private static class ItemsQuery implements Query<List<DashboardItem>> {

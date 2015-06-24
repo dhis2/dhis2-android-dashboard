@@ -53,7 +53,7 @@ import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.activities.INavigationCallback;
 import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
-import org.dhis2.android.dashboard.ui.fragments.dashboard.AutoCompleteDialogFragment.OnOptionSelectedListener;
+import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardItemAddFragment.OnOptionSelectedListener;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 
 import java.util.ArrayList;
@@ -181,7 +181,7 @@ public class DashboardViewPagerFragment extends BaseFragment
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_dashboard_item: {
-                AutoCompleteDialogFragment.newInstance(this)
+                DashboardItemAddFragment.newInstance(this)
                         .show(getChildFragmentManager());
                 return true;
             }
@@ -190,16 +190,16 @@ public class DashboardViewPagerFragment extends BaseFragment
                 return true;
             }
             case R.id.add_dashboard: {
-                AddDashboardFragment fragment
-                        = new AddDashboardFragment();
+                DashboardAddFragment fragment
+                        = new DashboardAddFragment();
                 fragment.show(getChildFragmentManager(), "someFragment");
                 return true;
             }
             case R.id.manage_dashboard: {
                 Dashboard dashboard = mDashboardAdapter
                         .getDashboard(mViewPager.getCurrentItem());
-                ManageDashboardFragment fragment
-                        = ManageDashboardFragment.newInstance(dashboard);
+                DashboardManageFragment fragment
+                        = DashboardManageFragment.newInstance(dashboard);
                 fragment.show(getChildFragmentManager(), "someFragment2");
                 return true;
             }
@@ -209,7 +209,7 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     @Override
     public void onOptionSelected(int dialogId, int position, String id, String name) {
-        if (dialogId == AutoCompleteDialogFragment.DIALOG_ID) {
+        if (dialogId == DashboardItemAddFragment.DIALOG_ID) {
             DashboardItemContent resource = new Select().from(DashboardItemContent.class)
                     .where(Condition.column(DashboardItemContent$Table.UID).is(id))
                     .querySingle();

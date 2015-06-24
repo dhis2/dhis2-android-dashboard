@@ -51,22 +51,49 @@ import org.dhis2.android.dashboard.api.utils.PicassoProvider;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectViews;
+
 public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardItemAdapter.ItemViewHolder> {
     private static final String DATE_FORMAT = "YYYY-MM-dd";
     private static final String EMPTY_FIELD = "";
 
+    /**
+     * Basically we have three types of dashboard items:
+     * 1) Item which can be represented as image: charts, event charts, maps.
+     * 2) Item which contain tables: report table, event report.
+     * 3) Item which contains links to content: resource, reports, users.
+     */
     private static final int ITEM_WITH_IMAGE_TYPE = 0;
     private static final int ITEM_WITH_TABLE_TYPE = 1;
     private static final int ITEM_WITH_LIST_TYPE = 2;
 
+    /**
+     * As dashboard access rules apply to items, we need to have it here in order to
+     * restrict user actions in correspondence to user permissions.
+     */
     private final Access mDashboardAccess;
+
+    /**
+     * Callback which reacts to user actions on each dashboard item.
+     */
     private final OnItemClickListener mClickListener;
+
+    /**
+     * This is the maximum number of columns which can fit in screen for given device.
+     */
     private final int mMaxSpanCount;
 
+    /**
+     * Some resources cached in field variables.
+     */
     private final String mUsersName;
     private final String mReportsName;
     private final String mResourcesName;
 
+    /**
+     * Image loading utility.
+     */
     private final Picasso mImageLoader;
 
     public DashboardItemAdapter(Context context, Access dashboardAccess,
@@ -84,175 +111,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         mImageLoader = PicassoProvider.getInstance(context);
     }
 
-    @Override
-    public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View rootView = getLayoutInflater().inflate(
-                R.layout.gridview_dashboard_item, parent, false);
-
-        LinearLayout itemBody = (LinearLayout) rootView
-                .findViewById(R.id.dashboard_item_body_container);
-        TextView itemName = (TextView) rootView
-                .findViewById(R.id.dashboard_item_name);
-        TextView lastUpdated = (TextView) rootView
-                .findViewById(R.id.dashboard_item_last_updated);
-        ImageView itemMenuButton = (ImageView) rootView
-                .findViewById(R.id.dashboard_item_menu);
-        IElementContentViewHolder elementContentViewHolder
-                = onCreateElementContentViewHolder(itemBody, viewType);
-            /* attaching custom view */
-        itemBody.addView(elementContentViewHolder.getView());
-
-        // Overflow menu button click listener
-        MenuButtonHandler menuButtonHandler = new MenuButtonHandler(
-                rootView.getContext(), mDashboardAccess, mClickListener);
-        itemMenuButton.setOnClickListener(menuButtonHandler);
-
-        return new ItemViewHolder(
-                rootView, itemBody, itemName, lastUpdated,
-                itemMenuButton, menuButtonHandler, elementContentViewHolder
-        );
-    }
-
-    @Override
-    public void onBindViewHolder(ItemViewHolder holder, int position) {
-        DashboardItem item = getItem(holder.getAdapterPosition());
-
-        holder.menuButtonHandler.setDashboardItem(item);
-        holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
-
-        if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
-            holder.itemName.setText(item.getChart().getDisplayName());
-        } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
-            holder.itemName.setText(item.getMap().getDisplayName());
-        } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
-            holder.itemName.setText(item.getEventChart().getDisplayName());
-        } else if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
-            holder.itemName.setText(item.getReportTable().getDisplayName());
-        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
-            holder.itemName.setText(item.getEventReport().getDisplayName());
-        } else if (DashboardItemContent.TYPE_USERS.equals(item.getType())) {
-            holder.itemName.setText(mUsersName);
-        } else if (DashboardItemContent.TYPE_REPORTS.equals(item.getType())) {
-            holder.itemName.setText(mReportsName);
-        } else if (DashboardItemContent.TYPE_RESOURCES.equals(item.getType())) {
-            holder.itemName.setText(mResourcesName);
-        }
-
-        if (holder.menuButtonHandler.isMenuVisible()) {
-            holder.itemMenuButton.setVisibility(View.VISIBLE);
-        } else {
-            holder.itemMenuButton.setVisibility(View.GONE);
-        }
-
-        onBindElementContentViewHolder(holder.contentViewHolder,
-                holder.getItemViewType(), holder.getAdapterPosition());
-    }
-
-    public IElementContentViewHolder onCreateElementContentViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case ITEM_WITH_IMAGE_TYPE: {
-                ImageView imageView = (ImageView) getLayoutInflater()
-                        .inflate(R.layout.gridview_dashboard_item_imageview, parent, false);
-                return new ImageItemViewHolder(imageView);
-            }
-            case ITEM_WITH_TABLE_TYPE: {
-                TextView textView = (TextView) getLayoutInflater()
-                        .inflate(R.layout.gridview_dashboard_item_textview, parent, false);
-                return new TextItemViewHolder(textView);
-            }
-            case ITEM_WITH_LIST_TYPE: {
-                LinearLayout textViewContainer = (LinearLayout) getLayoutInflater()
-                        .inflate(R.layout.gridview_dashboard_item_list, parent, false);
-                return new ListItemViewHolder(textViewContainer);
-            }
-        }
-        return null;
-    }
-
-    public void onBindElementContentViewHolder(IElementContentViewHolder holder, int viewType, int position) {
-        switch (viewType) {
-            case ITEM_WITH_IMAGE_TYPE: {
-                handleItemsWithImages((ImageItemViewHolder) holder, getItem(position));
-                break;
-            }
-            case ITEM_WITH_TABLE_TYPE: {
-                handleItemsWithTables((TextItemViewHolder) holder, getItem(position));
-                break;
-            }
-            case ITEM_WITH_LIST_TYPE: {
-                handleItemsWithLists((ListItemViewHolder) holder, getItem(position));
-                break;
-            }
-        }
-    }
-
-    private void handleItemsWithImages(ImageItemViewHolder holder, DashboardItem item) {
-        String request = null;
-        if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
-            request = buildImageUrl("charts", item.getChart().getUId());
-        } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
-            request = buildImageUrl("maps", item.getMap().getUId());
-        } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
-            request = buildImageUrl("eventCharts", item.getEventChart().getUId());
-        }
-
-        mImageLoader.load(request)
-                .placeholder(R.mipmap.ic_stub_dashboard_item)
-                .into(holder.imageView);
-    }
-
-    private static String buildImageUrl(String resource, String id) {
-        return DhisManager.getInstance().getServerUrl().newBuilder()
-                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
-                .toString();
-    }
-
-    private void handleItemsWithTables(TextItemViewHolder holder, DashboardItem item) {
-        if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
-            holder.textView.setText(item.getReportTable().getDisplayName());
-        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
-            holder.textView.setText(item.getEventReport().getDisplayName());
-        }
-    }
-
-    private void handleItemsWithLists(ListItemViewHolder holder, DashboardItem item) {
-        List<DashboardElement> elementList = null;
-        if (DashboardItemContent.TYPE_USERS.equals(item.getType())) {
-            elementList = item.getUsers();
-        } else if (DashboardItemContent.TYPE_REPORTS.equals(item.getType())) {
-            elementList = item.getReports();
-        } else if (DashboardItemContent.TYPE_RESOURCES.equals(item.getType())) {
-            elementList = item.getResources();
-        }
-
-        holder.onElementClickListener.setElements(elementList);
-
-        handleItem(holder.itemElement0, holder.itemDeleteButton0, getElement(elementList, 0));
-        handleItem(holder.itemElement1, holder.itemDeleteButton1, getElement(elementList, 1));
-        handleItem(holder.itemElement2, holder.itemDeleteButton2, getElement(elementList, 2));
-        handleItem(holder.itemElement3, holder.itemDeleteButton3, getElement(elementList, 3));
-        handleItem(holder.itemElement4, holder.itemDeleteButton4, getElement(elementList, 4));
-        handleItem(holder.itemElement5, holder.itemDeleteButton5, getElement(elementList, 5));
-        handleItem(holder.itemElement6, holder.itemDeleteButton6, getElement(elementList, 6));
-        handleItem(holder.itemElement7, holder.itemDeleteButton7, getElement(elementList, 7));
-    }
-
-    private static void handleItem(TextView textView, ImageView button, DashboardElement element) {
-        button.setVisibility(element == null ? View.INVISIBLE : View.VISIBLE);
-        textView.setVisibility(element == null ? View.INVISIBLE : View.VISIBLE);
-        textView.setText(element == null ? EMPTY_FIELD : element.getDisplayName());
-    }
-
-    private static DashboardElement getElement(
-            List<DashboardElement> elements, int position) {
-        if (elements != null && elements.size() > position) {
-            return elements.get(position);
-        }
-
-        return null;
-    }
-
+    /* returns type of row depending on item content type. */
     @Override
     public int getItemViewType(int position) {
 
@@ -321,115 +180,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         return mMaxSpanCount;
     }
 
-    public void removeItem(DashboardItem item) {
-        if (getData() != null) {
-            int truePosition = getData().indexOf(item);
-            if (!(truePosition < 0)) {
-                getData().remove(truePosition);
-                notifyItemRemoved(truePosition);
-            }
-        }
-    }
-
-    interface IElementContentViewHolder {
-        View getView();
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(DashboardItem item);
-
-        void onItemElementClick(DashboardElement element);
-
-        void onItemShareInterpretation(DashboardItem item);
-
-        void onItemDelete(DashboardItem item);
-    }
-
-    static class ImageItemViewHolder implements IElementContentViewHolder {
-        final ImageView imageView;
-
-        public ImageItemViewHolder(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        @Override
-        public View getView() {
-            return imageView;
-        }
-    }
-
-    static class TextItemViewHolder implements IElementContentViewHolder {
-        final TextView textView;
-
-        public TextItemViewHolder(TextView textView) {
-            this.textView = textView;
-        }
-
-        @Override
-        public View getView() {
-            return textView;
-        }
-    }
-
-    static class ListItemViewHolder implements IElementContentViewHolder {
-        final OnElementClickListener onElementClickListener;
-        final View itemElementsContainer;
-
-        final TextView itemElement0;
-        final TextView itemElement1;
-        final TextView itemElement2;
-        final TextView itemElement3;
-        final TextView itemElement4;
-        final TextView itemElement5;
-        final TextView itemElement6;
-        final TextView itemElement7;
-
-        final ImageView itemDeleteButton0;
-        final ImageView itemDeleteButton1;
-        final ImageView itemDeleteButton2;
-        final ImageView itemDeleteButton3;
-        final ImageView itemDeleteButton4;
-        final ImageView itemDeleteButton5;
-        final ImageView itemDeleteButton6;
-        final ImageView itemDeleteButton7;
-
-        public ListItemViewHolder(View view) {
-            onElementClickListener = new OnElementClickListener();
-            itemElementsContainer = view;
-
-            itemElement0 = (TextView) view.findViewById(R.id.element_item_0);
-            itemElement1 = (TextView) view.findViewById(R.id.element_item_1);
-            itemElement2 = (TextView) view.findViewById(R.id.element_item_2);
-            itemElement3 = (TextView) view.findViewById(R.id.element_item_3);
-            itemElement4 = (TextView) view.findViewById(R.id.element_item_4);
-            itemElement5 = (TextView) view.findViewById(R.id.element_item_5);
-            itemElement6 = (TextView) view.findViewById(R.id.element_item_6);
-            itemElement7 = (TextView) view.findViewById(R.id.element_item_7);
-
-            itemDeleteButton0 = (ImageView) view.findViewById(R.id.element_item_0_delete_button);
-            itemDeleteButton1 = (ImageView) view.findViewById(R.id.element_item_1_delete_button);
-            itemDeleteButton2 = (ImageView) view.findViewById(R.id.element_item_2_delete_button);
-            itemDeleteButton3 = (ImageView) view.findViewById(R.id.element_item_3_delete_button);
-            itemDeleteButton4 = (ImageView) view.findViewById(R.id.element_item_4_delete_button);
-            itemDeleteButton5 = (ImageView) view.findViewById(R.id.element_item_5_delete_button);
-            itemDeleteButton6 = (ImageView) view.findViewById(R.id.element_item_6_delete_button);
-            itemDeleteButton7 = (ImageView) view.findViewById(R.id.element_item_7_delete_button);
-
-            itemDeleteButton0.setOnClickListener(onElementClickListener);
-            itemDeleteButton1.setOnClickListener(onElementClickListener);
-            itemDeleteButton2.setOnClickListener(onElementClickListener);
-            itemDeleteButton3.setOnClickListener(onElementClickListener);
-            itemDeleteButton4.setOnClickListener(onElementClickListener);
-            itemDeleteButton5.setOnClickListener(onElementClickListener);
-            itemDeleteButton6.setOnClickListener(onElementClickListener);
-            itemDeleteButton7.setOnClickListener(onElementClickListener);
-        }
-
-        @Override
-        public View getView() {
-            return itemElementsContainer;
-        }
-    }
+    /////////////////////////////////////////////////////////////////////////
+    // Generic item view handling logic.
+    /////////////////////////////////////////////////////////////////////////
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {
         final View itemBody;
@@ -453,17 +206,478 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         }
     }
 
-    private static class MenuButtonHandler implements View.OnClickListener {
-        private static final int MENU_GROUP_ID = 9382352;
-        private static final int MENU_SHARE_ITEM_ID = 8936352;
-        private static final int MENU_DELETE_ITEM_ID = 149232;
-        private static final int MENU_SHARE_ITEM_ORDER = 100;
-        private static final int MENU_DELETE_ITEM_ORDER = 110;
+    static class OnElementInternalClickListener implements View.OnClickListener {
+        final OnItemClickListener mListener;
+        DashboardElement mElement;
 
-        private final Context mContext;
-        private final Access mDashboardAccess;
-        private final OnItemClickListener mListener;
-        private DashboardItem mDashboardItem;
+        OnElementInternalClickListener(OnItemClickListener listener) {
+            this.mListener = listener;
+        }
+
+        public void setDashboardElement(DashboardElement element) {
+            mElement = element;
+        }
+
+        @Override public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.dashboard_item_image: {
+                    mListener.onContentClick(mElement);
+                    break;
+                }
+                case R.id.dashboard_item_text: {
+                    mListener.onContentClick(mElement);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Inflating all necessary views for particular viewType.
+     * <p/>
+     * {@inheritDoc}
+     */
+    @Override
+    public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View rootView = getLayoutInflater().inflate(
+                R.layout.gridview_dashboard_item, parent, false);
+
+        LinearLayout itemBody = (LinearLayout) rootView
+                .findViewById(R.id.dashboard_item_body_container);
+        TextView itemName = (TextView) rootView
+                .findViewById(R.id.dashboard_item_name);
+        TextView lastUpdated = (TextView) rootView
+                .findViewById(R.id.dashboard_item_last_updated);
+        ImageView itemMenuButton = (ImageView) rootView
+                .findViewById(R.id.dashboard_item_menu);
+
+        /* Here we are creating view holder depending on view type*/
+        IElementContentViewHolder elementContentViewHolder
+                = onCreateElementContentViewHolder(itemBody, viewType);
+        /* attaching child view */
+        itemBody.addView(elementContentViewHolder.getView());
+
+        // Overflow menu button click listener
+        MenuButtonHandler menuButtonHandler = new MenuButtonHandler(
+                rootView.getContext(), mDashboardAccess, mClickListener);
+        itemMenuButton.setOnClickListener(menuButtonHandler);
+
+        return new ItemViewHolder(
+                rootView, itemBody, itemName, lastUpdated,
+                itemMenuButton, menuButtonHandler, elementContentViewHolder
+        );
+    }
+
+    @Override
+    public void onBindViewHolder(ItemViewHolder holder, int position) {
+        DashboardItem item = getItem(holder.getAdapterPosition());
+
+        holder.menuButtonHandler.setDashboardItem(item);
+        holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
+
+        /* setting name extracted from content to TextView at top of item layout. */
+        if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
+            holder.itemName.setText(item.getChart().getDisplayName());
+        } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
+            holder.itemName.setText(item.getMap().getDisplayName());
+        } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
+            holder.itemName.setText(item.getEventChart().getDisplayName());
+        } else if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
+            holder.itemName.setText(item.getReportTable().getDisplayName());
+        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
+            holder.itemName.setText(item.getEventReport().getDisplayName());
+        } else if (DashboardItemContent.TYPE_USERS.equals(item.getType())) {
+            holder.itemName.setText(mUsersName);
+        } else if (DashboardItemContent.TYPE_REPORTS.equals(item.getType())) {
+            holder.itemName.setText(mReportsName);
+        } else if (DashboardItemContent.TYPE_RESOURCES.equals(item.getType())) {
+            holder.itemName.setText(mResourcesName);
+        }
+
+        /* handling visibility of 3-dot menu button */
+        holder.itemMenuButton.setVisibility(
+                holder.menuButtonHandler.isMenuVisible() ? View.VISIBLE : View.GONE);
+        onBindElementContentViewHolder(holder.contentViewHolder,
+                holder.getItemViewType(), holder.getAdapterPosition());
+    }
+
+
+    /**
+     * Depending on viewType, this method will return correct IElementContentViewHolder.
+     *
+     * @param parent   Parent ViewGroup.
+     * @param viewType Type of view we want to get IElementContentViewHolder for.
+     * @return view holder.
+     */
+    private IElementContentViewHolder onCreateElementContentViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case ITEM_WITH_IMAGE_TYPE: {
+                ImageView imageView = (ImageView) getLayoutInflater()
+                        .inflate(R.layout.gridview_dashboard_item_imageview, parent, false);
+                return new ImageItemViewHolder(imageView, mClickListener);
+            }
+            case ITEM_WITH_TABLE_TYPE: {
+                TextView textView = (TextView) getLayoutInflater()
+                        .inflate(R.layout.gridview_dashboard_item_textview, parent, false);
+                return new TextItemViewHolder(textView, mClickListener);
+            }
+            case ITEM_WITH_LIST_TYPE: {
+                LinearLayout textViewContainer = (LinearLayout) getLayoutInflater()
+                        .inflate(R.layout.gridview_dashboard_item_list, parent, false);
+                return new ListItemViewHolder(textViewContainer, mClickListener);
+            }
+        }
+        return null;
+    }
+
+    /* handling data */
+    private void onBindElementContentViewHolder(IElementContentViewHolder holder, int viewType, int position) {
+        switch (viewType) {
+            case ITEM_WITH_IMAGE_TYPE: {
+                handleItemsWithImages((ImageItemViewHolder) holder, getItem(position));
+                break;
+            }
+            case ITEM_WITH_TABLE_TYPE: {
+                handleItemsWithTables((TextItemViewHolder) holder, getItem(position));
+                break;
+            }
+            case ITEM_WITH_LIST_TYPE: {
+                handleItemsWithLists((ListItemViewHolder) holder, getItem(position));
+                break;
+            }
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    // ITEM_WITH_IMAGE_TYPE view handling logic.
+    /////////////////////////////////////////////////////////////////////////
+
+    /* View holder for ImageView */
+    static class ImageItemViewHolder implements IElementContentViewHolder {
+        final OnElementInternalClickListener listener;
+        final ImageView imageView;
+
+        public ImageItemViewHolder(ImageView view, OnItemClickListener outerListener) {
+            imageView = view;
+
+            listener = new OnElementInternalClickListener(outerListener);
+            imageView.setOnClickListener(listener);
+        }
+
+        @Override
+        public View getView() {
+            return imageView;
+        }
+    }
+
+    /* builds the URL to image data and loads it by means of Picasso. */
+    private void handleItemsWithImages(ImageItemViewHolder holder, DashboardItem item) {
+        DashboardElement element = null;
+        String request = null;
+        if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
+            element = item.getChart();
+            request = buildImageUrl("charts", element.getUId());
+        } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
+            element = item.getMap();
+            request = buildImageUrl("maps", element.getUId());
+        } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
+            element = item.getEventChart();
+            request = buildImageUrl("eventCharts", element.getUId());
+        }
+
+        holder.listener.setDashboardElement(element);
+        mImageLoader.load(request)
+                .placeholder(R.mipmap.ic_stub_dashboard_item)
+                .into(holder.imageView);
+    }
+
+    private static String buildImageUrl(String resource, String id) {
+        return DhisManager.getInstance().getServerUrl().newBuilder()
+                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
+                .addQueryParameter("width", "480").addQueryParameter("height", "320")
+                .toString();
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////
+    // ITEM_WITH_TABLE_TYPE view handling logic.
+    /////////////////////////////////////////////////////////////////////////
+
+    static class TextItemViewHolder implements IElementContentViewHolder {
+        final OnElementInternalClickListener listener;
+        final TextView textView;
+
+        public TextItemViewHolder(TextView view, OnItemClickListener outerListener) {
+            textView = view;
+
+            listener = new OnElementInternalClickListener(outerListener);
+            textView.setOnClickListener(this.listener);
+        }
+
+        @Override
+        public View getView() {
+            return textView;
+        }
+    }
+
+    private void handleItemsWithTables(TextItemViewHolder holder, DashboardItem item) {
+        DashboardElement element = null;
+        if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
+            element = item.getReportTable();
+        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
+            element = item.getEventReport();
+        }
+
+        if (element != null) {
+            holder.listener.setDashboardElement(element);
+            holder.textView.setText(element.getDisplayName());
+        }
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////
+    // ITEM_WITH_LIST_TYPE view handling logic.
+    /////////////////////////////////////////////////////////////////////////
+
+    /* on content click listener (handles clicks both for items and delete buttons) */
+    static class OnListElementInternalClickListener implements View.OnClickListener {
+        private List<DashboardElement> mElements;
+        private OnItemClickListener mListener;
+
+        public OnListElementInternalClickListener(OnItemClickListener listener) {
+            mListener = listener;
+        }
+
+        public void setElements(List<DashboardElement> elements) {
+            mElements = elements;
+        }
+
+        @Override public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.element_item_0: {
+                    onContentClick(0);
+                    break;
+                }
+                case R.id.element_item_1: {
+                    onContentClick(1);
+                    break;
+                }
+                case R.id.element_item_2: {
+                    onContentClick(2);
+                    break;
+                }
+                case R.id.element_item_3: {
+                    onContentClick(3);
+                    break;
+                }
+                case R.id.element_item_4: {
+                    onContentClick(4);
+                    break;
+                }
+                case R.id.element_item_5: {
+                    onContentClick(5);
+                    break;
+                }
+                case R.id.element_item_6: {
+                    onContentClick(6);
+                    break;
+                }
+                case R.id.element_item_7: {
+                    onContentClick(7);
+                    break;
+                }
+                case R.id.element_item_0_delete_button: {
+                    onContentDeleteClick(0);
+                    break;
+                }
+                case R.id.element_item_1_delete_button: {
+                    onContentDeleteClick(1);
+                    break;
+                }
+                case R.id.element_item_2_delete_button: {
+                    onContentDeleteClick(2);
+                    break;
+                }
+                case R.id.element_item_3_delete_button: {
+                    onContentDeleteClick(3);
+                    break;
+                }
+                case R.id.element_item_4_delete_button: {
+                    onContentDeleteClick(4);
+                    break;
+                }
+                case R.id.element_item_5_delete_button: {
+                    onContentDeleteClick(5);
+                    break;
+                }
+                case R.id.element_item_6_delete_button: {
+                    onContentDeleteClick(6);
+                    break;
+                }
+                case R.id.element_item_7_delete_button: {
+                    onContentDeleteClick(7);
+                    break;
+                }
+            }
+        }
+
+        private void onContentDeleteClick(int position) {
+            if (mElements != null && mElements.size() > position) {
+                mListener.onContentDeleteClick(mElements.get(position));
+            }
+        }
+
+        private void onContentClick(int position) {
+            if (mElements != null && mElements.size() > position) {
+                mListener.onContentClick(mElements.get(position));
+            }
+        }
+    }
+
+    static class ListItemViewHolder implements IElementContentViewHolder {
+
+        /* action which will be applied to list of content in item */
+        static final ButterKnife.Setter<TextView, List<DashboardElement>> ELEMENT_ITEMS_SETTER
+                = new ButterKnife.Setter<TextView, List<DashboardElement>>() {
+            @Override
+            public void set(TextView textView, List<DashboardElement> elements, int index) {
+                DashboardElement element = getElement(elements, index);
+                textView.setVisibility(element == null ? View.INVISIBLE : View.VISIBLE);
+                textView.setText(element == null ? EMPTY_FIELD : element.getDisplayName());
+            }
+        };
+
+        static final ButterKnife.Setter<View, List<DashboardElement>> ELEMENT_ITEM_BUTTONS_SETTER
+                = new ButterKnife.Setter<View, List<DashboardElement>>() {
+            @Override public void set(View view, List<DashboardElement> elements, int index) {
+                DashboardElement element = getElement(elements, index);
+                view.setVisibility(element == null ? View.INVISIBLE : View.VISIBLE);
+            }
+        };
+
+        final OnListElementInternalClickListener onListElementInternalClickListener;
+        final View itemElementsContainer;
+
+        @InjectViews({
+                R.id.element_item_0,
+                R.id.element_item_1,
+                R.id.element_item_2,
+                R.id.element_item_3,
+                R.id.element_item_4,
+                R.id.element_item_5,
+                R.id.element_item_6,
+                R.id.element_item_7
+        }) List<TextView> elementItems;
+
+        @InjectViews({
+                R.id.element_item_0_delete_button,
+                R.id.element_item_1_delete_button,
+                R.id.element_item_2_delete_button,
+                R.id.element_item_3_delete_button,
+                R.id.element_item_4_delete_button,
+                R.id.element_item_5_delete_button,
+                R.id.element_item_6_delete_button,
+                R.id.element_item_7_delete_button
+        }) List<View> elementItemDeleteButtons;
+
+        static DashboardElement getElement(List<DashboardElement> elements, int position) {
+            if (elements != null && elements.size() > position) {
+                return elements.get(position);
+            }
+
+            return null;
+        }
+
+        public ListItemViewHolder(View view, OnItemClickListener listener) {
+            itemElementsContainer = view;
+            onListElementInternalClickListener = new OnListElementInternalClickListener(listener);
+
+            ButterKnife.inject(this, view);
+            ButterKnife.apply(elementItems, new ButterKnife.Action<View>() {
+                @Override public void apply(View view, int index) {
+                    view.setOnClickListener(onListElementInternalClickListener);
+                }
+            });
+            ButterKnife.apply(elementItemDeleteButtons, new ButterKnife.Action<View>() {
+                @Override public void apply(View view, int index) {
+                    view.setOnClickListener(onListElementInternalClickListener);
+                }
+            });
+        }
+
+        @Override
+        public View getView() {
+            return itemElementsContainer;
+        }
+    }
+
+    private void handleItemsWithLists(ListItemViewHolder holder, DashboardItem item) {
+        List<DashboardElement> elementList = null;
+        if (DashboardItemContent.TYPE_USERS.equals(item.getType())) {
+            elementList = item.getUsers();
+        } else if (DashboardItemContent.TYPE_REPORTS.equals(item.getType())) {
+            elementList = item.getReports();
+        } else if (DashboardItemContent.TYPE_RESOURCES.equals(item.getType())) {
+            elementList = item.getResources();
+        }
+
+        /*
+        * each time RecyclerView binds data to a row, we need to handle recycling properly.
+        * This also applies to view listeners, which will contain reference to data from previous row
+        * (if not handled properly).That's why we need to set element list each time
+        * handleItemsWithLists() is called.
+        */
+        holder.onListElementInternalClickListener.setElements(elementList);
+
+        /* Handling embedded list items. */
+        ButterKnife.apply(holder.elementItems,
+                ListItemViewHolder.ELEMENT_ITEMS_SETTER, elementList);
+        ButterKnife.apply(holder.elementItemDeleteButtons,
+                ListItemViewHolder.ELEMENT_ITEM_BUTTONS_SETTER, elementList);
+    }
+
+    /* convenience method for removing dashboard items with animations */
+    public void removeItem(DashboardItem item) {
+        if (getData() != null) {
+            int truePosition = getData().indexOf(item);
+            if (!(truePosition < 0)) {
+                getData().remove(truePosition);
+                notifyItemRemoved(truePosition);
+            }
+        }
+    }
+
+    interface IElementContentViewHolder {
+        View getView();
+    }
+
+    public interface OnItemClickListener {
+        void onContentClick(DashboardElement element);
+
+        void onContentDeleteClick(DashboardElement element);
+
+        void onItemDeleteClick(DashboardItem item);
+
+        void onItemShareClick(DashboardItem item);
+    }
+
+    static class MenuButtonHandler implements View.OnClickListener {
+        /* menu item ids */
+        static final int MENU_GROUP_ID = 9382352;
+        static final int MENU_SHARE_ITEM_ID = 8936352;
+        static final int MENU_DELETE_ITEM_ID = 149232;
+        static final int MENU_SHARE_ITEM_ORDER = 100;
+        static final int MENU_DELETE_ITEM_ORDER = 110;
+
+        final Context mContext;
+
+        /* access which we will use in order to determine
+        if user has access to particular actions */
+        final Access mDashboardAccess;
+        final OnItemClickListener mListener;
+
+        /* dashboard item will change on each call to onBindViewHolder() in recycler view */
+        DashboardItem mDashboardItem;
 
         public MenuButtonHandler(Context context, Access dashboardAccess,
                                  OnItemClickListener listener) {
@@ -476,11 +690,14 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             mDashboardItem = dashboardItem;
         }
 
+        /* helper method for client code, which allows to
+        determine if we need to show 3-dot button*/
         public boolean isMenuVisible() {
             return isItemShareable() ||
                     (isDashboardManageable() && isItemDeletable());
         }
 
+        /* helper method which returns true if we can show share menu item */
         private boolean isItemShareable() {
             return mDashboardItem != null && (
                     DashboardItemContent.TYPE_CHART.equals(mDashboardItem.getType()) ||
@@ -497,6 +714,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             return mDashboardItem.getAccess().isDelete();
         }
 
+        /* here we will build popup menu and show it. */
         @Override
         public void onClick(View view) {
             PopupMenu popupMenu = new PopupMenu(mContext, view);
@@ -522,9 +740,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
                     }
 
                     if (menuItem.getItemId() == MENU_SHARE_ITEM_ID) {
-                        mListener.onItemShareInterpretation(mDashboardItem);
+                        mListener.onItemShareClick(mDashboardItem);
                     } else if (menuItem.getItemId() == MENU_DELETE_ITEM_ID) {
-                        mListener.onItemDelete(mDashboardItem);
+                        mListener.onItemDeleteClick(mDashboardItem);
                     }
 
                     return true;
@@ -532,79 +750,6 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             });
 
             popupMenu.show();
-        }
-    }
-
-    private static class OnElementClickListener implements View.OnClickListener {
-        private List<DashboardElement> mElements;
-
-        public void setElements(List<DashboardElement> elements) {
-            mElements = elements;
-        }
-
-        @Override public void onClick(View view) {
-            switch (view.getId()) {
-                case R.id.element_item_0_delete_button: {
-                    removeElement(0);
-                    break;
-                }
-                case R.id.element_item_1_delete_button: {
-                    removeElement(1);
-                    break;
-                }
-                case R.id.element_item_2_delete_button: {
-                    removeElement(2);
-                    break;
-                }
-                case R.id.element_item_3_delete_button: {
-                    removeElement(3);
-                    break;
-                }
-                case R.id.element_item_4_delete_button: {
-                    removeElement(4);
-                    break;
-                }
-                case R.id.element_item_5_delete_button: {
-                    removeElement(5);
-                    break;
-                }
-                case R.id.element_item_6_delete_button: {
-                    removeElement(6);
-                    break;
-                }
-                case R.id.element_item_7_delete_button: {
-                    removeElement(7);
-                    break;
-                }
-            }
-        }
-
-        void removeElement(int position) {
-            if (mElements != null && mElements.size() > position) {
-                DashboardElement element = mElements.get(position);
-
-                if (element != null) {
-                    element.deleteDashboardElement();
-                }
-            }
-        }
-    }
-
-    private static class OnItemBodyClickListener implements View.OnClickListener {
-        private final OnItemClickListener mListener;
-        private DashboardItem mDashboardItem;
-
-        public OnItemBodyClickListener(OnItemClickListener listener) {
-            mListener = listener;
-        }
-
-        public void setDashboardItem(DashboardItem dashboardItem) {
-            mDashboardItem = dashboardItem;
-        }
-
-        @Override
-        public void onClick(View view) {
-            mListener.onItemClick(mDashboardItem);
         }
     }
 }
