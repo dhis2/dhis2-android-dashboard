@@ -29,6 +29,7 @@
 package org.dhis2.android.dashboard.ui.fragments.dashboard;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -54,6 +55,7 @@ import org.dhis2.android.dashboard.api.models.DashboardItemContent;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
+import org.dhis2.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
@@ -143,9 +145,7 @@ public class DashboardFragment extends BaseFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (isAdded()) {
-            getLoaderManager().initLoader(LOADER_ID, getArguments(), this);
-        }
+        getLoaderManager().initLoader(LOADER_ID, getArguments(), this);
     }
 
     @Override
@@ -183,18 +183,23 @@ public class DashboardFragment extends BaseFragment
     public void onContentClick(DashboardElement element) {
         Toast.makeText(getActivity(), "ON CONTENT CLICK: " +
                 element.getName(), Toast.LENGTH_SHORT).show();
+        Intent intent = DashboardElementDetailActivity
+                .newIntent(getActivity(), element.getId());
+        startActivity(intent);
     }
 
     @Override
     public void onContentDeleteClick(DashboardElement element) {
-        Toast.makeText(getActivity(), "ON CONTENT DELETE CLICK: " +
-                element.getName(), Toast.LENGTH_SHORT).show();
+        if (element != null) {
+            element.deleteDashboardElement();
+        }
     }
 
     @Override
     public void onItemDeleteClick(DashboardItem item) {
-        Toast.makeText(getActivity(), "ON ITEM DELETE CLICK: " +
-                item.getId(), Toast.LENGTH_SHORT).show();
+        if (item != null) {
+            item.deleteDashboardItem();
+        }
     }
 
     @Override

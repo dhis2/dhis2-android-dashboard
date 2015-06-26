@@ -65,5 +65,6 @@
     <string name="users">Users</string>
     <string name="reports">Reports</string>
     <string name="resources">Resources</string>
+    <string name="title_activity_dashboard_item_detail">DashboardItemDetailActivity</string>
     <!-- END DashboardFragment -->
 </resources>

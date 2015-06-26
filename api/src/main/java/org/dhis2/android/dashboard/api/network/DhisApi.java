@@ -28,17 +28,21 @@
 
 package org.dhis2.android.dashboard.api.network;
 
-import org.dhis2.android.dashboard.api.models.DashboardItemContent;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent;
 import org.dhis2.android.dashboard.api.models.SystemInfo;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 
 import java.util.List;
 import java.util.Map;
 
+import retrofit.client.Response;
 import retrofit.http.GET;
+import retrofit.http.Headers;
+import retrofit.http.Path;
 import retrofit.http.QueryMap;
+import retrofit.mime.TypedString;
 
 
 public interface DhisApi {
@@ -47,11 +51,9 @@ public interface DhisApi {
     // Methods for getting user information
     /////////////////////////////////////////////////////////////////////////
 
-    @GET("/system/info/")
-    SystemInfo getSystemInfo();
+    @GET("/system/info/") SystemInfo getSystemInfo();
 
-    @GET("/me/")
-    UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
+    @GET("/me/") UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
 
 
     /////////////////////////////////////////////////////////////////////////
@@ -80,6 +82,9 @@ public interface DhisApi {
 
     @GET("/reportTables?paging=false")
     Map<String, List<DashboardItemContent>> getReportTables(@QueryMap Map<String, String> queryParams);
+
+    @Headers("Accept: application/text")
+    @GET("/reportTables/{id}/data.html") Response getReportTableData(@Path("id") String id);
 
     @GET("/eventReports?paging=false")
     Map<String, List<DashboardItemContent>> getEventReports(@QueryMap Map<String, String> queryParams);
