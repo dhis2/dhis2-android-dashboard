@@ -32,7 +32,7 @@ import android.content.Context;
 
 import com.squareup.okhttp.HttpUrl;
 
-import org.dhis2.android.dashboard.api.controllers.DashboardSyncController;
+import org.dhis2.android.dashboard.api.controllers.DashboardController;
 import org.dhis2.android.dashboard.api.controllers.IController;
 import org.dhis2.android.dashboard.api.controllers.InvalidateUserController;
 import org.dhis2.android.dashboard.api.controllers.LogInUserController;
@@ -135,7 +135,7 @@ public class DhisManager {
     }
 
     public void syncDashboards() throws APIException {
-        runController(new DashboardSyncController(this));
+        runController(new DashboardController(this));
     }
 
     public HttpUrl getServerUrl() {

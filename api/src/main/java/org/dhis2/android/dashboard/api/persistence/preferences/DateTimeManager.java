@@ -18,6 +18,10 @@ public final class DateTimeManager {
     private static DateTimeManager mPreferences;
     private final SharedPreferences mPrefs;
 
+    public enum ResourceType {
+        CONTENT, DASHBOARDS, INTERPRETATIONS
+    }
+
     public static void init(Context context) {
         mPreferences = new DateTimeManager(context);
     }
@@ -51,7 +55,8 @@ public final class DateTimeManager {
         return new DateTime();
     }
 
-    public void setLastUpdated(DateTime dateTime) {
+    public void setLastUpdated(ResourceType type, DateTime dateTime) {
+        isNull(type, "ResourceType object must not be null");
         isNull(dateTime, "DateTime object must not be null");
 
         if (!dateTime.getZone().toTimeZone().hasSameRules(getServerTimeZone())) {
@@ -59,23 +64,23 @@ public final class DateTimeManager {
                     "different from the server's one");
         }
 
-        putString(METADATA_UPDATE_DATETIME, dateTime.toString());
+        putString(METADATA_UPDATE_DATETIME + type.toString(), dateTime.toString());
     }
 
-    public DateTime getLastUpdated() {
-        String dateTimeString = getString(METADATA_UPDATE_DATETIME);
+    public DateTime getLastUpdated(ResourceType type) {
+        String dateTimeString = getString(METADATA_UPDATE_DATETIME + type.toString());
         if (dateTimeString != null) {
             return DateTime.parse(dateTimeString);
         }
         return null;
     }
 
-    public void deleteLastUpdated() {
-        deleteString(METADATA_UPDATE_DATETIME);
+    public void deleteLastUpdated(ResourceType type) {
+        deleteString(METADATA_UPDATE_DATETIME + type.toString());
     }
 
-    public boolean isLastUpdatedSet() {
-        return getLastUpdated() != null;
+    public boolean isLastUpdatedSet(ResourceType type) {
+        return getLastUpdated(type) != null;
     }
 
     public void setServerTimeZone(TimeZone timeZone) {
@@ -98,6 +103,7 @@ public final class DateTimeManager {
     public boolean isServerTimeZoneSet() {
         return getServerTimeZone() != null;
     }
+
 
     private void putString(String key, String value) {
         mPrefs.edit().putString(key, value).commit();
