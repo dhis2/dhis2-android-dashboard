@@ -27,6 +27,7 @@
 package org.dhis2.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
@@ -35,6 +36,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import org.dhis2.android.dashboard.api.utils.StringUtils;
 import org.joda.time.DateTime;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseIdentifiableObject extends BaseModel implements IdentifiableObject {
 
     @JsonIgnore

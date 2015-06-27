@@ -38,11 +38,15 @@ import java.util.List;
 import java.util.Map;
 
 import retrofit.client.Response;
+import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Headers;
+import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
+import retrofit.http.Query;
 import retrofit.http.QueryMap;
-import retrofit.mime.TypedString;
 
 
 public interface DhisApi {
@@ -51,9 +55,11 @@ public interface DhisApi {
     // Methods for getting user information
     /////////////////////////////////////////////////////////////////////////
 
-    @GET("/system/info/") SystemInfo getSystemInfo();
+    @GET("/system/info/")
+    SystemInfo getSystemInfo();
 
-    @GET("/me/") UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
+    @GET("/me/")
+    UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
 
 
     /////////////////////////////////////////////////////////////////////////
@@ -63,8 +69,31 @@ public interface DhisApi {
     @GET("/dashboards?paging=false")
     Map<String, List<Dashboard>> getDashboards(@QueryMap Map<String, String> queryMap);
 
+    @POST("/dashboards/")
+    Response postDashboard(@Body Dashboard dashboard);
+
+    @DELETE("/dashboards/{uid}")
+    Response deleteDashboard(@Path("uid") String dashboardUId);
+
+    @PUT("/dashboards/{uid}")
+    Response putDashboard(@Body Dashboard dashboard);
+
     @GET("/dashboardItems?paging=false")
     Map<String, List<DashboardItem>> getDashboardItems(@QueryMap Map<String, String> queryMap);
+
+    @POST("/dashboards/{dashboardUId}/items/content")
+    Response postDashboardItem(@Path("dashboardUId") String dashboardUId,
+                               @Query("elementType") String elementType,
+                               @Query("elementUId") String elementUId);
+
+    @DELETE("/dashboards/{dashboardUId}/items/{itemUId}")
+    Response deleteDashboardItem(@Path("dashboardUId") String dashboardUId,
+                                 @Path("itemUId") String itemUId);
+
+    @DELETE("/{dashboardUid}/items/{itemUid}/content/{contentUid}")
+    Response deleteDashboardItemContent(@Path("dashboardUid") String dashboardUid,
+                                        @Path("itemUid") String itemUid,
+                                        @Path("contentUid") String contentUid);
 
 
     /////////////////////////////////////////////////////////////////////////
@@ -84,7 +113,8 @@ public interface DhisApi {
     Map<String, List<DashboardItemContent>> getReportTables(@QueryMap Map<String, String> queryParams);
 
     @Headers("Accept: application/text")
-    @GET("/reportTables/{id}/data.html") Response getReportTableData(@Path("id") String id);
+    @GET("/reportTables/{id}/data.html")
+    Response getReportTableData(@Path("id") String id);
 
     @GET("/eventReports?paging=false")
     Map<String, List<DashboardItemContent>> getEventReports(@QueryMap Map<String, String> queryParams);

@@ -33,9 +33,9 @@ import com.squareup.okhttp.HttpUrl;
 import org.dhis2.android.dashboard.api.job.Job;
 import org.dhis2.android.dashboard.api.job.JobExecutor;
 import org.dhis2.android.dashboard.api.job.NetworkJob;
-import org.dhis2.android.dashboard.api.network.APIException;
-import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.meta.Credentials;
+import org.dhis2.android.dashboard.api.network.APIException;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
@@ -100,13 +100,22 @@ public final class DhisService {
         });
     }
 
-    public void syncDashboards() {
-        System.out.println("*** syncDashboards() ***");
+    public void syncDashboardContent() {
         JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS) {
 
             @Override
             public Object execute() throws APIException {
-                System.out.println("Sync dashboards job is started");
+                mDhisManager.syncDashboardContent();
+                return new Object();
+            }
+        });
+    }
+
+    public void syncDashboards() {
+        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS) {
+
+            @Override
+            public Object execute() throws APIException {
                 mDhisManager.syncDashboards();
                 return new Object();
             }

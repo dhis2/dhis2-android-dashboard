@@ -28,6 +28,7 @@
 
 package org.dhis2.android.dashboard.api.utils;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
@@ -42,6 +43,13 @@ public final class ObjectMapperProvider {
         if (mMapper == null) {
             mMapper = new ObjectMapper();
             mMapper.registerModule(new JodaModule());
+            mMapper.disable(
+                    MapperFeature.AUTO_DETECT_CREATORS,
+                    MapperFeature.AUTO_DETECT_FIELDS,
+                    MapperFeature.AUTO_DETECT_GETTERS,
+                    MapperFeature.AUTO_DETECT_IS_GETTERS,
+                    MapperFeature.AUTO_DETECT_SETTERS
+            );
         }
 
         return mMapper;
