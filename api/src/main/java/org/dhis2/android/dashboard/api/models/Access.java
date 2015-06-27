@@ -113,6 +113,21 @@ public final class Access {
         this.write = write;
     }
 
+    /**
+     * Factory method which creates Access object with all rights set to true.
+     * @return new Access object.
+     */
+    static Access provideDefaultAccess() {
+        Access access = new Access();
+        access.setManage(true);
+        access.setExternalize(true);
+        access.setWrite(true);
+        access.setUpdate(true);
+        access.setRead(true);
+        access.setDelete(true);
+        return access;
+    }
+
     @JsonIgnore
     @Override
     public String toString() {

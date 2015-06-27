@@ -34,11 +34,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/fragment_bar"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+
+        <include layout="@layout/fragment_bar"/>
+        <include layout="@layout/fragment_bar_mode_editing"/>
+
+    </FrameLayout>
 
     <RelativeLayout
-        android:layout_width="290dp"
-        android:layout_height="220dp">
+        android:layout_width="310dp"
+        android:layout_height="220dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"

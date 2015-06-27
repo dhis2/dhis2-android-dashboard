@@ -85,7 +85,7 @@ public final class Dashboard extends BaseIdentifiableObject {
         dashboard.setDisplayName(name);
         dashboard.setCreated(currentDateTime);
         dashboard.setLastUpdated(currentDateTime);
-        dashboard.setAccess(provideDefaultAccess());
+        dashboard.setAccess(Access.provideDefaultAccess());
 
         return dashboard;
     }
@@ -234,17 +234,6 @@ public final class Dashboard extends BaseIdentifiableObject {
         }
 
         throw new IllegalArgumentException("Unsupported DashboardItemContent type");
-    }
-
-    static Access provideDefaultAccess() {
-        Access access = new Access();
-        access.setManage(true);
-        access.setExternalize(true);
-        access.setWrite(true);
-        access.setUpdate(true);
-        access.setRead(true);
-        access.setDelete(true);
-        return access;
     }
 
     /////////////////////////////////////////////////////////////////////////

@@ -34,6 +34,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -43,14 +44,28 @@ import org.dhis2.android.dashboard.api.models.Dashboard;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import butterknife.OnFocusChange;
 
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
+
+/**
+ * Handles editing (changing name) and removal of given dashboard.
+ */
 public final class DashboardManageFragment extends DialogFragment {
+    @InjectView(R.id.fragment_bar) View mFragmentBar;
+    @InjectView(R.id.fragment_bar_mode_editing) View mFragmentBarEditingMode;
+
     @InjectView(R.id.dialog_label) TextView mDialogLabel;
+    @InjectView(R.id.action_name) TextView mActionName;
+
     @InjectView(R.id.dashboard_name) EditText mDashboardName;
+    @InjectView(R.id.delete_dashboard_button) Button mDeleteButton;
 
     Dashboard mDashboard;
 
     public static DashboardManageFragment newInstance(Dashboard dashboard) {
+        isNull(dashboard, "Dashboard object must not be null");
+
         DashboardManageFragment fragment = new DashboardManageFragment();
         fragment.mDashboard = dashboard;
         return fragment;
@@ -68,27 +83,57 @@ public final class DashboardManageFragment extends DialogFragment {
         return inflater.inflate(R.layout.fragment_dashboard_manage, container, false);
     }
 
-    @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.inject(this, view);
 
         mDialogLabel.setText(getString(R.string.manage_dashboard));
+        mActionName.setText(getString(R.string.edit_name));
 
-        if (mDashboard != null) {
-            mDashboardName.setText(mDashboard.getDisplayName());
+        mDashboardName.setText(mDashboard.getDisplayName());
+        mDeleteButton.setEnabled(mDashboard.getAccess().isDelete());
+
+        setFragmentBarActionMode(false);
+    }
+
+
+
+    @OnClick({R.id.close_dialog_button, R.id.cancel_action,
+            R.id.accept_action, R.id.delete_dashboard_button,})
+    @SuppressWarnings("unused")
+    public void onButtonClick(View view) {
+        switch (view.getId()) {
+            case R.id.cancel_action: {
+                mDashboardName.setText(
+                        mDashboard.getDisplayName());
+                mDashboardName.clearFocus();
+                break;
+            }
+            case R.id.accept_action: {
+                mDashboard.updateDashboard(
+                        mDashboardName.getText().toString());
+                mDashboardName.clearFocus();
+                break;
+            }
+            case R.id.delete_dashboard_button: {
+                mDashboard.deleteDashboard();
+            }
+            case R.id.close_dialog_button: {
+                dismiss();
+            }
         }
     }
 
-    @OnClick({R.id.close_dialog_button, R.id.delete_dashboard_button})
-    public void onButtonClick(View view) {
+    @OnFocusChange(R.id.dashboard_name)
+    @SuppressWarnings("unused")
+    public void onFocusChanged(boolean focused) {
+        setFragmentBarActionMode(focused);
+    }
 
-        if (view.getId() == R.id.delete_dashboard_button) {
-            mDashboard.deleteDashboard();
-        }
-
-        /* if (mDashboard != null) {
-            mDashboard.updateDashboard(mDashboardName.getText().toString());
-        } */
-
-        dismiss();
+    /* set fragment bar in editing mode, by hiding standard
+    layout and showing layout with actions*/
+    void setFragmentBarActionMode(boolean enabled) {
+        mFragmentBarEditingMode.setVisibility(enabled ? View.VISIBLE : View.GONE);
+        mFragmentBar.setVisibility(enabled ? View.GONE : View.VISIBLE);
     }
 }

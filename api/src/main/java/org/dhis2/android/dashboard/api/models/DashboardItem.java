@@ -132,7 +132,7 @@ public final class DashboardItem extends BaseIdentifiableObject {
         item.setLastUpdated(currentDate);
         item.setState(State.TO_POST);
         item.setDashboard(dashboard);
-        item.setAccess(Dashboard.provideDefaultAccess());
+        item.setAccess(Access.provideDefaultAccess());
         item.setType(content.getType());
 
         return item;

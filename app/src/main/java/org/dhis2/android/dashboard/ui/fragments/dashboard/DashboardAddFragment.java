@@ -44,6 +44,9 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
+/**
+ * Fragment responsible for creation of new dashboards.
+ */
 public final class DashboardAddFragment extends DialogFragment {
     @InjectView(R.id.dialog_label) TextView mDialogLabel;
     @InjectView(R.id.dashboard_name) EditText mDashboardName;
@@ -66,9 +69,12 @@ public final class DashboardAddFragment extends DialogFragment {
     }
 
     @OnClick({R.id.close_dialog_button, R.id.cancel_dashboard_add, R.id.save_dashboard})
+    @SuppressWarnings("unused")
     public void onButtonClicked(View view) {
         if (view.getId() == R.id.save_dashboard) {
-            Dashboard.createDashboard(mDashboardName.getText().toString());
+            Dashboard newDashboard = Dashboard
+                    .createDashboard(mDashboardName.getText().toString());
+            newDashboard.save();
         }
         dismiss();
     }

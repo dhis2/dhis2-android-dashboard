@@ -28,7 +28,6 @@
 
 package org.dhis2.android.dashboard.ui.fragments.dashboard;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -53,7 +52,6 @@ import org.dhis2.android.dashboard.api.models.DashboardItemContent$Table;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
-import org.dhis2.android.dashboard.ui.activities.INavigationCallback;
 import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardItemAddFragment.OnOptionSelectedListener;
@@ -80,26 +78,6 @@ public class DashboardViewPagerFragment extends BaseFragment
     Toolbar mToolbar;
 
     DashboardAdapter mDashboardAdapter;
-    INavigationCallback mNavCallback;
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        if (activity instanceof INavigationCallback) {
-            mNavCallback = (INavigationCallback) activity;
-        } else {
-            throw new UnsupportedOperationException("Parent activity must " +
-                    "implement INavigationCallback");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-        mNavCallback = null;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -154,7 +132,7 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     @Override
     public void onClick(View view) {
-        mNavCallback.toggleNavigationDrawer();
+        toggleNavigationDrawer();
     }
 
     @Override

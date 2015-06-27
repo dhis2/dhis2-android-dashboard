@@ -28,13 +28,32 @@
 
 package org.dhis2.android.dashboard.ui.fragments;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 
 import org.dhis2.android.dashboard.api.DhisApplication;
 import org.dhis2.android.dashboard.api.DhisService;
 import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+import org.dhis2.android.dashboard.ui.activities.INavigationCallback;
 
 public class BaseFragment extends Fragment {
+    INavigationCallback mNavCallback;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (activity instanceof INavigationCallback) {
+            mNavCallback = (INavigationCallback) activity;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        mNavCallback = null;
+    }
 
     @Override
     public void onPause() {
@@ -53,6 +72,15 @@ public class BaseFragment extends Fragment {
             return ((DhisApplication) getActivity().getApplication()).getDhisService();
         } else {
             throw new IllegalArgumentException("Fragment is not attached to Activity");
+        }
+    }
+
+    public void toggleNavigationDrawer() {
+        if (mNavCallback != null) {
+            mNavCallback.toggleNavigationDrawer();
+        } else {
+            throw new UnsupportedOperationException("The fragment must be attached to Activity " +
+                    "which implements INavigationCallback interface");
         }
     }
 }

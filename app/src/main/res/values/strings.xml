@@ -49,13 +49,14 @@
     <string name="add_dashboard_item">Add dashboard item</string>
     <string name="dashboard_name">Dashboard name</string>
     <string name="manage_dashboard">Manage dashboard</string>
+    <string name="edit_name">Edit name</string>
+    <string name="share_interpretation">Share interpretation</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="manage">Manage</string>
     <string name="search">Search</string>
     <string name="refresh">Refresh</string>
     <string name="delete">Delete</string>
-    <string name="share_interpretation">Share interpretation</string>
 
     <string name="charts">Charts</string>
     <string name="event_charts">Event charts</string>
