@@ -97,7 +97,6 @@ public final class DashboardManageFragment extends DialogFragment {
     }
 
 
-
     @OnClick({R.id.close_dialog_button, R.id.cancel_action,
             R.id.accept_action, R.id.delete_dashboard_button,})
     @SuppressWarnings("unused")

@@ -46,6 +46,7 @@
     <color name="button_re_log_in_state_unpressed">#FF1F70C3</color>
     <color name="button_re_log_in_state_pressed">#FF1D5288</color>
 
+    <color name="button_log_out_state_enabled_false">#EF9A9A</color>
     <color name="button_log_out_state_unpressed">#F44336</color>
     <color name="button_log_out_state_pressed">#D32F2F</color>
 
