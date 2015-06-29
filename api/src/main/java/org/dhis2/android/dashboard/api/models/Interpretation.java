@@ -28,11 +28,45 @@
 
 package org.dhis2.android.dashboard.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.Table;
 
+import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
 
 @Table(databaseName = DbDhis.NAME)
 public final class Interpretation extends BaseIdentifiableObject {
 
+    public static final String TYPE_CHART = "chart";
+    public static final String TYPE_MAP = "map";
+    public static final String TYPE_REPORT_TABLE = "reportTable";
+    public static final String TYPE_DATASET_REPORT = "dataSetReport";
+
+    @JsonProperty("text")
+    @Column(name = "text")
+    String text;
+
+    @JsonIgnore
+    @Column(name = "state")
+    @NotNull
+    State state;
+
+    @JsonProperty("chart")
+    DashboardElement chart;
+
+    @JsonProperty("map")
+    DashboardElement map;
+
+    @JsonProperty("reportTable")
+    DashboardElement reportTable;
+
+    @JsonProperty("user")
+    DashboardElement user;
+
+    public Interpretation() {
+        state = State.SYNCED;
+    }
 }

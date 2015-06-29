@@ -31,6 +31,7 @@ package org.dhis2.android.dashboard.api.network;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent;
+import org.dhis2.android.dashboard.api.models.Interpretation;
 import org.dhis2.android.dashboard.api.models.SystemInfo;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 
@@ -55,9 +56,11 @@ public interface DhisApi {
     // Methods for getting user information
     /////////////////////////////////////////////////////////////////////////
 
-    @GET("/system/info/") SystemInfo getSystemInfo();
+    @GET("/system/info/")
+    SystemInfo getSystemInfo();
 
-    @GET("/me/") UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
+    @GET("/me/")
+    UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
 
 
     /////////////////////////////////////////////////////////////////////////
@@ -67,9 +70,11 @@ public interface DhisApi {
     @GET("/dashboards?paging=false")
     Map<String, List<Dashboard>> getDashboards(@QueryMap Map<String, String> queryMap);
 
-    @POST("/dashboards/") Response postDashboard(@Body Dashboard dashboard);
+    @POST("/dashboards/")
+    Response postDashboard(@Body Dashboard dashboard);
 
-    @DELETE("/dashboards/{uid}") Response deleteDashboard(@Path("uid") String dashboardUId);
+    @DELETE("/dashboards/{uid}")
+    Response deleteDashboard(@Path("uid") String dashboardUId);
 
     @PUT("/dashboards/{uid}")
     Response putDashboard(@Path("uid") String uid, @Body Dashboard dashboard);
@@ -110,7 +115,8 @@ public interface DhisApi {
     Map<String, List<DashboardItemContent>> getReportTables(@QueryMap Map<String, String> queryParams);
 
     @Headers("Accept: application/text")
-    @GET("/reportTables/{id}/data.html") Response getReportTableData(@Path("id") String id);
+    @GET("/reportTables/{id}/data.html")
+    Response getReportTableData(@Path("id") String id);
 
     @GET("/eventReports?paging=false")
     Map<String, List<DashboardItemContent>> getEventReports(@QueryMap Map<String, String> queryParams);
@@ -123,4 +129,12 @@ public interface DhisApi {
 
     @GET("/documents?paging=false")
     Map<String, List<DashboardItemContent>> getResources(@QueryMap Map<String, String> queryMap);
+
+
+    /////////////////////////////////////////////////////////////////////////
+    // Methods for working with Interpretations
+    /////////////////////////////////////////////////////////////////////////
+
+    @GET("/interpretation/")
+    Map<String, List<Interpretation>> getInterpretations(@QueryMap Map<String, String> queryMap);
 }
