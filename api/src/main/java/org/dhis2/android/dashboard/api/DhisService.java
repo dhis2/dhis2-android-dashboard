@@ -46,6 +46,7 @@ public final class DhisService {
 
     public static final int SYNC_META_DATA = 4;
     public static final int SYNC_DASHBOARDS = 5;
+    public static final int SYNC_DASHBOARD_CONTENT = 6;
 
     private DhisManager mDhisManager;
 
@@ -101,7 +102,7 @@ public final class DhisService {
     }
 
     public void syncDashboardContent() {
-        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS) {
+        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARD_CONTENT) {
 
             @Override
             public Object execute() throws APIException {

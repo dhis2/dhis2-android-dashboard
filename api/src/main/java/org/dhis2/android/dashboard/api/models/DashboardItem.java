@@ -124,12 +124,12 @@ public final class DashboardItem extends BaseIdentifiableObject {
     @JsonIgnore
     public static DashboardItem createDashboardItem(Dashboard dashboard,
                                                     DashboardItemContent content) {
-        DateTime currentDate = DateTimeManager.getInstance()
-                .getCurrentDateTimeInServerTimeZone();
+        DateTime lastUpdatedDateTime = DateTimeManager.getInstance()
+                .getLastUpdated(DateTimeManager.ResourceType.DASHBOARDS);
 
         DashboardItem item = new DashboardItem();
-        item.setCreated(currentDate);
-        item.setLastUpdated(currentDate);
+        item.setCreated(lastUpdatedDateTime);
+        item.setLastUpdated(lastUpdatedDateTime);
         item.setState(State.TO_POST);
         item.setDashboard(dashboard);
         item.setAccess(Access.provideDefaultAccess());

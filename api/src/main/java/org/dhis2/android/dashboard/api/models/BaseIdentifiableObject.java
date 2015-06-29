@@ -38,11 +38,13 @@ import org.joda.time.DateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseIdentifiableObject extends BaseModel implements IdentifiableObject {
+    /* if object was not persisted to database before, this ID will be assigned to object  */
+    private static final int IRREGULAR_DB_ID = -1;
 
     @JsonIgnore
     @Column(name = "id")
     @PrimaryKey(autoincrement = true)
-    long id;
+    long id = IRREGULAR_DB_ID;
 
     @JsonProperty("id")
     @Column(name = "uId")

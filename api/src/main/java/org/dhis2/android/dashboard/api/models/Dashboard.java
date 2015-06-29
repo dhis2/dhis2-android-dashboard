@@ -78,15 +78,15 @@ public final class Dashboard extends BaseIdentifiableObject {
      */
     @JsonIgnore
     public static Dashboard createDashboard(String name) {
-        DateTime currentDateTime = DateTimeManager.getInstance()
-                .getCurrentDateTimeInServerTimeZone();
+        DateTime lastUpdatedDateTime = DateTimeManager.getInstance()
+                .getLastUpdated(DateTimeManager.ResourceType.DASHBOARDS);
 
         Dashboard dashboard = new Dashboard();
         dashboard.setState(State.TO_POST);
         dashboard.setName(name);
         dashboard.setDisplayName(name);
-        dashboard.setCreated(currentDateTime);
-        dashboard.setLastUpdated(currentDateTime);
+        dashboard.setCreated(lastUpdatedDateTime);
+        dashboard.setLastUpdated(lastUpdatedDateTime);
         dashboard.setAccess(Access.provideDefaultAccess());
 
         return dashboard;

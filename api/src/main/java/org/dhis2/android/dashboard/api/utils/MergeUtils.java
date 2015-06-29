@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, University of Oslo
- * All rights reserved.
  *
+ * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice, this
@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.controllers;
+package org.dhis2.android.dashboard.api.utils;
 
 import org.dhis2.android.dashboard.api.models.BaseIdentifiableObject;
 
@@ -35,18 +35,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import retrofit.RetrofitError;
-
 import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toMap;
 
-public abstract class AbsBaseController<T extends BaseIdentifiableObject> implements IController<List<T>> {
+public final class MergeUtils {
+    private MergeUtils() {
+        // no instances
+    }
 
-    @Override
-    public List<T> run() throws RetrofitError {
-        List<T> existingItems = getExistingItems();
-        List<T> updatedItems = getUpdatedItems();
-        List<T> persistedItems = getPersistedItems();
-
+    public static <T extends BaseIdentifiableObject> List<T> merge(List<T> existingItems,
+                                                                   List<T> updatedItems,
+                                                                   List<T> persistedItems) {
         Map<String, T> updatedItemsMap = toMap(updatedItems);
         Map<String, T> persistedItemsMap = toMap(persistedItems);
         Map<String, T> existingItemsMap = new HashMap<>();
@@ -75,10 +73,4 @@ public abstract class AbsBaseController<T extends BaseIdentifiableObject> implem
 
         return new ArrayList<>(existingItemsMap.values());
     }
-
-    public abstract List<T> getExistingItems();
-
-    public abstract List<T> getUpdatedItems();
-
-    public abstract List<T> getPersistedItems();
 }

@@ -4,8 +4,8 @@ import android.util.Log;
 
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 
-import org.dhis2.android.dashboard.api.models.meta.DbOperation;
 import org.dhis2.android.dashboard.api.models.BaseIdentifiableObject;
+import org.dhis2.android.dashboard.api.models.meta.DbOperation;
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
 
 import java.util.ArrayList;
@@ -84,13 +84,11 @@ public final class DbUtils {
             T oldModel = oldModelsMap.get(oldModelKey);
 
             if (newModel == null) {
-                System.out.println("Deleting: " + oldModel.getId());
                 ops.add(DbOperation.delete(oldModel));
                 continue;
             }
 
             if (newModel.getLastUpdated().isAfter(oldModel.getLastUpdated())) {
-                System.out.println("Updating: " + oldModel.getId());
                 ops.add(DbOperation.update(newModel));
             }
 
@@ -98,7 +96,6 @@ public final class DbUtils {
         }
 
         for (String newModelKey : newModelsMap.keySet()) {
-            System.out.println("Inserting: " + newModelKey);
             T item = newModelsMap.get(newModelKey);
             ops.add(DbOperation.insert(item));
         }

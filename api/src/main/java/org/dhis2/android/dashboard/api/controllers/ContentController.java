@@ -65,57 +65,58 @@ public final class ContentController implements IController<Object> {
 
     @Override
     public Object run() throws APIException {
-        boolean isUpdating = DateTimeManager.getInstance().getLastUpdated(ResourceType.CONTENT) != null;
         DateTime lastUpdated = DateTimeManager.getInstance()
-                .getCurrentDateTimeInServerTimeZone();
+                .getLastUpdated(ResourceType.CONTENT);
+        DateTime serverDateTime = mDhisApi
+                .getSystemInfo().getServerDate();
 
         /* first we need to update api resources, dashboards
         and dashboard items */
         List<DashboardItemContent> dashboardItemContent =
-                updateApiResources(lastUpdated, isUpdating);
+                updateApiResources(lastUpdated);
         Queue<DbOperation> operations = new LinkedList<>();
         operations.addAll(DbUtils.createOperations(new Select()
                 .from(DashboardItemContent.class).queryList(), dashboardItemContent));
         DbUtils.applyBatch(operations);
         DateTimeManager.getInstance()
-                .setLastUpdated(ResourceType.CONTENT, lastUpdated);
+                .setLastUpdated(ResourceType.CONTENT, serverDateTime);
         return new Object();
     }
 
-    private List<DashboardItemContent> updateApiResources(DateTime lastUpdated, boolean isUpdating) throws RetrofitError {
+    private List<DashboardItemContent> updateApiResources(DateTime lastUpdated) throws RetrofitError {
         List<DashboardItemContent> dashboardItemContent = new ArrayList<>();
         dashboardItemContent.addAll(updateApiResourceByType(
-                DashboardItemContent.TYPE_CHART, lastUpdated, isUpdating));
+                DashboardItemContent.TYPE_CHART, lastUpdated));
         dashboardItemContent.addAll(updateApiResourceByType(
-                DashboardItemContent.TYPE_EVENT_CHART, lastUpdated, isUpdating));
+                DashboardItemContent.TYPE_EVENT_CHART, lastUpdated));
         dashboardItemContent.addAll(updateApiResourceByType(
-                DashboardItemContent.TYPE_MAP, lastUpdated, isUpdating));
+                DashboardItemContent.TYPE_MAP, lastUpdated));
         dashboardItemContent.addAll(updateApiResourceByType(
-                DashboardItemContent.TYPE_REPORT_TABLES, lastUpdated, isUpdating));
+                DashboardItemContent.TYPE_REPORT_TABLES, lastUpdated));
         dashboardItemContent.addAll(updateApiResourceByType(
-                DashboardItemContent.TYPE_EVENT_REPORT, lastUpdated, isUpdating));
+                DashboardItemContent.TYPE_EVENT_REPORT, lastUpdated));
         dashboardItemContent.addAll(updateApiResourceByType(
-                DashboardItemContent.TYPE_USERS, lastUpdated, isUpdating));
+                DashboardItemContent.TYPE_USERS, lastUpdated));
         dashboardItemContent.addAll(updateApiResourceByType(
-                DashboardItemContent.TYPE_REPORTS, lastUpdated, isUpdating));
+                DashboardItemContent.TYPE_REPORTS, lastUpdated));
         dashboardItemContent.addAll(updateApiResourceByType(
-                DashboardItemContent.TYPE_RESOURCES, lastUpdated, isUpdating));
+                DashboardItemContent.TYPE_RESOURCES, lastUpdated));
         return dashboardItemContent;
     }
 
-    private List<DashboardItemContent> updateApiResourceByType(final String type, final DateTime lastUpdated,
-                                                               final boolean isUpdating) throws RetrofitError {
+    private List<DashboardItemContent> updateApiResourceByType(final String type,
+                                                               final DateTime lastUpdated) throws RetrofitError {
         final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
         final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
 
         QUERY_MAP_BASIC.put("fields", "id");
         QUERY_MAP_FULL.put("fields", "id,created,lastUpdated,name,displayName");
 
-        if (isUpdating) {
+        if (lastUpdated != null) {
             QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
         }
 
-        return new AbsBaseController<DashboardItemContent>() {
+        return new AbsMergeController<DashboardItemContent>() {
 
             @Override
             public List<DashboardItemContent> getExistingItems() {

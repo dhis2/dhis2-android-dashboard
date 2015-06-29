@@ -30,19 +30,16 @@ package org.dhis2.android.dashboard.api.controllers;
 
 import com.squareup.okhttp.HttpUrl;
 
+import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.models.meta.Session;
-import org.dhis2.android.dashboard.api.models.SystemInfo;
-import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
 import org.dhis2.android.dashboard.api.network.RepoManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
@@ -59,16 +56,12 @@ public final class LogInUserController implements IController<UserAccount> {
 
     @Override
     public UserAccount run() throws APIException {
-        // First, we need to get UserAccount
         final Map<String, String> QUERY_PARAMS = new HashMap<>();
         QUERY_PARAMS.put("fields", "id,created,lastUpdated,name,displayName," +
                 "firstName,surname,gender,birthday,introduction," +
                 "education,employer,interests,jobTitle,languages,email,phoneNumber," +
                 "organisationUnits[id]");
         UserAccount userAccount = mService.getCurrentUserAccount(QUERY_PARAMS);
-
-        // Second, we need to get SystemInfo about server.
-        SystemInfo systemInfo = mService.getSystemInfo();
 
         // if we got here, it means http
         // request was executed successfully
@@ -78,14 +71,8 @@ public final class LogInUserController implements IController<UserAccount> {
         SessionManager.getInstance().put(session);
 
         /* save user account details */
-        //mUserAccountHandler.put(userAccount);
         userAccount.save();
 
-        /* get server time zone and save it */
-        TimeZone serverTimeZone = systemInfo.getServerDate()
-                .getZone().toTimeZone();
-        DateTimeManager.getInstance()
-                .setServerTimeZone(serverTimeZone);
         return userAccount;
     }
 }

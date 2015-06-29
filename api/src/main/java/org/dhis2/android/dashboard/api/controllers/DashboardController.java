@@ -29,7 +29,6 @@
 package org.dhis2.android.dashboard.api.controllers;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -76,282 +75,90 @@ public final class DashboardController implements IController<Object> {
 
     @Override
     public Object run() throws APIException {
-        /* first we need to fetch all changes in server
+        /* first we need to fetch all changes from server
         and apply them to local database */
         getDashboardDataFromServer();
+        getDashboardDataFromServer2();
 
         /* now we can try to send changes made locally to server */
-        sendLocalChanges();
+        // sendLocalChanges();
 
         return new Object();
     }
 
-    private void sendLocalChanges() throws RetrofitError {
-        sendDashboardChanges();
-        sendDashboardItemChanges();
-        sendDashboardElements();
+
+
+    private void getDashboardDataFromServer2() throws RetrofitError {
+        // download all metadata through dashboards resource (including items, elements).
+        // DO NOT update dashboard items separately at start
+
+        DateTime lastUpdated = DateTimeManager.getInstance()
+                .getLastUpdated(ResourceType.DASHBOARDS);
+        DateTime serverDateTime = mDhisApi.getSystemInfo()
+                .getServerDate();
+
+        List<Dashboard> dashboards = updateDashboards2(lastUpdated);
     }
 
-    private void sendDashboardChanges() throws RetrofitError {
-        // we need to sort dashboards in natural order.
-        // In order they were inserted in local database.
-        List<Dashboard> dashboards = new Select()
-                .from(Dashboard.class)
-                .where(Condition.column(Dashboard$Table
-                        .STATE).isNot(State.SYNCED.toString()))
-                .orderBy(true, Dashboard$Table.ID)
-                .queryList();
+    private List<Dashboard> updateDashboards2(DateTime lastUpdated) throws RetrofitError {
+        final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
+        final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
+        final String BASE = "id,created,lastUpdated,name,displayName,access";
 
-        if (dashboards == null || dashboards.isEmpty()) {
-            return;
+        QUERY_MAP_BASIC.put("fields", "id");
+        QUERY_MAP_FULL.put("fields", BASE + ",dashboardItems" +
+                "[" + BASE + ",type,shape,messages," +
+                "chart" + "[" + BASE + "]," +
+                "eventChart" + "[" + BASE + "]" +
+                "map" + "[" + BASE + "]," +
+                "reportTable" + "[" + BASE + "]," +
+                "eventReport" + "[" + BASE + "]," +
+                "users" + "[" + BASE + "]," +
+                "reports" + "[" + BASE + "]," +
+                "resources" + "[" + BASE + "]" +
+                "]");
+
+        if (lastUpdated != null) {
+            QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
         }
 
-        for (Dashboard dashboard : dashboards) {
-            switch (dashboard.getState()) {
-                case TO_POST: {
-                    postDashboard(dashboard);
-                    break;
+        return new AbsMergeController<Dashboard>() {
+
+            @Override
+            public List<Dashboard> getExistingItems() {
+                return unwrapResponse(mDhisApi
+                        .getDashboards(QUERY_MAP_BASIC), "dashboards");
+            }
+
+            @Override
+            public List<Dashboard> getUpdatedItems() {
+                return unwrapResponse(mDhisApi
+                        .getDashboards(QUERY_MAP_FULL), "dashboards");
+            }
+
+            @Override
+            public List<Dashboard> getPersistedItems() {
+                List<Dashboard> dashboards = new Select()
+                        .from(Dashboard.class).queryList();
+                if (dashboards != null && !dashboards.isEmpty()) {
+                    for (Dashboard dashboard : dashboards) {
+                        dashboard.setDashboardItems(dashboard
+                                .queryRelatedDashboardItems());
+                    }
                 }
-                case TO_UPDATE: {
-                    putDashboard(dashboard);
-                    break;
-                }
-                case TO_DELETE: {
-                    deleteDashboard(dashboard);
-                    break;
-                }
+                return dashboards;
             }
-        }
-    }
-
-    private void postDashboard(Dashboard dashboard) throws RetrofitError {
-        Response response = mDhisApi.postDashboard(dashboard);
-
-        // we need to make sure that server has successfully created new dashboard
-        if (isSuccess(response.getStatus())) {
-            // also, we will need to find UUID of newly created dashboard,
-            // which is contained inside of HTTP Location header
-            Header header = findLocationHeader(response.getHeaders());
-            // parse the value of header as URI and extract the id
-            String dashboardId = Uri.parse(header.getValue()).getLastPathSegment();
-            // set UUID, change state and save dashboard
-            dashboard.setUId(dashboardId);
-            dashboard.setState(State.SYNCED);
-            dashboard.save();
-        }
-    }
-
-    private void putDashboard(Dashboard dashboard) throws RetrofitError {
-        Response response = mDhisApi.putDashboard(dashboard);
-
-        if (isSuccess(response.getStatus())) {
-            dashboard.setState(State.SYNCED);
-            dashboard.save();
-        }
-    }
-
-    private void deleteDashboard(Dashboard dashboard) throws RetrofitError {
-        Response response = mDhisApi.deleteDashboard(dashboard.getUId());
-
-        // if the network operation is performed successfully,
-        // we can remove local copy of dashboard
-        if (isSuccess(response.getStatus())) {
-            dashboard.delete();
-        }
-    }
-
-    private void sendDashboardItemChanges() throws RetrofitError {
-        List<DashboardItem> dashboardItems = new Select()
-                .from(DashboardItem.class)
-                .where(Condition.column(DashboardItem$Table.STATE).isNot(State.SYNCED))
-                .orderBy(true, DashboardItem$Table.ID)
-                .queryList();
-
-        if (dashboardItems == null || dashboardItems.isEmpty()) {
-            return;
-        }
-
-        for (DashboardItem dashboardItem : dashboardItems) {
-            switch (dashboardItem.getState()) {
-                case TO_POST: {
-                    postDashboardItem(dashboardItem);
-                    break;
-                }
-                case TO_DELETE: {
-                    deleteDashboardItem(dashboardItem);
-                    break;
-                }
-            }
-        }
-    }
-
-    private void postDashboardItem(DashboardItem dashboardItem) throws RetrofitError {
-        Dashboard dashboard = dashboardItem.getDashboard();
-
-        if (dashboard != null && dashboard.getState() != null) {
-            boolean isDashboardSynced = (dashboard.getState().equals(State.SYNCED) ||
-                    dashboard.getState().equals(State.TO_UPDATE));
-
-            if (!isDashboardSynced) {
-                return;
-            }
-
-            List<DashboardElement> elements = new Select().from(DashboardElement.class)
-                    .where(Condition.column(DashboardElement$Table
-                            .DASHBOARDITEM_DASHBOARDITEM).is(dashboardItem.getId()))
-                    .and(Condition.column(DashboardItem$Table
-                            .STATE).is(State.TO_POST.toString()))
-                    .queryList();
-
-            if (elements == null || elements.isEmpty()) {
-                return;
-            }
-
-            DashboardElement element = elements.get(0);
-            Response response = mDhisApi.postDashboardItem(dashboard.getUId(),
-                    dashboardItem.getType(), element.getUId());
-
-            if (isSuccess(response.getStatus())) {
-                Header locationHeader = findLocationHeader(response.getHeaders());
-                String dashboardItemUId = Uri.parse(locationHeader
-                        .getValue()).getLastPathSegment();
-                dashboardItem.setUId(dashboardItemUId);
-                dashboardItem.setState(State.SYNCED);
-                dashboardItem.save();
-
-                element.setState(State.SYNCED);
-                element.save();
-            }
-        }
-    }
-
-    private void deleteDashboardItem(DashboardItem dashboardItem) throws RetrofitError {
-        Dashboard dashboard = dashboardItem.getDashboard();
-
-        if (dashboard != null && dashboard.getState() != null) {
-            boolean isDashboardSynced = (dashboard.getState().equals(State.SYNCED) ||
-                    dashboard.getState().equals(State.TO_UPDATE));
-
-            if (!isDashboardSynced) {
-                return;
-            }
-
-            Response response = mDhisApi.deleteDashboardItem(dashboard.getUId(),
-                    dashboardItem.getUId());
-            if (isSuccess(response.getStatus())) {
-                dashboardItem.delete();
-            }
-        }
-    }
-
-    private void sendDashboardElements() throws RetrofitError {
-        List<DashboardElement> elements = new Select()
-                .from(DashboardElement.class)
-                .where(Condition.column(DashboardElement$Table
-                        .STATE).isNot(State.SYNCED))
-                .orderBy(true, DashboardElement$Table.ID)
-                .queryList();
-
-        if (elements == null || elements.isEmpty()) {
-            return;
-        }
-
-        for (DashboardElement element : elements) {
-            switch (element.getState()) {
-                case TO_POST: {
-                    postDashboardElement(element);
-                    break;
-                }
-                case TO_DELETE: {
-                    deleteDashboardElement(element);
-                    break;
-                }
-            }
-        }
-    }
-
-    private void postDashboardElement(DashboardElement element) throws RetrofitError {
-        DashboardItem item = element.getDashboardItem();
-        if (item == null || item.getState() == null) {
-            return;
-        }
-
-        Dashboard dashboard = item.getDashboard();
-        if (dashboard == null || dashboard.getState() == null) {
-            return;
-        }
-
-        // we need to make sure that associated DashboardItem
-        // and parent Dashboard are already synced to the server.
-        boolean isDashboardSynced = (dashboard.getState().equals(State.SYNCED) ||
-                dashboard.getState().equals(State.TO_UPDATE));
-        boolean isItemSynced = item.getState().equals(State.SYNCED) ||
-                item.getState().equals(State.TO_UPDATE);
-        if (isDashboardSynced && isItemSynced) {
-            Response response = mDhisApi.postDashboardItem(
-                    dashboard.getUId(), item.getType(), element.getUId());
-
-            if (isSuccess(response.getStatus())) {
-                element.setState(State.SYNCED);
-                element.save();
-            }
-        }
-    }
-
-    private void deleteDashboardElement(DashboardElement element) throws RetrofitError {
-        DashboardItem item = element.getDashboardItem();
-        if (item == null || item.getState() == null) {
-            return;
-        }
-
-        Dashboard dashboard = item.getDashboard();
-        if (dashboard == null || dashboard.getState() == null) {
-            return;
-        }
-
-        // we need to make sure associated DashboardItem
-        // and parent Dashboard are already synced to server
-        boolean isDashboardSynced = (dashboard.getState().equals(State.SYNCED) ||
-                dashboard.getState().equals(State.TO_UPDATE));
-        boolean isItemSynced = item.getState().equals(State.SYNCED) ||
-                item.getState().equals(State.TO_UPDATE);
-        if (isDashboardSynced && isItemSynced) {
-            Response response = mDhisApi.deleteDashboardItemContent(
-                    dashboard.getUId(), item.getUId(), element.getUId());
-
-            if (isSuccess(response.getStatus())) {
-                element.delete();
-            }
-        }
-    }
-
-    private static boolean isSuccess(int status) {
-        return status >= 200 && status < 300;
-    }
-
-    private static Header findLocationHeader(List<Header> headers) {
-        final String LOCATION = "location";
-        if (headers != null && !headers.isEmpty()) {
-            for (Header header : headers) {
-                if (header.getName().equalsIgnoreCase(LOCATION)) {
-                    return header;
-                }
-            }
-        }
-
-        return null;
+        }.run();
     }
 
     private void getDashboardDataFromServer() throws RetrofitError {
-        boolean isUpdating = DateTimeManager.getInstance().getLastUpdated(
-                ResourceType.DASHBOARDS) != null;
         DateTime lastUpdated = DateTimeManager.getInstance()
-                .getCurrentDateTimeInServerTimeZone();
+                .getLastUpdated(ResourceType.DASHBOARDS);
+        DateTime serverDateTime = mDhisApi.getSystemInfo()
+                .getServerDate();
 
-        List<Dashboard> dashboards =
-                updateDashboards(lastUpdated, isUpdating);
-        List<DashboardItem> dashboardItems =
-                updateDashboardItems(lastUpdated, isUpdating);
+        List<Dashboard> dashboards = updateDashboards(lastUpdated);
+        List<DashboardItem> dashboardItems = updateDashboardItems(lastUpdated);
 
         /* build relation ships between dashboards - items */
         buildDashboardToItemRelations(dashboards, dashboardItems);
@@ -367,11 +174,10 @@ public final class DashboardController implements IController<Object> {
 
         DbUtils.applyBatch(operations);
         DateTimeManager.getInstance()
-                .setLastUpdated(ResourceType.DASHBOARDS, lastUpdated);
+                .setLastUpdated(ResourceType.DASHBOARDS, serverDateTime);
     }
 
-    private List<Dashboard> updateDashboards(DateTime lastUpdated,
-                                             boolean isUpdating) throws RetrofitError {
+    private List<Dashboard> updateDashboards(DateTime lastUpdated) throws RetrofitError {
         final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
         final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
 
@@ -379,11 +185,11 @@ public final class DashboardController implements IController<Object> {
         QUERY_MAP_FULL.put("fields", "id,created,lastUpdated,name," +
                 "displayName,access,dashboardItems[id]");
 
-        if (isUpdating) {
+        if (lastUpdated != null) {
             QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
         }
 
-        return new AbsBaseController<Dashboard>() {
+        return new AbsMergeController<Dashboard>() {
 
             @Override
             public List<Dashboard> getExistingItems() {
@@ -411,7 +217,7 @@ public final class DashboardController implements IController<Object> {
         }.run();
     }
 
-    private List<DashboardItem> updateDashboardItems(DateTime lastUpdated, boolean isUpdating) throws RetrofitError {
+    private List<DashboardItem> updateDashboardItems(DateTime lastUpdated) throws RetrofitError {
         final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
         final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
 
@@ -428,11 +234,11 @@ public final class DashboardController implements IController<Object> {
                 "resources[id,created,lastUpdated,name,displayName]," +
                 "reportTables[id,created,lastUpdated,name,displayName]");
 
-        if (isUpdating) {
+        if (lastUpdated != null) {
             QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
         }
 
-        return new AbsBaseController<DashboardItem>() {
+        return new AbsMergeController<DashboardItem>() {
 
             @Override
             public List<DashboardItem> getExistingItems() {
@@ -511,14 +317,14 @@ public final class DashboardController implements IController<Object> {
             List<String> persistedElementIds = toListIds(persistedElementList);
             List<String> refreshedElementIds = toListIds(refreshedElementList);
 
-            System.out.println("REFRESHED_ITEMS IDS: " + refreshedElementIds);
-            System.out.println("PERSISTED_ITEMS IDS: " + persistedElementIds);
+            //System.out.println("REFRESHED_ITEMS IDS: " + refreshedElementIds);
+            //System.out.println("PERSISTED_ITEMS IDS: " + persistedElementIds);
 
             List<String> itemIdsToInsert = subtract(refreshedElementIds, persistedElementIds);
             List<String> itemIdsToDelete = subtract(persistedElementIds, refreshedElementIds);
 
-            System.out.println("ITEMS_TO_INSERT IDS: " + itemIdsToInsert);
-            System.out.println("ITEMS_TO_DELETE IDS: " + itemIdsToDelete);
+            //System.out.println("ITEMS_TO_INSERT IDS: " + itemIdsToInsert);
+            //System.out.println("ITEMS_TO_DELETE IDS: " + itemIdsToDelete);
 
             for (String elementToDelete : itemIdsToDelete) {
                 int index = persistedElementIds.indexOf(elementToDelete);
@@ -559,7 +365,7 @@ public final class DashboardController implements IController<Object> {
             } */
         }
 
-        Log.e("ELEMENTS", dbOperations.size() + "");
+        // Log.e("ELEMENTS", dbOperations.size() + "");
         return dbOperations;
     }
 

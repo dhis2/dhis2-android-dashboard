@@ -711,7 +711,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         }
 
         private boolean isItemDeletable() {
-            return mDashboardItem.getAccess().isDelete();
+            // return mDashboardItem.getAccess().isDelete();
+            return true;
         }
 
         /* here we will build popup menu and show it. */

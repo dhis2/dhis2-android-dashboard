@@ -4,16 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
-import java.util.TimeZone;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public final class DateTimeManager {
     private static final String PREFERENCES = "preferences:lastUpdated";
     private static final String METADATA_UPDATE_DATETIME = "key:metaDataUpdateDateTime";
-    private static final String SERVER_TIME_ZONE = "key:serverTimeZone";
 
     private static DateTimeManager mPreferences;
     private final SharedPreferences mPrefs;
@@ -40,29 +36,9 @@ public final class DateTimeManager {
                 Context.MODE_PRIVATE);
     }
 
-    /**
-     * Method which returns DateTime object in server
-     * time zone (if set previously), otherwise returns DateTime in current TimeZone
-     *
-     * @return DateTime object
-     */
-    public DateTime getCurrentDateTimeInServerTimeZone() {
-        if (isServerTimeZoneSet()) {
-            TimeZone serverTimeZone = getServerTimeZone();
-            return new DateTime(DateTimeZone.forTimeZone(serverTimeZone));
-        }
-
-        return new DateTime();
-    }
-
     public void setLastUpdated(ResourceType type, DateTime dateTime) {
         isNull(type, "ResourceType object must not be null");
         isNull(dateTime, "DateTime object must not be null");
-
-        if (!dateTime.getZone().toTimeZone().hasSameRules(getServerTimeZone())) {
-            throw new IllegalArgumentException("TimeZone of lastUpdated field is " +
-                    "different from the server's one");
-        }
 
         putString(METADATA_UPDATE_DATETIME + type.toString(), dateTime.toString());
     }
@@ -82,28 +58,6 @@ public final class DateTimeManager {
     public boolean isLastUpdatedSet(ResourceType type) {
         return getLastUpdated(type) != null;
     }
-
-    public void setServerTimeZone(TimeZone timeZone) {
-        isNull(timeZone, "TimeZone object must not be null");
-        putString(SERVER_TIME_ZONE, timeZone.toString());
-    }
-
-    public TimeZone getServerTimeZone() {
-        String timeZone = getString(SERVER_TIME_ZONE);
-        if (timeZone != null) {
-            return TimeZone.getTimeZone(timeZone);
-        }
-        return null;
-    }
-
-    public void deleteServerTimeZone() {
-        deleteString(SERVER_TIME_ZONE);
-    }
-
-    public boolean isServerTimeZoneSet() {
-        return getServerTimeZone() != null;
-    }
-
 
     private void putString(String key, String value) {
         mPrefs.edit().putString(key, value).commit();

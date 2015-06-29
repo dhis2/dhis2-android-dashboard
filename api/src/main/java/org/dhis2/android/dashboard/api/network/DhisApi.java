@@ -76,21 +76,22 @@ public interface DhisApi {
     Response deleteDashboard(@Path("uid") String dashboardUId);
 
     @PUT("/dashboards/{uid}")
-    Response putDashboard(@Body Dashboard dashboard);
+    Response putDashboard(@Path("uid") String uid, @Body Dashboard dashboard);
 
     @GET("/dashboardItems?paging=false")
     Map<String, List<DashboardItem>> getDashboardItems(@QueryMap Map<String, String> queryMap);
 
     @POST("/dashboards/{dashboardUId}/items/content")
     Response postDashboardItem(@Path("dashboardUId") String dashboardUId,
-                               @Query("elementType") String elementType,
-                               @Query("elementUId") String elementUId);
+                               @Query("type") String type,
+                               @Query("id") String uid,
+                               @Body String emptyBody);
 
     @DELETE("/dashboards/{dashboardUId}/items/{itemUId}")
     Response deleteDashboardItem(@Path("dashboardUId") String dashboardUId,
                                  @Path("itemUId") String itemUId);
 
-    @DELETE("/{dashboardUid}/items/{itemUid}/content/{contentUid}")
+    @DELETE("/dashboards/{dashboardUid}/items/{itemUid}/content/{contentUid}")
     Response deleteDashboardItemContent(@Path("dashboardUid") String dashboardUid,
                                         @Path("itemUid") String itemUid,
                                         @Path("contentUid") String contentUid);
@@ -113,8 +114,7 @@ public interface DhisApi {
     Map<String, List<DashboardItemContent>> getReportTables(@QueryMap Map<String, String> queryParams);
 
     @Headers("Accept: application/text")
-    @GET("/reportTables/{id}/data.html")
-    Response getReportTableData(@Path("id") String id);
+    @GET("/reportTables/{id}/data.html") Response getReportTableData(@Path("id") String id);
 
     @GET("/eventReports?paging=false")
     Map<String, List<DashboardItemContent>> getEventReports(@QueryMap Map<String, String> queryParams);
