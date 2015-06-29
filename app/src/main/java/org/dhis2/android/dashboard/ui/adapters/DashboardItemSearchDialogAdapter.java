@@ -39,18 +39,16 @@ public class DashboardItemSearchDialogAdapter extends BaseAdapter implements Fil
      * the original array of data.
      */
     private final Object mLock = new Object();
+    private final LayoutInflater mInflater;
     /**
      * Contains the list of objects that represent the data of this ArrayAdapter.
      * The content of this list is referred to as "the array" in the documentation.
      */
     private List<OptionAdapterValue> mObjects;
-
     // A copy of the original mObjects array, initialized from and then used instead as soon as
     // the mFilter ArrayFilter is used. mObjects will then only contain the filtered values.
     private ArrayList<OptionAdapterValue> mOriginalValues;
     private ArrayFilter mFilter;
-
-    private final LayoutInflater mInflater;
 
     public DashboardItemSearchDialogAdapter(LayoutInflater inflater) {
         mInflater = inflater;
@@ -117,14 +115,6 @@ public class DashboardItemSearchDialogAdapter extends BaseAdapter implements Fil
         return view;
     }
 
-    private static class ViewHolder {
-        public final TextView textView;
-
-        public ViewHolder(View view) {
-            textView = (TextView) view.findViewById(R.id.textview_item);
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -134,6 +124,80 @@ public class DashboardItemSearchDialogAdapter extends BaseAdapter implements Fil
             mFilter = new ArrayFilter();
         }
         return mFilter;
+    }
+
+    public void swapData(List<OptionAdapterValue> values) {
+        if (values == null) {
+            values = new ArrayList<>();
+        }
+
+        clear();
+        addAll(values);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Adds the specified Collection at the end of the array.
+     *
+     * @param collection The Collection to add at the end of the array.
+     */
+    private void addAll(Collection<OptionAdapterValue> collection) {
+        synchronized (mLock) {
+            if (mOriginalValues != null) {
+                mOriginalValues.addAll(collection);
+            } else {
+                mObjects.addAll(collection);
+            }
+        }
+    }
+
+    /**
+     * Remove all elements from the list.
+     */
+    private void clear() {
+        synchronized (mLock) {
+            if (mOriginalValues != null) {
+                mOriginalValues.clear();
+            } else {
+                mObjects.clear();
+            }
+        }
+    }
+
+    private static class ViewHolder {
+        public final TextView textView;
+
+        public ViewHolder(View view) {
+            textView = (TextView) view.findViewById(R.id.textview_item);
+        }
+    }
+
+    public static class OptionAdapterValue {
+        public final String id;
+        public final String label;
+
+        public OptionAdapterValue(String id, String label) {
+            this.id = id;
+            this.label = label;
+        }
+
+        private static boolean objectsEqual(Object a, Object b) {
+            return a == b || (a != null && a.equals(b));
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof OptionAdapterValue)) {
+                return false;
+            }
+            OptionAdapterValue p = (OptionAdapterValue) o;
+            return objectsEqual(p.id, label) && objectsEqual(p.id, label);
+        }
+
+        @Override
+        public int hashCode() {
+            return (id == null ? 0 : id.hashCode()) ^ (label == null ? 0 : label.hashCode());
+        }
     }
 
     /**
@@ -209,72 +273,6 @@ public class DashboardItemSearchDialogAdapter extends BaseAdapter implements Fil
             } else {
                 notifyDataSetInvalidated();
             }
-        }
-    }
-
-    public void swapData(List<OptionAdapterValue> values) {
-        if (values == null) {
-            values = new ArrayList<>();
-        }
-
-        clear();
-        addAll(values);
-        notifyDataSetChanged();
-    }
-
-    /**
-     * Adds the specified Collection at the end of the array.
-     *
-     * @param collection The Collection to add at the end of the array.
-     */
-    private void addAll(Collection<OptionAdapterValue> collection) {
-        synchronized (mLock) {
-            if (mOriginalValues != null) {
-                mOriginalValues.addAll(collection);
-            } else {
-                mObjects.addAll(collection);
-            }
-        }
-    }
-
-    /**
-     * Remove all elements from the list.
-     */
-    private void clear() {
-        synchronized (mLock) {
-            if (mOriginalValues != null) {
-                mOriginalValues.clear();
-            } else {
-                mObjects.clear();
-            }
-        }
-    }
-
-    public static class OptionAdapterValue {
-        public final String id;
-        public final String label;
-
-        public OptionAdapterValue(String id, String label) {
-            this.id = id;
-            this.label = label;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof OptionAdapterValue)) {
-                return false;
-            }
-            OptionAdapterValue p = (OptionAdapterValue) o;
-            return objectsEqual(p.id, label) && objectsEqual(p.id, label);
-        }
-
-        private static boolean objectsEqual(Object a, Object b) {
-            return a == b || (a != null && a.equals(b));
-        }
-
-        @Override
-        public int hashCode() {
-            return (id == null ? 0 : id.hashCode()) ^ (label == null ? 0 : label.hashCode());
         }
     }
 }

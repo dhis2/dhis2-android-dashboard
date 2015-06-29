@@ -27,32 +27,32 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/add_dashboard_item"
         android:icon="@mipmap/ic_search"
         android:orderInCategory="101"
         android:title="@string/search"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/refresh"
         android:icon="@mipmap/ic_refresh"
         android:orderInCategory="110"
         android:title="@string/refresh"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/add_dashboard"
         android:orderInCategory="111"
         android:title="@string/add"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/manage_dashboard"
         android:orderInCategory="120"
         android:title="@string/manage"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
 
 </menu>

@@ -12,10 +12,6 @@ public final class DbOperation {
     private final OperationType mOperationType;
     private final BaseModel mModel;
 
-    public enum OperationType {
-        INSERT, UPDATE, DELETE, SAVE
-    }
-
     private DbOperation(OperationType operationType, BaseModel model) {
         mOperationType = operationType;
         mModel = isNull(model, "BaseModel object must nto be null,");
@@ -43,5 +39,9 @@ public final class DbOperation {
 
     public OperationType getOperationType() {
         return mOperationType;
+    }
+
+    public enum OperationType {
+        INSERT, UPDATE, DELETE, SAVE
     }
 }

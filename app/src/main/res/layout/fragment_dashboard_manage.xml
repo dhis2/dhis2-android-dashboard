@@ -39,6 +39,7 @@
         android:layout_height="56dp">
 
         <include layout="@layout/fragment_bar"/>
+
         <include layout="@layout/fragment_bar_mode_editing"/>
 
     </FrameLayout>

@@ -1,6 +1,6 @@
 <manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.dhis2.android.dashboard.api">
+    package="org.dhis2.android.dashboard.api"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 

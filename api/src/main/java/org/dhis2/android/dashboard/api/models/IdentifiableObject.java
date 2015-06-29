@@ -34,6 +34,34 @@ import java.util.Comparator;
 public interface IdentifiableObject {
     Comparator<IdentifiableObject> DISPLAY_NAME_COMPARATOR = new NameComparator();
 
+    long getId();
+
+    void setId(long id);
+
+    String getUId();
+
+    void setUId(String uId);
+
+    String getName();
+
+    void setName(String name);
+
+    String getDisplayName();
+
+    void setDisplayName(String displayName);
+
+    DateTime getCreated();
+
+    void setCreated(DateTime created);
+
+    DateTime getLastUpdated();
+
+    void setLastUpdated(DateTime lastUpdated);
+
+    Access getAccess();
+
+    void setAccess(Access access);
+
     class NameComparator implements Comparator<IdentifiableObject> {
 
         @Override
@@ -46,32 +74,4 @@ public interface IdentifiableObject {
             return 0;
         }
     }
-
-    void setId(long id);
-
-    void setUId(String uId);
-
-    long getId();
-
-    void setName(String name);
-
-    void setDisplayName(String displayName);
-
-    void setCreated(DateTime created);
-
-    void setLastUpdated(DateTime lastUpdated);
-
-    void setAccess(Access access);
-
-    String getUId();
-
-    String getName();
-
-    String getDisplayName();
-
-    DateTime getCreated();
-
-    DateTime getLastUpdated();
-
-    Access getAccess();
 }

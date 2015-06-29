@@ -55,11 +55,9 @@ public interface DhisApi {
     // Methods for getting user information
     /////////////////////////////////////////////////////////////////////////
 
-    @GET("/system/info/")
-    SystemInfo getSystemInfo();
+    @GET("/system/info/") SystemInfo getSystemInfo();
 
-    @GET("/me/")
-    UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
+    @GET("/me/") UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
 
 
     /////////////////////////////////////////////////////////////////////////
@@ -69,11 +67,9 @@ public interface DhisApi {
     @GET("/dashboards?paging=false")
     Map<String, List<Dashboard>> getDashboards(@QueryMap Map<String, String> queryMap);
 
-    @POST("/dashboards/")
-    Response postDashboard(@Body Dashboard dashboard);
+    @POST("/dashboards/") Response postDashboard(@Body Dashboard dashboard);
 
-    @DELETE("/dashboards/{uid}")
-    Response deleteDashboard(@Path("uid") String dashboardUId);
+    @DELETE("/dashboards/{uid}") Response deleteDashboard(@Path("uid") String dashboardUId);
 
     @PUT("/dashboards/{uid}")
     Response putDashboard(@Path("uid") String uid, @Body Dashboard dashboard);

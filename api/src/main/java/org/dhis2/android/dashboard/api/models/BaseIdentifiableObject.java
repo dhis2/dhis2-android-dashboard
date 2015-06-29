@@ -136,15 +136,15 @@ public class BaseIdentifiableObject extends BaseModel implements IdentifiableObj
         return lastUpdated;
     }
 
-    @Override
-    public Access getAccess() {
-        return access;
-    }
-
     @JsonIgnore
     @Override
     public void setLastUpdated(DateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    @Override
+    public Access getAccess() {
+        return access;
     }
 
     @Override

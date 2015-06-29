@@ -43,14 +43,11 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 public class DbLoader<T> extends AsyncTaskLoader<T> {
     // A Model Class which we want to observe
     private final List<Class<? extends Model>> mModelClasses;
-
+    // The object which will perform Query
+    private final Query<T> mQuery;
     // The actual observer
     // private ModelChangeObserver<ModelClass> mObserver;
     private List<ModelChangeObserver<?>> mObservers;
-
-    // The object which will perform Query
-    private final Query<T> mQuery;
-
     private T mData;
 
     public DbLoader(Context context,

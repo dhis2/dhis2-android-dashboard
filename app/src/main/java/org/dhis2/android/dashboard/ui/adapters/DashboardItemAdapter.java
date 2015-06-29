@@ -111,6 +111,13 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         mImageLoader = PicassoProvider.getInstance(context);
     }
 
+    private static String buildImageUrl(String resource, String id) {
+        return DhisManager.getInstance().getServerUrl().newBuilder()
+                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
+                .addQueryParameter("width", "480").addQueryParameter("height", "320")
+                .toString();
+    }
+
     /* returns type of row depending on item content type. */
     @Override
     public int getItemViewType(int position) {
@@ -176,60 +183,12 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         }
     }
 
-    private int getSpanSizeFull() {
-        return mMaxSpanCount;
-    }
-
     /////////////////////////////////////////////////////////////////////////
     // Generic item view handling logic.
     /////////////////////////////////////////////////////////////////////////
 
-    static class ItemViewHolder extends RecyclerView.ViewHolder {
-        final View itemBody;
-        final TextView itemName;
-        final TextView lastUpdated;
-        final ImageView itemMenuButton;
-        final MenuButtonHandler menuButtonHandler;
-        final IElementContentViewHolder contentViewHolder;
-
-        public ItemViewHolder(View itemView, View itemBody,
-                              TextView itemName, TextView lastUpdated,
-                              ImageView itemMenuButton, MenuButtonHandler menuButtonHandler,
-                              IElementContentViewHolder elementContentViewHolder) {
-            super(itemView);
-            this.itemBody = itemBody;
-            this.itemName = itemName;
-            this.lastUpdated = lastUpdated;
-            this.itemMenuButton = itemMenuButton;
-            this.menuButtonHandler = menuButtonHandler;
-            this.contentViewHolder = elementContentViewHolder;
-        }
-    }
-
-    static class OnElementInternalClickListener implements View.OnClickListener {
-        final OnItemClickListener mListener;
-        DashboardElement mElement;
-
-        OnElementInternalClickListener(OnItemClickListener listener) {
-            this.mListener = listener;
-        }
-
-        public void setDashboardElement(DashboardElement element) {
-            mElement = element;
-        }
-
-        @Override public void onClick(View view) {
-            switch (view.getId()) {
-                case R.id.dashboard_item_image: {
-                    mListener.onContentClick(mElement);
-                    break;
-                }
-                case R.id.dashboard_item_text: {
-                    mListener.onContentClick(mElement);
-                    break;
-                }
-            }
-        }
+    private int getSpanSizeFull() {
+        return mMaxSpanCount;
     }
 
     /**
@@ -301,7 +260,6 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
                 holder.getItemViewType(), holder.getAdapterPosition());
     }
 
-
     /**
      * Depending on viewType, this method will return correct IElementContentViewHolder.
      *
@@ -348,28 +306,6 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         }
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    // ITEM_WITH_IMAGE_TYPE view handling logic.
-    /////////////////////////////////////////////////////////////////////////
-
-    /* View holder for ImageView */
-    static class ImageItemViewHolder implements IElementContentViewHolder {
-        final OnElementInternalClickListener listener;
-        final ImageView imageView;
-
-        public ImageItemViewHolder(ImageView view, OnItemClickListener outerListener) {
-            imageView = view;
-
-            listener = new OnElementInternalClickListener(outerListener);
-            imageView.setOnClickListener(listener);
-        }
-
-        @Override
-        public View getView() {
-            return imageView;
-        }
-    }
-
     /* builds the URL to image data and loads it by means of Picasso. */
     private void handleItemsWithImages(ImageItemViewHolder holder, DashboardItem item) {
         DashboardElement element = null;
@@ -391,17 +327,149 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
                 .into(holder.imageView);
     }
 
-    private static String buildImageUrl(String resource, String id) {
-        return DhisManager.getInstance().getServerUrl().newBuilder()
-                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
-                .toString();
+    /////////////////////////////////////////////////////////////////////////
+    // ITEM_WITH_IMAGE_TYPE view handling logic.
+    /////////////////////////////////////////////////////////////////////////
+
+    private void handleItemsWithTables(TextItemViewHolder holder, DashboardItem item) {
+        DashboardElement element = null;
+        if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
+            element = item.getReportTable();
+        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
+            element = item.getEventReport();
+        }
+
+        if (element != null) {
+            holder.listener.setDashboardElement(element);
+            holder.textView.setText(element.getDisplayName());
+        }
+    }
+
+    private void handleItemsWithLists(ListItemViewHolder holder, DashboardItem item) {
+        List<DashboardElement> elementList = null;
+        if (DashboardItemContent.TYPE_USERS.equals(item.getType())) {
+            elementList = item.getUsers();
+        } else if (DashboardItemContent.TYPE_REPORTS.equals(item.getType())) {
+            elementList = item.getReports();
+        } else if (DashboardItemContent.TYPE_RESOURCES.equals(item.getType())) {
+            elementList = item.getResources();
+        }
+
+        /*
+        * each time RecyclerView binds data to a row, we need to handle recycling properly.
+        * This also applies to view listeners, which will contain reference to data from previous row
+        * (if not handled properly).That's why we need to set element list each time
+        * handleItemsWithLists() is called.
+        */
+        holder.onListElementInternalClickListener.setElements(elementList);
+
+        /* Handling embedded list items. */
+        ButterKnife.apply(holder.elementItems,
+                ListItemViewHolder.ELEMENT_ITEMS_SETTER, elementList);
+        ButterKnife.apply(holder.elementItemDeleteButtons,
+                ListItemViewHolder.ELEMENT_ITEM_BUTTONS_SETTER, elementList);
+    }
+
+    /* convenience method for removing dashboard items with animations */
+    public void removeItem(DashboardItem item) {
+        if (getData() != null) {
+            int truePosition = getData().indexOf(item);
+            if (!(truePosition < 0)) {
+                getData().remove(truePosition);
+                notifyItemRemoved(truePosition);
+            }
+        }
     }
 
 
     /////////////////////////////////////////////////////////////////////////
     // ITEM_WITH_TABLE_TYPE view handling logic.
     /////////////////////////////////////////////////////////////////////////
+
+    interface IElementContentViewHolder {
+        View getView();
+    }
+
+    public interface OnItemClickListener {
+        void onContentClick(DashboardElement element);
+
+        void onContentDeleteClick(DashboardElement element);
+
+        void onItemDeleteClick(DashboardItem item);
+
+        void onItemShareClick(DashboardItem item);
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////
+    // ITEM_WITH_LIST_TYPE view handling logic.
+    /////////////////////////////////////////////////////////////////////////
+
+    static class ItemViewHolder extends RecyclerView.ViewHolder {
+        final View itemBody;
+        final TextView itemName;
+        final TextView lastUpdated;
+        final ImageView itemMenuButton;
+        final MenuButtonHandler menuButtonHandler;
+        final IElementContentViewHolder contentViewHolder;
+
+        public ItemViewHolder(View itemView, View itemBody,
+                              TextView itemName, TextView lastUpdated,
+                              ImageView itemMenuButton, MenuButtonHandler menuButtonHandler,
+                              IElementContentViewHolder elementContentViewHolder) {
+            super(itemView);
+            this.itemBody = itemBody;
+            this.itemName = itemName;
+            this.lastUpdated = lastUpdated;
+            this.itemMenuButton = itemMenuButton;
+            this.menuButtonHandler = menuButtonHandler;
+            this.contentViewHolder = elementContentViewHolder;
+        }
+    }
+
+    static class OnElementInternalClickListener implements View.OnClickListener {
+        final OnItemClickListener mListener;
+        DashboardElement mElement;
+
+        OnElementInternalClickListener(OnItemClickListener listener) {
+            this.mListener = listener;
+        }
+
+        public void setDashboardElement(DashboardElement element) {
+            mElement = element;
+        }
+
+        @Override public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.dashboard_item_image: {
+                    mListener.onContentClick(mElement);
+                    break;
+                }
+                case R.id.dashboard_item_text: {
+                    mListener.onContentClick(mElement);
+                    break;
+                }
+            }
+        }
+    }
+
+    /* View holder for ImageView */
+    static class ImageItemViewHolder implements IElementContentViewHolder {
+        final OnElementInternalClickListener listener;
+        final ImageView imageView;
+
+        public ImageItemViewHolder(ImageView view, OnItemClickListener outerListener) {
+            imageView = view;
+
+            listener = new OnElementInternalClickListener(outerListener);
+            imageView.setOnClickListener(listener);
+        }
+
+        @Override
+        public View getView() {
+            return imageView;
+        }
+    }
 
     static class TextItemViewHolder implements IElementContentViewHolder {
         final OnElementInternalClickListener listener;
@@ -419,25 +487,6 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             return textView;
         }
     }
-
-    private void handleItemsWithTables(TextItemViewHolder holder, DashboardItem item) {
-        DashboardElement element = null;
-        if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
-            element = item.getReportTable();
-        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
-            element = item.getEventReport();
-        }
-
-        if (element != null) {
-            holder.listener.setDashboardElement(element);
-            holder.textView.setText(element.getDisplayName());
-        }
-    }
-
-
-    /////////////////////////////////////////////////////////////////////////
-    // ITEM_WITH_LIST_TYPE view handling logic.
-    /////////////////////////////////////////////////////////////////////////
 
     /* on content click listener (handles clicks both for items and delete buttons) */
     static class OnListElementInternalClickListener implements View.OnClickListener {
@@ -580,14 +629,6 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
                 R.id.element_item_7_delete_button
         }) List<View> elementItemDeleteButtons;
 
-        static DashboardElement getElement(List<DashboardElement> elements, int position) {
-            if (elements != null && elements.size() > position) {
-                return elements.get(position);
-            }
-
-            return null;
-        }
-
         public ListItemViewHolder(View view, OnItemClickListener listener) {
             itemElementsContainer = view;
             onListElementInternalClickListener = new OnListElementInternalClickListener(listener);
@@ -605,60 +646,18 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             });
         }
 
+        static DashboardElement getElement(List<DashboardElement> elements, int position) {
+            if (elements != null && elements.size() > position) {
+                return elements.get(position);
+            }
+
+            return null;
+        }
+
         @Override
         public View getView() {
             return itemElementsContainer;
         }
-    }
-
-    private void handleItemsWithLists(ListItemViewHolder holder, DashboardItem item) {
-        List<DashboardElement> elementList = null;
-        if (DashboardItemContent.TYPE_USERS.equals(item.getType())) {
-            elementList = item.getUsers();
-        } else if (DashboardItemContent.TYPE_REPORTS.equals(item.getType())) {
-            elementList = item.getReports();
-        } else if (DashboardItemContent.TYPE_RESOURCES.equals(item.getType())) {
-            elementList = item.getResources();
-        }
-
-        /*
-        * each time RecyclerView binds data to a row, we need to handle recycling properly.
-        * This also applies to view listeners, which will contain reference to data from previous row
-        * (if not handled properly).That's why we need to set element list each time
-        * handleItemsWithLists() is called.
-        */
-        holder.onListElementInternalClickListener.setElements(elementList);
-
-        /* Handling embedded list items. */
-        ButterKnife.apply(holder.elementItems,
-                ListItemViewHolder.ELEMENT_ITEMS_SETTER, elementList);
-        ButterKnife.apply(holder.elementItemDeleteButtons,
-                ListItemViewHolder.ELEMENT_ITEM_BUTTONS_SETTER, elementList);
-    }
-
-    /* convenience method for removing dashboard items with animations */
-    public void removeItem(DashboardItem item) {
-        if (getData() != null) {
-            int truePosition = getData().indexOf(item);
-            if (!(truePosition < 0)) {
-                getData().remove(truePosition);
-                notifyItemRemoved(truePosition);
-            }
-        }
-    }
-
-    interface IElementContentViewHolder {
-        View getView();
-    }
-
-    public interface OnItemClickListener {
-        void onContentClick(DashboardElement element);
-
-        void onContentDeleteClick(DashboardElement element);
-
-        void onItemDeleteClick(DashboardItem item);
-
-        void onItemShareClick(DashboardItem item);
     }
 
     static class MenuButtonHandler implements View.OnClickListener {

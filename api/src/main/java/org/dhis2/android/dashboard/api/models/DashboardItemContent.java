@@ -47,14 +47,13 @@ public final class DashboardItemContent extends BaseIdentifiableObject {
     public static final String TYPE_RESOURCES = "resources";
     public static final String TYPE_REPORT_TABLES = "reportTables";
     public static final String TYPE_MESSAGES = "messages";
-
-    public DashboardItemContent() {
-    }
-
     @JsonIgnore
     @Column(name = "type")
     @NotNull
     String type;
+
+    public DashboardItemContent() {
+    }
 
     @JsonIgnore
     public String getType() {

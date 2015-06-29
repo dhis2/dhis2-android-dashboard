@@ -96,20 +96,6 @@ public class WebViewFragment extends BaseFragment {
             mDashboardElementId = dashboardElementId;
         }
 
-        @Override
-        public String inBackground() {
-            DhisApi dhisApi = RepoManager.createService(DhisManager.getInstance().getServerUrl(),
-                    DhisManager.getInstance().getUserCredentials());
-            return readInputStream(dhisApi.getReportTableData(mDashboardElementId).getBody());
-        }
-
-        @Override
-        public void onFinish(String result) {
-            if (mFragmentRef.get() != null) {
-                mFragmentRef.get().onDataDownloaded(result);
-            }
-        }
-
         static String readInputStream(TypedInput in) {
             StringBuilder builder = new StringBuilder();
             try {
@@ -129,6 +115,20 @@ public class WebViewFragment extends BaseFragment {
                 e.printStackTrace();
             }
             return builder.toString();
+        }
+
+        @Override
+        public String inBackground() {
+            DhisApi dhisApi = RepoManager.createService(DhisManager.getInstance().getServerUrl(),
+                    DhisManager.getInstance().getUserCredentials());
+            return readInputStream(dhisApi.getReportTableData(mDashboardElementId).getBody());
+        }
+
+        @Override
+        public void onFinish(String result) {
+            if (mFragmentRef.get() != null) {
+                mFragmentRef.get().onDataDownloaded(result);
+            }
         }
     }
 }

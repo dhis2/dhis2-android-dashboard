@@ -73,11 +73,9 @@ import static com.raizlabs.android.dbflow.sql.builder.Condition.column;
 
 public class DashboardItemAddFragment extends DialogFragment
         implements PopupMenu.OnMenuItemClickListener, LoaderCallbacks<List<OptionAdapterValue>> {
+    public static final int DIALOG_ID = 234235;
     private static final String TAG = DashboardItemAddFragment.class.getSimpleName();
     private static final int LOADER_ID = 3451234;
-
-    public static final int DIALOG_ID = 234235;
-
     @InjectView(R.id.filter_options) EditText mFilter;
     @InjectView(R.id.dialog_label) TextView mDialogLabel;
     @InjectView(R.id.simple_listview) ListView mListView;
@@ -231,6 +229,10 @@ public class DashboardItemAddFragment extends DialogFragment
         return mResourcesMenu.getMenu().findItem(id).isChecked();
     }
 
+    public interface OnOptionSelectedListener {
+        void onOptionSelected(int dialogId, int position, String id, String name);
+    }
+
     static class DbQuery implements Query<List<OptionAdapterValue>> {
         private List<String> mTypes;
 
@@ -270,9 +272,5 @@ public class DashboardItemAddFragment extends DialogFragment
 
             return adapterValues;
         }
-    }
-
-    public interface OnOptionSelectedListener {
-        void onOptionSelected(int dialogId, int position, String id, String name);
     }
 }

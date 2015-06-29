@@ -41,7 +41,6 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.UserAccount;

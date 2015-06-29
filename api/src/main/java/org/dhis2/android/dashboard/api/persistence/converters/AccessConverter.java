@@ -40,7 +40,7 @@ import org.dhis2.android.dashboard.api.utils.ObjectMapperProvider;
 import java.io.IOException;
 
 @com.raizlabs.android.dbflow.annotation.TypeConverter
-public final class AccessConverter extends TypeConverter<String, Access>{
+public final class AccessConverter extends TypeConverter<String, Access> {
 
     @Override public String getDBValue(Access model) {
         String access = null;

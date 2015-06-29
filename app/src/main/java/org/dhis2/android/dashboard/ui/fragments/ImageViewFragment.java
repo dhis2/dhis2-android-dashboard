@@ -44,6 +44,8 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public class ImageViewFragment extends BaseFragment {
     private static final String IMAGE_URL = "arg:imageUrl";
+    ImageView mImageView;
+    PhotoViewAttacher mAttacher;
 
     public static ImageViewFragment newInstance(String imageUrl) {
         isNull(imageUrl, "Image URL must not be null");
@@ -59,9 +61,6 @@ public class ImageViewFragment extends BaseFragment {
     private String getImageUrl() {
         return getArguments().getString(IMAGE_URL);
     }
-
-    ImageView mImageView;
-    PhotoViewAttacher mAttacher;
 
     @Nullable @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

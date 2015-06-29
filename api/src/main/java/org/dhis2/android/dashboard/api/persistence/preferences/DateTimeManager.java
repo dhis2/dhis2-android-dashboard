@@ -14,8 +14,10 @@ public final class DateTimeManager {
     private static DateTimeManager mPreferences;
     private final SharedPreferences mPrefs;
 
-    public enum ResourceType {
-        CONTENT, DASHBOARDS, INTERPRETATIONS
+    private DateTimeManager(Context context) {
+        isNull(context, "Context object must not be null");
+        mPrefs = context.getSharedPreferences(PREFERENCES,
+                Context.MODE_PRIVATE);
     }
 
     public static void init(Context context) {
@@ -28,12 +30,6 @@ public final class DateTimeManager {
         }
 
         return mPreferences;
-    }
-
-    private DateTimeManager(Context context) {
-        isNull(context, "Context object must not be null");
-        mPrefs = context.getSharedPreferences(PREFERENCES,
-                Context.MODE_PRIVATE);
     }
 
     public void setLastUpdated(ResourceType type, DateTime dateTime) {
@@ -69,5 +65,9 @@ public final class DateTimeManager {
 
     private void deleteString(String key) {
         mPrefs.edit().remove(key).commit();
+    }
+
+    public enum ResourceType {
+        CONTENT, DASHBOARDS, INTERPRETATIONS
     }
 }

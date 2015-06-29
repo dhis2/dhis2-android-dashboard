@@ -53,6 +53,22 @@ public final class Access {
     @JsonProperty("delete")
     boolean delete;
 
+    /**
+     * Factory method which creates Access object with all rights set to true.
+     *
+     * @return new Access object.
+     */
+    static Access provideDefaultAccess() {
+        Access access = new Access();
+        access.setManage(true);
+        access.setExternalize(true);
+        access.setWrite(true);
+        access.setUpdate(true);
+        access.setRead(true);
+        access.setDelete(true);
+        return access;
+    }
+
     @JsonIgnore
     public boolean isDelete() {
         return delete;
@@ -111,21 +127,6 @@ public final class Access {
     @JsonIgnore
     public void setWrite(boolean write) {
         this.write = write;
-    }
-
-    /**
-     * Factory method which creates Access object with all rights set to true.
-     * @return new Access object.
-     */
-    static Access provideDefaultAccess() {
-        Access access = new Access();
-        access.setManage(true);
-        access.setExternalize(true);
-        access.setWrite(true);
-        access.setUpdate(true);
-        access.setRead(true);
-        access.setDelete(true);
-        return access;
     }
 
     @JsonIgnore

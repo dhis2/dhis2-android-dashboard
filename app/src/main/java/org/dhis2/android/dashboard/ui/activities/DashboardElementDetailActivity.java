@@ -61,6 +61,13 @@ public class DashboardElementDetailActivity extends BaseActivity {
         return intent;
     }
 
+    private static String buildImageUrl(String resource, String id) {
+        return DhisManager.getInstance().getServerUrl().newBuilder()
+                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
+                .addQueryParameter("width", "480").addQueryParameter("height", "320")
+                .toString();
+    }
+
     private long getDashboardElementId() {
         return getIntent().getLongExtra(DASHBOARD_ELEMENT_ID, -1);
     }
@@ -122,13 +129,6 @@ public class DashboardElementDetailActivity extends BaseActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();
-    }
-
-    private static String buildImageUrl(String resource, String id) {
-        return DhisManager.getInstance().getServerUrl().newBuilder()
-                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
-                .toString();
     }
 
     @Override

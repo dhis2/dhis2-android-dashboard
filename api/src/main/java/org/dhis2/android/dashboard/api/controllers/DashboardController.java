@@ -75,6 +75,65 @@ public final class DashboardController implements IController<Object> {
                 dhisManager.getUserCredentials());
     }
 
+    private static boolean isSuccess(int status) {
+        return status >= 200 && status < 300;
+    }
+
+    private static Header findLocationHeader(List<Header> headers) {
+        final String LOCATION = "location";
+        if (headers != null && !headers.isEmpty()) {
+            for (Header header : headers) {
+                if (header.getName().equalsIgnoreCase(LOCATION)) {
+                    return header;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /* this method subtracts content of bList from aList */
+    private static List<String> subtract(List<String> aList, List<String> bList) {
+        List<String> aListCopy = new ArrayList<>(aList);
+        if (bList != null && !bList.isEmpty()) {
+            for (String bItem : bList) {
+                if (aListCopy.contains(bItem)) {
+                    int index = aListCopy.indexOf(bItem);
+                    aListCopy.remove(index);
+                }
+            }
+        }
+        return aListCopy;
+    }
+
+    private static List<Dashboard> queryDashboards() {
+        return new Select().from(Dashboard.class)
+                .where(Condition.column(Dashboard$Table
+                        .STATE).isNot(State.TO_POST.toString()))
+                .queryList();
+    }
+
+    private static List<DashboardItem> queryDashboardItems(Dashboard dashboard) {
+        Where<DashboardItem> where = new Select().from(DashboardItem.class)
+                .where(Condition.column(DashboardItem$Table
+                        .STATE).isNot(State.TO_POST));
+        if (dashboard != null) {
+            where = where.and(Condition.column(DashboardItem$Table
+                    .DASHBOARD_DASHBOARD).is(dashboard.getId()));
+        }
+
+        return where.queryList();
+    }
+
+    private static List<DashboardElement> queryDashboardElements(DashboardItem item) {
+        return new Select().from(DashboardElement.class)
+                .where(Condition.column(DashboardElement$Table
+                        .DASHBOARDITEM_DASHBOARDITEM).is(item.getId()))
+                .and(Condition.column(DashboardElement$Table
+                        .STATE).isNot(State.TO_POST.toString()))
+                .queryList();
+    }
+
     @Override
     public Object run() throws APIException {
         /* first we need to fetch all changes from server
@@ -506,64 +565,5 @@ public final class DashboardController implements IController<Object> {
                 element.delete();
             }
         }
-    }
-
-    private static boolean isSuccess(int status) {
-        return status >= 200 && status < 300;
-    }
-
-    private static Header findLocationHeader(List<Header> headers) {
-        final String LOCATION = "location";
-        if (headers != null && !headers.isEmpty()) {
-            for (Header header : headers) {
-                if (header.getName().equalsIgnoreCase(LOCATION)) {
-                    return header;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /* this method subtracts content of bList from aList */
-    private static List<String> subtract(List<String> aList, List<String> bList) {
-        List<String> aListCopy = new ArrayList<>(aList);
-        if (bList != null && !bList.isEmpty()) {
-            for (String bItem : bList) {
-                if (aListCopy.contains(bItem)) {
-                    int index = aListCopy.indexOf(bItem);
-                    aListCopy.remove(index);
-                }
-            }
-        }
-        return aListCopy;
-    }
-
-    private static List<Dashboard> queryDashboards() {
-        return new Select().from(Dashboard.class)
-                .where(Condition.column(Dashboard$Table
-                        .STATE).isNot(State.TO_POST.toString()))
-                .queryList();
-    }
-
-    private static List<DashboardItem> queryDashboardItems(Dashboard dashboard) {
-        Where<DashboardItem> where = new Select().from(DashboardItem.class)
-                .where(Condition.column(DashboardItem$Table
-                        .STATE).isNot(State.TO_POST));
-        if (dashboard != null) {
-            where = where.and(Condition.column(DashboardItem$Table
-                    .DASHBOARD_DASHBOARD).is(dashboard.getId()));
-        }
-
-        return where.queryList();
-    }
-
-    private static List<DashboardElement> queryDashboardElements(DashboardItem item) {
-        return new Select().from(DashboardElement.class)
-                .where(Condition.column(DashboardElement$Table
-                        .DASHBOARDITEM_DASHBOARDITEM).is(item.getId()))
-                .and(Condition.column(DashboardElement$Table
-                        .STATE).isNot(State.TO_POST.toString()))
-                .queryList();
     }
 }

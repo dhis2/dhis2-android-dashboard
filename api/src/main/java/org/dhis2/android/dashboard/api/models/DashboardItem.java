@@ -51,14 +51,11 @@ import static android.text.TextUtils.isEmpty;
 
 @Table(databaseName = DbDhis.NAME)
 public final class DashboardItem extends BaseIdentifiableObject {
-    private static final String TAG = DashboardItem.class.getSimpleName();
-
     public static final int MAX_CONTENT = 8;
-
     public static final String SHAPE_NORMAL = "normal";
     public static final String SHAPE_DOUBLE_WIDTH = "double_width";
     public static final String SHAPE_FULL_WIDTH = "full_width";
-
+    private static final String TAG = DashboardItem.class.getSimpleName();
     @JsonIgnore
     @Column(name = "state")
     @NotNull
@@ -187,52 +184,6 @@ public final class DashboardItem extends BaseIdentifiableObject {
         return elements;
     }
 
-    @JsonIgnore
-    public void setDashboardElements(List<DashboardElement> dashboardElements) {
-        if (isEmpty(getType())) {
-            return;
-        }
-
-        if (dashboardElements == null || dashboardElements.isEmpty()) {
-            return;
-        }
-
-        switch (getType()) {
-            case DashboardItemContent.TYPE_CHART: {
-                setChart(dashboardElements.get(0));
-                break;
-            }
-            case DashboardItemContent.TYPE_EVENT_CHART: {
-                setEventChart(dashboardElements.get(0));
-                break;
-            }
-            case DashboardItemContent.TYPE_MAP: {
-                setMap(dashboardElements.get(0));
-                break;
-            }
-            case DashboardItemContent.TYPE_REPORT_TABLE: {
-                setReportTable(dashboardElements.get(0));
-                break;
-            }
-            case DashboardItemContent.TYPE_EVENT_REPORT: {
-                setEventReport(dashboardElements.get(0));
-                break;
-            }
-            case DashboardItemContent.TYPE_USERS: {
-                setUsers(dashboardElements);
-                break;
-            }
-            case DashboardItemContent.TYPE_REPORTS: {
-                setReports(dashboardElements);
-                break;
-            }
-            case DashboardItemContent.TYPE_RESOURCES: {
-                setResources(dashboardElements);
-                break;
-            }
-        }
-    }
-
     /**
      * Convenience method for retrieving DashboardElements from item.
      *
@@ -282,6 +233,52 @@ public final class DashboardItem extends BaseIdentifiableObject {
         }
 
         return elements;
+    }
+
+    @JsonIgnore
+    public void setDashboardElements(List<DashboardElement> dashboardElements) {
+        if (isEmpty(getType())) {
+            return;
+        }
+
+        if (dashboardElements == null || dashboardElements.isEmpty()) {
+            return;
+        }
+
+        switch (getType()) {
+            case DashboardItemContent.TYPE_CHART: {
+                setChart(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_EVENT_CHART: {
+                setEventChart(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_MAP: {
+                setMap(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_REPORT_TABLE: {
+                setReportTable(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
+                setEventReport(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_USERS: {
+                setUsers(dashboardElements);
+                break;
+            }
+            case DashboardItemContent.TYPE_REPORTS: {
+                setReports(dashboardElements);
+                break;
+            }
+            case DashboardItemContent.TYPE_RESOURCES: {
+                setResources(dashboardElements);
+                break;
+            }
+        }
     }
 
 

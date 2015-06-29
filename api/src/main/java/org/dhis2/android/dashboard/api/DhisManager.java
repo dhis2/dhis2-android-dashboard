@@ -55,6 +55,14 @@ public class DhisManager {
     private static DhisManager mDhisManager;
     private Session mSession;
 
+    private DhisManager(Context context) {
+        SessionManager.init(context);
+        DateTimeManager.init(context);
+
+        // fetch meta data from disk
+        readSession();
+    }
+
     public static void init(Context context) {
         isNull(context, "Context object must not be null");
         if (mDhisManager == null) {
@@ -68,14 +76,6 @@ public class DhisManager {
         }
 
         return mDhisManager;
-    }
-
-    private DhisManager(Context context) {
-        SessionManager.init(context);
-        DateTimeManager.init(context);
-
-        // fetch meta data from disk
-        readSession();
     }
 
     public UserAccount logInUser(HttpUrl serverUrl,

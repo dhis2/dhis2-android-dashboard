@@ -30,8 +30,12 @@ package org.dhis2.android.dashboard.api.job;
 
 public interface IJob<T> {
     public void onBind(JobExecutor jobExecutor);
+
     public void onStart();
+
     public T inBackground();
+
     public void onFinish(T result);
+
     public void onUnbind();
 }
