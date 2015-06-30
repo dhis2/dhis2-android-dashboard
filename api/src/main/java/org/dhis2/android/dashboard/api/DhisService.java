@@ -129,7 +129,7 @@ public final class DhisService {
             @Override
             public Object execute() throws APIException {
                 mDhisManager.syncInterpretations();
-                return null;
+                return new Object();
             }
         });
     }

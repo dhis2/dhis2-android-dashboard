@@ -60,21 +60,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class DashboardViewPagerFragment extends BaseFragment
         implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener,
         Toolbar.OnMenuItemClickListener, ViewPager.OnPageChangeListener, OnOptionSelectedListener {
     private static final int LOADER_ID = 1233432;
 
-    @InjectView(R.id.dashboard_tabs)
+    @Bind(R.id.dashboard_tabs)
     TabLayout mTabs;
 
-    @InjectView(R.id.dashboard_view_pager)
+    @Bind(R.id.dashboard_view_pager)
     ViewPager mViewPager;
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
     DashboardAdapter mDashboardAdapter;
@@ -86,7 +86,7 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
 
         mToolbar.setNavigationIcon(R.mipmap.ic_menu);
         mToolbar.setNavigationOnClickListener(this);

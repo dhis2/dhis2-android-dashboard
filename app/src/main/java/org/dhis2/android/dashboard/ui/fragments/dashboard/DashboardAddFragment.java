@@ -40,16 +40,20 @@ import android.widget.TextView;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 
 /**
  * Fragment responsible for creation of new dashboards.
  */
 public final class DashboardAddFragment extends DialogFragment {
-    @InjectView(R.id.dialog_label) TextView mDialogLabel;
-    @InjectView(R.id.dashboard_name) EditText mDashboardName;
+
+    @Bind(R.id.dialog_label)
+    TextView mDialogLabel;
+
+    @Bind(R.id.dashboard_name)
+    EditText mDashboardName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,13 +62,15 @@ public final class DashboardAddFragment extends DialogFragment {
                 R.style.Theme_AppCompat_Light_Dialog);
     }
 
-    @Nullable @Override
+    @Nullable
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_dashboard_add, container, false);
     }
 
-    @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        ButterKnife.inject(this, view);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        ButterKnife.bind(this, view);
         mDialogLabel.setText(getString(R.string.add_dashboard));
     }
 

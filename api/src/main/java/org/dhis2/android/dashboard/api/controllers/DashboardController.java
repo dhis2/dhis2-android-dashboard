@@ -240,7 +240,10 @@ public final class DashboardController implements IController<Object> {
         List<DashboardItem> actualItems = new ArrayList<>();
         if (dashboards != null && !dashboards.isEmpty()) {
             for (Dashboard dashboard : dashboards) {
-                actualItems.addAll(dashboard.getDashboardItems());
+                System.out.println("DASHBOARD: " + dashboard);
+                if (dashboard.getDashboardItems() != null) {
+                    actualItems.addAll(dashboard.getDashboardItems());
+                }
             }
         }
 

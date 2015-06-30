@@ -46,13 +46,13 @@ import org.dhis2.android.dashboard.api.models.DashboardItemContent;
 import org.dhis2.android.dashboard.ui.fragments.ImageViewFragment;
 import org.dhis2.android.dashboard.ui.fragments.WebViewFragment;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class DashboardElementDetailActivity extends BaseActivity {
     private static final String DASHBOARD_ELEMENT_ID = "arg:dashboardElementId";
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
     public static Intent newIntent(Activity activity, long dashboardElementId) {
@@ -76,7 +76,7 @@ public class DashboardElementDetailActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard_element_detail);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
 

@@ -63,8 +63,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import butterknife.OnTextChanged;
@@ -73,13 +73,23 @@ import static com.raizlabs.android.dbflow.sql.builder.Condition.column;
 
 public class DashboardItemAddFragment extends DialogFragment
         implements PopupMenu.OnMenuItemClickListener, LoaderCallbacks<List<OptionAdapterValue>> {
-    public static final int DIALOG_ID = 234235;
+
     private static final String TAG = DashboardItemAddFragment.class.getSimpleName();
     private static final int LOADER_ID = 3451234;
-    @InjectView(R.id.filter_options) EditText mFilter;
-    @InjectView(R.id.dialog_label) TextView mDialogLabel;
-    @InjectView(R.id.simple_listview) ListView mListView;
-    @InjectView(R.id.filter_resources) ImageView mFilterResources;
+
+    public static final int DIALOG_ID = 234235;
+
+    @Bind(R.id.filter_options)
+    EditText mFilter;
+
+    @Bind(R.id.dialog_label)
+    TextView mDialogLabel;
+
+    @Bind(R.id.simple_listview)
+    ListView mListView;
+
+    @Bind(R.id.filter_resources)
+    ImageView mFilterResources;
 
     PopupMenu mResourcesMenu;
     DashboardItemSearchDialogAdapter mAdapter;
@@ -107,7 +117,7 @@ public class DashboardItemAddFragment extends DialogFragment
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
 
         InputMethodManager imm = (InputMethodManager)
                 getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);

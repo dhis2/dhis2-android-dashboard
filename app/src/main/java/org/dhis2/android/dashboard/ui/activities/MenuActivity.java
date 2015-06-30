@@ -47,21 +47,24 @@ import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardViewPagerFragment;
 import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationsFragment;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public class MenuActivity extends BaseActivity
         implements OnNavigationItemSelectedListener, DrawerListener, INavigationCallback {
 
-    @InjectView(R.id.drawer_layout)
+    @Bind(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
-    @InjectView(R.id.navigation_view)
+
+    @Bind(R.id.navigation_view)
     NavigationView mNavigationView;
-    @InjectView(R.id.drawer_user_name)
+
+    @Bind(R.id.drawer_user_name)
     TextView mUsername;
-    @InjectView(R.id.drawer_user_info)
+
+    @Bind(R.id.drawer_user_info)
     TextView mUserInfo;
 
     Runnable mPendingRunnable;
@@ -70,7 +73,7 @@ public class MenuActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         mDrawerLayout.setDrawerListener(this);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);

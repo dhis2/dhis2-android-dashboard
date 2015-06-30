@@ -39,6 +39,7 @@ import org.dhis2.android.dashboard.api.utils.ObjectMapperProvider;
 
 import java.io.IOException;
 
+@SuppressWarnings("unused")
 @com.raizlabs.android.dbflow.annotation.TypeConverter
 public final class AccessConverter extends TypeConverter<String, Access> {
 

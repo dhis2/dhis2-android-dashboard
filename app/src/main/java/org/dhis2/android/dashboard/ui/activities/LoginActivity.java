@@ -44,8 +44,8 @@ import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.network.APIException;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
@@ -55,24 +55,29 @@ import static org.dhis2.android.dashboard.utils.TextUtils.isEmpty;
 public class LoginActivity extends BaseActivity {
     private static final String IS_LOADING = "state:isLoading";
 
-    @InjectView(R.id.log_in_views_container)
+    @Bind(R.id.log_in_views_container)
     View mViewsContainer;
-    @InjectView(R.id.progress_bar_circular_white)
+
+    @Bind(R.id.progress_bar_circular_white)
     CircularProgressBar mProgressBar;
-    @InjectView(R.id.server_url)
+
+    @Bind(R.id.server_url)
     EditText mServerUrl;
-    @InjectView(R.id.username)
+
+    @Bind(R.id.username)
     EditText mUsername;
-    @InjectView(R.id.password)
+
+    @Bind(R.id.password)
     EditText mPassword;
-    @InjectView(R.id.log_in_button)
+
+    @Bind(R.id.log_in_button)
     Button mLogInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         mServerUrl.setText("https://apps.dhis2.org/demo/");
         mUsername.setText("admin");

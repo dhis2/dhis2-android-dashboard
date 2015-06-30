@@ -51,8 +51,8 @@ import org.dhis2.android.dashboard.api.utils.PicassoProvider;
 
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectViews;
 
 public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardItemAdapter.ItemViewHolder> {
     private static final String DATE_FORMAT = "YYYY-MM-dd";
@@ -439,7 +439,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             mElement = element;
         }
 
-        @Override public void onClick(View view) {
+        @Override
+        public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.dashboard_item_image: {
                     mListener.onContentClick(mElement);
@@ -501,7 +502,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             mElements = elements;
         }
 
-        @Override public void onClick(View view) {
+        @Override
+        public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.element_item_0: {
                     onContentClick(0);
@@ -598,7 +600,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
 
         static final ButterKnife.Setter<View, List<DashboardElement>> ELEMENT_ITEM_BUTTONS_SETTER
                 = new ButterKnife.Setter<View, List<DashboardElement>>() {
-            @Override public void set(View view, List<DashboardElement> elements, int index) {
+            @Override
+            public void set(View view, List<DashboardElement> elements, int index) {
                 DashboardElement element = getElement(elements, index);
                 view.setVisibility(element == null ? View.INVISIBLE : View.VISIBLE);
             }
@@ -607,7 +610,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         final OnListElementInternalClickListener onListElementInternalClickListener;
         final View itemElementsContainer;
 
-        @InjectViews({
+        @Bind({
                 R.id.element_item_0,
                 R.id.element_item_1,
                 R.id.element_item_2,
@@ -616,9 +619,10 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
                 R.id.element_item_5,
                 R.id.element_item_6,
                 R.id.element_item_7
-        }) List<TextView> elementItems;
+        })
+        List<TextView> elementItems;
 
-        @InjectViews({
+        @Bind({
                 R.id.element_item_0_delete_button,
                 R.id.element_item_1_delete_button,
                 R.id.element_item_2_delete_button,
@@ -627,20 +631,23 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
                 R.id.element_item_5_delete_button,
                 R.id.element_item_6_delete_button,
                 R.id.element_item_7_delete_button
-        }) List<View> elementItemDeleteButtons;
+        })
+        List<View> elementItemDeleteButtons;
 
         public ListItemViewHolder(View view, OnItemClickListener listener) {
             itemElementsContainer = view;
             onListElementInternalClickListener = new OnListElementInternalClickListener(listener);
 
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
             ButterKnife.apply(elementItems, new ButterKnife.Action<View>() {
-                @Override public void apply(View view, int index) {
+                @Override
+                public void apply(View view, int index) {
                     view.setOnClickListener(onListElementInternalClickListener);
                 }
             });
             ButterKnife.apply(elementItemDeleteButtons, new ButterKnife.Action<View>() {
-                @Override public void apply(View view, int index) {
+                @Override
+                public void apply(View view, int index) {
                     view.setOnClickListener(onListElementInternalClickListener);
                 }
             });

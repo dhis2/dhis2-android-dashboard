@@ -41,8 +41,8 @@ import android.widget.TextView;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 
@@ -52,14 +52,24 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
  * Handles editing (changing name) and removal of given dashboard.
  */
 public final class DashboardManageFragment extends DialogFragment {
-    @InjectView(R.id.fragment_bar) View mFragmentBar;
-    @InjectView(R.id.fragment_bar_mode_editing) View mFragmentBarEditingMode;
 
-    @InjectView(R.id.dialog_label) TextView mDialogLabel;
-    @InjectView(R.id.action_name) TextView mActionName;
+    @Bind(R.id.fragment_bar)
+    View mFragmentBar;
 
-    @InjectView(R.id.dashboard_name) EditText mDashboardName;
-    @InjectView(R.id.delete_dashboard_button) Button mDeleteButton;
+    @Bind(R.id.fragment_bar_mode_editing)
+    View mFragmentBarEditingMode;
+
+    @Bind(R.id.dialog_label)
+    TextView mDialogLabel;
+
+    @Bind(R.id.action_name)
+    TextView mActionName;
+
+    @Bind(R.id.dashboard_name)
+    EditText mDashboardName;
+
+    @Bind(R.id.delete_dashboard_button)
+    Button mDeleteButton;
 
     Dashboard mDashboard;
 
@@ -78,14 +88,15 @@ public final class DashboardManageFragment extends DialogFragment {
                 R.style.Theme_AppCompat_Light_Dialog);
     }
 
-    @Nullable @Override
+    @Nullable
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_dashboard_manage, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
 
         mDialogLabel.setText(getString(R.string.manage_dashboard));
         mActionName.setText(getString(R.string.edit_name));

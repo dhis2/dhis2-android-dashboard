@@ -32,6 +32,7 @@ import com.raizlabs.android.dbflow.converter.TypeConverter;
 
 import org.dhis2.android.dashboard.api.models.meta.State;
 
+@SuppressWarnings("unused")
 @com.raizlabs.android.dbflow.annotation.TypeConverter
 public final class StateConverter extends TypeConverter<String, State> {
 

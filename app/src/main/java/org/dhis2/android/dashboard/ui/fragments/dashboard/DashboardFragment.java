@@ -63,9 +63,6 @@ import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-
 public class DashboardFragment extends BaseFragment
         implements LoaderManager.LoaderCallbacks<List<DashboardItem>>, DashboardItemAdapter.OnItemClickListener {
     private static final int LOADER_ID = 74734523;
@@ -77,8 +74,8 @@ public class DashboardFragment extends BaseFragment
     private static final String MANAGE = "arg:manage";
     private static final String EXTERNALIZE = "arg:externalize";
 
-    @InjectView(R.id.grid)
     RecyclerView mGridView;
+
     DashboardItemAdapter mAdapter;
 
     public static DashboardFragment newInstance(Dashboard dashboard) {
@@ -113,12 +110,12 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup group, Bundle bundle) {
-        return inflater.inflate(R.layout.fragment_dashboard, group, false);
+        return inflater.inflate(R.layout.gridview, group, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        ButterKnife.inject(this, view);
+        mGridView = (RecyclerView) view;
 
         final int spanCount = getResources().getInteger(R.integer.column_nums);
 

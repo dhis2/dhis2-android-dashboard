@@ -44,6 +44,7 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public class ImageViewFragment extends BaseFragment {
     private static final String IMAGE_URL = "arg:imageUrl";
+
     ImageView mImageView;
     PhotoViewAttacher mAttacher;
 
