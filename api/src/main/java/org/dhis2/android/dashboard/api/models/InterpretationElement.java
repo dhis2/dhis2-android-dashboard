@@ -27,64 +27,32 @@
 package org.dhis2.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyAction;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.Table;
 
-import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
 @Table(databaseName = DbDhis.NAME)
-@JsonIgnoreProperties(ignoreUnknown = true)
-public final class InterpretationComment extends BaseIdentifiableObject {
-
-    @JsonProperty("text")
-    @Column(name = "text")
-    String text;
-
-    @JsonProperty("user")
-    @Column(name = "user")
-    @ForeignKey(
-            references = {
-                    @ForeignKeyReference(columnName = "user", columnType = long.class, foreignColumnName = "id")
-            }, saveForeignKeyModel = false, onDelete = ForeignKeyAction.CASCADE
-    )
-    User user;
+public final class InterpretationElement extends BaseIdentifiableObject {
 
     @JsonIgnore
     @Column
     @ForeignKey(
             references = {
-                    @ForeignKeyReference(columnName = "interpretation", columnType = long.class, foreignColumnName = "id")
+                    @ForeignKeyReference(columnName = "interpretation",
+                            columnType = long.class, foreignColumnName = "id")
             }, saveForeignKeyModel = false, onDelete = ForeignKeyAction.CASCADE
     )
     Interpretation interpretation;
 
-    @JsonIgnore
-    @Column(name = "state")
-    State state;
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    public InterpretationElement() {
+        // empty constructor
     }
 
     public Interpretation getInterpretation() {
@@ -93,13 +61,5 @@ public final class InterpretationComment extends BaseIdentifiableObject {
 
     public void setInterpretation(Interpretation interpretation) {
         this.interpretation = interpretation;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public void setState(State state) {
-        this.state = state;
     }
 }

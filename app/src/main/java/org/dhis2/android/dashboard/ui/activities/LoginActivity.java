@@ -55,12 +55,18 @@ import static org.dhis2.android.dashboard.utils.TextUtils.isEmpty;
 public class LoginActivity extends BaseActivity {
     private static final String IS_LOADING = "state:isLoading";
 
-    @InjectView(R.id.log_in_views_container) View mViewsContainer;
-    @InjectView(R.id.progress_bar_circular_white) CircularProgressBar mProgressBar;
-    @InjectView(R.id.server_url) EditText mServerUrl;
-    @InjectView(R.id.username) EditText mUsername;
-    @InjectView(R.id.password) EditText mPassword;
-    @InjectView(R.id.log_in_button) Button mLogInButton;
+    @InjectView(R.id.log_in_views_container)
+    View mViewsContainer;
+    @InjectView(R.id.progress_bar_circular_white)
+    CircularProgressBar mProgressBar;
+    @InjectView(R.id.server_url)
+    EditText mServerUrl;
+    @InjectView(R.id.username)
+    EditText mUsername;
+    @InjectView(R.id.password)
+    EditText mPassword;
+    @InjectView(R.id.log_in_button)
+    Button mLogInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +123,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onSuccess(UserAccount userAccount) {
+    public void onSuccess(UserAccount user) {
         startActivity(new Intent(this, MenuActivity.class));
         finish();
     }

@@ -61,7 +61,7 @@ public final class LogInUserController implements IController<UserAccount> {
                 "firstName,surname,gender,birthday,introduction," +
                 "education,employer,interests,jobTitle,languages,email,phoneNumber," +
                 "organisationUnits[id]");
-        UserAccount userAccount = mService.getCurrentUserAccount(QUERY_PARAMS);
+        UserAccount user = mService.getCurrentUserAccount(QUERY_PARAMS);
 
         // if we got here, it means http
         // request was executed successfully
@@ -71,8 +71,8 @@ public final class LogInUserController implements IController<UserAccount> {
         SessionManager.getInstance().put(session);
 
         /* save user account details */
-        userAccount.save();
+        user.save();
 
-        return userAccount;
+        return user;
     }
 }

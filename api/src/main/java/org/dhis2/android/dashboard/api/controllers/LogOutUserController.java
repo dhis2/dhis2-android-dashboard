@@ -43,10 +43,10 @@ public final class LogOutUserController implements IController<Object> {
                 .getInstance();
         sessionManager.delete();
         //mUserAccountHandler.delete();
-        UserAccount userAccount
+        UserAccount user
                 = UserAccount.getUserAccountFromDb();
-        if (userAccount != null) {
-            userAccount.delete();
+        if (user != null) {
+            user.delete();
         }
         return new Object();
     }

@@ -111,6 +111,18 @@ public final class UserAccount extends BaseIdentifiableObject {
     }
 
     @JsonIgnore
+    public static User toUser(UserAccount userAccount) {
+        User user = new User();
+        user.setUId(userAccount.getUId());
+        user.setAccess(userAccount.getAccess());
+        user.setCreated(user.getCreated());
+        user.setLastUpdated(userAccount.getLastUpdated());
+        user.setName(userAccount.getName());
+        user.setDisplayName(userAccount.getDisplayName());
+        return user;
+    }
+
+    @JsonIgnore
     public State getState() {
         return state;
     }

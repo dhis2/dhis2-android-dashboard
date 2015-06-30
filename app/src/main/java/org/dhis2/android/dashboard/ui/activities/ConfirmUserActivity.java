@@ -55,13 +55,20 @@ import static org.dhis2.android.dashboard.utils.TextUtils.isEmpty;
 public class ConfirmUserActivity extends BaseActivity {
     private static final String IS_LOADING = "state:isLoading";
 
-    @InjectView(R.id.toolbar) Toolbar mToolbar;
-    @InjectView(R.id.progress_bar_circular_navy) CircularProgressBar mProgressBar;
-    @InjectView(R.id.re_log_in_views_container) View mViewsContainer;
-    @InjectView(R.id.username) EditText mUsername;
-    @InjectView(R.id.password) EditText mPassword;
-    @InjectView(R.id.re_log_in_button) Button mReLogIn;
-    @InjectView(R.id.delete_and_log_out_button) Button mLogOut;
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.progress_bar_circular_navy)
+    CircularProgressBar mProgressBar;
+    @InjectView(R.id.re_log_in_views_container)
+    View mViewsContainer;
+    @InjectView(R.id.username)
+    EditText mUsername;
+    @InjectView(R.id.password)
+    EditText mPassword;
+    @InjectView(R.id.re_log_in_button)
+    Button mReLogIn;
+    @InjectView(R.id.delete_and_log_out_button)
+    Button mLogOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +129,7 @@ public class ConfirmUserActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onSuccess(UserAccount userAccount) {
+    public void onSuccess(UserAccount user) {
         startActivity(new Intent(this, LauncherActivity.class));
         finish();
     }

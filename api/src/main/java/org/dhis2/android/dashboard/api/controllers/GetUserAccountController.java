@@ -49,10 +49,10 @@ public final class GetUserAccountController implements IController<UserAccount> 
 
     @Override
     public UserAccount run() throws APIException {
-        UserAccount userAccount = getUserAccount();
+        UserAccount user = getUserAccount();
         // update it in db
-        userAccount.save();
-        return userAccount;
+        user.save();
+        return user;
     }
 
     private UserAccount getUserAccount() {

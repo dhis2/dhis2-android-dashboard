@@ -101,11 +101,11 @@ public class DhisManager {
                                    Credentials credentials) throws APIException {
         IController<UserAccount> controller
                 = new LogInUserController(serverUrl, credentials);
-        UserAccount userAccount = controller.run();
+        UserAccount user = controller.run();
 
         // fetch meta data from disk
         readSession();
-        return userAccount;
+        return user;
     }
 
     public void invalidateMetaData() {

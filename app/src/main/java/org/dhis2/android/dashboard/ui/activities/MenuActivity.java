@@ -54,10 +54,14 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 public class MenuActivity extends BaseActivity
         implements OnNavigationItemSelectedListener, DrawerListener, INavigationCallback {
 
-    @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-    @InjectView(R.id.navigation_view) NavigationView mNavigationView;
-    @InjectView(R.id.drawer_user_name) TextView mUsername;
-    @InjectView(R.id.drawer_user_info) TextView mUserInfo;
+    @InjectView(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
+    @InjectView(R.id.navigation_view)
+    NavigationView mNavigationView;
+    @InjectView(R.id.drawer_user_name)
+    TextView mUsername;
+    @InjectView(R.id.drawer_user_info)
+    TextView mUserInfo;
 
     Runnable mPendingRunnable;
 
@@ -71,9 +75,9 @@ public class MenuActivity extends BaseActivity
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        UserAccount userAccount = UserAccount.getUserAccountFromDb();
-        mUsername.setText(userAccount.getDisplayName());
-        mUserInfo.setText(userAccount.getEmail());
+        UserAccount user = UserAccount.getUserAccountFromDb();
+        mUsername.setText(user.getDisplayName());
+        mUserInfo.setText(user.getEmail());
     }
 
     @Override
