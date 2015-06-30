@@ -43,6 +43,7 @@ import org.dhis2.android.dashboard.api.persistence.DbDhis;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(databaseName = DbDhis.NAME)
@@ -68,7 +69,7 @@ public final class Interpretation extends BaseIdentifiableObject {
     State state;
 
     @JsonProperty("user")
-    @Column(name = "user")
+    @Column
     @ForeignKey(
             references = {
                     @ForeignKeyReference(columnName = "user", columnType = long.class, foreignColumnName = "id")
@@ -89,13 +90,13 @@ public final class Interpretation extends BaseIdentifiableObject {
     will contain only UUIDs of objects. Also, dashboard application
     won't allow to view dataSet interpretations until dataEntry is implemented here */
     @JsonProperty("dataSet")
-    String dataSet;
+    InterpretationElement dataSet;
 
     @JsonProperty("period")
-    String period;
+    InterpretationElement period;
 
     @JsonProperty("organisationUnit")
-    String organisationUnit;
+    InterpretationElement organisationUnit;
 
     @JsonProperty("comments")
     List<InterpretationComment> comments;
@@ -178,27 +179,27 @@ public final class Interpretation extends BaseIdentifiableObject {
         this.reportTable = reportTable;
     }
 
-    public String getDataSet() {
+    public InterpretationElement getDataSet() {
         return dataSet;
     }
 
-    public void setDataSet(String dataSet) {
+    public void setDataSet(InterpretationElement dataSet) {
         this.dataSet = dataSet;
     }
 
-    public String getPeriod() {
+    public InterpretationElement getPeriod() {
         return period;
     }
 
-    public void setPeriod(String period) {
+    public void setPeriod(InterpretationElement period) {
         this.period = period;
     }
 
-    public String getOrganisationUnit() {
+    public InterpretationElement getOrganisationUnit() {
         return organisationUnit;
     }
 
-    public void setOrganisationUnit(String organisationUnit) {
+    public void setOrganisationUnit(InterpretationElement organisationUnit) {
         this.organisationUnit = organisationUnit;
     }
 
@@ -208,5 +209,71 @@ public final class Interpretation extends BaseIdentifiableObject {
 
     public void setComments(List<InterpretationComment> comments) {
         this.comments = comments;
+    }
+
+    public void setInterpretationElements(List<InterpretationElement> elements) {
+        if (elements == null || elements.isEmpty()) {
+            return;
+        }
+
+        switch (getType()) {
+            case Interpretation.TYPE_CHART: {
+                setChart(elements.get(0));
+                break;
+            }
+            case Interpretation.TYPE_MAP: {
+                setMap(elements.get(0));
+                break;
+            }
+            case Interpretation.TYPE_REPORT_TABLE: {
+                setReportTable(elements.get(0));
+                break;
+            }
+            case Interpretation.TYPE_DATASET_REPORT: {
+                for (InterpretationElement element : elements) {
+                    switch (element.getType()) {
+                        case InterpretationElement.TYPE_DATA_SET: {
+                            setDataSet(element);
+                            break;
+                        }
+                        case InterpretationElement.TYPE_PERIOD: {
+                            setPeriod(element);
+                            break;
+                        }
+                        case InterpretationElement.TYPE_ORGANISATION_UNIT: {
+                            setOrganisationUnit(element);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public List<InterpretationElement> getInterpretationElements() {
+        List<InterpretationElement> elements = new ArrayList<>();
+
+        switch (getType()) {
+            case Interpretation.TYPE_CHART: {
+                elements.add(getChart());
+                break;
+            }
+            case Interpretation.TYPE_MAP: {
+                elements.add(getMap());
+                break;
+            }
+            case Interpretation.TYPE_REPORT_TABLE: {
+                elements.add(getReportTable());
+                break;
+            }
+            case Interpretation.TYPE_DATASET_REPORT: {
+                elements.add(getDataSet());
+                elements.add(getPeriod());
+                elements.add(getOrganisationUnit());
+                break;
+            }
+        }
+
+        return elements;
     }
 }

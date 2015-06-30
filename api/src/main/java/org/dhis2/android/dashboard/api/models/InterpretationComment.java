@@ -50,7 +50,7 @@ public final class InterpretationComment extends BaseIdentifiableObject {
     String text;
 
     @JsonProperty("user")
-    @Column(name = "user")
+    @Column
     @ForeignKey(
             references = {
                     @ForeignKeyReference(columnName = "user", columnType = long.class, foreignColumnName = "id")

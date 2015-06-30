@@ -47,6 +47,7 @@ public final class DhisService {
     public static final int SYNC_META_DATA = 4;
     public static final int SYNC_DASHBOARDS = 5;
     public static final int SYNC_DASHBOARD_CONTENT = 6;
+    public static final int SYNC_INTERPRETATIONS = 7;
 
     private DhisManager mDhisManager;
 
@@ -119,6 +120,16 @@ public final class DhisService {
             public Object execute() throws APIException {
                 mDhisManager.syncDashboards();
                 return new Object();
+            }
+        });
+    }
+
+    public void syncInterpretations() {
+        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_INTERPRETATIONS) {
+            @Override
+            public Object execute() throws APIException {
+                mDhisManager.syncInterpretations();
+                return null;
             }
         });
     }

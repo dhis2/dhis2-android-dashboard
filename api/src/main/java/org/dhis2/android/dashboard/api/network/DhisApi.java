@@ -135,6 +135,6 @@ public interface DhisApi {
     // Methods for working with Interpretations
     /////////////////////////////////////////////////////////////////////////
 
-    @GET("/interpretation/")
+    @GET("/interpretations/?paging=false")
     Map<String, List<Interpretation>> getInterpretations(@QueryMap Map<String, String> queryMap);
 }

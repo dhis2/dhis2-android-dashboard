@@ -45,6 +45,7 @@ import android.widget.TextView;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardViewPagerFragment;
+import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationsFragment;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -97,14 +98,16 @@ public class MenuActivity extends BaseActivity
                 attachFragmentDelayed(new DashboardViewPagerFragment());
                 break;
             }
-
+            case R.id.menu_interpretations_item: {
+                attachFragmentDelayed(new InterpretationsFragment());
+                break;
+            }
             case R.id.menu_settings_item: {
                 getDhisService().logOutUser();
                 startActivity(new Intent(this, LauncherActivity.class));
                 finish();
                 break;
             }
-
             case R.id.menu_about_item: {
                 getDhisManager().invalidateMetaData();
                 startActivity(new Intent(this, LauncherActivity.class));

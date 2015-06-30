@@ -35,6 +35,7 @@ import com.squareup.okhttp.HttpUrl;
 import org.dhis2.android.dashboard.api.controllers.ContentController;
 import org.dhis2.android.dashboard.api.controllers.DashboardController;
 import org.dhis2.android.dashboard.api.controllers.IController;
+import org.dhis2.android.dashboard.api.controllers.InterpretationController;
 import org.dhis2.android.dashboard.api.controllers.InvalidateUserController;
 import org.dhis2.android.dashboard.api.controllers.LogInUserController;
 import org.dhis2.android.dashboard.api.controllers.LogOutUserController;
@@ -47,6 +48,7 @@ import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
 
 import java.net.HttpURLConnection;
 
+import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
@@ -141,6 +143,10 @@ public class DhisManager {
 
     public void syncDashboards() throws APIException {
         runController(new DashboardController(this));
+    }
+
+    public void syncInterpretations() throws RetrofitError {
+        runController(new InterpretationController(this));
     }
 
     public HttpUrl getServerUrl() {

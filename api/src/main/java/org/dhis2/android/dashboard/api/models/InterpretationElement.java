@@ -31,6 +31,7 @@ import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyAction;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
+import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.Table;
 
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
@@ -40,6 +41,17 @@ import org.dhis2.android.dashboard.api.persistence.DbDhis;
  */
 @Table(databaseName = DbDhis.NAME)
 public final class InterpretationElement extends BaseIdentifiableObject {
+    public static final String TYPE_CHART = "chart";
+    public static final String TYPE_MAP = "map";
+    public static final String TYPE_REPORT_TABLE = "reportTable";
+    public static final String TYPE_DATA_SET = "dataSet";
+    public static final String TYPE_PERIOD = "period";
+    public static final String TYPE_ORGANISATION_UNIT = "organisationUnit";
+
+    @JsonIgnore
+    @Column
+    @NotNull
+    String type;
 
     @JsonIgnore
     @Column
@@ -61,5 +73,13 @@ public final class InterpretationElement extends BaseIdentifiableObject {
 
     public void setInterpretation(Interpretation interpretation) {
         this.interpretation = interpretation;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
