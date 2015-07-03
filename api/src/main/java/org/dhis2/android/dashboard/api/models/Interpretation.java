@@ -86,9 +86,6 @@ public final class Interpretation extends BaseIdentifiableObject {
     @JsonProperty("reportTable")
     InterpretationElement reportTable;
 
-    /* dataSet, period and organisationUnit
-    will contain only UUIDs of objects. Also, dashboard application
-    won't allow to view dataSet interpretations until dataEntry is implemented here */
     @JsonProperty("dataSet")
     InterpretationElement dataSet;
 
@@ -216,39 +213,55 @@ public final class Interpretation extends BaseIdentifiableObject {
             return;
         }
 
-        switch (getType()) {
-            case Interpretation.TYPE_CHART: {
-                setChart(elements.get(0));
-                break;
-            }
-            case Interpretation.TYPE_MAP: {
-                setMap(elements.get(0));
-                break;
-            }
-            case Interpretation.TYPE_REPORT_TABLE: {
-                setReportTable(elements.get(0));
-                break;
-            }
-            case Interpretation.TYPE_DATASET_REPORT: {
-                for (InterpretationElement element : elements) {
-                    switch (element.getType()) {
-                        case InterpretationElement.TYPE_DATA_SET: {
-                            setDataSet(element);
-                            break;
-                        }
-                        case InterpretationElement.TYPE_PERIOD: {
-                            setPeriod(element);
-                            break;
-                        }
-                        case InterpretationElement.TYPE_ORGANISATION_UNIT: {
-                            setOrganisationUnit(element);
-                            break;
-                        }
+        if (getType() == null) {
+            return;
+        }
+
+        System.out.println(" ");
+        System.out.println("INTERPRETATION+TYPE: " + getType());
+        System.out.println("ELEMENTS_SIZE: " + elements.size());
+
+        if (getType().equals(TYPE_DATASET_REPORT)) {
+            for (InterpretationElement element : elements) {
+                switch (element.getType()) {
+                    case InterpretationElement.TYPE_DATA_SET: {
+                        System.out.println("DATA_SET:" + element.getDisplayName());
+                        setDataSet(element);
+                        break;
+                    }
+                    case InterpretationElement.TYPE_PERIOD: {
+                        System.out.println("PERIOD:" + element.getDisplayName());
+                        setPeriod(element);
+                        break;
+                    }
+                    case InterpretationElement.TYPE_ORGANISATION_UNIT: {
+                        System.out.println("ORGANISATION_UNIT:" + element.getDisplayName());
+                        setOrganisationUnit(element);
+                        break;
                     }
                 }
-                break;
+            }
+        } else {
+            switch (getType()) {
+                case InterpretationElement.TYPE_CHART: {
+                    System.out.println("CHART:" + elements.get(0).getDisplayName());
+                    setChart(elements.get(0));
+                    break;
+                }
+                case InterpretationElement.TYPE_MAP: {
+                    System.out.println("MAP:" + elements.get(0).getDisplayName());
+                    setMap(elements.get(0));
+                    break;
+                }
+                case InterpretationElement.TYPE_REPORT_TABLE: {
+                    System.out.println("REPORT_TABLE:" + elements.get(0).getDisplayName());
+                    setReportTable(elements.get(0));
+                    break;
+                }
             }
         }
+
+        System.out.println(" ");
     }
 
     public List<InterpretationElement> getInterpretationElements() {

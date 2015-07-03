@@ -112,13 +112,19 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
                 .findViewById(R.id.interpretation_text);
         ViewGroup interpretationContent = (FrameLayout) rootView
                 .findViewById(R.id.interpretation_content);
+        View commentsShowButton = rootView.
+                findViewById(R.id.interpretation_comments_show);
+        TextView commentsCountTextView = (TextView) rootView
+                .findViewById(R.id.interpretation_comments_count);
         IInterpretationViewHolder viewHolder =
                 onCreateContentViewHolder(interpretationContent, viewType);
         interpretationContent.addView(viewHolder.getView());
 
+
         return new InterpretationHolder(
                 rootView, itemBody, userTextView, lastUpdated,
-                menuButton, interpretationTextView, viewHolder
+                menuButton, interpretationTextView, viewHolder,
+                commentsShowButton, commentsCountTextView
         );
     }
 
@@ -128,8 +134,16 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
 
         holder.userTextView.setText(interpretation.getUser() == null
                 ? EMPTY_FIELD : interpretation.getUser().getDisplayName());
-        holder.created.setText(interpretation.getCreated().toString(DATE_FORMAT));
-        holder.interpretationTextView.setText(interpretation.getText());
+        holder.createdTextView.setText(interpretation.getCreated() == null
+                ? EMPTY_FIELD : interpretation.getCreated().toString(DATE_FORMAT));
+        holder.interpretationTextView.setText(interpretation.getText() == null
+                ? EMPTY_FIELD : interpretation.getText());
+
+        int commentsCount = interpretation.getComments() == null
+                ? 0 : interpretation.getComments().size();
+        String commentsCountString = commentsCount > 99
+                ? "99+" : commentsCount + "";
+        holder.commentsCountTextView.setText(commentsCountString);
 
         onBindContentViewHolder(holder.contentViewHolder,
                 holder.getItemViewType(), holder.getAdapterPosition());
@@ -187,10 +201,14 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         if (Interpretation.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
             element = item.getReportTable();
         } else if (Interpretation.TYPE_DATASET_REPORT.equals(item.getType()) && item.getDataSet() != null) {
+            System.out.println("Period: " + item.getPeriod().getDisplayName());
+            System.out.println("DataSet: " + item.getDataSet().getDisplayName());
+            System.out.println("OrgUnit: " + item.getOrganisationUnit().getDisplayName());
             element = item.getDataSet();
         }
 
         if (element != null) {
+            System.out.println("ELEMENT_TYPE: " + element.getType());
             holder.listener.setInterpretation(item);
             holder.textView.setText(element.getDisplayName());
         }
@@ -201,24 +219,29 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
     }
 
     static class InterpretationHolder extends RecyclerView.ViewHolder {
-        final View itemBody;
+        final View itemBodyView;
         final TextView userTextView;
-        final TextView created;
+        final TextView createdTextView;
         final ImageView menuButton;
         final TextView interpretationTextView;
         final IInterpretationViewHolder contentViewHolder;
+        final View commentsShowButton;
+        final TextView commentsCountTextView;
 
-        public InterpretationHolder(View itemView, View itemBody,
-                                    TextView userTextView, TextView created,
+        public InterpretationHolder(View itemView, View itemBodyView,
+                                    TextView userTextView, TextView createdTextView,
                                     ImageView menuButton, TextView interpretationTextView,
-                                    IInterpretationViewHolder contentViewHolder) {
+                                    IInterpretationViewHolder contentViewHolder,
+                                    View commentsShowButton, TextView commentsCountTextView) {
             super(itemView);
-            this.itemBody = itemBody;
+            this.itemBodyView = itemBodyView;
             this.userTextView = userTextView;
-            this.created = created;
+            this.createdTextView = createdTextView;
             this.menuButton = menuButton;
             this.interpretationTextView = interpretationTextView;
             this.contentViewHolder = contentViewHolder;
+            this.commentsShowButton = commentsShowButton;
+            this.commentsCountTextView = commentsCountTextView;
         }
     }
 

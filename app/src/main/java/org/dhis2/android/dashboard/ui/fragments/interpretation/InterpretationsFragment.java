@@ -46,6 +46,8 @@ import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Interpretation;
+import org.dhis2.android.dashboard.api.models.InterpretationComment;
+import org.dhis2.android.dashboard.api.models.InterpretationComment$Table;
 import org.dhis2.android.dashboard.api.models.InterpretationElement;
 import org.dhis2.android.dashboard.api.models.InterpretationElement$Table;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
@@ -198,7 +200,13 @@ public final class InterpretationsFragment extends BaseFragment
                         .where(Condition.column(InterpretationElement$Table
                                 .ID).is(interpretation.getId()))
                         .queryList();
+                List<InterpretationComment> comments = new Select()
+                        .from(InterpretationComment.class)
+                        .where(Condition.column(InterpretationComment$Table
+                                .INTERPRETATION_INTERPRETATION).is(interpretation.getId()))
+                        .queryList();
                 interpretation.setInterpretationElements(elements);
+                interpretation.setComments(comments);
             }
             return interpretations;
         }

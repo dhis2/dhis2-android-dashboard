@@ -1,12 +1,13 @@
 <resources>
 
-    <style name="LightTheme" parent="Base.Theme.App"/>
+    <style name="LightTheme" parent="Base.Theme.App" />
 
     <!-- Base application theme. -->
     <style name="Base.Theme.App" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/navy_blue</item>
         <item name="colorPrimaryDark">@color/dark_navy_blue</item>
         <item name="android:windowBackground">@color/light_grey</item>
+        <item name="android:textColor">@color/dark_grey_text</item>
     </style>
 
     <style name="Base.Theme.App.Dark" parent="Theme.AppCompat.Light.NoActionBar">

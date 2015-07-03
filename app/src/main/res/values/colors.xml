@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2015, University of Oslo
   ~
   ~ All rights reserved.
@@ -37,8 +36,8 @@
 
     <color name="grey">#8a000000</color>
     <color name="light_grey">#FFE5E5E5</color>
-    <color name="graphite_grey">#FFCBCBCB</color>
     <color name="dark_grey">#FF9E9E9E</color>
+    <color name="dark_grey_text">#FF757575</color>
 
     <color name="menu_divider_grey">#FF9F9F9F</color>
 
