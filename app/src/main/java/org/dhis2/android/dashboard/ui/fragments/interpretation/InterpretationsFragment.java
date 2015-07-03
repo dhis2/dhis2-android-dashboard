@@ -31,47 +31,93 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Interpretation;
+import org.dhis2.android.dashboard.api.models.InterpretationElement;
+import org.dhis2.android.dashboard.api.models.InterpretationElement$Table;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
+import org.dhis2.android.dashboard.ui.adapters.InterpretationAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
+import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
 public final class InterpretationsFragment extends BaseFragment
-        implements LoaderManager.LoaderCallbacks<List<Interpretation>> {
+        implements LoaderManager.LoaderCallbacks<List<Interpretation>>,
+        View.OnClickListener, Toolbar.OnMenuItemClickListener,
+        InterpretationAdapter.OnItemClickListener {
     private static final int LOADER_ID = 23452435;
 
+    @Bind(R.id.grid)
     RecyclerView mGridView;
+
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
+
+    InterpretationAdapter mAdapter;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.gridview, container, false);
+        return inflater.inflate(R.layout.fragment_interpretations, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mGridView = (RecyclerView) view;
+        ButterKnife.bind(this, view);
+
+        mAdapter = new InterpretationAdapter(getActivity().getApplicationContext(),
+                getLayoutInflater(savedInstanceState), this);
+
+        final int spanCount = getResources().getInteger(R.integer.column_nums);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), spanCount);
+        gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+
+            @Override
+            public int getSpanSize(int position) {
+                return spanCount;
+            }
+        });
+
+        mGridView.setLayoutManager(gridLayoutManager);
+        mGridView.setItemAnimator(new DefaultItemAnimator());
+        mGridView.addItemDecoration(new GridDividerDecoration(getActivity()
+                .getApplicationContext()));
+        mGridView.setAdapter(mAdapter);
+
+        mToolbar.setNavigationIcon(R.mipmap.ic_menu);
+        mToolbar.setNavigationOnClickListener(this);
+        mToolbar.setTitle(R.string.interpretations);
+        mToolbar.inflateMenu(R.menu.menu_interpretations_fragment);
+        mToolbar.setOnMenuItemClickListener(this);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getService().syncInterpretations();
         getLoaderManager().initLoader(LOADER_ID, getArguments(), this);
     }
 
@@ -87,6 +133,7 @@ public final class InterpretationsFragment extends BaseFragment
     public void onLoadFinished(Loader<List<Interpretation>> loader, List<Interpretation> data) {
         if (loader != null && loader.getId() == LOADER_ID) {
             if (data != null) {
+                mAdapter.swapData(data);
                 for (Interpretation interpretation : data) {
                     System.out.println("INTERPRETATION: " + interpretation.getDisplayName());
                 }
@@ -96,14 +143,64 @@ public final class InterpretationsFragment extends BaseFragment
 
     @Override
     public void onLoaderReset(Loader<List<Interpretation>> loader) {
-        // reset data here
+        if (loader != null && loader.getId() == LOADER_ID) {
+            // resetting data here
+            mAdapter.swapData(null);
+        }
     }
+
+    @Override
+    public void onClick(View v) {
+        toggleNavigationDrawer();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh: {
+                getService().syncInterpretations();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void onInterpretationContentClick(Interpretation interpretation) {
+
+    }
+
+    @Override
+    public void onInterpretationTextClick(Interpretation interpretation) {
+
+    }
+
+    @Override
+    public void onInterpretationDeleteClick(Interpretation interpretation) {
+
+    }
+
+    @Override
+    public void onInterpretationEditClick(Interpretation interpretation) {
+
+    }
+
 
     static class InterpretationsQuery implements Query<List<Interpretation>> {
 
         @Override
         public List<Interpretation> query(Context context) {
-            return new Select().from(Interpretation.class).queryList();
+            List<Interpretation> interpretations
+                    = new Select().from(Interpretation.class).queryList();
+            for (Interpretation interpretation : interpretations) {
+                List<InterpretationElement> elements = new Select()
+                        .from(InterpretationElement.class)
+                        .where(Condition.column(InterpretationElement$Table
+                                .ID).is(interpretation.getId()))
+                        .queryList();
+                interpretation.setInterpretationElements(elements);
+            }
+            return interpretations;
         }
     }
 }

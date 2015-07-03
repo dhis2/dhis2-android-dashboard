@@ -246,6 +246,7 @@ public final class Interpretation extends BaseIdentifiableObject {
                         }
                     }
                 }
+                break;
             }
         }
     }

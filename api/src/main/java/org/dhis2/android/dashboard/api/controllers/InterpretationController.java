@@ -214,14 +214,24 @@ public final class InterpretationController implements IController<Object> {
         if (interpretations != null && !interpretations.isEmpty()) {
             for (Interpretation interpretation : interpretations) {
                 User user = interpretation.getUser();
-                users.put(user.getUId(), user);
+                if (users.containsKey(user.getUId())) {
+                    user = users.get(user.getUId());
+                    interpretation.setUser(user);
+                } else {
+                    users.put(user.getUId(), user);
+                }
             }
         }
 
         if (comments != null && !comments.isEmpty()) {
             for (InterpretationComment comment : comments) {
                 User user = comment.getUser();
-                users.put(user.getUId(), user);
+                if (users.containsKey(user.getUId())) {
+                    user = users.get(user.getUId());
+                    comment.setUser(user);
+                } else {
+                    users.put(user.getUId(), user);
+                }
             }
         }
 
@@ -237,9 +247,6 @@ public final class InterpretationController implements IController<Object> {
             }
         }
 
-        for (InterpretationElement element : elements) {
-            System.out.println("ELEMENT: " + element);
-        }
         return elements;
     }
 
