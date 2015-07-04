@@ -27,8 +27,10 @@
 package org.dhis2.android.dashboard.ui.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -120,17 +122,24 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
                 onCreateContentViewHolder(interpretationContent, viewType);
         interpretationContent.addView(viewHolder.getView());
 
+        MenuButtonHandler handler = new MenuButtonHandler(getContext(), mClickListener);
+        menuButton.setOnClickListener(handler);
 
         return new InterpretationHolder(
                 rootView, itemBody, userTextView, lastUpdated,
                 menuButton, interpretationTextView, viewHolder,
-                commentsShowButton, commentsCountTextView
+                commentsShowButton, commentsCountTextView, handler
         );
     }
 
     @Override
     public void onBindViewHolder(InterpretationHolder holder, int position) {
         Interpretation interpretation = getItem(holder.getAdapterPosition());
+
+        // handling menu visibility
+        holder.menuButtonHandler.setInterpretation(interpretation);
+        holder.menuButton.setVisibility(holder.menuButtonHandler
+                .isMenuVisible() ? View.VISIBLE : View.GONE);
 
         holder.userTextView.setText(interpretation.getUser() == null
                 ? EMPTY_FIELD : interpretation.getUser().getDisplayName());
@@ -180,13 +189,12 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
 
     /* builds the URL to image data and loads it by means of Picasso. */
     private void handleItemsWithImages(ImageItemViewHolder holder, Interpretation item) {
-        InterpretationElement element = null;
         String request = null;
         if (Interpretation.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
-            element = item.getChart();
+            InterpretationElement element = item.getChart();
             request = buildImageUrl("charts", element.getUId());
         } else if (Interpretation.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
-            element = item.getMap();
+            InterpretationElement element = item.getMap();
             request = buildImageUrl("maps", element.getUId());
         }
 
@@ -201,17 +209,16 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         if (Interpretation.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
             element = item.getReportTable();
         } else if (Interpretation.TYPE_DATASET_REPORT.equals(item.getType()) && item.getDataSet() != null) {
-            System.out.println("Period: " + item.getPeriod().getDisplayName());
-            System.out.println("DataSet: " + item.getDataSet().getDisplayName());
-            System.out.println("OrgUnit: " + item.getOrganisationUnit().getDisplayName());
             element = item.getDataSet();
         }
 
+        String text = EMPTY_FIELD;
         if (element != null) {
-            System.out.println("ELEMENT_TYPE: " + element.getType());
-            holder.listener.setInterpretation(item);
-            holder.textView.setText(element.getDisplayName());
+            text = element.getDisplayName();
         }
+
+        holder.listener.setInterpretation(item);
+        holder.textView.setText(text);
     }
 
     interface IInterpretationViewHolder {
@@ -227,12 +234,14 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         final IInterpretationViewHolder contentViewHolder;
         final View commentsShowButton;
         final TextView commentsCountTextView;
+        final MenuButtonHandler menuButtonHandler;
 
         public InterpretationHolder(View itemView, View itemBodyView,
                                     TextView userTextView, TextView createdTextView,
                                     ImageView menuButton, TextView interpretationTextView,
                                     IInterpretationViewHolder contentViewHolder,
-                                    View commentsShowButton, TextView commentsCountTextView) {
+                                    View commentsShowButton, TextView commentsCountTextView,
+                                    MenuButtonHandler menuButtonHandler) {
             super(itemView);
             this.itemBodyView = itemBodyView;
             this.userTextView = userTextView;
@@ -242,6 +251,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
             this.contentViewHolder = contentViewHolder;
             this.commentsShowButton = commentsShowButton;
             this.commentsCountTextView = commentsCountTextView;
+            this.menuButtonHandler = menuButtonHandler;
         }
     }
 
@@ -315,5 +325,82 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         void onInterpretationDeleteClick(Interpretation interpretation);
 
         void onInterpretationEditClick(Interpretation interpretation);
+    }
+
+    private static class MenuButtonHandler implements View.OnClickListener {
+        /* menu item ids */
+        static final int MENU_GROUP_ID = 746523;
+        static final int MENU_EDIT_INTERPRETATION_ID = 582345;
+        static final int MENU_DELETE_INTERPRETATION_ID = 364587;
+
+        static final int MENU_EDIT_INTERPRETATION_ORDER = 100;
+        static final int MENU_DELETE_INTERPRETATION_ORDER = 110;
+
+        final Context mContext;
+
+        final OnItemClickListener mListener;
+
+        /* dashboard item will change on each call to onBindViewHolder() in recycler view */
+        Interpretation mInterpretation;
+
+        public MenuButtonHandler(Context context, OnItemClickListener listener) {
+            mContext = context;
+            mListener = listener;
+        }
+
+        public void setInterpretation(Interpretation interpretation) {
+            mInterpretation = interpretation;
+        }
+
+        /* helper method for client code, which allows to
+        determine if we need to show 3-dot button*/
+        public boolean isMenuVisible() {
+            return isInterpretationEditable() || isInterpretationDeletable();
+        }
+
+        /* helper method which returns true if we can show edit menu item */
+        private boolean isInterpretationEditable() {
+            return mInterpretation.getAccess().isUpdate();
+        }
+
+        private boolean isInterpretationDeletable() {
+            return mInterpretation.getAccess().isDelete();
+        }
+
+        /* here we will build popup menu and show it. */
+        @Override
+        public void onClick(View view) {
+            PopupMenu popupMenu = new PopupMenu(mContext, view);
+
+            if (isInterpretationEditable()) {
+                popupMenu.getMenu().add(MENU_GROUP_ID, MENU_EDIT_INTERPRETATION_ID,
+                        MENU_EDIT_INTERPRETATION_ORDER, R.string.edit);
+            }
+
+            if (isInterpretationDeletable()) {
+                popupMenu.getMenu().add(MENU_GROUP_ID, MENU_DELETE_INTERPRETATION_ID,
+                        MENU_DELETE_INTERPRETATION_ORDER, R.string.delete);
+            }
+
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                @Override
+                public boolean onMenuItemClick(MenuItem menuItem) {
+                    if (mListener == null) {
+                        return false;
+                    }
+
+                    if (menuItem.getItemId() == MENU_EDIT_INTERPRETATION_ID) {
+                        mListener.onInterpretationEditClick(mInterpretation);
+                    } else if (menuItem.getItemId() == MENU_DELETE_INTERPRETATION_ID) {
+                        mListener.onInterpretationDeleteClick(mInterpretation);
+                    }
+
+                    return true;
+                }
+            });
+
+            popupMenu.show();
+        }
     }
 }

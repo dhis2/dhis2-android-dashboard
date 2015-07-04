@@ -58,6 +58,7 @@ import java.util.Queue;
 
 import retrofit.RetrofitError;
 
+import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toMap;
 import static org.dhis2.android.dashboard.api.utils.MergeUtils.merge;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
@@ -85,17 +86,16 @@ public final class InterpretationController implements IController<Object> {
         DateTime serverTime = mDhisApi.getSystemInfo().getServerDate();
 
         List<Interpretation> interpretations = updateInterpretations(lastUpdated);
-        List<InterpretationElement> elements = updateInterpretationElements(interpretations);
         List<InterpretationComment> comments = updateInterpretationComments(interpretations);
         List<User> users = updateInterpretationUsers(interpretations, comments);
 
         Queue<DbOperation> operations = new LinkedList<>();
         operations.addAll(DbUtils.createOperations(
                 queryInterpretationUsers(), users));
-        operations.addAll(DbUtils.createOperations(
+        operations.addAll(createOperations(
                 queryInterpretations(), interpretations));
-        operations.addAll(DbUtils.createOperations(
-                queryInterpretationElements(null), elements));
+        /* operations.addAll(createOperations(
+                interpretations)); */
         operations.addAll(DbUtils.createOperations(
                 queryInterpretationComments(null), comments));
 
@@ -238,17 +238,102 @@ public final class InterpretationController implements IController<Object> {
         return new ArrayList<>(users.values());
     }
 
-    private List<InterpretationElement> updateInterpretationElements(List<Interpretation> interpretations) {
-        List<InterpretationElement> elements = new ArrayList<>();
+    private static List<DbOperation> createOperations(List<Interpretation> oldModels,
+                                                      List<Interpretation> newModels) {
+        List<DbOperation> ops = new ArrayList<>();
 
-        if (interpretations != null && !interpretations.isEmpty()) {
-            for (Interpretation interpretation : interpretations) {
-                elements.addAll(interpretation.getInterpretationElements());
+        Map<String, Interpretation> newModelsMap = toMap(newModels);
+        Map<String, Interpretation> oldModelsMap = toMap(oldModels);
+
+        for (String oldModelKey : oldModelsMap.keySet()) {
+            Interpretation newModel = newModelsMap.get(oldModelKey);
+            Interpretation oldModel = oldModelsMap.get(oldModelKey);
+
+            if (newModel == null) {
+                ops.add(DbOperation.delete(oldModel));
+                continue;
+            }
+
+            if (newModel.getLastUpdated().isAfter(oldModel.getLastUpdated())) {
+                ops.add(DbOperation.update(newModel));
+            }
+
+            newModelsMap.remove(oldModelKey);
+        }
+
+        for (String newModelKey : newModelsMap.keySet()) {
+            Interpretation item = newModelsMap.get(newModelKey);
+
+            // we also have to insert interpretation elements here
+            ops.add(DbOperation.insert(item));
+
+            List<InterpretationElement> elements = item
+                    .getInterpretationElements();
+            for (InterpretationElement element : elements) {
+                ops.add(DbOperation.insert(element));
             }
         }
 
-        return elements;
+        return ops;
     }
+
+    /* private List<DbOperation> createOperations(List<Interpretation> refreshedItems) {
+        List<DbOperation> dbOperations = new ArrayList<>();
+        for (Interpretation refreshedItem : refreshedItems) {
+            List<InterpretationElement> persistedElementList
+                    = queryInterpretationElements(refreshedItem);
+            List<InterpretationElement> refreshedElementList =
+                    refreshedItem.getInterpretationElements();
+
+            if (persistedElementList == null) {
+                persistedElementList = new ArrayList<>();
+            }
+
+            if (refreshedElementList == null) {
+                refreshedElementList = new ArrayList<>();
+            }
+
+            List<String> persistedElementIds = toListIds(persistedElementList);
+            List<String> refreshedElementIds = toListIds(refreshedElementList);
+
+            List<String> itemIdsToInsert = subtract(refreshedElementIds, persistedElementIds);
+            List<String> itemIdsToDelete = subtract(persistedElementIds, refreshedElementIds);
+
+            for (String elementToDelete : itemIdsToDelete) {
+                int index = persistedElementIds.indexOf(elementToDelete);
+                InterpretationElement element = persistedElementList.get(index);
+                dbOperations.add(DbOperation.delete(element));
+
+                persistedElementIds.remove(index);
+                persistedElementList.remove(index);
+            }
+
+            for (String elementToInsert : itemIdsToInsert) {
+                int index = refreshedElementIds.indexOf(elementToInsert);
+                InterpretationElement element = refreshedElementList.get(index);
+                dbOperations.add(DbOperation.insert(element));
+
+                refreshedElementIds.remove(index);
+                refreshedElementList.remove(index);
+            }
+        }
+
+        return dbOperations;
+    } */
+
+    /* this method subtracts content of bList from aList */
+    /* private static List<String> subtract(List<String> aList, List<String> bList) {
+        List<String> aListCopy = new ArrayList<>(aList);
+        if (bList != null && !bList.isEmpty()) {
+            for (String bItem : bList) {
+                if (aListCopy.contains(bItem)) {
+                    int index = aListCopy.indexOf(bItem);
+                    aListCopy.remove(index);
+                }
+            }
+        }
+        return aListCopy;
+    } */
 
     private static List<Interpretation> queryInterpretations() {
         return new Select().from(Interpretation.class)

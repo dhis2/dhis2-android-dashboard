@@ -89,20 +89,13 @@ public final class InterpretationsFragment extends BaseFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        mAdapter = new InterpretationAdapter(getActivity().getApplicationContext(),
+        mAdapter = new InterpretationAdapter(getActivity(),
                 getLayoutInflater(savedInstanceState), this);
 
         final int spanCount = getResources().getInteger(R.integer.column_nums);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), spanCount);
         gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
-        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-
-            @Override
-            public int getSpanSize(int position) {
-                return spanCount;
-            }
-        });
 
         mGridView.setLayoutManager(gridLayoutManager);
         mGridView.setItemAnimator(new DefaultItemAnimator());
@@ -198,7 +191,7 @@ public final class InterpretationsFragment extends BaseFragment
                 List<InterpretationElement> elements = new Select()
                         .from(InterpretationElement.class)
                         .where(Condition.column(InterpretationElement$Table
-                                .ID).is(interpretation.getId()))
+                                .INTERPRETATION_INTERPRETATION).is(interpretation.getId()))
                         .queryList();
                 List<InterpretationComment> comments = new Select()
                         .from(InterpretationComment.class)

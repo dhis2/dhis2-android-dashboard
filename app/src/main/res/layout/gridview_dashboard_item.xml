@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2015, University of Oslo
   ~ All rights reserved.
   ~
@@ -27,8 +26,7 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
@@ -56,7 +54,7 @@
                 android:singleLine="true"
                 android:textColor="@color/dark_grey"
                 android:textSize="12sp"
-                app:font="@string/light_font_name"/>
+                app:font="@string/light_font_name" />
 
             <ImageView
                 android:id="@+id/dashboard_item_menu"
@@ -64,9 +62,10 @@
                 android:layout_height="32dp"
                 android:adjustViewBounds="true"
                 android:background="@drawable/transparent_selector"
+                android:clickable="true"
                 android:contentDescription="@string/description"
                 android:padding="4dp"
-                android:src="@mipmap/ic_overflow"/>
+                android:src="@mipmap/ic_overflow" />
         </LinearLayout>
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
@@ -78,12 +77,12 @@
             android:lines="2"
             android:singleLine="false"
             android:textSize="16sp"
-            app:font="@string/condensed_font_name"/>
+            app:font="@string/condensed_font_name" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="@color/light_grey"/>
+            android:background="@color/light_grey" />
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

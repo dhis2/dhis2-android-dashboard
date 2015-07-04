@@ -667,7 +667,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         }
     }
 
-    static class MenuButtonHandler implements View.OnClickListener {
+    private static class MenuButtonHandler implements View.OnClickListener {
         /* menu item ids */
         static final int MENU_GROUP_ID = 9382352;
         static final int MENU_SHARE_ITEM_ID = 8936352;
@@ -717,7 +717,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         }
 
         private boolean isItemDeletable() {
-            // return mDashboardItem.getAccess().isDelete();
+            // return mInterpretation.getAccess().isDelete();
             return true;
         }
 

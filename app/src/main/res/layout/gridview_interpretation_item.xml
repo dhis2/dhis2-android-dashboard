@@ -79,6 +79,7 @@
                 android:layout_height="32dp"
                 android:adjustViewBounds="true"
                 android:background="@drawable/transparent_selector"
+                android:clickable="true"
                 android:contentDescription="@string/description"
                 android:padding="4dp"
                 android:src="@mipmap/ic_overflow" />
@@ -90,6 +91,7 @@
             android:layout_height="42dp"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"
+            android:ellipsize="end"
             android:lines="2"
             android:singleLine="false"
             android:textSize="16sp"
