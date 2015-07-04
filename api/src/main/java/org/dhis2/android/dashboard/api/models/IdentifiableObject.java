@@ -33,6 +33,7 @@ import java.util.Comparator;
 
 public interface IdentifiableObject {
     Comparator<IdentifiableObject> DISPLAY_NAME_COMPARATOR = new NameComparator();
+    Comparator<IdentifiableObject> CREATED_COMPARATOR = new CreatedComparator();
 
     long getId();
 
@@ -71,6 +72,24 @@ public interface IdentifiableObject {
                 return first.getDisplayName().compareTo(second.getDisplayName());
             }
 
+            return 0;
+        }
+    }
+
+    class CreatedComparator implements Comparator<IdentifiableObject> {
+
+        @Override
+        public int compare(IdentifiableObject first, IdentifiableObject second) {
+            if (first != null && first.getCreated() != null
+                    && second != null && second.getCreated() != null) {
+                if (first.getCreated().isAfter(second.getCreated())) {
+                    return 1;
+                }
+
+                if (second.getCreated().isAfter(first.getCreated())) {
+                    return -1;
+                }
+            }
             return 0;
         }
     }

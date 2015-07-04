@@ -51,6 +51,7 @@
     <string name="manage_dashboard">Manage dashboard</string>
     <string name="edit_name">Edit name</string>
     <string name="share_interpretation">Share interpretation</string>
+    <string name="add_comment">Add comment</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="manage">Manage</string>
@@ -68,5 +69,6 @@
     <string name="reports">Reports</string>
     <string name="resources">Resources</string>
     <string name="title_activity_dashboard_item_detail">DashboardItemDetailActivity</string>
+    <string name="title_activity_interpretation_comments">InterpretationCommentsActivity</string>
     <!-- END DashboardFragment -->
 </resources>

@@ -83,4 +83,10 @@ public class BaseFragment extends Fragment {
                     "which implements INavigationCallback interface");
         }
     }
+
+    public void onBackPressed() {
+        if (isAdded()) {
+            getActivity().onBackPressed();
+        }
+    }
 }

@@ -74,7 +74,7 @@ public class DashboardFragment extends BaseFragment
     private static final String MANAGE = "arg:manage";
     private static final String EXTERNALIZE = "arg:externalize";
 
-    RecyclerView mGridView;
+    RecyclerView mRecyclerView;
 
     DashboardItemAdapter mAdapter;
 
@@ -110,12 +110,12 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup group, Bundle bundle) {
-        return inflater.inflate(R.layout.gridview, group, false);
+        return inflater.inflate(R.layout.recycler_view, group, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        mGridView = (RecyclerView) view;
+        mRecyclerView = (RecyclerView) view;
 
         final int spanCount = getResources().getInteger(R.integer.column_nums);
 
@@ -132,11 +132,11 @@ public class DashboardFragment extends BaseFragment
             }
         });
 
-        mGridView.setLayoutManager(gridLayoutManager);
-        mGridView.setItemAnimator(new DefaultItemAnimator());
-        mGridView.addItemDecoration(new GridDividerDecoration(getActivity()
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.addItemDecoration(new GridDividerDecoration(getActivity()
                 .getApplicationContext()));
-        mGridView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override

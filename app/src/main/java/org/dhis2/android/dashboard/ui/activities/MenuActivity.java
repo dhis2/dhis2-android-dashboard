@@ -45,7 +45,7 @@ import android.widget.TextView;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardViewPagerFragment;
-import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationsFragment;
+import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -102,7 +102,7 @@ public class MenuActivity extends BaseActivity
                 break;
             }
             case R.id.menu_interpretations_item: {
-                attachFragmentDelayed(new InterpretationsFragment());
+                attachFragmentDelayed(new InterpretationFragment());
                 break;
             }
             case R.id.menu_settings_item: {

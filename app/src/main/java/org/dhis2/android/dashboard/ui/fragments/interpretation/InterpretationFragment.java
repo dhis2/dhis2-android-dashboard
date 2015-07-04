@@ -27,6 +27,7 @@
 package org.dhis2.android.dashboard.ui.fragments.interpretation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -52,6 +53,7 @@ import org.dhis2.android.dashboard.api.models.InterpretationElement;
 import org.dhis2.android.dashboard.api.models.InterpretationElement$Table;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
+import org.dhis2.android.dashboard.ui.activities.InterpretationCommentsActivity;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
@@ -65,14 +67,14 @@ import butterknife.ButterKnife;
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-public final class InterpretationsFragment extends BaseFragment
+public final class InterpretationFragment extends BaseFragment
         implements LoaderManager.LoaderCallbacks<List<Interpretation>>,
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
         InterpretationAdapter.OnItemClickListener {
     private static final int LOADER_ID = 23452435;
 
-    @Bind(R.id.grid)
-    RecyclerView mGridView;
+    @Bind(R.id.recycler_view)
+    RecyclerView mRecyclerView;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -97,11 +99,11 @@ public final class InterpretationsFragment extends BaseFragment
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), spanCount);
         gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
 
-        mGridView.setLayoutManager(gridLayoutManager);
-        mGridView.setItemAnimator(new DefaultItemAnimator());
-        mGridView.addItemDecoration(new GridDividerDecoration(getActivity()
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.addItemDecoration(new GridDividerDecoration(getActivity()
                 .getApplicationContext()));
-        mGridView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
 
         mToolbar.setNavigationIcon(R.mipmap.ic_menu);
         mToolbar.setNavigationOnClickListener(this);
@@ -129,9 +131,6 @@ public final class InterpretationsFragment extends BaseFragment
         if (loader != null && loader.getId() == LOADER_ID) {
             if (data != null) {
                 mAdapter.swapData(data);
-                for (Interpretation interpretation : data) {
-                    System.out.println("INTERPRETATION: " + interpretation.getDisplayName());
-                }
             }
         }
     }
@@ -178,6 +177,13 @@ public final class InterpretationsFragment extends BaseFragment
     @Override
     public void onInterpretationEditClick(Interpretation interpretation) {
 
+    }
+
+    @Override
+    public void onInterpretationCommentsClick(Interpretation interpretation) {
+        Intent intent = InterpretationCommentsActivity
+                .newIntent(getActivity(), interpretation.getId());
+        startActivity(intent);
     }
 
 

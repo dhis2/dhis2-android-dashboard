@@ -199,7 +199,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rootView = getLayoutInflater().inflate(
-                R.layout.gridview_dashboard_item, parent, false);
+                R.layout.recycler_view_dashboard_item, parent, false);
 
         LinearLayout itemBody = (LinearLayout) rootView
                 .findViewById(R.id.dashboard_item_body_container);
@@ -271,17 +271,17 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         switch (viewType) {
             case ITEM_WITH_IMAGE_TYPE: {
                 ImageView imageView = (ImageView) getLayoutInflater()
-                        .inflate(R.layout.gridview_dashboard_item_imageview, parent, false);
+                        .inflate(R.layout.recycler_view_dashboard_item_imageview, parent, false);
                 return new ImageItemViewHolder(imageView, mClickListener);
             }
             case ITEM_WITH_TABLE_TYPE: {
                 TextView textView = (TextView) getLayoutInflater()
-                        .inflate(R.layout.gridview_dashboard_item_textview, parent, false);
+                        .inflate(R.layout.recycler_view_dashboard_item_textview, parent, false);
                 return new TextItemViewHolder(textView, mClickListener);
             }
             case ITEM_WITH_LIST_TYPE: {
                 LinearLayout textViewContainer = (LinearLayout) getLayoutInflater()
-                        .inflate(R.layout.gridview_dashboard_item_list, parent, false);
+                        .inflate(R.layout.recycler_view_dashboard_item_list, parent, false);
                 return new ListItemViewHolder(textViewContainer, mClickListener);
             }
         }

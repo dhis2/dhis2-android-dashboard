@@ -100,7 +100,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
     @Override
     public InterpretationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rootView = getLayoutInflater().inflate(
-                R.layout.gridview_interpretation_item, parent, false);
+                R.layout.recycler_view_interpretation_item, parent, false);
 
         View itemBody = rootView
                 .findViewById(R.id.interpretation_body_container);
@@ -125,10 +125,14 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         MenuButtonHandler handler = new MenuButtonHandler(getContext(), mClickListener);
         menuButton.setOnClickListener(handler);
 
+        OnInterpretationInternalClickListener listener
+                = new OnInterpretationInternalClickListener(mClickListener);
+        commentsShowButton.setOnClickListener(listener);
+
         return new InterpretationHolder(
                 rootView, itemBody, userTextView, lastUpdated,
                 menuButton, interpretationTextView, viewHolder,
-                commentsShowButton, commentsCountTextView, handler
+                commentsShowButton, commentsCountTextView, handler, listener
         );
     }
 
@@ -140,6 +144,8 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         holder.menuButtonHandler.setInterpretation(interpretation);
         holder.menuButton.setVisibility(holder.menuButtonHandler
                 .isMenuVisible() ? View.VISIBLE : View.GONE);
+
+        holder.listener.setInterpretation(interpretation);
 
         holder.userTextView.setText(interpretation.getUser() == null
                 ? EMPTY_FIELD : interpretation.getUser().getDisplayName());
@@ -162,12 +168,12 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         switch (viewType) {
             case ITEM_WITH_IMAGE_TYPE: {
                 ImageView imageView = (ImageView) getLayoutInflater()
-                        .inflate(R.layout.gridview_dashboard_item_imageview, parent, false);
+                        .inflate(R.layout.recycler_view_dashboard_item_imageview, parent, false);
                 return new ImageItemViewHolder(imageView, mClickListener);
             }
             case ITEM_WITH_TABLE_TYPE: {
                 TextView textView = (TextView) getLayoutInflater()
-                        .inflate(R.layout.gridview_dashboard_item_textview, parent, false);
+                        .inflate(R.layout.recycler_view_dashboard_item_textview, parent, false);
                 return new TextItemViewHolder(textView, mClickListener);
             }
         }
@@ -235,13 +241,15 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         final View commentsShowButton;
         final TextView commentsCountTextView;
         final MenuButtonHandler menuButtonHandler;
+        final OnInterpretationInternalClickListener listener;
 
         public InterpretationHolder(View itemView, View itemBodyView,
                                     TextView userTextView, TextView createdTextView,
                                     ImageView menuButton, TextView interpretationTextView,
                                     IInterpretationViewHolder contentViewHolder,
                                     View commentsShowButton, TextView commentsCountTextView,
-                                    MenuButtonHandler menuButtonHandler) {
+                                    MenuButtonHandler menuButtonHandler,
+                                    OnInterpretationInternalClickListener listener) {
             super(itemView);
             this.itemBodyView = itemBodyView;
             this.userTextView = userTextView;
@@ -252,6 +260,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
             this.commentsShowButton = commentsShowButton;
             this.commentsCountTextView = commentsCountTextView;
             this.menuButtonHandler = menuButtonHandler;
+            this.listener = listener;
         }
     }
 
@@ -313,6 +322,10 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
                     mListener.onInterpretationContentClick(mInterpretation);
                     break;
                 }
+                case R.id.interpretation_comments_show: {
+                    mListener.onInterpretationCommentsClick(mInterpretation);
+                    break;
+                }
             }
         }
     }
@@ -325,6 +338,8 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         void onInterpretationDeleteClick(Interpretation interpretation);
 
         void onInterpretationEditClick(Interpretation interpretation);
+
+        void onInterpretationCommentsClick(Interpretation interpretation);
     }
 
     private static class MenuButtonHandler implements View.OnClickListener {
