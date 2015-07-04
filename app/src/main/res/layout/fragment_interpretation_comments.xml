@@ -44,7 +44,7 @@
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
         android:scrollbarSize="4dp"
-        android:scrollbarStyle="outsideInset"
+        android:scrollbarStyle="insideOverlay"
         android:scrollbarThumbVertical="@drawable/scrollbar_shape"
         android:scrollbars="vertical"/>
 
@@ -58,32 +58,32 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:gravity="center_vertical"
-        android:minHeight="48dp"
+        android:minHeight="56dp"
         android:orientation="horizontal"
+        android:paddingLeft="16dp"
         android:weightSum="1">
 
         <org.dhis2.android.dashboard.ui.views.FontEditText
             android:id="@+id/new_interpretation_comment_edit_text"
             android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="4dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="8dp"
             android:layout_weight="1"
             android:hint="@string/add_comment"
-            android:padding="4dp"
-            android:textSize="15sp"/>
+            android:minHeight="40dp"
+            android:textSize="16sp"/>
 
         <ImageView
             android:id="@+id/post_new_interpretation_comment_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:adjustViewBounds="true"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:contentDescription="@string/description"
-            android:padding="4dp"
+            android:padding="16dp"
             android:src="@mipmap/ic_comment_send"/>
 
     </LinearLayout>
