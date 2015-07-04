@@ -35,9 +35,11 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -45,8 +47,13 @@ import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.IdentifiableObject;
+import org.dhis2.android.dashboard.api.models.Interpretation;
+import org.dhis2.android.dashboard.api.models.Interpretation$Table;
 import org.dhis2.android.dashboard.api.models.InterpretationComment;
 import org.dhis2.android.dashboard.api.models.InterpretationComment$Table;
+import org.dhis2.android.dashboard.api.models.User;
+import org.dhis2.android.dashboard.api.models.User$Table;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationCommentsAdapter;
@@ -58,6 +65,10 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnTextChanged;
+
+import static org.dhis2.android.dashboard.utils.TextUtils.isEmpty;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -66,6 +77,7 @@ public class InterpretationCommentsFragment extends BaseFragment
         implements LoaderCallbacks<List<InterpretationComment>> {
     private static final int LOADER_ID = 89636345;
     private static final String INTERPRETATION_ID = "arg:interpretationId";
+    private static final String EMPTY_FIELD = "";
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -73,7 +85,16 @@ public class InterpretationCommentsFragment extends BaseFragment
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
+    @Bind(R.id.interpretation_comment_edit_text)
+    EditText mNewCommentText;
+
+    @Bind(R.id.add_interpretation_comment_button)
+    View mAddNewComment;
+
     InterpretationCommentsAdapter mAdapter;
+
+    Interpretation mInterpretation;
+    User mUser;
 
     public static InterpretationCommentsFragment newInstance(long interpretationId) {
         Bundle arguments = new Bundle();
@@ -112,8 +133,21 @@ public class InterpretationCommentsFragment extends BaseFragment
 
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        // mRecyclerView.addItemDecoration(new GridDividerDecoration(getActivity()));
         mRecyclerView.setAdapter(mAdapter);
+
+        mInterpretation = new Select()
+                .from(Interpretation.class)
+                .where(Condition.column(Interpretation$Table
+                        .ID).is(getArguments().getLong(INTERPRETATION_ID)))
+                .querySingle();
+        //mUser = UserAccount.getCurrentUser();
+        UserAccount account = UserAccount
+                .getCurrentUserAccountFromDb();
+        mUser = new Select()
+                .from(User.class)
+                .where(Condition.column(User$Table
+                        .UID).is(account.getUId()))
+                .querySingle();
     }
 
     @Override
@@ -126,7 +160,7 @@ public class InterpretationCommentsFragment extends BaseFragment
     public Loader<List<InterpretationComment>> onCreateLoader(int id, Bundle args) {
         if (LOADER_ID == id) {
             List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
-            tablesToTrack.add(InterpretationComment.class);
+            //tablesToTrack.add(InterpretationComment.class);
             return new DbLoader<>(getActivity().getApplicationContext(), tablesToTrack,
                     new CommentsQuery(args.getLong(INTERPRETATION_ID)));
         }
@@ -146,6 +180,24 @@ public class InterpretationCommentsFragment extends BaseFragment
         if (LOADER_ID == loader.getId()) {
             mAdapter.swapData(null);
         }
+    }
+
+    @SuppressWarnings("unused")
+    @OnTextChanged(R.id.interpretation_comment_edit_text)
+    public void onCommentChanged(Editable text) {
+        mAddNewComment.setVisibility(isEmpty(text) ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    @SuppressWarnings("unused")
+    @OnClick(R.id.add_interpretation_comment_button)
+    public void onAddComment() {
+        String newCommentText = mNewCommentText.getText().toString();
+        InterpretationComment comment = Interpretation
+                .addComment(mInterpretation, mUser, newCommentText);
+        comment.save();
+        mAdapter.getData().add(comment);
+        mAdapter.notifyItemInserted(mAdapter.getItemCount() - 1);
+        mNewCommentText.setText(EMPTY_FIELD);
     }
 
     private static class CommentsQuery implements Query<List<InterpretationComment>> {

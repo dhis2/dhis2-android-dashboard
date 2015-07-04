@@ -104,7 +104,7 @@ public final class Interpretation extends BaseIdentifiableObject {
 
     public static InterpretationComment addComment(Interpretation interpretation, User user, String text) {
         DateTime lastUpdated = DateTimeManager.getInstance()
-                .getLastUpdated(DateTimeManager.ResourceType.INTERPRETATION_COMMENTS);
+                .getLastUpdated(DateTimeManager.ResourceType.INTERPRETATIONS);
 
         InterpretationComment comment = new InterpretationComment();
         comment.setCreated(lastUpdated);

@@ -68,6 +68,6 @@ public final class DateTimeManager {
     }
 
     public enum ResourceType {
-        CONTENT, DASHBOARDS, INTERPRETATIONS, INTERPRETATION_COMMENTS
+        CONTENT, DASHBOARDS, INTERPRETATIONS,
     }
 }

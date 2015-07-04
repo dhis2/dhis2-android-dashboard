@@ -44,7 +44,7 @@ public final class LogOutUserController implements IController<Object> {
         sessionManager.delete();
         //mUserAccountHandler.delete();
         UserAccount user
-                = UserAccount.getUserAccountFromDb();
+                = UserAccount.getCurrentUserAccountFromDb();
         if (user != null) {
             user.delete();
         }

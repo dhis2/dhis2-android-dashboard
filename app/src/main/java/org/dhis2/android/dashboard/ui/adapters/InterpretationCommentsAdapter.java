@@ -35,13 +35,16 @@ import android.widget.TextView;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.InterpretationComment;
+import org.dhis2.android.dashboard.api.models.User;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationCommentsAdapter.CommentViewHolder;
+import org.joda.time.DateTime;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
 public final class InterpretationCommentsAdapter extends AbsAdapter<InterpretationComment, CommentViewHolder> {
     private static final String DATE_FORMAT = "YYYY-MM-dd";
+    private static final String EMPTY_FIELD = "";
 
     public InterpretationCommentsAdapter(Context context, LayoutInflater inflater) {
         super(context, inflater);
@@ -56,13 +59,12 @@ public final class InterpretationCommentsAdapter extends AbsAdapter<Interpretati
     @Override
     public void onBindViewHolder(CommentViewHolder holder, int position) {
         InterpretationComment comment = getItem(position);
-        String created = comment.getCreated().toString(DATE_FORMAT);
-        String username = comment.getUser().getDisplayName();
-        String commentText = comment.getText();
+        DateTime created = comment.getCreated();
+        User user = comment.getUser();
 
-        holder.createdTextView.setText(created);
-        holder.usernameTextView.setText(username);
-        holder.commentTextView.setText(commentText);
+        holder.commentTextView.setText(comment.getText());
+        holder.createdTextView.setText(created == null ? EMPTY_FIELD : created.toString(DATE_FORMAT));
+        holder.usernameTextView.setText(user == null ? EMPTY_FIELD : user.getDisplayName());
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {

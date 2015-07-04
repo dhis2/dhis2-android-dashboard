@@ -104,10 +104,15 @@ public final class UserAccount extends BaseIdentifiableObject {
     }
 
     @JsonIgnore
-    public static UserAccount getUserAccountFromDb() {
+    public static UserAccount getCurrentUserAccountFromDb() {
         return new Select().from(UserAccount.class)
                 .where(Condition.column(UserAccount$Table.ID).is(LOCAL_ID))
                 .querySingle();
+    }
+
+    @JsonIgnore
+    public static User getCurrentUser() {
+        return toUser(getCurrentUserAccountFromDb());
     }
 
     @JsonIgnore

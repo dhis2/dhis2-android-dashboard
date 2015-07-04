@@ -30,6 +30,7 @@ package org.dhis2.android.dashboard.api.controllers;
 
 import com.squareup.okhttp.HttpUrl;
 
+import org.dhis2.android.dashboard.api.models.User;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.models.meta.Session;
@@ -61,7 +62,8 @@ public final class LogInUserController implements IController<UserAccount> {
                 "firstName,surname,gender,birthday,introduction," +
                 "education,employer,interests,jobTitle,languages,email,phoneNumber," +
                 "organisationUnits[id]");
-        UserAccount user = mService.getCurrentUserAccount(QUERY_PARAMS);
+        UserAccount userAccount = mService.getCurrentUserAccount(QUERY_PARAMS);
+        User user = UserAccount.toUser(userAccount);
 
         // if we got here, it means http
         // request was executed successfully
@@ -71,8 +73,9 @@ public final class LogInUserController implements IController<UserAccount> {
         SessionManager.getInstance().put(session);
 
         /* save user account details */
+        userAccount.save();
         user.save();
 
-        return user;
+        return userAccount;
     }
 }

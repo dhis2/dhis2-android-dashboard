@@ -122,6 +122,7 @@ public final class InterpretationFragment extends BaseFragment
     public Loader<List<Interpretation>> onCreateLoader(int id, Bundle args) {
         List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
         tablesToTrack.add(Interpretation.class);
+        tablesToTrack.add(InterpretationComment.class);
         return new DbLoader<>(getActivity().getApplicationContext(),
                 tablesToTrack, new InterpretationsQuery());
     }

@@ -79,7 +79,7 @@ public class MenuActivity extends BaseActivity
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        UserAccount user = UserAccount.getUserAccountFromDb();
+        UserAccount user = UserAccount.getCurrentUserAccountFromDb();
         mUsername.setText(user.getDisplayName());
         mUserInfo.setText(user.getEmail());
     }
