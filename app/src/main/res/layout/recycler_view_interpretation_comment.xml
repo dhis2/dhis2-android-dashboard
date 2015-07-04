@@ -24,25 +24,37 @@
   ~ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
-    android:orientation="horizontal"
-    android:padding="16dp">
+    android:orientation="horizontal">
 
-    <ImageView
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginRight="8dp"
-        android:adjustViewBounds="true"
-        android:src="@mipmap/ic_anonymous_user" />
+    <LinearLayout
+        android:layout_width="72dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:adjustViewBounds="true"
+            android:src="@mipmap/ic_anonymous_user"/>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="20dp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -61,16 +73,16 @@
                 android:ellipsize="middle"
                 android:singleLine="true"
                 android:textColor="@color/navy_blue"
-                android:textSize="14sp"
-                app:font="@string/regular_font_name" />
+                android:textSize="16sp"
+                app:font="@string/regular_font_name"/>
 
             <org.dhis2.android.dashboard.ui.views.FontTextView
                 android:id="@+id/comment_created"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textSize="12sp"
-                app:font="@string/light_font_name" />
+                android:textSize="14sp"
+                app:font="@string/light_font_name"/>
         </LinearLayout>
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
@@ -78,7 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            app:font="@string/regular_font_name" />
+            app:font="@string/regular_font_name"/>
 
     </LinearLayout>
 
