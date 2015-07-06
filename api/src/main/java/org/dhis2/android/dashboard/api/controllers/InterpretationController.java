@@ -165,7 +165,7 @@ public final class InterpretationController implements IController<Object> {
                                 .setInterpretation(interpretation);
                         break;
                     }
-                    case Interpretation.TYPE_DATASET_REPORT: {
+                    case Interpretation.TYPE_DATA_SET_REPORT: {
                         interpretation.getDataSet()
                                 .setType(InterpretationElement.TYPE_DATA_SET);
                         interpretation.getPeriod()

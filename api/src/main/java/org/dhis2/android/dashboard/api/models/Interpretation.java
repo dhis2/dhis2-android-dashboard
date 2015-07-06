@@ -41,11 +41,15 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
+import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager.ResourceType;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
+ */
 @Table(databaseName = DbDhis.NAME)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class Interpretation extends BaseIdentifiableObject {
@@ -53,7 +57,7 @@ public final class Interpretation extends BaseIdentifiableObject {
     public static final String TYPE_CHART = "chart";
     public static final String TYPE_MAP = "map";
     public static final String TYPE_REPORT_TABLE = "reportTable";
-    public static final String TYPE_DATASET_REPORT = "dataSetReport";
+    public static final String TYPE_DATA_SET_REPORT = "dataSetReport";
 
     @JsonProperty("text")
     @Column(name = "text")
@@ -102,6 +106,14 @@ public final class Interpretation extends BaseIdentifiableObject {
         state = State.SYNCED;
     }
 
+    /**
+     * Creates comment for given interpretation. Comment is assigned to given user.
+     *
+     * @param interpretation Interpretation to associate comment with.
+     * @param user           User who wants to create comment.
+     * @param text           The actual content of comment.
+     * @return Intrepretation comment.
+     */
     public static InterpretationComment addComment(Interpretation interpretation, User user, String text) {
         DateTime lastUpdated = DateTimeManager.getInstance()
                 .getLastUpdated(DateTimeManager.ResourceType.INTERPRETATIONS);
@@ -110,14 +122,179 @@ public final class Interpretation extends BaseIdentifiableObject {
         comment.setCreated(lastUpdated);
         comment.setLastUpdated(lastUpdated);
         comment.setAccess(Access.provideDefaultAccess());
-        comment.setName(text);
-        comment.setDisplayName(text);
         comment.setText(text);
         comment.setState(State.TO_POST);
         comment.setUser(user);
         comment.setInterpretation(interpretation);
-
         return comment;
+    }
+
+    /**
+     * This method allows to create interpretation from: chart, map,
+     * reportTable. Please note, it won't work for data sets.
+     * <p/>
+     * Note, model won't be saved to database automatically. You have to call .save()
+     * both on interpretation and interpretation elements of current object.
+     *
+     * @param item DashboardItem which will represent content of interpretation.
+     * @param user User who associated with Interpretation.
+     * @param text Interpretation text written by user.
+     * @return new Interpretation.
+     */
+    public static Interpretation createInterpretation(DashboardItem item, User user, String text) {
+        DateTime lastUpdated = DateTimeManager.getInstance()
+                .getLastUpdated(ResourceType.INTERPRETATIONS);
+
+        Interpretation interpretation = new Interpretation();
+        interpretation.setCreated(lastUpdated);
+        interpretation.setLastUpdated(lastUpdated);
+        interpretation.setAccess(Access.provideDefaultAccess());
+        interpretation.setText(text);
+        interpretation.setState(State.TO_POST);
+        interpretation.setUser(user);
+
+        switch (item.getType()) {
+            case TYPE_CHART: {
+                InterpretationElement element = InterpretationElement
+                        .fromDashboardElement(interpretation, item.getChart(), TYPE_CHART);
+                interpretation.setType(TYPE_CHART);
+                interpretation.setChart(element);
+                break;
+            }
+            case TYPE_MAP: {
+                InterpretationElement element = InterpretationElement
+                        .fromDashboardElement(interpretation, item.getMap(), TYPE_MAP);
+                interpretation.setType(TYPE_MAP);
+                interpretation.setMap(element);
+                break;
+            }
+            case TYPE_REPORT_TABLE: {
+                InterpretationElement element = InterpretationElement
+                        .fromDashboardElement(interpretation, item.getReportTable(), TYPE_REPORT_TABLE);
+                interpretation.setType(TYPE_REPORT_TABLE);
+                interpretation.setReportTable(element);
+                break;
+            }
+            default: {
+                throw new IllegalArgumentException("Unsupported DashboardItem type");
+            }
+        }
+
+        return interpretation;
+    }
+
+    /**
+     * Method modifies the original interpretation text and sets TO_UPDATE as state,
+     * if the object was received from server.
+     * <p/>
+     * If the model was persisted only locally, the State will remain TO_POST.
+     *
+     * @param text Edited text of interpretation.
+     */
+    public void updateInterpretation(String text) {
+        setText(text);
+
+        if (state != State.TO_DELETE && state != State.TO_POST) {
+            state = State.TO_UPDATE;
+        }
+
+        super.save();
+    }
+
+    /**
+     * Performs soft delete of model. If State of object was SYNCED, it will be set to TO_DELETE.
+     * If the model is persisted only in the local database, it will be removed immediately.
+     */
+    public final void deleteInterpretation() {
+        if (State.TO_POST.equals(getState())) {
+            super.delete();
+        } else {
+            setState(State.TO_DELETE);
+            super.save();
+        }
+    }
+
+    /**
+     * Convenience method which allows to set InterpretationElements
+     * to Interpretation depending on their mime-type.
+     *
+     * @param elements List of interpretation elements.
+     */
+    public void setInterpretationElements(List<InterpretationElement> elements) {
+        if (elements == null || elements.isEmpty()) {
+            return;
+        }
+
+        if (getType() == null) {
+            return;
+        }
+
+        if (getType().equals(TYPE_DATA_SET_REPORT)) {
+            for (InterpretationElement element : elements) {
+                switch (element.getType()) {
+                    case InterpretationElement.TYPE_DATA_SET: {
+                        setDataSet(element);
+                        break;
+                    }
+                    case InterpretationElement.TYPE_PERIOD: {
+                        setPeriod(element);
+                        break;
+                    }
+                    case InterpretationElement.TYPE_ORGANISATION_UNIT: {
+                        setOrganisationUnit(element);
+                        break;
+                    }
+                }
+            }
+        } else {
+            switch (getType()) {
+                case InterpretationElement.TYPE_CHART: {
+                    setChart(elements.get(0));
+                    break;
+                }
+                case InterpretationElement.TYPE_MAP: {
+                    setMap(elements.get(0));
+                    break;
+                }
+                case InterpretationElement.TYPE_REPORT_TABLE: {
+                    setReportTable(elements.get(0));
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Convenience method which allows to get
+     * interpretation elements assigned to current object.
+     *
+     * @return List of interpretation elements.
+     */
+    public List<InterpretationElement> getInterpretationElements() {
+        List<InterpretationElement> elements = new ArrayList<>();
+
+        switch (getType()) {
+            case Interpretation.TYPE_CHART: {
+                elements.add(getChart());
+                break;
+            }
+            case Interpretation.TYPE_MAP: {
+                elements.add(getMap());
+                break;
+            }
+            case Interpretation.TYPE_REPORT_TABLE: {
+                elements.add(getReportTable());
+                break;
+            }
+            case Interpretation.TYPE_DATA_SET_REPORT: {
+                elements.add(getDataSet());
+                elements.add(getPeriod());
+                elements.add(getOrganisationUnit());
+                break;
+            }
+        }
+
+        return elements;
     }
 
     public String getText() {
@@ -206,76 +383,5 @@ public final class Interpretation extends BaseIdentifiableObject {
 
     public void setComments(List<InterpretationComment> comments) {
         this.comments = comments;
-    }
-
-    public void setInterpretationElements(List<InterpretationElement> elements) {
-        if (elements == null || elements.isEmpty()) {
-            return;
-        }
-
-        if (getType() == null) {
-            return;
-        }
-
-        if (getType().equals(TYPE_DATASET_REPORT)) {
-            for (InterpretationElement element : elements) {
-                switch (element.getType()) {
-                    case InterpretationElement.TYPE_DATA_SET: {
-                        setDataSet(element);
-                        break;
-                    }
-                    case InterpretationElement.TYPE_PERIOD: {
-                        setPeriod(element);
-                        break;
-                    }
-                    case InterpretationElement.TYPE_ORGANISATION_UNIT: {
-                        setOrganisationUnit(element);
-                        break;
-                    }
-                }
-            }
-        } else {
-            switch (getType()) {
-                case InterpretationElement.TYPE_CHART: {
-                    setChart(elements.get(0));
-                    break;
-                }
-                case InterpretationElement.TYPE_MAP: {
-                    setMap(elements.get(0));
-                    break;
-                }
-                case InterpretationElement.TYPE_REPORT_TABLE: {
-                    setReportTable(elements.get(0));
-                    break;
-                }
-            }
-        }
-    }
-
-    public List<InterpretationElement> getInterpretationElements() {
-        List<InterpretationElement> elements = new ArrayList<>();
-
-        switch (getType()) {
-            case Interpretation.TYPE_CHART: {
-                elements.add(getChart());
-                break;
-            }
-            case Interpretation.TYPE_MAP: {
-                elements.add(getMap());
-                break;
-            }
-            case Interpretation.TYPE_REPORT_TABLE: {
-                elements.add(getReportTable());
-                break;
-            }
-            case Interpretation.TYPE_DATASET_REPORT: {
-                elements.add(getDataSet());
-                elements.add(getPeriod());
-                elements.add(getOrganisationUnit());
-                break;
-            }
-        }
-
-        return elements;
     }
 }

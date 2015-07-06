@@ -38,9 +38,10 @@ import android.widget.TextView;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.InterpretationComment;
 import org.dhis2.android.dashboard.api.models.User;
-import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationCommentsAdapter.CommentViewHolder;
 import org.joda.time.DateTime;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -79,12 +80,17 @@ public final class InterpretationCommentsAdapter extends AbsAdapter<Interpretati
         DateTime lastUpdated = comment.getLastUpdated();
         User user = comment.getUser();
 
-        holder.commentTextView.setText(
-                comment.getText());
+        String name = EMPTY_FIELD;
+        if (user != null) {
+            name = isEmpty(user.getDisplayName())
+                    ? user.getName() : user.getDisplayName();
+        }
+
+        holder.usernameTextView.setText(name);
+        holder.commentTextView.setText(comment.getText());
         holder.lastUpdatedTextView.setText(
                 lastUpdated == null ? EMPTY_FIELD : lastUpdated.toString(DATE_FORMAT));
-        holder.usernameTextView.setText(
-                user == null ? EMPTY_FIELD : user.getDisplayName());
+
         holder.menuButtonHandler
                 .setInterpretationComment(comment);
         holder.menuButton.setVisibility(holder.menuButtonHandler

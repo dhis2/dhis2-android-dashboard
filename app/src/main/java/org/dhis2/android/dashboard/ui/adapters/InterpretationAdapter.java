@@ -90,7 +90,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
             case Interpretation.TYPE_MAP:
                 return ITEM_WITH_IMAGE_TYPE;
             case Interpretation.TYPE_REPORT_TABLE:
-            case Interpretation.TYPE_DATASET_REPORT:
+            case Interpretation.TYPE_DATA_SET_REPORT:
                 return ITEM_WITH_TABLE_TYPE;
         }
 
@@ -214,7 +214,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         InterpretationElement element = null;
         if (Interpretation.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
             element = item.getReportTable();
-        } else if (Interpretation.TYPE_DATASET_REPORT.equals(item.getType()) && item.getDataSet() != null) {
+        } else if (Interpretation.TYPE_DATA_SET_REPORT.equals(item.getType()) && item.getDataSet() != null) {
             element = item.getDataSet();
         }
 

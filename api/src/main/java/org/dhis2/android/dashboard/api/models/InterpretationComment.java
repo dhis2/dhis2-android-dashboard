@@ -26,7 +26,6 @@
 
 package org.dhis2.android.dashboard.api.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -59,7 +58,6 @@ public final class InterpretationComment extends BaseIdentifiableObject {
     )
     User user;
 
-    @JsonIgnore
     @Column
     @ForeignKey(
             references = {
@@ -68,7 +66,6 @@ public final class InterpretationComment extends BaseIdentifiableObject {
     )
     Interpretation interpretation;
 
-    @JsonIgnore
     @NotNull
     @Column(name = "state")
     State state;
@@ -77,7 +74,11 @@ public final class InterpretationComment extends BaseIdentifiableObject {
         state = State.SYNCED;
     }
 
-    public void deleteComment() {
+    /**
+     * Performs soft delete of model. If State of object was SYNCED, it will be set to TO_DELETE.
+     * If the model is persisted only in the local database, it will be removed immediately.
+     */
+    public final void deleteComment() {
         if (State.TO_POST.equals(getState())) {
             super.delete();
         } else {
@@ -86,8 +87,15 @@ public final class InterpretationComment extends BaseIdentifiableObject {
         }
     }
 
-    public void updateComment(String newName) {
-        setText(newName);
+    /**
+     * Method modifies the original comment text and sets TO_UPDATE as state,
+     * if the object was received from server. If the model was persisted only locally,
+     * the State will be the TO_POST.
+     *
+     * @param newText Edited text of comment.
+     */
+    public final void updateComment(String newText) {
+        setText(newText);
 
         if (state != State.TO_DELETE && state != State.TO_POST) {
             state = State.TO_UPDATE;

@@ -26,7 +26,6 @@
 
 package org.dhis2.android.dashboard.api.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyAction;
@@ -38,6 +37,9 @@ import org.dhis2.android.dashboard.api.persistence.DbDhis;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
+ *         <p/>
+ *         This model class is intended to represent content of Interpretation {map, chart,
+ *         reportTable, dataSet, period, organisationUnit}
  */
 @Table(databaseName = DbDhis.NAME)
 public final class InterpretationElement extends BaseIdentifiableObject {
@@ -48,12 +50,10 @@ public final class InterpretationElement extends BaseIdentifiableObject {
     public static final String TYPE_PERIOD = "period";
     public static final String TYPE_ORGANISATION_UNIT = "organisationUnit";
 
-    @JsonIgnore
     @Column
     @NotNull
     String type;
 
-    @JsonIgnore
     @Column
     @ForeignKey(
             references = {
@@ -65,6 +65,28 @@ public final class InterpretationElement extends BaseIdentifiableObject {
 
     public InterpretationElement() {
         // empty constructor
+    }
+
+    /**
+     * Factory method which allows to create InterpretationElement
+     * by using DashboardElement as main source of data.
+     *
+     * @param interpretation Interpretation to which we will assign interpretation element
+     * @param dashboardElement DashboardElement from which we want to create interpretation element.
+     * @return new InterpretationElement
+     */
+    public static InterpretationElement fromDashboardElement(Interpretation interpretation,
+                                                             DashboardElement dashboardElement,
+                                                             String mimeType) {
+        InterpretationElement interpretationElement = new InterpretationElement();
+        interpretationElement.setName(dashboardElement.getName());
+        interpretationElement.setDisplayName(dashboardElement.getDisplayName());
+        interpretationElement.setCreated(dashboardElement.getCreated());
+        interpretationElement.setLastUpdated(dashboardElement.getLastUpdated());
+        interpretationElement.setAccess(dashboardElement.getAccess());
+        interpretationElement.setType(mimeType);
+        interpretationElement.setInterpretation(interpretation);
+        return interpretationElement;
     }
 
     public Interpretation getInterpretation() {
