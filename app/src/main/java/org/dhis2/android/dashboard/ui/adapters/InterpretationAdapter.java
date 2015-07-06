@@ -128,6 +128,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         OnInterpretationInternalClickListener listener
                 = new OnInterpretationInternalClickListener(mClickListener);
         commentsShowButton.setOnClickListener(listener);
+        interpretationTextView.setOnClickListener(listener);
 
         return new InterpretationHolder(
                 rootView, itemBody, userTextView, lastUpdated,
@@ -324,6 +325,10 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
                 }
                 case R.id.interpretation_comments_show: {
                     mListener.onInterpretationCommentsClick(mInterpretation);
+                    break;
+                }
+                case R.id.interpretation_text: {
+                    mListener.onInterpretationTextClick(mInterpretation);
                     break;
                 }
             }

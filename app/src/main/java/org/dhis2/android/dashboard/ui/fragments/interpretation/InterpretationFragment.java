@@ -123,7 +123,6 @@ public final class InterpretationFragment extends BaseFragment
     @Override
     public Loader<List<Interpretation>> onCreateLoader(int id, Bundle args) {
         List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
-        tablesToTrack.add(Interpretation.class);
         tablesToTrack.add(InterpretationComment.class);
         return new DbLoader<>(getActivity().getApplicationContext(),
                 tablesToTrack, new InterpretationsQuery());
@@ -174,12 +173,19 @@ public final class InterpretationFragment extends BaseFragment
 
     @Override
     public void onInterpretationDeleteClick(Interpretation interpretation) {
-
+        int position = mAdapter.getData().indexOf(interpretation);
+        if (!(position < 0)) {
+            mAdapter.getData().remove(position);
+            mAdapter.notifyItemRemoved(position);
+            interpretation.deleteInterpretation();
+        }
     }
 
     @Override
     public void onInterpretationEditClick(Interpretation interpretation) {
-
+        InterpretationTextFragment fragment = InterpretationTextFragment
+                .newInstance(interpretation);
+        fragment.show(getChildFragmentManager());
     }
 
     @Override

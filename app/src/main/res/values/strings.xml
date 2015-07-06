@@ -78,6 +78,8 @@
     <!-- START Interpretations -->
     <string name="add_comment">Add comment</string>
     <string name="edit_comment">Edit comment</string>
+    <string name="edit_text">Edit text</string>
     <string name="interpretation_comment">Interpretation comment</string>
+    <string name="interpretation_text">Interpretation text</string>
     <!-- END Interpretations -->
 </resources>
