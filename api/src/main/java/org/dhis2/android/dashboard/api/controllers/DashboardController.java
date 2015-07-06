@@ -65,6 +65,8 @@ import retrofit.client.Response;
 import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toListIds;
 import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toMap;
 import static org.dhis2.android.dashboard.api.utils.MergeUtils.merge;
+import static org.dhis2.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
+import static org.dhis2.android.dashboard.api.utils.NetworkUtils.isSuccess;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
 public final class DashboardController implements IController<Object> {
@@ -73,23 +75,6 @@ public final class DashboardController implements IController<Object> {
     public DashboardController(DhisManager dhisManager) {
         mDhisApi = RepoManager.createService(dhisManager.getServerUrl(),
                 dhisManager.getUserCredentials());
-    }
-
-    private static boolean isSuccess(int status) {
-        return status >= 200 && status < 300;
-    }
-
-    private static Header findLocationHeader(List<Header> headers) {
-        final String LOCATION = "location";
-        if (headers != null && !headers.isEmpty()) {
-            for (Header header : headers) {
-                if (header.getName().equalsIgnoreCase(LOCATION)) {
-                    return header;
-                }
-            }
-        }
-
-        return null;
     }
 
     /* this method subtracts content of bList from aList */

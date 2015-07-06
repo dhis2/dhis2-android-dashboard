@@ -26,6 +26,8 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
+import android.net.Uri;
+
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.From;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -58,9 +60,13 @@ import java.util.Map;
 import java.util.Queue;
 
 import retrofit.RetrofitError;
+import retrofit.client.Header;
+import retrofit.client.Response;
 
 import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toMap;
 import static org.dhis2.android.dashboard.api.utils.MergeUtils.merge;
+import static org.dhis2.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
+import static org.dhis2.android.dashboard.api.utils.NetworkUtils.isSuccess;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
 /**
@@ -78,7 +84,201 @@ public final class InterpretationController implements IController<Object> {
     public Object run() throws APIException {
         getInterpretationDataFromServer();
 
+        sendLocalChanges();
         return null;
+    }
+
+    private void sendLocalChanges() throws RetrofitError {
+        sendInterpretationChanges();
+        sendInterpretationCommentChanges();
+    }
+
+    private void sendInterpretationChanges() throws RetrofitError {
+        List<Interpretation> interpretations = new Select()
+                .from(Interpretation.class)
+                .where(Condition.column(Interpretation$Table
+                        .STATE).isNot(State.SYNCED.toString()))
+                .orderBy(true, Interpretation$Table.ID)
+                .queryList();
+
+        if (interpretations == null || interpretations.isEmpty()) {
+            return;
+        }
+
+        for (Interpretation interpretation : interpretations) {
+            List<InterpretationElement> elements = new Select()
+                    .from(InterpretationElement.class)
+                    .where(Condition.column(InterpretationElement$Table
+                            .INTERPRETATION_INTERPRETATION).is(interpretation.getId()))
+                    .queryList();
+            interpretation.setInterpretationElements(elements);
+        }
+
+        for (Interpretation interpretation : interpretations) {
+            switch (interpretation.getState()) {
+                case TO_POST: {
+                    postInterpretation(interpretation);
+                    break;
+                }
+                case TO_UPDATE: {
+                    putInterpretation(interpretation);
+                    break;
+                }
+                case TO_DELETE: {
+                    deleteInterpretation(interpretation);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void postInterpretation(Interpretation interpretation) throws RetrofitError {
+        Response response;
+
+        switch (interpretation.getType()) {
+            case Interpretation.TYPE_CHART: {
+                response = mDhisApi.postChartInterpretation(
+                        interpretation.getChart().getUId(), interpretation.getText());
+                break;
+            }
+            case Interpretation.TYPE_MAP: {
+                response = mDhisApi.postMapInterpretation(
+                        interpretation.getMap().getUId(), interpretation.getText());
+                break;
+            }
+            case Interpretation.TYPE_REPORT_TABLE: {
+                response = mDhisApi.postReportTableInterpretation(
+                        interpretation.getReportTable().getUId(), interpretation.getText());
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported interpretation type");
+        }
+
+        if (isSuccess(response.getStatus())) {
+            Header header = findLocationHeader(response.getHeaders());
+            String interpretationUid = Uri.parse(header
+                    .getValue()).getLastPathSegment();
+            interpretation.setUId(interpretationUid);
+            interpretation.setState(State.SYNCED);
+            interpretation.save();
+        }
+    }
+
+    private void putInterpretation(Interpretation interpretation) throws RetrofitError {
+        Response response = mDhisApi.putInterpretationText(
+                interpretation.getUId(), interpretation.getText());
+
+        if (isSuccess(response.getStatus())) {
+            interpretation.setState(State.SYNCED);
+            interpretation.save();
+        }
+    }
+
+    private void deleteInterpretation(Interpretation interpretation) throws RetrofitError {
+        Response response = mDhisApi.deleteInterpretation(interpretation.getUId());
+
+        if (isSuccess(response.getStatus())) {
+            interpretation.delete();
+        }
+    }
+
+    private void sendInterpretationCommentChanges() throws RetrofitError {
+        List<InterpretationComment> comments = new Select()
+                .from(InterpretationComment.class)
+                .where(Condition.column(InterpretationComment$Table
+                        .STATE).isNot(State.SYNCED.toString()))
+                .queryList();
+
+        if (comments == null || comments.isEmpty()) {
+            return;
+        }
+
+        for (InterpretationComment comment : comments) {
+            switch (comment.getState()) {
+                case TO_POST: {
+                    postInterpretationComment(comment);
+                    break;
+                }
+                case TO_UPDATE: {
+                    putInterpretationComment(comment);
+                    break;
+                }
+                case TO_DELETE: {
+                    deleteInterpretationComment(comment);
+                    break;
+                }
+            }
+        }
+
+        // sync comments here, but be careful with
+        // comments which interpretations are not synced yet.
+    }
+
+    private void postInterpretationComment(InterpretationComment comment) throws RetrofitError {
+        Interpretation interpretation = comment.getInterpretation();
+
+        if (interpretation != null && interpretation.getState() != null) {
+            boolean isInterpretationSynced = (interpretation.getState().equals(State.SYNCED) ||
+                    interpretation.getState().equals(State.TO_UPDATE));
+
+            if (!isInterpretationSynced) {
+                return;
+            }
+
+            Response response = mDhisApi.postInterpretationComment(
+                    interpretation.getUId(), comment.getText());
+
+            if (isSuccess(response.getStatus())) {
+                Header locationHeader = findLocationHeader(response.getHeaders());
+                String commentUid = Uri.parse(locationHeader
+                        .getValue()).getLastPathSegment();
+                comment.setUId(commentUid);
+                comment.setState(State.SYNCED);
+                comment.save();
+            }
+        }
+    }
+
+    private void putInterpretationComment(InterpretationComment comment) throws RetrofitError {
+        Interpretation interpretation = comment.getInterpretation();
+
+        if (interpretation != null && interpretation.getState() != null) {
+            boolean isInterpretationSynced = (interpretation.getState().equals(State.SYNCED) ||
+                    interpretation.getState().equals(State.TO_UPDATE));
+
+            if (!isInterpretationSynced) {
+                return;
+            }
+
+            Response response = mDhisApi.putInterpretationComment(
+                    interpretation.getUId(), comment.getUId(), comment.getText());
+
+            if (isSuccess(response.getStatus())) {
+                comment.setState(State.SYNCED);
+                comment.save();
+            }
+        }
+    }
+
+    private void deleteInterpretationComment(InterpretationComment comment) throws RetrofitError {
+        Interpretation interpretation = comment.getInterpretation();
+
+        if (interpretation != null && interpretation.getState() != null) {
+            boolean isInterpretationSynced = (interpretation.getState().equals(State.SYNCED) ||
+                    interpretation.getState().equals(State.TO_UPDATE));
+
+            if (!isInterpretationSynced) {
+                return;
+            }
+
+            Response response = mDhisApi.deleteInterpretationComment(
+                    interpretation.getUId(), comment.getUId());
+
+            if (isSuccess(response.getStatus())) {
+                comment.delete();
+            }
+        }
     }
 
     private void getInterpretationDataFromServer() throws RetrofitError {

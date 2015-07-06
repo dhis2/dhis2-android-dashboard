@@ -137,4 +137,42 @@ public interface DhisApi {
 
     @GET("/interpretations/?paging=false")
     Map<String, List<Interpretation>> getInterpretations(@QueryMap Map<String, String> queryMap);
+
+    @Headers("Content-Type: text/plain")
+    @POST("/interpretations/chart/{uid}")
+    Response postChartInterpretation(@Path("uid") String elementUid,
+                                     @Body String interpretationText);
+
+    @Headers("Content-Type: text/plain")
+    @POST("/interpretations/map/{uid}")
+    Response postMapInterpretation(@Path("uid") String elementUid,
+                                   @Body String interpretationText);
+
+    @Headers("Content-Type: text/plain")
+    @POST("/interpretations/reportTable/{uid}")
+    Response postReportTableInterpretation(@Path("uid") String elementUid,
+                                           @Body String interpretationText);
+
+    @Headers("Content-Type: text/plain")
+    @PUT("/interpretations/{uid}")
+    Response putInterpretationText(@Path("uid") String interpretationUid,
+                                   @Body String interpretationText);
+
+    @DELETE("/interpretations/{uid}")
+    Response deleteInterpretation(@Path("uid") String interpretationUid);
+
+    @Headers("Content-Type: text/plain")
+    @POST("/interpretations/{interpretationUid}/comments")
+    Response postInterpretationComment(@Path("interpretationUid") String interpretationUid,
+                                       @Body String commentText);
+
+    @Headers("Content-Type: text/plain")
+    @PUT("/interpretations/{interpretationUid}/comments/{commentUid}")
+    Response putInterpretationComment(@Path("interpretationUid") String interpretationUid,
+                                      @Path("commentUid") String commentUid,
+                                      @Body String commentText);
+
+    @DELETE("/interpretations/{interpretationUid}/comments/{commentUid}")
+    Response deleteInterpretationComment(@Path("interpretationUid") String interpretationUid,
+                                         @Path("commentUid") String commentUid);
 }
