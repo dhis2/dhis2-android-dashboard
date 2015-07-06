@@ -55,7 +55,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardItemAdapter.ItemViewHolder> {
-    private static final String DATE_FORMAT = "YYYY-MM-dd";
+    private static final String DATE_FORMAT = "MMMM dd, YYYY";
     private static final String EMPTY_FIELD = "";
 
     /**

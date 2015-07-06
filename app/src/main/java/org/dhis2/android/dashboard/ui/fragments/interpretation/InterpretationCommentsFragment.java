@@ -44,7 +44,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -230,14 +229,25 @@ public class InterpretationCommentsFragment extends BaseFragment
 
     @Override
     public void onCommentEdit(InterpretationComment comment) {
-        Toast.makeText(getActivity(), "onCommentEdit()" +
-                comment.getText(), Toast.LENGTH_SHORT).show();
+        InterpretationCommentEditFragment.newInstance(this, comment)
+                .show(getChildFragmentManager());
     }
 
     @Override
     public void onCommentDelete(InterpretationComment comment) {
-        Toast.makeText(getActivity(), "onCommentDelete()" +
-                comment.getText(), Toast.LENGTH_SHORT).show();
+        int position = mAdapter.getData().indexOf(comment);
+        if (!(position < 0)) {
+            mAdapter.getData().remove(position);
+            mAdapter.notifyItemRemoved(position);
+            comment.deleteComment();
+        }
+    }
+
+    // a method to be called from InterpretationCommentEditFragment
+    public void onCommentEdited() {
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     private static class CommentsQuery implements Query<List<InterpretationComment>> {

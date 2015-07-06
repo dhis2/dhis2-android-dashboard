@@ -47,10 +47,12 @@ import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Interpretation;
+import org.dhis2.android.dashboard.api.models.Interpretation$Table;
 import org.dhis2.android.dashboard.api.models.InterpretationComment;
 import org.dhis2.android.dashboard.api.models.InterpretationComment$Table;
 import org.dhis2.android.dashboard.api.models.InterpretationElement;
 import org.dhis2.android.dashboard.api.models.InterpretationElement$Table;
+import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.activities.InterpretationCommentsActivity;
@@ -193,7 +195,11 @@ public final class InterpretationFragment extends BaseFragment
         @Override
         public List<Interpretation> query(Context context) {
             List<Interpretation> interpretations
-                    = new Select().from(Interpretation.class).queryList();
+                    = new Select()
+                    .from(Interpretation.class)
+                    .where(Condition.column(Interpretation$Table
+                            .STATE).isNot(State.TO_DELETE.toString()))
+                    .queryList();
             for (Interpretation interpretation : interpretations) {
                 List<InterpretationElement> elements = new Select()
                         .from(InterpretationElement.class)
@@ -204,6 +210,8 @@ public final class InterpretationFragment extends BaseFragment
                         .from(InterpretationComment.class)
                         .where(Condition.column(InterpretationComment$Table
                                 .INTERPRETATION_INTERPRETATION).is(interpretation.getId()))
+                        .and(Condition.column(InterpretationComment$Table
+                                .STATE).isNot(State.TO_DELETE.toString()))
                         .queryList();
                 interpretation.setInterpretationElements(elements);
                 interpretation.setComments(comments);

@@ -73,7 +73,6 @@ import static com.raizlabs.android.dbflow.sql.builder.Condition.column;
 
 public class DashboardItemAddFragment extends DialogFragment
         implements PopupMenu.OnMenuItemClickListener, LoaderCallbacks<List<OptionAdapterValue>> {
-
     private static final String TAG = DashboardItemAddFragment.class.getSimpleName();
     private static final int LOADER_ID = 3451234;
 

@@ -31,6 +31,7 @@ package org.dhis2.android.dashboard.ui.fragments.dashboard;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,7 @@ import butterknife.OnClick;
  * Fragment responsible for creation of new dashboards.
  */
 public final class DashboardAddFragment extends DialogFragment {
+    private static final String TAG = DashboardAddFragment.class.getSimpleName();
 
     @Bind(R.id.dialog_label)
     TextView mDialogLabel;
@@ -83,5 +85,9 @@ public final class DashboardAddFragment extends DialogFragment {
             newDashboard.save();
         }
         dismiss();
+    }
+
+    public void show(FragmentManager manager) {
+        super.show(manager, TAG);
     }
 }

@@ -31,6 +31,7 @@ package org.dhis2.android.dashboard.ui.fragments.dashboard;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,7 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
  * Handles editing (changing name) and removal of given dashboard.
  */
 public final class DashboardManageFragment extends DialogFragment {
+    private static final String TAG = DashboardManageFragment.class.getSimpleName();
 
     @Bind(R.id.fragment_bar)
     View mFragmentBar;
@@ -145,5 +147,9 @@ public final class DashboardManageFragment extends DialogFragment {
     void setFragmentBarActionMode(boolean enabled) {
         mFragmentBarEditingMode.setVisibility(enabled ? View.VISIBLE : View.GONE);
         mFragmentBar.setVisibility(enabled ? View.GONE : View.VISIBLE);
+    }
+
+    public void show(FragmentManager manager) {
+        super.show(manager, TAG);
     }
 }

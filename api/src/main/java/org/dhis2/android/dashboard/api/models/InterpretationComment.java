@@ -77,6 +77,25 @@ public final class InterpretationComment extends BaseIdentifiableObject {
         state = State.SYNCED;
     }
 
+    public void deleteComment() {
+        if (State.TO_POST.equals(getState())) {
+            super.delete();
+        } else {
+            setState(State.TO_DELETE);
+            super.save();
+        }
+    }
+
+    public void updateComment(String newName) {
+        setText(newName);
+
+        if (state != State.TO_DELETE && state != State.TO_POST) {
+            state = State.TO_UPDATE;
+        }
+
+        super.save();
+    }
+
     public String getText() {
         return text;
     }

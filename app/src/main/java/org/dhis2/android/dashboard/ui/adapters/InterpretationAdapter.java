@@ -50,7 +50,7 @@ import org.dhis2.android.dashboard.ui.adapters.InterpretationAdapter.Interpretat
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
 public final class InterpretationAdapter extends AbsAdapter<Interpretation, InterpretationHolder> {
-    private static final String DATE_FORMAT = "YYYY-MM-dd";
+    private static final String DATE_FORMAT = "MMMM dd, YYYY";
     private static final String EMPTY_FIELD = "";
 
     private static final int ITEM_WITH_IMAGE_TYPE = 0;

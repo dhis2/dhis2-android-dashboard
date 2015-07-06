@@ -172,17 +172,15 @@ public class DashboardViewPagerFragment extends BaseFragment
                 return true;
             }
             case R.id.add_dashboard: {
-                DashboardAddFragment fragment
-                        = new DashboardAddFragment();
-                fragment.show(getChildFragmentManager(), "someFragment");
+                new DashboardAddFragment()
+                        .show(getChildFragmentManager());
                 return true;
             }
             case R.id.manage_dashboard: {
                 Dashboard dashboard = mDashboardAdapter
                         .getDashboard(mViewPager.getCurrentItem());
-                DashboardManageFragment fragment
-                        = DashboardManageFragment.newInstance(dashboard);
-                fragment.show(getChildFragmentManager(), "someFragment2");
+                DashboardManageFragment.newInstance(
+                        dashboard).show(getChildFragmentManager());
                 return true;
             }
         }
