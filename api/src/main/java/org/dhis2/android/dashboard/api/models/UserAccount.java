@@ -32,19 +32,51 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.DbDhis;
+import org.joda.time.DateTime;
 
 @Table(databaseName = DbDhis.NAME)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public final class UserAccount extends BaseIdentifiableObject {
+public final class UserAccount extends BaseModel implements IdentifiableObject {
 
     // As we have only one user account, the id will be constant
     private static final int LOCAL_ID = 1;
+
+    @JsonIgnore
+    @Column(name = "id")
+    @PrimaryKey(autoincrement = false)
+    long id = LOCAL_ID;
+
+    @JsonProperty("id")
+    @Column(name = "uId")
+    String uId;
+
+    @JsonProperty("name")
+    @Column(name = "name")
+    String name;
+
+    @JsonProperty("displayName")
+    @Column(name = "displayName")
+    String displayName;
+
+    @JsonProperty("created")
+    @Column(name = "created")
+    DateTime created;
+
+    @JsonProperty("lastUpdated")
+    @Column(name = "lastUpdated")
+    DateTime lastUpdated;
+
+    @JsonProperty("access")
+    @Column(name = "access")
+    Access access;
 
     @JsonIgnore
     @Column(name = "state")
@@ -100,7 +132,6 @@ public final class UserAccount extends BaseIdentifiableObject {
 
     public UserAccount() {
         state = State.SYNCED;
-        setId(LOCAL_ID);
     }
 
     @JsonIgnore
@@ -110,10 +141,10 @@ public final class UserAccount extends BaseIdentifiableObject {
                 .querySingle();
     }
 
-    @JsonIgnore
+    /* @JsonIgnore
     public static User getCurrentUser() {
         return toUser(getCurrentUserAccountFromDb());
-    }
+    } */
 
     @JsonIgnore
     public static User toUser(UserAccount userAccount) {
@@ -125,6 +156,90 @@ public final class UserAccount extends BaseIdentifiableObject {
         user.setName(userAccount.getName());
         user.setDisplayName(userAccount.getDisplayName());
         return user;
+    }
+
+    @JsonIgnore
+    @Override
+    public long getId() {
+        return id;
+    }
+
+    @JsonIgnore
+    @Override
+    public void setId(long id) {
+        throw new UnsupportedOperationException("You cannot set id on UserAccount");
+    }
+
+    @JsonIgnore
+    @Override
+    public String getUId() {
+        return uId;
+    }
+
+    @JsonIgnore
+    @Override
+    public void setUId(String uId) {
+        this.uId = uId;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @JsonIgnore
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    @JsonIgnore
+    @Override
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    @JsonIgnore
+    @Override
+    public DateTime getCreated() {
+        return created;
+    }
+
+    @JsonIgnore
+    @Override
+    public void setCreated(DateTime created) {
+        this.created = created;
+    }
+
+    @JsonIgnore
+    @Override
+    public DateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    @JsonIgnore
+    @Override
+    public void setLastUpdated(DateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    @JsonIgnore
+    @Override
+    public Access getAccess() {
+        return access;
+    }
+
+    @JsonIgnore
+    @Override
+    public void setAccess(Access access) {
+        this.access = access;
     }
 
     @JsonIgnore

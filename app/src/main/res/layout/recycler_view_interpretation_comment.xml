@@ -24,12 +24,10 @@
   ~ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:orientation="horizontal">
 
@@ -46,7 +44,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:adjustViewBounds="true"
-            android:src="@mipmap/ic_anonymous_user"/>
+            android:src="@mipmap/ic_anonymous_user" />
     </LinearLayout>
 
     <LinearLayout
@@ -60,29 +58,48 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <org.dhis2.android.dashboard.ui.views.FontTextView
-                android:id="@+id/comment_username"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:layout_weight="1"
-                android:ellipsize="middle"
-                android:singleLine="true"
-                android:textColor="@color/navy_blue"
-                android:textSize="16sp"
-                app:font="@string/regular_font_name"/>
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:weightSum="1">
 
-            <org.dhis2.android.dashboard.ui.views.FontTextView
-                android:id="@+id/comment_created"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:textSize="14sp"
-                app:font="@string/light_font_name"/>
+                <org.dhis2.android.dashboard.ui.views.FontTextView
+                    android:id="@+id/comment_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
+                    android:textColor="@color/navy_blue"
+                    android:textSize="16sp"
+                    app:font="@string/regular_font_name" />
+
+                <org.dhis2.android.dashboard.ui.views.FontTextView
+                    android:id="@+id/comment_last_updated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textSize="12sp"
+                    app:font="@string/light_font_name" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/interpretation_comment_menu"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="top"
+                android:adjustViewBounds="true"
+                android:background="@drawable/transparent_selector"
+                android:clickable="true"
+                android:contentDescription="@string/description"
+                android:padding="6dp"
+                android:src="@mipmap/ic_overflow" />
         </LinearLayout>
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
@@ -90,7 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            app:font="@string/regular_font_name"/>
+            app:font="@string/regular_font_name" />
 
     </LinearLayout>
 

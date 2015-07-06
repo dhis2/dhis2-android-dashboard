@@ -33,6 +33,7 @@ import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyAction;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
+import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.Table;
 
 import org.dhis2.android.dashboard.api.models.meta.State;
@@ -68,8 +69,13 @@ public final class InterpretationComment extends BaseIdentifiableObject {
     Interpretation interpretation;
 
     @JsonIgnore
+    @NotNull
     @Column(name = "state")
     State state;
+
+    public InterpretationComment() {
+        state = State.SYNCED;
+    }
 
     public String getText() {
         return text;

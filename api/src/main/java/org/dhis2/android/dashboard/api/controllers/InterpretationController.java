@@ -39,6 +39,7 @@ import org.dhis2.android.dashboard.api.models.InterpretationComment$Table;
 import org.dhis2.android.dashboard.api.models.InterpretationElement;
 import org.dhis2.android.dashboard.api.models.InterpretationElement$Table;
 import org.dhis2.android.dashboard.api.models.User;
+import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.DbOperation;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.network.APIException;
@@ -94,8 +95,6 @@ public final class InterpretationController implements IController<Object> {
                 queryInterpretationUsers(), users));
         operations.addAll(createOperations(
                 queryInterpretations(), interpretations));
-        /* operations.addAll(createOperations(
-                interpretations)); */
         operations.addAll(DbUtils.createOperations(
                 queryInterpretationComments(null), comments));
 
@@ -211,6 +210,12 @@ public final class InterpretationController implements IController<Object> {
                                                  List<InterpretationComment> comments) {
         Map<String, User> users = new HashMap<>();
 
+        UserAccount currentUserAccount
+                = UserAccount.getCurrentUserAccountFromDb();
+        User currentUser = UserAccount
+                .toUser(currentUserAccount);
+        users.put(currentUser.getUId(), currentUser);
+
         if (interpretations != null && !interpretations.isEmpty()) {
             for (Interpretation interpretation : interpretations) {
                 User user = interpretation.getUser();
@@ -276,64 +281,6 @@ public final class InterpretationController implements IController<Object> {
 
         return ops;
     }
-
-    /* private List<DbOperation> createOperations(List<Interpretation> refreshedItems) {
-        List<DbOperation> dbOperations = new ArrayList<>();
-        for (Interpretation refreshedItem : refreshedItems) {
-            List<InterpretationElement> persistedElementList
-                    = queryInterpretationElements(refreshedItem);
-            List<InterpretationElement> refreshedElementList =
-                    refreshedItem.getInterpretationElements();
-
-            if (persistedElementList == null) {
-                persistedElementList = new ArrayList<>();
-            }
-
-            if (refreshedElementList == null) {
-                refreshedElementList = new ArrayList<>();
-            }
-
-            List<String> persistedElementIds = toListIds(persistedElementList);
-            List<String> refreshedElementIds = toListIds(refreshedElementList);
-
-            List<String> itemIdsToInsert = subtract(refreshedElementIds, persistedElementIds);
-            List<String> itemIdsToDelete = subtract(persistedElementIds, refreshedElementIds);
-
-            for (String elementToDelete : itemIdsToDelete) {
-                int index = persistedElementIds.indexOf(elementToDelete);
-                InterpretationElement element = persistedElementList.get(index);
-                dbOperations.add(DbOperation.delete(element));
-
-                persistedElementIds.remove(index);
-                persistedElementList.remove(index);
-            }
-
-            for (String elementToInsert : itemIdsToInsert) {
-                int index = refreshedElementIds.indexOf(elementToInsert);
-                InterpretationElement element = refreshedElementList.get(index);
-                dbOperations.add(DbOperation.insert(element));
-
-                refreshedElementIds.remove(index);
-                refreshedElementList.remove(index);
-            }
-        }
-
-        return dbOperations;
-    } */
-
-    /* this method subtracts content of bList from aList */
-    /* private static List<String> subtract(List<String> aList, List<String> bList) {
-        List<String> aListCopy = new ArrayList<>(aList);
-        if (bList != null && !bList.isEmpty()) {
-            for (String bItem : bList) {
-                if (aListCopy.contains(bItem)) {
-                    int index = aListCopy.indexOf(bItem);
-                    aListCopy.remove(index);
-                }
-            }
-        }
-        return aListCopy;
-    } */
 
     private static List<Interpretation> queryInterpretations() {
         return new Select().from(Interpretation.class)

@@ -27,10 +27,13 @@
 package org.dhis2.android.dashboard.ui.fragments.interpretation;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +43,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -54,9 +59,11 @@ import org.dhis2.android.dashboard.api.models.InterpretationComment$Table;
 import org.dhis2.android.dashboard.api.models.User;
 import org.dhis2.android.dashboard.api.models.User$Table;
 import org.dhis2.android.dashboard.api.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationCommentsAdapter;
+import org.dhis2.android.dashboard.ui.adapters.InterpretationCommentsAdapter.OnCommentClickListener;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 
 import java.util.ArrayList;
@@ -74,7 +81,7 @@ import static org.dhis2.android.dashboard.utils.TextUtils.isEmpty;
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
 public class InterpretationCommentsFragment extends BaseFragment
-        implements LoaderCallbacks<List<InterpretationComment>> {
+        implements LoaderCallbacks<List<InterpretationComment>>, OnCommentClickListener {
     private static final int LOADER_ID = 89636345;
     private static final String INTERPRETATION_ID = "arg:interpretationId";
     private static final String EMPTY_FIELD = "";
@@ -89,7 +96,7 @@ public class InterpretationCommentsFragment extends BaseFragment
     EditText mNewCommentText;
 
     @Bind(R.id.add_interpretation_comment_button)
-    View mAddNewComment;
+    ImageView mAddNewComment;
 
     InterpretationCommentsAdapter mAdapter;
 
@@ -115,6 +122,19 @@ public class InterpretationCommentsFragment extends BaseFragment
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        mInterpretation = new Select()
+                .from(Interpretation.class)
+                .where(Condition.column(Interpretation$Table
+                        .ID).is(getArguments().getLong(INTERPRETATION_ID)))
+                .querySingle();
+        UserAccount account = UserAccount
+                .getCurrentUserAccountFromDb();
+        mUser = new Select()
+                .from(User.class)
+                .where(Condition.column(User$Table
+                        .UID).is(account.getUId()))
+                .querySingle();
+
         ButterKnife.bind(this, view);
 
         mToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
@@ -126,28 +146,23 @@ public class InterpretationCommentsFragment extends BaseFragment
         });
 
         mAdapter = new InterpretationCommentsAdapter(getActivity(),
-                getLayoutInflater(savedInstanceState));
+                getLayoutInflater(savedInstanceState), this, mUser);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        linearLayoutManager.setStackFromEnd(true);
 
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(mAdapter);
 
-        mInterpretation = new Select()
-                .from(Interpretation.class)
-                .where(Condition.column(Interpretation$Table
-                        .ID).is(getArguments().getLong(INTERPRETATION_ID)))
-                .querySingle();
-        //mUser = UserAccount.getCurrentUser();
-        UserAccount account = UserAccount
-                .getCurrentUserAccountFromDb();
-        mUser = new Select()
-                .from(User.class)
-                .where(Condition.column(User$Table
-                        .UID).is(account.getUId()))
-                .querySingle();
+        Drawable buttonIcon = ContextCompat.getDrawable(
+                getActivity(), R.mipmap.ic_comment_send);
+        DrawableCompat.setTintList(buttonIcon, getResources()
+                .getColorStateList(R.color.button_navy_blue_color_state_list));
+        mAddNewComment.setImageDrawable(buttonIcon);
+
+        handleAddNewCommentButton(EMPTY_FIELD);
     }
 
     @Override
@@ -160,7 +175,6 @@ public class InterpretationCommentsFragment extends BaseFragment
     public Loader<List<InterpretationComment>> onCreateLoader(int id, Bundle args) {
         if (LOADER_ID == id) {
             List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
-            //tablesToTrack.add(InterpretationComment.class);
             return new DbLoader<>(getActivity().getApplicationContext(), tablesToTrack,
                     new CommentsQuery(args.getLong(INTERPRETATION_ID)));
         }
@@ -172,6 +186,8 @@ public class InterpretationCommentsFragment extends BaseFragment
                                List<InterpretationComment> data) {
         if (LOADER_ID == loader.getId()) {
             mAdapter.swapData(data);
+            mRecyclerView.smoothScrollToPosition(
+                    mAdapter.getItemCount() > 0 ? mAdapter.getItemCount() - 1 : 0);
         }
     }
 
@@ -185,19 +201,43 @@ public class InterpretationCommentsFragment extends BaseFragment
     @SuppressWarnings("unused")
     @OnTextChanged(R.id.interpretation_comment_edit_text)
     public void onCommentChanged(Editable text) {
-        mAddNewComment.setVisibility(isEmpty(text) ? View.INVISIBLE : View.VISIBLE);
+        handleAddNewCommentButton(text.toString());
     }
 
     @SuppressWarnings("unused")
     @OnClick(R.id.add_interpretation_comment_button)
     public void onAddComment() {
         String newCommentText = mNewCommentText.getText().toString();
+
+        // creating and saving new comment
         InterpretationComment comment = Interpretation
                 .addComment(mInterpretation, mUser, newCommentText);
         comment.save();
+
+        // now we need to new item to list and play animation.
         mAdapter.getData().add(comment);
+        mRecyclerView.scrollToPosition(
+                mAdapter.getItemCount() > 0 ? mAdapter.getItemCount() - 1 : 0);
         mAdapter.notifyItemInserted(mAdapter.getItemCount() - 1);
+
+        // we need to erase the previous comment from the field.
         mNewCommentText.setText(EMPTY_FIELD);
+    }
+
+    private void handleAddNewCommentButton(String text) {
+        mAddNewComment.setEnabled(!isEmpty(text));
+    }
+
+    @Override
+    public void onCommentEdit(InterpretationComment comment) {
+        Toast.makeText(getActivity(), "onCommentEdit()" +
+                comment.getText(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCommentDelete(InterpretationComment comment) {
+        Toast.makeText(getActivity(), "onCommentDelete()" +
+                comment.getText(), Toast.LENGTH_SHORT).show();
     }
 
     private static class CommentsQuery implements Query<List<InterpretationComment>> {
@@ -209,9 +249,12 @@ public class InterpretationCommentsFragment extends BaseFragment
 
         @Override
         public List<InterpretationComment> query(Context context) {
-            List<InterpretationComment> comments = new Select().from(InterpretationComment.class)
+            List<InterpretationComment> comments = new Select()
+                    .from(InterpretationComment.class)
                     .where(Condition.column(InterpretationComment$Table
                             .INTERPRETATION_INTERPRETATION).is(mInterpretationId))
+                    .and(Condition.column(InterpretationComment$Table
+                            .STATE).isNot(State.TO_DELETE.toString()))
                     .queryList();
             Collections.sort(comments, IdentifiableObject.CREATED_COMPARATOR);
             return comments;
