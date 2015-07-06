@@ -71,7 +71,7 @@ public final class InterpretationElement extends BaseIdentifiableObject {
      * Factory method which allows to create InterpretationElement
      * by using DashboardElement as main source of data.
      *
-     * @param interpretation Interpretation to which we will assign interpretation element
+     * @param interpretation   Interpretation to which we will assign interpretation element
      * @param dashboardElement DashboardElement from which we want to create interpretation element.
      * @return new InterpretationElement
      */
@@ -79,6 +79,7 @@ public final class InterpretationElement extends BaseIdentifiableObject {
                                                              DashboardElement dashboardElement,
                                                              String mimeType) {
         InterpretationElement interpretationElement = new InterpretationElement();
+        interpretationElement.setUId(dashboardElement.getUId());
         interpretationElement.setName(dashboardElement.getName());
         interpretationElement.setDisplayName(dashboardElement.getDisplayName());
         interpretationElement.setCreated(dashboardElement.getCreated());

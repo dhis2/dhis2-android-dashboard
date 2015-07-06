@@ -30,8 +30,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/appbar" />
-
     <include layout="@layout/recycler_view" />
+
+    <include layout="@layout/appbar" />
 
 </android.support.design.widget.CoordinatorLayout>

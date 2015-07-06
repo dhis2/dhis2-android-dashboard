@@ -58,6 +58,7 @@ import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
+import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationCreateFragment;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
 import java.util.ArrayList;
@@ -201,8 +202,8 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onItemShareClick(DashboardItem item) {
-        Toast.makeText(getActivity(), "ON ITEM SHARE CLICK: " +
-                item.getUId(), Toast.LENGTH_SHORT).show();
+        InterpretationCreateFragment
+                .newInstance(item).show(getChildFragmentManager());
     }
 
     private static class ItemsQuery implements Query<List<DashboardItem>> {

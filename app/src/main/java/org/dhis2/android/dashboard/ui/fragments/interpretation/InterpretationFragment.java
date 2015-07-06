@@ -61,6 +61,7 @@ import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -222,6 +223,10 @@ public final class InterpretationFragment extends BaseFragment
                 interpretation.setInterpretationElements(elements);
                 interpretation.setComments(comments);
             }
+
+            // sort interpretations by created field in reverse order.
+            Collections.sort(interpretations,
+                    Collections.reverseOrder(Interpretation.CREATED_COMPARATOR));
             return interpretations;
         }
     }

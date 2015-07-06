@@ -55,6 +55,7 @@
     <string name="refresh">Refresh</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="create">Create</string>
     <!-- END -->
 
     <!-- START DashboardFragment -->
@@ -81,5 +82,6 @@
     <string name="edit_text">Edit text</string>
     <string name="interpretation_comment">Interpretation comment</string>
     <string name="interpretation_text">Interpretation text</string>
+    <string name="create_interpretation">Create interpretation</string>
     <!-- END Interpretations -->
 </resources>
