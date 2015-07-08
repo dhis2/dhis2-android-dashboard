@@ -35,45 +35,45 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.dhis2.android.dashboard.R;
-import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.models.Interpretation;
-import org.dhis2.android.dashboard.api.models.InterpretationElement;
-import org.dhis2.android.dashboard.api.models.User;
-import org.dhis2.android.dashboard.api.models.User$Table;
-import org.dhis2.android.dashboard.api.models.UserAccount;
-
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnFocusChange;
 
-import static org.dhis2.android.dashboard.api.models.Interpretation.createInterpretation;
+import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 /**
- * Fragment responsible for creation of new dashboards.
+ * Handles editing (changing text) of given interpretation.
  */
-public final class InterpretationCreateFragment extends DialogFragment {
-    private static final String TAG = InterpretationCreateFragment.class.getSimpleName();
+public final class InterpretationTextEditFragment extends DialogFragment {
+    private static final String TAG = InterpretationTextEditFragment.class.getSimpleName();
+
+    @Bind(R.id.fragment_bar)
+    View mFragmentBar;
+
+    @Bind(R.id.fragment_bar_mode_editing)
+    View mFragmentBarEditingMode;
 
     @Bind(R.id.dialog_label)
     TextView mDialogLabel;
 
+    @Bind(R.id.action_name)
+    TextView mActionName;
+
     @Bind(R.id.interpretation_text)
     EditText mInterpretationText;
 
-    DashboardItem mDashboardItem;
+    Interpretation mInterpretation;
 
-    public static InterpretationCreateFragment newInstance(DashboardItem item) {
-        InterpretationCreateFragment fragment = new InterpretationCreateFragment();
-        fragment.mDashboardItem = item;
+    public static InterpretationTextEditFragment newInstance(Interpretation interpretation) {
+        isNull(interpretation, "Interpretation object must not be null");
 
+        InterpretationTextEditFragment fragment = new InterpretationTextEditFragment();
+        fragment.mInterpretation = interpretation;
         return fragment;
     }
 
@@ -87,47 +87,54 @@ public final class InterpretationCreateFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_dialog_interpretation_create, container, false);
+        return inflater.inflate(R.layout.fragment_dialog_interpretation_text_edit, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
-        mDialogLabel.setText(getString(R.string.create_interpretation));
+
+        mDialogLabel.setText(getString(R.string.interpretation_text));
+        mActionName.setText(getString(R.string.edit_text));
+
+        mInterpretationText.setText(mInterpretation.getText());
+        setFragmentBarActionMode(false);
     }
 
-    @OnClick({R.id.close_dialog_button, R.id.cancel_interpretation_create, R.id.create_interpretation})
+
+    @OnClick({R.id.close_dialog_button, R.id.cancel_action, R.id.accept_action})
     @SuppressWarnings("unused")
-    public void onButtonClicked(View view) {
-        if (view.getId() == R.id.create_interpretation) {
-            // read user
-            UserAccount userAccount = UserAccount
-                    .getCurrentUserAccountFromDb();
-            User user = new Select()
-                    .from(User.class)
-                    .where(Condition.column(User$Table
-                            .UID).is(userAccount.getUId()))
-                    .querySingle();
-
-            // create interpretation
-            Interpretation interpretation = createInterpretation(mDashboardItem,
-                    user, mInterpretationText.getText().toString());
-            List<InterpretationElement> elements = interpretation
-                    .getInterpretationElements();
-
-            // save interpretation
-            interpretation.save();
-            if (elements != null && !elements.isEmpty()) {
-                for (InterpretationElement element : elements) {
-                    // save corresponding interpretation elements
-                    element.save();
-                }
+    public void onButtonClick(View view) {
+        switch (view.getId()) {
+            case R.id.cancel_action: {
+                mInterpretationText.setText(
+                        mInterpretation.getText());
+                mInterpretationText.clearFocus();
+                break;
             }
-
-            Toast.makeText(getActivity(),
-                    "Successfully created interpretation", Toast.LENGTH_SHORT).show();
+            case R.id.accept_action: {
+                mInterpretation.updateInterpretation(
+                        mInterpretationText.getText().toString());
+                mInterpretationText.clearFocus();
+                break;
+            }
+            case R.id.close_dialog_button: {
+                dismiss();
+            }
         }
-        dismiss();
+    }
+
+    @OnFocusChange(R.id.interpretation_text)
+    @SuppressWarnings("unused")
+    public void onFocusChange(boolean hasFocus) {
+        setFragmentBarActionMode(hasFocus);
+    }
+
+    /* set fragment bar in editing mode, by hiding standard
+    layout and showing layout with actions*/
+    void setFragmentBarActionMode(boolean enabled) {
+        mFragmentBarEditingMode.setVisibility(enabled ? View.VISIBLE : View.GONE);
+        mFragmentBar.setVisibility(enabled ? View.GONE : View.VISIBLE);
     }
 
     public void show(FragmentManager manager) {
