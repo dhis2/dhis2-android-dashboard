@@ -182,7 +182,7 @@ public class DashboardFragment extends BaseFragment
         Toast.makeText(getActivity(), "ON CONTENT CLICK: " +
                 element.getName(), Toast.LENGTH_SHORT).show();
         Intent intent = DashboardElementDetailActivity
-                .newIntent(getActivity(), element.getId());
+                .newIntentForDashboardElement(getActivity(), element.getId());
         startActivity(intent);
     }
 

@@ -40,6 +40,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -55,6 +56,7 @@ import org.dhis2.android.dashboard.api.models.InterpretationElement$Table;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
+import org.dhis2.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.dhis2.android.dashboard.ui.activities.InterpretationCommentsActivity;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
@@ -164,7 +166,31 @@ public final class InterpretationFragment extends BaseFragment
 
     @Override
     public void onInterpretationContentClick(Interpretation interpretation) {
+        InterpretationElement element = null;
+        switch (interpretation.getType()) {
+            case Interpretation.TYPE_CHART: {
+                element = interpretation.getChart();
+                break;
+            }
+            case Interpretation.TYPE_MAP: {
+                element = interpretation.getMap();
+                break;
+            }
+            case Interpretation.TYPE_REPORT_TABLE: {
+                element = interpretation.getReportTable();
+                break;
+            }
+            default: {
+                Toast.makeText(getActivity(), "Unsupported interpretation type",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
 
+        if (element != null) {
+            Intent intent = DashboardElementDetailActivity
+                    .newIntentForInterpretationElement(getActivity(), element.getId());
+            startActivity(intent);
+        }
     }
 
     @Override

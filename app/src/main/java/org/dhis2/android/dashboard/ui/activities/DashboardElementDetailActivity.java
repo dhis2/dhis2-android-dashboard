@@ -43,6 +43,9 @@ import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardElement$Table;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent;
+import org.dhis2.android.dashboard.api.models.Interpretation;
+import org.dhis2.android.dashboard.api.models.InterpretationElement;
+import org.dhis2.android.dashboard.api.models.InterpretationElement$Table;
 import org.dhis2.android.dashboard.ui.fragments.ImageViewFragment;
 import org.dhis2.android.dashboard.ui.fragments.WebViewFragment;
 
@@ -51,13 +54,21 @@ import butterknife.ButterKnife;
 
 public class DashboardElementDetailActivity extends BaseActivity {
     private static final String DASHBOARD_ELEMENT_ID = "arg:dashboardElementId";
+    private static final String INTERPRETATION_ELEMENT_ID = "arg:interpretationElementId";
+
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    public static Intent newIntent(Activity activity, long dashboardElementId) {
+    public static Intent newIntentForDashboardElement(Activity activity, long dashboardElementId) {
         Intent intent = new Intent(activity, DashboardElementDetailActivity.class);
         intent.putExtra(DASHBOARD_ELEMENT_ID, dashboardElementId);
+        return intent;
+    }
+
+    public static Intent newIntentForInterpretationElement(Activity activity, long interpretationElementId) {
+        Intent intent = new Intent(activity, DashboardElementDetailActivity.class);
+        intent.putExtra(INTERPRETATION_ELEMENT_ID, interpretationElementId);
         return intent;
     }
 
@@ -70,6 +81,10 @@ public class DashboardElementDetailActivity extends BaseActivity {
 
     private long getDashboardElementId() {
         return getIntent().getLongExtra(DASHBOARD_ELEMENT_ID, -1);
+    }
+
+    private long getInterpretationElementId() {
+        return getIntent().getLongExtra(INTERPRETATION_ELEMENT_ID, -1);
     }
 
     @Override
@@ -90,11 +105,29 @@ public class DashboardElementDetailActivity extends BaseActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        DashboardElement element = new Select()
-                .from(DashboardElement.class)
-                .where(Condition.column(DashboardElement$Table.ID)
-                        .is(getDashboardElementId()))
-                .querySingle();
+        long dashboardElementId = getDashboardElementId();
+        long interpretationElementId = getInterpretationElementId();
+
+        if (dashboardElementId > 0) {
+            DashboardElement element = new Select()
+                    .from(DashboardElement.class)
+                    .where(Condition.column(DashboardElement$Table.ID)
+                            .is(getDashboardElementId()))
+                    .querySingle();
+            handleDashboardElement(element);
+        }
+
+        if (interpretationElementId > 0) {
+            InterpretationElement element = new Select()
+                    .from(InterpretationElement.class)
+                    .where(Condition.column(InterpretationElement$Table
+                            .ID).is(interpretationElementId))
+                    .querySingle();
+            handleInterpretationElement(element);
+        }
+    }
+
+    private void handleDashboardElement(DashboardElement element) {
 
         if (element == null || element.getDashboardItem() == null) {
             return;
@@ -120,6 +153,34 @@ public class DashboardElementDetailActivity extends BaseActivity {
             case DashboardItemContent.TYPE_REPORT_TABLE: {
                 String elementId = element.getUId();
                 attachFragment(WebViewFragment.newInstance(elementId));
+                break;
+            }
+        }
+    }
+
+    private void handleInterpretationElement(InterpretationElement element) {
+        if (element == null || element.getInterpretation() == null) {
+            return;
+        }
+
+        mToolbar.setTitle(element.getDisplayName());
+        switch (element.getInterpretation().getType()) {
+            case Interpretation.TYPE_CHART: {
+                String request = buildImageUrl("charts", element.getUId());
+                attachFragment(ImageViewFragment.newInstance(request));
+                break;
+            }
+            case Interpretation.TYPE_MAP: {
+                String request = buildImageUrl("maps", element.getUId());
+                attachFragment(ImageViewFragment.newInstance(request));
+                break;
+            }
+            case Interpretation.TYPE_REPORT_TABLE: {
+                String elementId = element.getUId();
+                attachFragment(WebViewFragment.newInstance(elementId));
+                break;
+            }
+            case Interpretation.TYPE_DATA_SET_REPORT: {
                 break;
             }
         }

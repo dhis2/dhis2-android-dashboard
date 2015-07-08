@@ -104,20 +104,29 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
 
         View itemBody = rootView
                 .findViewById(R.id.interpretation_body_container);
+
         TextView userTextView = (TextView) rootView
                 .findViewById(R.id.interpretation_user);
         TextView lastUpdated = (TextView) rootView
                 .findViewById(R.id.interpretation_created);
         ImageView menuButton = (ImageView) rootView
                 .findViewById(R.id.interpretation_menu);
+
+        View interpretationTextContainer = rootView
+                .findViewById(R.id.interpretation_text_container);
         TextView interpretationTextView = (TextView) rootView
                 .findViewById(R.id.interpretation_text);
+        ImageView interpretationTextIcon = (ImageView) rootView
+                .findViewById(R.id.interpretation_text_more);
+
         ViewGroup interpretationContent = (FrameLayout) rootView
                 .findViewById(R.id.interpretation_content);
+
         View commentsShowButton = rootView.
                 findViewById(R.id.interpretation_comments_show);
         TextView commentsCountTextView = (TextView) rootView
                 .findViewById(R.id.interpretation_comments_count);
+
         IInterpretationViewHolder viewHolder =
                 onCreateContentViewHolder(interpretationContent, viewType);
         interpretationContent.addView(viewHolder.getView());
@@ -128,12 +137,12 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         OnInterpretationInternalClickListener listener
                 = new OnInterpretationInternalClickListener(mClickListener);
         commentsShowButton.setOnClickListener(listener);
-        interpretationTextView.setOnClickListener(listener);
+        interpretationTextContainer.setOnClickListener(listener);
 
         return new InterpretationHolder(
                 rootView, itemBody, userTextView, lastUpdated,
-                menuButton, interpretationTextView, viewHolder,
-                commentsShowButton, commentsCountTextView, handler, listener
+                menuButton, interpretationTextView, interpretationTextContainer, interpretationTextIcon,
+                viewHolder, commentsShowButton, commentsCountTextView, handler, listener
         );
     }
 
@@ -154,6 +163,19 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
                 ? EMPTY_FIELD : interpretation.getCreated().toString(DATE_FORMAT));
         holder.interpretationTextView.setText(interpretation.getText() == null
                 ? EMPTY_FIELD : interpretation.getText());
+
+        /* Layout textLayout = holder.interpretationTextView.getLayout();
+        boolean isDropDownVisible = true;
+        if (textLayout != null) {
+            int lineCount = textLayout.getLineCount();
+
+            isDropDownVisible = lineCount > 0 &&
+                    textLayout.getEllipsisCount(lineCount - 1) > 0;
+        }
+
+        holder.interpretationTextContainer.setClickable(isDropDownVisible);
+        holder.interpretationTextMoreIcon.setVisibility(isDropDownVisible
+                ? View.VISIBLE : View.INVISIBLE); */
 
         int commentsCount = interpretation.getComments() == null
                 ? 0 : interpretation.getComments().size();
@@ -233,35 +255,54 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
     }
 
     static class InterpretationHolder extends RecyclerView.ViewHolder {
+        // the main container
         final View itemBodyView;
+
+        // username, created text views and menu button
         final TextView userTextView;
         final TextView createdTextView;
         final ImageView menuButton;
+
+        // interpretation text
+        final View interpretationTextContainer;
         final TextView interpretationTextView;
+        final ImageView interpretationTextMoreIcon;
+
+        // interpretation content
         final IInterpretationViewHolder contentViewHolder;
-        final View commentsShowButton;
-        final TextView commentsCountTextView;
-        final MenuButtonHandler menuButtonHandler;
         final OnInterpretationInternalClickListener listener;
 
+        // comment button
+        final View commentsShowButton;
+        final TextView commentsCountTextView;
+
+        final MenuButtonHandler menuButtonHandler;
+
         public InterpretationHolder(View itemView, View itemBodyView,
-                                    TextView userTextView, TextView createdTextView,
-                                    ImageView menuButton, TextView interpretationTextView,
+                                    TextView userTextView, TextView createdTextView, ImageView menuButton,
+                                    TextView interpretationTextView, View interpretationTextContainer, ImageView textMoreIcon,
                                     IInterpretationViewHolder contentViewHolder,
                                     View commentsShowButton, TextView commentsCountTextView,
                                     MenuButtonHandler menuButtonHandler,
                                     OnInterpretationInternalClickListener listener) {
             super(itemView);
             this.itemBodyView = itemBodyView;
+
             this.userTextView = userTextView;
             this.createdTextView = createdTextView;
             this.menuButton = menuButton;
+
+            this.interpretationTextContainer = interpretationTextContainer;
             this.interpretationTextView = interpretationTextView;
+            this.interpretationTextMoreIcon = textMoreIcon;
+
             this.contentViewHolder = contentViewHolder;
+            this.listener = listener;
+
             this.commentsShowButton = commentsShowButton;
             this.commentsCountTextView = commentsCountTextView;
+
             this.menuButtonHandler = menuButtonHandler;
-            this.listener = listener;
         }
     }
 
@@ -327,7 +368,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
                     mListener.onInterpretationCommentsClick(mInterpretation);
                     break;
                 }
-                case R.id.interpretation_text: {
+                case R.id.interpretation_text_container: {
                     mListener.onInterpretationTextClick(mInterpretation);
                     break;
                 }
