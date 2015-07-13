@@ -110,8 +110,8 @@ public class InterpretationCommentEditFragment extends DialogFragment {
     public void onButtonClick(View view) {
         switch (view.getId()) {
             case R.id.update_interpretation_comment: {
-                String commentText = mCommentEditText.getText().toString();
-                mInterpretationComment.updateComment(commentText);
+                mInterpretationComment.updateComment(
+                        mCommentEditText.getText().toString());
                 break;
             }
         }

@@ -167,7 +167,6 @@ public final class InterpretationFragment extends BaseFragment
         List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
                 new TrackedTable(Interpretation.class, Action.UPDATE),
                 new TrackedTable(InterpretationComment.class, Action.INSERT));
-
         return new DbLoader<>(getActivity().getApplicationContext(),
                 trackedTables, new InterpretationsQuery());
     }
@@ -251,8 +250,8 @@ public final class InterpretationFragment extends BaseFragment
     private void syncInterpretations() {
         if (isDhisServiceBound()) {
             getDhisService().syncInterpretations();
+            mProgressBar.setVisibility(View.VISIBLE);
         }
-        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Subscribe

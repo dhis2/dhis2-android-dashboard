@@ -101,16 +101,17 @@ public final class InterpretationCreateFragment extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
+        long dashboardItemId = getArguments().getLong(DashboardItem$Table.ID);
         mDashboardItem = new Select()
                 .from(DashboardItem.class)
                 .where(Condition.column(DashboardItem$Table
-                        .ID).is(getArguments().getLong(DashboardItem$Table.ID)))
+                        .ID).is(dashboardItemId))
                 .querySingle();
 
         List<DashboardElement> elements = new Select()
                 .from(DashboardElement.class)
                 .where(Condition.column(DashboardElement$Table
-                        .DASHBOARDITEM_DASHBOARDITEM).is(getArguments().getLong(DashboardItem$Table.ID)))
+                        .DASHBOARDITEM_DASHBOARDITEM).is(dashboardItemId))
                 .and(Condition.column(DashboardElement$Table
                         .STATE).isNot(State.TO_DELETE.toString()))
                 .queryList();
