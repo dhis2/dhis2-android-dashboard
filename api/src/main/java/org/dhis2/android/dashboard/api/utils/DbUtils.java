@@ -1,7 +1,5 @@
 package org.dhis2.android.dashboard.api.utils;
 
-import android.util.Log;
-
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 
 import org.dhis2.android.dashboard.api.models.BaseIdentifiableObject;
@@ -21,14 +19,13 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
  * during single database transaction
  */
 public final class DbUtils {
-    private static final String TAG = DbUtils.class.getSimpleName();
 
     private DbUtils() {
         // no instances
     }
 
     /**
-     * Performs each DbOperation during one database transaction
+     * Performs each given DbOperation during one database transaction
      *
      * @param operations List of DbOperations to be performed.
      */
@@ -79,64 +76,42 @@ public final class DbUtils {
         Map<String, T> newModelsMap = toMap(newModels);
         Map<String, T> oldModelsMap = toMap(oldModels);
 
+        // As we will go through map of persisted items, we will try to update existing data.
+        // Also, during each iteration we will remove old model key from list of new models.
+        // As the result, the list of remaining items in newModelsMap,
+        // will contain only those items which were not inserted before.
         for (String oldModelKey : oldModelsMap.keySet()) {
             T newModel = newModelsMap.get(oldModelKey);
             T oldModel = oldModelsMap.get(oldModelKey);
 
+            // if there is no particular model with given uid in list of
+            // actual (up to date) items, it means it was removed on the server side
             if (newModel == null) {
                 ops.add(DbOperation.delete(oldModel));
+
+                // in case if there is no new model object,
+                // we can jump to next iteration.
                 continue;
             }
 
+            // if the last updated field in up to date model is after the same
+            // field in persisted model, it means we need to update it.
             if (newModel.getLastUpdated().isAfter(oldModel.getLastUpdated())) {
+                // note, we need to pass database primary id to updated model
+                // in order to avoid creation of new object.
+                newModel.setId(oldModel.getId());
                 ops.add(DbOperation.update(newModel));
             }
 
+            // as we have processed given old (persisted) model,
+            // we can remove it from map of new models.
             newModelsMap.remove(oldModelKey);
         }
 
+        // Inserting new items.
         for (String newModelKey : newModelsMap.keySet()) {
             T item = newModelsMap.get(newModelKey);
             ops.add(DbOperation.insert(item));
-        }
-
-        return ops;
-    }
-
-    public static <T extends BaseIdentifiableObject> List<DbOperation> createOperations(Collection<T> oldModels,
-                                                                                        Collection<T> newModels) {
-        List<DbOperation> ops = new ArrayList<>();
-
-        Map<String, T> newModelsMap = toMap(newModels);
-        Map<String, T> oldModelsMap = toMap(oldModels);
-
-        for (String oldModelKey : oldModelsMap.keySet()) {
-            T oldModel = oldModelsMap.get(oldModelKey);
-
-            if (!newModelsMap.containsKey(oldModelKey)) {
-                Log.d(TAG, "Deleting: " + oldModel.getId());
-                ops.add(DbOperation.delete(oldModel));
-                continue;
-            }
-
-            T newModel = newModelsMap.get(oldModelKey);
-            if (newModel != null && newModel.getLastUpdated()
-                    .isAfter(oldModel.getLastUpdated())) {
-                Log.d(TAG, "Updating: " + oldModel.getId());
-                ops.add(DbOperation.update(newModel));
-            }
-
-            newModelsMap.remove(oldModelKey);
-        }
-
-        for (String newModelKey : newModelsMap.keySet()) {
-            T item = newModelsMap.get(newModelKey);
-            if (item != null) {
-                Log.d(TAG, "Inserting: " + newModelKey);
-                ops.add(DbOperation.insert(item));
-            } else {
-                throw new IllegalArgumentException("Something went wrong");
-            }
         }
 
         return ops;

@@ -48,6 +48,7 @@ import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import retrofit.http.QueryMap;
+import retrofit.mime.TypedString;
 
 
 public interface DhisApi {
@@ -141,22 +142,22 @@ public interface DhisApi {
     @Headers("Content-Type: text/plain")
     @POST("/interpretations/chart/{uid}")
     Response postChartInterpretation(@Path("uid") String elementUid,
-                                     @Body String interpretationText);
+                                     @Body TypedString interpretationText);
 
     @Headers("Content-Type: text/plain")
     @POST("/interpretations/map/{uid}")
     Response postMapInterpretation(@Path("uid") String elementUid,
-                                   @Body String interpretationText);
+                                   @Body TypedString interpretationText);
 
     @Headers("Content-Type: text/plain")
     @POST("/interpretations/reportTable/{uid}")
     Response postReportTableInterpretation(@Path("uid") String elementUid,
-                                           @Body String interpretationText);
+                                           @Body TypedString interpretationText);
 
     @Headers("Content-Type: text/plain")
     @PUT("/interpretations/{uid}")
     Response putInterpretationText(@Path("uid") String interpretationUid,
-                                   @Body String interpretationText);
+                                   @Body TypedString interpretationText);
 
     @DELETE("/interpretations/{uid}")
     Response deleteInterpretation(@Path("uid") String interpretationUid);
@@ -164,13 +165,13 @@ public interface DhisApi {
     @Headers("Content-Type: text/plain")
     @POST("/interpretations/{interpretationUid}/comments")
     Response postInterpretationComment(@Path("interpretationUid") String interpretationUid,
-                                       @Body String commentText);
+                                       @Body TypedString commentText);
 
     @Headers("Content-Type: text/plain")
     @PUT("/interpretations/{interpretationUid}/comments/{commentUid}")
     Response putInterpretationComment(@Path("interpretationUid") String interpretationUid,
                                       @Path("commentUid") String commentUid,
-                                      @Body String commentText);
+                                      @Body TypedString commentText);
 
     @DELETE("/interpretations/{interpretationUid}/comments/{commentUid}")
     Response deleteInterpretationComment(@Path("interpretationUid") String interpretationUid,

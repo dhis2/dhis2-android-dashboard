@@ -41,6 +41,7 @@ import org.dhis2.android.dashboard.api.models.InterpretationComment$Table;
 import org.dhis2.android.dashboard.api.models.InterpretationElement;
 import org.dhis2.android.dashboard.api.models.InterpretationElement$Table;
 import org.dhis2.android.dashboard.api.models.User;
+import org.dhis2.android.dashboard.api.models.User$Table;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.DbOperation;
 import org.dhis2.android.dashboard.api.models.meta.State;
@@ -62,6 +63,7 @@ import java.util.Queue;
 import retrofit.RetrofitError;
 import retrofit.client.Header;
 import retrofit.client.Response;
+import retrofit.mime.TypedString;
 
 import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toMap;
 import static org.dhis2.android.dashboard.api.utils.MergeUtils.merge;
@@ -138,17 +140,17 @@ public final class InterpretationController implements IController<Object> {
         switch (interpretation.getType()) {
             case Interpretation.TYPE_CHART: {
                 response = mDhisApi.postChartInterpretation(
-                        interpretation.getChart().getUId(), interpretation.getText());
+                        interpretation.getChart().getUId(), new TypedString(interpretation.getText()));
                 break;
             }
             case Interpretation.TYPE_MAP: {
                 response = mDhisApi.postMapInterpretation(
-                        interpretation.getMap().getUId(), interpretation.getText());
+                        interpretation.getMap().getUId(), new TypedString(interpretation.getText()));
                 break;
             }
             case Interpretation.TYPE_REPORT_TABLE: {
                 response = mDhisApi.postReportTableInterpretation(
-                        interpretation.getReportTable().getUId(), interpretation.getText());
+                        interpretation.getReportTable().getUId(), new TypedString(interpretation.getText()));
                 break;
             }
             default:
@@ -167,7 +169,7 @@ public final class InterpretationController implements IController<Object> {
 
     private void putInterpretation(Interpretation interpretation) throws RetrofitError {
         Response response = mDhisApi.putInterpretationText(
-                interpretation.getUId(), interpretation.getText());
+                interpretation.getUId(), new TypedString(interpretation.getText()));
 
         if (isSuccess(response.getStatus())) {
             interpretation.setState(State.SYNCED);
@@ -227,7 +229,7 @@ public final class InterpretationController implements IController<Object> {
             }
 
             Response response = mDhisApi.postInterpretationComment(
-                    interpretation.getUId(), comment.getText());
+                    interpretation.getUId(), new TypedString(comment.getText()));
 
             if (isSuccess(response.getStatus())) {
                 Header locationHeader = findLocationHeader(response.getHeaders());
@@ -252,7 +254,7 @@ public final class InterpretationController implements IController<Object> {
             }
 
             Response response = mDhisApi.putInterpretationComment(
-                    interpretation.getUId(), comment.getUId(), comment.getText());
+                    interpretation.getUId(), comment.getUId(), new TypedString(comment.getText()));
 
             if (isSuccess(response.getStatus())) {
                 comment.setState(State.SYNCED);
@@ -409,13 +411,19 @@ public final class InterpretationController implements IController<Object> {
     private List<User> updateInterpretationUsers(List<Interpretation> interpretations,
                                                  List<InterpretationComment> comments) {
         Map<String, User> users = new HashMap<>();
-
         UserAccount currentUserAccount
                 = UserAccount.getCurrentUserAccountFromDb();
-        User currentUser = UserAccount
-                .toUser(currentUserAccount);
-        users.put(currentUser.getUId(), currentUser);
+        User currentUser = new Select()
+                .from(User.class)
+                .where(Condition.column(User$Table
+                        .UID).is(currentUserAccount.getUId()))
+                .querySingle();
+        if (currentUser == null) {
+            currentUser = UserAccount
+                    .toUser(currentUserAccount);
+        }
 
+        users.put(currentUser.getUId(), currentUser);
         if (interpretations != null && !interpretations.isEmpty()) {
             for (Interpretation interpretation : interpretations) {
                 User user = interpretation.getUser();
@@ -460,6 +468,7 @@ public final class InterpretationController implements IController<Object> {
             }
 
             if (newModel.getLastUpdated().isAfter(oldModel.getLastUpdated())) {
+                newModel.setId(oldModel.getId());
                 ops.add(DbOperation.update(newModel));
             }
 
@@ -483,9 +492,10 @@ public final class InterpretationController implements IController<Object> {
     }
 
     private static List<Interpretation> queryInterpretations() {
-        return new Select().from(Interpretation.class)
+        return new Select()
+                .from(Interpretation.class)
                 .where(Condition.column(Interpretation$Table
-                        .STATE).is(State.TO_POST.toString()))
+                        .STATE).isNot(State.TO_POST.toString()))
                 .queryList();
     }
 
@@ -497,8 +507,9 @@ public final class InterpretationController implements IController<Object> {
         From<InterpretationElement> from = new Select().from(InterpretationElement.class);
 
         if (interpretation != null) {
-            return from.where(Condition.column(InterpretationElement$Table
-                    .INTERPRETATION_INTERPRETATION).is(interpretation.getId()))
+            return from
+                    .where(Condition.column(InterpretationElement$Table
+                            .INTERPRETATION_INTERPRETATION).is(interpretation.getId()))
                     .queryList();
         }
 

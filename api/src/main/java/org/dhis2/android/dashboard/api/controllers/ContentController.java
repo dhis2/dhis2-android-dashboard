@@ -50,6 +50,7 @@ import java.util.Queue;
 
 import retrofit.RetrofitError;
 
+import static org.dhis2.android.dashboard.api.utils.MergeUtils.merge;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
 /**
@@ -116,32 +117,24 @@ public final class ContentController implements IController<Object> {
             QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
         }
 
-        return new AbsMergeController<DashboardItemContent>() {
+        List<DashboardItemContent> actualItems
+                = getApiResourceByType(type, QUERY_MAP_BASIC);
 
-            @Override
-            public List<DashboardItemContent> getExistingItems() {
-                return getApiResourceByType(type, QUERY_MAP_BASIC);
+        List<DashboardItemContent> updatedItems =
+                getApiResourceByType(type, QUERY_MAP_FULL);
+        if (updatedItems != null && !updatedItems.isEmpty()) {
+            for (DashboardItemContent element : updatedItems) {
+                element.setType(type);
             }
+        }
 
-            @Override
-            public List<DashboardItemContent> getUpdatedItems() {
-                List<DashboardItemContent> elements =
-                        getApiResourceByType(type, QUERY_MAP_FULL);
-                if (elements != null && !elements.isEmpty()) {
-                    for (DashboardItemContent element : elements) {
-                        element.setType(type);
-                    }
-                }
-                return elements;
-            }
+        List<DashboardItemContent> persistedItems = new Select()
+                .from(DashboardItemContent.class)
+                .where(Condition.column(DashboardItemContent$Table
+                        .TYPE).is(type))
+                .queryList();
 
-            @Override
-            public List<DashboardItemContent> getPersistedItems() {
-                return new Select().from(DashboardItemContent.class)
-                        .where(Condition.column(DashboardItemContent$Table.TYPE).is(type))
-                        .queryList();
-            }
-        }.run();
+        return merge(actualItems, updatedItems, persistedItems);
     }
 
     private List<DashboardItemContent> getApiResourceByType(String type, Map<String, String> queryParams) throws RetrofitError {
