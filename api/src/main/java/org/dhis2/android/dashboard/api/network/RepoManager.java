@@ -34,8 +34,10 @@ import com.squareup.okhttp.OkHttpClient;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.utils.ObjectMapperProvider;
 
+import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.converter.Converter;
 import retrofit.converter.JacksonConverter;
@@ -55,6 +57,7 @@ public final class RepoManager {
                 .setConverter(provideJacksonConverter())
                 .setClient(provideOkClient())
                 .setRequestInterceptor(provideInterceptor(credentials))
+                .setErrorHandler(new RetrofitErrorHandler())
                 .setLogLevel(RestAdapter.LogLevel.BASIC)
                 .build();
         return restAdapter.create(DhisApi.class);
@@ -91,6 +94,14 @@ public final class RepoManager {
         public void intercept(RequestFacade request) {
             String base64Credentials = basic(mUsername, mPassword);
             request.addHeader("Authorization", base64Credentials);
+        }
+    }
+
+    private static class RetrofitErrorHandler implements ErrorHandler {
+
+        @Override
+        public Throwable handleError(RetrofitError cause) {
+            return APIException.fromRetrofitError(cause);
         }
     }
 }

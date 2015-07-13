@@ -28,6 +28,16 @@
 
 package org.dhis2.android.dashboard.api.controllers;
 
+import com.raizlabs.android.dbflow.sql.language.Delete;
+
+import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.DashboardElement;
+import org.dhis2.android.dashboard.api.models.DashboardItem;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent;
+import org.dhis2.android.dashboard.api.models.Interpretation;
+import org.dhis2.android.dashboard.api.models.InterpretationComment;
+import org.dhis2.android.dashboard.api.models.InterpretationElement;
+import org.dhis2.android.dashboard.api.models.User;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
@@ -39,15 +49,23 @@ public final class LogOutUserController implements IController<Object> {
 
     @Override
     public Object run() throws APIException {
+        // remove session
         SessionManager sessionManager = SessionManager
                 .getInstance();
         sessionManager.delete();
-        //mUserAccountHandler.delete();
-        UserAccount user
-                = UserAccount.getCurrentUserAccountFromDb();
-        if (user != null) {
-            user.delete();
-        }
+
+        // remove data
+        Delete.tables(
+                Dashboard.class,
+                DashboardElement.class,
+                DashboardItem.class,
+                DashboardItemContent.class,
+                Interpretation.class,
+                InterpretationComment.class,
+                InterpretationElement.class,
+                User.class,
+                UserAccount.class
+        );
         return new Object();
     }
 }

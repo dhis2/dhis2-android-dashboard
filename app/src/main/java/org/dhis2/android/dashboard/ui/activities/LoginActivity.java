@@ -30,6 +30,7 @@ package org.dhis2.android.dashboard.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -94,7 +95,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
+    public void onRestoreInstanceState(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING, false)) {
             showProgress(false);
@@ -114,6 +115,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     @OnClick(R.id.log_in_button)
+    @SuppressWarnings("unused")
     public void logIn() {
         showProgress(true);
 
@@ -128,12 +130,14 @@ public class LoginActivity extends BaseActivity {
     }
 
     @Subscribe
+    @SuppressWarnings("unused")
     public void onSuccess(UserAccount user) {
         startActivity(new Intent(this, MenuActivity.class));
         finish();
     }
 
     @Subscribe
+    @SuppressWarnings("unused")
     public void onFailure(APIException apiException) {
         hideProgress(true);
         showApiExceptionMessage(apiException);

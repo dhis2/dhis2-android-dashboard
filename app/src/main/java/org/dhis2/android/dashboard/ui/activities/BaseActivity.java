@@ -77,16 +77,16 @@ public class BaseActivity extends AppCompatActivity {
     protected void showApiExceptionMessage(APIException apiException) {
         apiException.printStackTrace();
 
-        if (apiException.isUnknownError()) {
+        if (apiException.getKind() == APIException.Kind.UNEXPECTED) {
             throw new IllegalArgumentException("Unexpected error");
         }
 
-        if (apiException.isNetworkError()) {
+        if (apiException.getKind() == APIException.Kind.NETWORK) {
             showMessage(R.string.no_network_connection);
             return;
         }
 
-        if (apiException.isConversionError()) {
+        if (apiException.getKind() == APIException.Kind.CONVERSION) {
             showMessage(R.string.bad_response);
             return;
         }

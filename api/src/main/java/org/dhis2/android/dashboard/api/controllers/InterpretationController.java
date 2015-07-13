@@ -85,9 +85,8 @@ public final class InterpretationController implements IController<Object> {
     @Override
     public Object run() throws APIException {
         getInterpretationDataFromServer();
-
         sendLocalChanges();
-        return null;
+        return new Object();
     }
 
     private void sendLocalChanges() throws RetrofitError {
@@ -134,7 +133,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    private void postInterpretation(Interpretation interpretation) throws RetrofitError {
+    public void postInterpretation(Interpretation interpretation) throws RetrofitError {
         Response response;
 
         switch (interpretation.getType()) {
@@ -167,7 +166,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    private void putInterpretation(Interpretation interpretation) throws RetrofitError {
+    public void putInterpretation(Interpretation interpretation) throws RetrofitError {
         Response response = mDhisApi.putInterpretationText(
                 interpretation.getUId(), new TypedString(interpretation.getText()));
 
@@ -177,7 +176,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    private void deleteInterpretation(Interpretation interpretation) throws RetrofitError {
+    public void deleteInterpretation(Interpretation interpretation) throws RetrofitError {
         Response response = mDhisApi.deleteInterpretation(interpretation.getUId());
 
         if (isSuccess(response.getStatus())) {
@@ -212,12 +211,9 @@ public final class InterpretationController implements IController<Object> {
                 }
             }
         }
-
-        // sync comments here, but be careful with
-        // comments which interpretations are not synced yet.
     }
 
-    private void postInterpretationComment(InterpretationComment comment) throws RetrofitError {
+    public void postInterpretationComment(InterpretationComment comment) throws RetrofitError {
         Interpretation interpretation = comment.getInterpretation();
 
         if (interpretation != null && interpretation.getState() != null) {
@@ -242,7 +238,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    private void putInterpretationComment(InterpretationComment comment) throws RetrofitError {
+    public void putInterpretationComment(InterpretationComment comment) throws RetrofitError {
         Interpretation interpretation = comment.getInterpretation();
 
         if (interpretation != null && interpretation.getState() != null) {
@@ -263,7 +259,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    private void deleteInterpretationComment(InterpretationComment comment) throws RetrofitError {
+    public void deleteInterpretationComment(InterpretationComment comment) throws RetrofitError {
         Interpretation interpretation = comment.getInterpretation();
 
         if (interpretation != null && interpretation.getState() != null) {

@@ -166,7 +166,7 @@ public class DhisManager {
         } catch (APIException apiException) {
             apiException.printStackTrace();
 
-            if (apiException.isHttpError()) {
+            if (apiException.getKind() == APIException.Kind.HTTP) {
                 Response response = apiException.getResponse();
                 if (response != null &&
                         response.getStatus() == HttpURLConnection.HTTP_UNAUTHORIZED) {
