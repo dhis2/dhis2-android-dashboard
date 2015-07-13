@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import retrofit.RetrofitError;
 import retrofit.client.Header;
 import retrofit.client.Response;
 import retrofit.mime.TypedString;
@@ -89,12 +88,12 @@ public final class InterpretationController implements IController<Object> {
         return new Object();
     }
 
-    private void sendLocalChanges() throws RetrofitError {
+    private void sendLocalChanges() throws APIException {
         sendInterpretationChanges();
         sendInterpretationCommentChanges();
     }
 
-    private void sendInterpretationChanges() throws RetrofitError {
+    private void sendInterpretationChanges() throws APIException {
         List<Interpretation> interpretations = new Select()
                 .from(Interpretation.class)
                 .where(Condition.column(Interpretation$Table
@@ -133,7 +132,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    public void postInterpretation(Interpretation interpretation) throws RetrofitError {
+    public void postInterpretation(Interpretation interpretation) throws APIException {
         Response response;
 
         switch (interpretation.getType()) {
@@ -166,7 +165,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    public void putInterpretation(Interpretation interpretation) throws RetrofitError {
+    public void putInterpretation(Interpretation interpretation) throws APIException {
         Response response = mDhisApi.putInterpretationText(
                 interpretation.getUId(), new TypedString(interpretation.getText()));
 
@@ -176,7 +175,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    public void deleteInterpretation(Interpretation interpretation) throws RetrofitError {
+    public void deleteInterpretation(Interpretation interpretation) throws APIException {
         Response response = mDhisApi.deleteInterpretation(interpretation.getUId());
 
         if (isSuccess(response.getStatus())) {
@@ -184,7 +183,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    private void sendInterpretationCommentChanges() throws RetrofitError {
+    private void sendInterpretationCommentChanges() throws APIException {
         List<InterpretationComment> comments = new Select()
                 .from(InterpretationComment.class)
                 .where(Condition.column(InterpretationComment$Table
@@ -213,7 +212,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    public void postInterpretationComment(InterpretationComment comment) throws RetrofitError {
+    public void postInterpretationComment(InterpretationComment comment) throws APIException {
         Interpretation interpretation = comment.getInterpretation();
 
         if (interpretation != null && interpretation.getState() != null) {
@@ -238,7 +237,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    public void putInterpretationComment(InterpretationComment comment) throws RetrofitError {
+    public void putInterpretationComment(InterpretationComment comment) throws APIException {
         Interpretation interpretation = comment.getInterpretation();
 
         if (interpretation != null && interpretation.getState() != null) {
@@ -259,7 +258,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    public void deleteInterpretationComment(InterpretationComment comment) throws RetrofitError {
+    public void deleteInterpretationComment(InterpretationComment comment) throws APIException {
         Interpretation interpretation = comment.getInterpretation();
 
         if (interpretation != null && interpretation.getState() != null) {
@@ -279,7 +278,7 @@ public final class InterpretationController implements IController<Object> {
         }
     }
 
-    private void getInterpretationDataFromServer() throws RetrofitError {
+    private void getInterpretationDataFromServer() throws APIException {
         DateTime lastUpdated = DateTimeManager.getInstance()
                 .getLastUpdated(ResourceType.INTERPRETATIONS);
         DateTime serverTime = mDhisApi.getSystemInfo().getServerDate();
@@ -301,7 +300,7 @@ public final class InterpretationController implements IController<Object> {
                 .setLastUpdated(ResourceType.INTERPRETATIONS, serverTime);
     }
 
-    private List<Interpretation> updateInterpretations(DateTime lastUpdated) throws RetrofitError {
+    private List<Interpretation> updateInterpretations(DateTime lastUpdated) throws APIException {
         final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
         final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
         final String BASE = "id,created,lastUpdated,name,displayName,access";

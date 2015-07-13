@@ -29,13 +29,19 @@
 package org.dhis2.android.dashboard.api.network;
 
 import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
+import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.utils.ObjectMapperProvider;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+
 import retrofit.ErrorHandler;
-import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
@@ -55,8 +61,7 @@ public final class RepoManager {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(provideServerUrl(serverUrl))
                 .setConverter(provideJacksonConverter())
-                .setClient(provideOkClient())
-                .setRequestInterceptor(provideInterceptor(credentials))
+                .setClient(provideOkClient(credentials))
                 .setErrorHandler(new RetrofitErrorHandler())
                 .setLogLevel(RestAdapter.LogLevel.BASIC)
                 .build();
@@ -73,15 +78,17 @@ public final class RepoManager {
         return new JacksonConverter(ObjectMapperProvider.getInstance());
     }
 
-    private static OkClient provideOkClient() {
-        return new OkClient(new OkHttpClient());
+    private static OkClient provideOkClient(Credentials credentials) {
+        OkHttpClient client = new OkHttpClient();
+        client.interceptors().add(provideInterceptor(credentials));
+        return new OkClient(client);
     }
 
-    private static AuthInterceptor provideInterceptor(Credentials credentials) {
+    private static Interceptor provideInterceptor(Credentials credentials) {
         return new AuthInterceptor(credentials.getUsername(), credentials.getPassword());
     }
 
-    private static class AuthInterceptor implements RequestInterceptor {
+    private static class AuthInterceptor implements Interceptor {
         private final String mUsername;
         private final String mPassword;
 
@@ -91,9 +98,19 @@ public final class RepoManager {
         }
 
         @Override
-        public void intercept(RequestFacade request) {
+        public Response intercept(Chain chain) throws IOException {
             String base64Credentials = basic(mUsername, mPassword);
-            request.addHeader("Authorization", base64Credentials);
+            Request request = chain.request()
+                    .newBuilder()
+                    .addHeader("Authorization", base64Credentials)
+                    .build();
+
+            Response response = chain.proceed(request);
+            if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED &&
+                    DhisManager.getInstance().isUserLoggedIn()) {
+                DhisManager.getInstance().invalidateMetaData();
+            }
+            return response;
         }
     }
 
