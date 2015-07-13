@@ -39,7 +39,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -179,8 +178,6 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onContentClick(DashboardElement element) {
-        Toast.makeText(getActivity(), "ON CONTENT CLICK: " +
-                element.getName(), Toast.LENGTH_SHORT).show();
         Intent intent = DashboardElementDetailActivity
                 .newIntentForDashboardElement(getActivity(), element.getId());
         startActivity(intent);

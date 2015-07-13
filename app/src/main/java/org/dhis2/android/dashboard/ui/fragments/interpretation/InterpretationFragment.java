@@ -139,6 +139,12 @@ public final class InterpretationFragment extends BaseFragment
             }
         });
 
+        // if savedInstanceState is null, it means user
+        // got to interpretations page first time.
+        if (savedInstanceState == null) {
+            syncInterpretations();
+        }
+
         boolean isLoading = isDhisServiceBound() && getDhisService()
                 .isJobRunning(DhisService.SYNC_INTERPRETATIONS);
         if ((savedInstanceState != null &&

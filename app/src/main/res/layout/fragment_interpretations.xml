@@ -31,17 +31,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/progress_bar_horizontal" />
-
         <include layout="@layout/recycler_view" />
 
-    </LinearLayout>
+        <include layout="@layout/progress_bar_horizontal" />
+
+    </FrameLayout>
 
     <include layout="@layout/appbar" />
 

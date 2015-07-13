@@ -64,7 +64,7 @@ import butterknife.ButterKnife;
 
 public class DashboardViewPagerFragment extends BaseFragment
         implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener,
-        Toolbar.OnMenuItemClickListener, ViewPager.OnPageChangeListener, OnOptionSelectedListener {
+        ViewPager.OnPageChangeListener, OnOptionSelectedListener {
     private static final int LOADER_ID = 1233432;
 
     @Bind(R.id.dashboard_tabs)
@@ -87,15 +87,20 @@ public class DashboardViewPagerFragment extends BaseFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
+        mDashboardAdapter = new DashboardAdapter(getChildFragmentManager());
+        mViewPager.setAdapter(mDashboardAdapter);
+        mViewPager.addOnPageChangeListener(this);
+
         mToolbar.setNavigationIcon(R.mipmap.ic_menu);
         mToolbar.setNavigationOnClickListener(this);
         mToolbar.setTitle(R.string.dashboard);
         mToolbar.inflateMenu(R.menu.menu_dashboard_fragment);
-        mToolbar.setOnMenuItemClickListener(this);
-
-        mDashboardAdapter = new DashboardAdapter(getChildFragmentManager());
-        mViewPager.setAdapter(mDashboardAdapter);
-        mViewPager.addOnPageChangeListener(this);
+        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return onMenuItemClicked(item);
+            }
+        });
     }
 
     @Override
@@ -135,7 +140,8 @@ public class DashboardViewPagerFragment extends BaseFragment
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageScrolled(int position, float positionOffset,
+                               int positionOffsetPixels) {
         // stub implementation
     }
 
@@ -149,6 +155,19 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     @Override
     public void onPageScrollStateChanged(int state) {
+        // stub implementation
+    }
+
+    @Override
+    public void onOptionSelected(int dialogId, int position, String id, String name) {
+        if (dialogId == DashboardItemAddFragment.DIALOG_ID) {
+            DashboardItemContent resource = new Select().from(DashboardItemContent.class)
+                    .where(Condition.column(DashboardItemContent$Table.UID).is(id))
+                    .querySingle();
+            Dashboard dashboard = mDashboardAdapter
+                    .getDashboard(mViewPager.getCurrentItem());
+            dashboard.addItemContent(resource);
+        }
     }
 
     private void setDashboards(List<Dashboard> dashboards) {
@@ -157,8 +176,7 @@ public class DashboardViewPagerFragment extends BaseFragment
         mTabs.setupWithViewPager(mViewPager);
     }
 
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
+    public boolean onMenuItemClicked(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_dashboard_item: {
                 DashboardItemAddFragment.newInstance(this)
@@ -186,25 +204,14 @@ public class DashboardViewPagerFragment extends BaseFragment
         return false;
     }
 
-    @Override
-    public void onOptionSelected(int dialogId, int position, String id, String name) {
-        if (dialogId == DashboardItemAddFragment.DIALOG_ID) {
-            DashboardItemContent resource = new Select().from(DashboardItemContent.class)
-                    .where(Condition.column(DashboardItemContent$Table.UID).is(id))
-                    .querySingle();
-            Dashboard dashboard = mDashboardAdapter
-                    .getDashboard(mViewPager.getCurrentItem());
-            dashboard.addItemContent(resource);
-        }
-    }
-
     private static class DashboardQuery implements Query<List<Dashboard>> {
 
         @Override
         public List<Dashboard> query(Context context) {
             List<Dashboard> dashboards = new Select()
                     .from(Dashboard.class)
-                    .where(Condition.column(Dashboard$Table.STATE).isNot(State.TO_DELETE.toString()))
+                    .where(Condition.column(Dashboard$Table
+                            .STATE).isNot(State.TO_DELETE.toString()))
                     .queryList();
             Collections.sort(dashboards, Dashboard.DISPLAY_NAME_COMPARATOR);
             return dashboards;
