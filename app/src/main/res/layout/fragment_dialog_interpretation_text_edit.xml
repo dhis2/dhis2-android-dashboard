@@ -30,22 +30,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp">
-
-        <include layout="@layout/fragment_bar" />
-
-        <include layout="@layout/fragment_bar_mode_editing" />
-
-    </FrameLayout>
+    <include layout="@layout/fragment_bar" />
 
     <RelativeLayout
         android:layout_width="310dp"
-        android:layout_height="310dp"
+        android:layout_height="220dp"
         android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:gravity="center">
+        android:focusableInTouchMode="true">
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -62,10 +53,41 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/interpretation_text"
                 android:maxLines="10"
-                android:minLines="2"
                 android:textSize="16sp"
                 app:font="@string/regular_font_name" />
         </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <org.dhis2.android.dashboard.ui.views.FontButton
+                android:id="@+id/cancel_interpretation_text_edit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:background="@drawable/transparent_selector"
+                android:gravity="center"
+                android:text="@string/cancel"
+                android:textColor="@color/navy_blue"
+                android:textSize="12sp"
+                app:font="@string/medium_font_name" />
+
+            <org.dhis2.android.dashboard.ui.views.FontButton
+                android:id="@+id/update_interpretation_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:background="@drawable/transparent_selector"
+                android:gravity="center"
+                android:text="@string/update"
+                android:textColor="@color/navy_blue"
+                android:textSize="12sp"
+                app:font="@string/medium_font_name" />
+        </LinearLayout>
 
     </RelativeLayout>
 

@@ -42,7 +42,6 @@ import org.dhis2.android.dashboard.api.models.Interpretation;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnFocusChange;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
@@ -52,17 +51,8 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 public final class InterpretationTextEditFragment extends DialogFragment {
     private static final String TAG = InterpretationTextEditFragment.class.getSimpleName();
 
-    @Bind(R.id.fragment_bar)
-    View mFragmentBar;
-
-    @Bind(R.id.fragment_bar_mode_editing)
-    View mFragmentBarEditingMode;
-
     @Bind(R.id.dialog_label)
     TextView mDialogLabel;
-
-    @Bind(R.id.action_name)
-    TextView mActionName;
 
     @Bind(R.id.interpretation_text)
     EditText mInterpretationText;
@@ -95,46 +85,26 @@ public final class InterpretationTextEditFragment extends DialogFragment {
         ButterKnife.bind(this, view);
 
         mDialogLabel.setText(getString(R.string.interpretation_text));
-        mActionName.setText(getString(R.string.edit_text));
-
         mInterpretationText.setText(mInterpretation.getText());
-        setFragmentBarActionMode(false);
     }
 
 
-    @OnClick({R.id.close_dialog_button, R.id.cancel_action, R.id.accept_action})
+    @OnClick({
+            R.id.close_dialog_button,
+            R.id.cancel_interpretation_text_edit,
+            R.id.update_interpretation_text
+    })
     @SuppressWarnings("unused")
     public void onButtonClick(View view) {
         switch (view.getId()) {
-            case R.id.cancel_action: {
-                mInterpretationText.setText(
-                        mInterpretation.getText());
-                mInterpretationText.clearFocus();
-                break;
-            }
-            case R.id.accept_action: {
+            case R.id.update_interpretation_text: {
                 mInterpretation.updateInterpretation(
                         mInterpretationText.getText().toString());
-                mInterpretationText.clearFocus();
                 break;
             }
-            case R.id.close_dialog_button: {
-                dismiss();
-            }
         }
-    }
 
-    @OnFocusChange(R.id.interpretation_text)
-    @SuppressWarnings("unused")
-    public void onFocusChange(boolean hasFocus) {
-        setFragmentBarActionMode(hasFocus);
-    }
-
-    /* set fragment bar in editing mode, by hiding standard
-    layout and showing layout with actions*/
-    void setFragmentBarActionMode(boolean enabled) {
-        mFragmentBarEditingMode.setVisibility(enabled ? View.VISIBLE : View.GONE);
-        mFragmentBar.setVisibility(enabled ? View.GONE : View.VISIBLE);
+        dismiss();
     }
 
     public void show(FragmentManager manager) {

@@ -36,9 +36,12 @@ import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
+
 import org.dhis2.android.dashboard.DhisService;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.controllers.DhisController;
+import org.dhis2.android.dashboard.api.job.NetworkJob;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 
@@ -110,10 +113,29 @@ public class BaseActivity extends AppCompatActivity {
         EventBusProvider.unregister(this);
     }
 
+    public DhisController getDhisController() {
+        return DhisController.getInstance();
+    }
+
+    public DhisService getDhisService() {
+        return mService;
+    }
+
+    public boolean isDhisServiceBound() {
+        return mIsBound;
+    }
+
+    @Subscribe
+    @SuppressWarnings("unused")
+    public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
+        if (result != null && result.getResponseHolder().getApiException() != null) {
+            showApiExceptionMessage(result.getResponseHolder().getApiException());
+        }
+    }
+
     protected void showMessage(CharSequence message) {
         Toast.makeText(
-                getBaseContext(), message, LENGTH_SHORT
-        ).show();
+                getBaseContext(), message, LENGTH_SHORT).show();
     }
 
     protected void showMessage(int id) {
@@ -148,17 +170,5 @@ public class BaseActivity extends AppCompatActivity {
                 break;
             }
         }
-    }
-
-    public DhisController getDhisController() {
-        return DhisController.getInstance();
-    }
-
-    public DhisService getDhisService() {
-        return mService;
-    }
-
-    public boolean isDhisServiceBound() {
-        return mIsBound;
     }
 }

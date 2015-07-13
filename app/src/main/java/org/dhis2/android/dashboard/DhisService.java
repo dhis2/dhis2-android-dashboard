@@ -78,7 +78,8 @@ public final class DhisService extends Service {
     }
 
     public void logInUser(final HttpUrl serverUrl, final Credentials credentials) {
-        JobExecutor.enqueueJob(new NetworkJob<UserAccount>(LOG_IN) {
+        JobExecutor.enqueueJob(new NetworkJob<UserAccount>(LOG_IN,
+                NetworkJob.ResponseType.USERS) {
 
             @Override
             public UserAccount execute() throws APIException {
@@ -98,7 +99,8 @@ public final class DhisService extends Service {
     }
 
     public void confirmUser(final Credentials credentials) {
-        JobExecutor.enqueueJob(new NetworkJob<UserAccount>(CONFIRM_USER) {
+        JobExecutor.enqueueJob(new NetworkJob<UserAccount>(CONFIRM_USER,
+                NetworkJob.ResponseType.USERS) {
 
             @Override
             public UserAccount execute() throws APIException {
@@ -113,7 +115,8 @@ public final class DhisService extends Service {
     }
 
     public void syncDashboardContent() {
-        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARD_CONTENT) {
+        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARD_CONTENT,
+                NetworkJob.ResponseType.DASHBOARD_CONTENT) {
 
             @Override
             public Object execute() throws APIException {
@@ -124,7 +127,8 @@ public final class DhisService extends Service {
     }
 
     public void syncDashboards() {
-        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS) {
+        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS,
+                NetworkJob.ResponseType.DASHBOARDS) {
 
             @Override
             public Object execute() throws APIException {
@@ -135,9 +139,15 @@ public final class DhisService extends Service {
     }
 
     public void syncInterpretations() {
-        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_INTERPRETATIONS) {
+        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_INTERPRETATIONS,
+                NetworkJob.ResponseType.INTERPRETATIONS) {
             @Override
             public Object execute() throws APIException {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 mDhisController.syncInterpretations();
                 return new Object();
             }

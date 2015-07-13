@@ -30,7 +30,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -45,8 +45,11 @@ import android.widget.Toast;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.Model;
+import com.squareup.otto.Subscribe;
 
+import org.dhis2.android.dashboard.DhisService;
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.job.NetworkJob;
 import org.dhis2.android.dashboard.api.models.Interpretation;
 import org.dhis2.android.dashboard.api.models.Interpretation$Table;
 import org.dhis2.android.dashboard.api.models.InterpretationComment;
@@ -68,15 +71,19 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
 public final class InterpretationFragment extends BaseFragment
-        implements LoaderManager.LoaderCallbacks<List<Interpretation>>,
-        View.OnClickListener, Toolbar.OnMenuItemClickListener,
-        InterpretationAdapter.OnItemClickListener {
+        implements LoaderCallbacks<List<Interpretation>>, InterpretationAdapter.OnItemClickListener {
+
     private static final int LOADER_ID = 23452435;
+    private static final String IS_LOADING = "state:isLoading";
+
+    @Bind(R.id.progress_bar)
+    SmoothProgressBar mProgressBar;
 
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -111,16 +118,47 @@ public final class InterpretationFragment extends BaseFragment
         mRecyclerView.setAdapter(mAdapter);
 
         mToolbar.setNavigationIcon(R.mipmap.ic_menu);
-        mToolbar.setNavigationOnClickListener(this);
         mToolbar.setTitle(R.string.interpretations);
         mToolbar.inflateMenu(R.menu.menu_interpretations_fragment);
-        mToolbar.setOnMenuItemClickListener(this);
+        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.refresh) {
+                    syncInterpretations();
+                    return true;
+                }
+
+                return false;
+            }
+        });
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleNavigationDrawer();
+            }
+        });
+
+        boolean isLoading = isDhisServiceBound() && getDhisService()
+                .isJobRunning(DhisService.SYNC_INTERPRETATIONS);
+        if ((savedInstanceState != null &&
+                savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(LOADER_ID, getArguments(), this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(IS_LOADING, mProgressBar
+                .getVisibility() == View.VISIBLE);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -143,25 +181,8 @@ public final class InterpretationFragment extends BaseFragment
     @Override
     public void onLoaderReset(Loader<List<Interpretation>> loader) {
         if (loader != null && loader.getId() == LOADER_ID) {
-            // resetting data here
             mAdapter.swapData(null);
         }
-    }
-
-    @Override
-    public void onClick(View v) {
-        toggleNavigationDrawer();
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.refresh: {
-                getDhisService().syncInterpretations();
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -222,8 +243,23 @@ public final class InterpretationFragment extends BaseFragment
         startActivity(intent);
     }
 
+    private void syncInterpretations() {
+        if (isDhisServiceBound()) {
+            getDhisService().syncInterpretations();
+        }
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
 
-    static class InterpretationsQuery implements Query<List<Interpretation>> {
+    @Subscribe
+    @SuppressWarnings("unused")
+    public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
+        if (result.getResponseType() ==
+                NetworkJob.ResponseType.INTERPRETATIONS) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private static class InterpretationsQuery implements Query<List<Interpretation>> {
 
         @Override
         public List<Interpretation> query(Context context) {

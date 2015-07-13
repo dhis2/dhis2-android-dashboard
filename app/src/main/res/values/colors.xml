@@ -41,6 +41,8 @@
 
     <color name="menu_divider_grey">#FF9F9F9F</color>
 
+    <color name="orange">#FFFF9800</color>
+
     <color name="button_re_log_in_state_enabled_false">#B0BEC5</color>
     <color name="button_re_log_in_state_unpressed">#FF1F70C3</color>
     <color name="button_re_log_in_state_pressed">#FF1D5288</color>

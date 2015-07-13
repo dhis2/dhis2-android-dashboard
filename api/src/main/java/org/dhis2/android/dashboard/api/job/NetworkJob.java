@@ -33,8 +33,12 @@ import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 
 public abstract class NetworkJob<T> extends Job<ResponseHolder<T>> {
-    public NetworkJob(int jobId) {
+    private final ResponseType mResponseType;
+
+    public NetworkJob(int jobId, ResponseType responseType) {
         super(jobId);
+
+        mResponseType = responseType;
     }
 
     @Override
@@ -51,25 +55,30 @@ public abstract class NetworkJob<T> extends Job<ResponseHolder<T>> {
 
     @Override
     public final void onFinish(ResponseHolder<T> result) {
-        if (result == null) {
-            onFailure(null);
-            return;
+        EventBusProvider.post(new NetworkJobResult<>(mResponseType, result));
+    }
+
+    public static class NetworkJobResult<Type> {
+        private final ResponseType mResponseType;
+        private final ResponseHolder<Type> mResponseHolder;
+
+        public NetworkJobResult(ResponseType responseType,
+                                ResponseHolder<Type> responseHolder) {
+            mResponseType = responseType;
+            mResponseHolder = responseHolder;
         }
 
-        if (result.getApiException() != null) {
-            result.getApiException().printStackTrace();
-            onFailure(result.getApiException());
-        } else {
-            onSuccess(result.getItem());
+        public ResponseType getResponseType() {
+            return mResponseType;
+        }
+
+        public ResponseHolder<Type> getResponseHolder() {
+            return mResponseHolder;
         }
     }
 
-    public void onSuccess(T item) {
-        EventBusProvider.post(item);
-    }
-
-    public void onFailure(APIException exception) {
-        EventBusProvider.post(exception);
+    public enum ResponseType {
+        INTERPRETATIONS, DASHBOARDS, USERS, DASHBOARD_CONTENT,
     }
 
     public abstract T execute() throws APIException;
