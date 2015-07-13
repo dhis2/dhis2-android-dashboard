@@ -43,7 +43,6 @@ import android.widget.Toast;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Access;
@@ -61,7 +60,7 @@ import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationCreateFragment;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DashboardFragment extends BaseFragment
@@ -153,11 +152,12 @@ public class DashboardFragment extends BaseFragment
             For example dashboard does not contain any dashboard items.
             In order to avoid strange bugs during table JOINs,
             we explicitly state that we want only not null values  */
-            List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
-            tablesToTrack.add(DashboardItem.class);
-            tablesToTrack.add(DashboardElement.class);
+
+            List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
+                    new DbLoader.TrackedTable(DashboardItem.class),
+                    new DbLoader.TrackedTable(DashboardElement.class));
             return new DbLoader<>(getActivity().getApplicationContext(),
-                    tablesToTrack, new ItemsQuery(args.getLong(DASHBOARD_ID)));
+                    trackedTables, new ItemsQuery(args.getLong(DASHBOARD_ID)));
         }
         return null;
     }

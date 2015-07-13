@@ -36,47 +36,43 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 
 public class DbLoader<T> extends AsyncTaskLoader<T> {
-    // A Model Class which we want to observe
-    private final List<Class<? extends Model>> mModelClasses;
+    // private final List<Class<? extends Model>> mModelClasses;
+
+    // List of BaseModel.Action on which
+    // we want the Loader to react
+    // private final List<BaseModel.Action> mActions;
+
+    // Model Classes which we want to observe
+    private final List<TrackedTable> mTrackedTables;
 
     // The object which will perform Query
     private final Query<T> mQuery;
 
-    // List of BaseModel.Action on which
-    // we want the Loader to react
-    private final List<BaseModel.Action> mActions;
-
     // The actual observer
-    private List<ModelChangeObserver<?>> mObservers;
+    private List<ModelChangeObserver> mObservers;
     private T mData;
 
     public DbLoader(Context context,
-                    List<Class<? extends Model>> modelClasses,
-                    Query<T> query) {
-        this(context, modelClasses, new ArrayList<BaseModel.Action>(), query);
-    }
-
-    public DbLoader(Context context,
-                    List<Class<? extends Model>> modelClasses,
-                    List<BaseModel.Action> actions,
+                    List<TrackedTable> trackedTables,
                     Query<T> query) {
         super(context);
 
-        mModelClasses = isNull(modelClasses, "Model Class object must not be null");
+        mTrackedTables = isNull(trackedTables, "List of tables to track");
         mQuery = isNull(query, "Query object must not be null");
-        mActions = actions == null ? new ArrayList<BaseModel.Action>() : actions;
     }
 
-    private void registerObservers(List<BaseModel.Action> actions) {
+    private void registerObservers() {
         mObservers = new ArrayList<>();
-        for (Class<? extends Model> modelClass : mModelClasses) {
-            ModelChangeObserver<?> observer = new ModelChangeObserver<>(modelClass, actions, this);
+        for (TrackedTable trackedTable : mTrackedTables) {
+            ModelChangeObserver observer
+                    = new ModelChangeObserver(trackedTable, this);
             observer.registerObserver();
             mObservers.add(observer);
         }
@@ -84,7 +80,7 @@ public class DbLoader<T> extends AsyncTaskLoader<T> {
 
     private void unregisterObservers() {
         if (mObservers != null) {
-            for (ModelChangeObserver<?> observer : mObservers) {
+            for (ModelChangeObserver observer : mObservers) {
                 observer.unregisterObserver();
             }
             mObservers = null;
@@ -129,7 +125,7 @@ public class DbLoader<T> extends AsyncTaskLoader<T> {
         }
 
         // Begin monitoring the underlying data source.
-        registerObservers(mActions);
+        registerObservers();
 
         if (takeContentChanged() || mData == null) {
             // When the observer detects a change, it should call onContentChanged()
@@ -177,5 +173,33 @@ public class DbLoader<T> extends AsyncTaskLoader<T> {
         // For a simple List, there is nothing to do. For something like a Cursor, we
         // would close it in this method. All resources associated with the Loader
         // should be released here.
+    }
+
+    public static class TrackedTable {
+        private final Class<? extends Model> mTrackedModel;
+        private final List<BaseModel.Action> mActions;
+
+        public TrackedTable(Class<? extends Model> trackedModel) {
+            this(trackedModel, new ArrayList<BaseModel.Action>());
+        }
+
+        public TrackedTable(Class<? extends Model> trackedModel,
+                            BaseModel.Action action) {
+            this(trackedModel, Arrays.asList(action));
+        }
+
+        public TrackedTable(Class<? extends Model> trackedModel,
+                            List<BaseModel.Action> actions) {
+            mTrackedModel = trackedModel;
+            mActions = actions;
+        }
+
+        public Class<? extends Model> getTrackedModel() {
+            return mTrackedModel;
+        }
+
+        public List<BaseModel.Action> getActions() {
+            return mActions;
+        }
     }
 }

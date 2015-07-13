@@ -44,7 +44,7 @@ import android.widget.Toast;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.Model;
+import com.raizlabs.android.dbflow.structure.BaseModel.Action;
 import com.squareup.otto.Subscribe;
 
 import org.dhis2.android.dashboard.DhisService;
@@ -58,6 +58,7 @@ import org.dhis2.android.dashboard.api.models.InterpretationElement;
 import org.dhis2.android.dashboard.api.models.InterpretationElement$Table;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
+import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader.TrackedTable;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.dhis2.android.dashboard.ui.activities.InterpretationCommentsActivity;
@@ -65,7 +66,7 @@ import org.dhis2.android.dashboard.ui.adapters.InterpretationAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -163,10 +164,12 @@ public final class InterpretationFragment extends BaseFragment
 
     @Override
     public Loader<List<Interpretation>> onCreateLoader(int id, Bundle args) {
-        List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
-        tablesToTrack.add(InterpretationComment.class);
+        List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
+                new TrackedTable(Interpretation.class, Action.UPDATE),
+                new TrackedTable(InterpretationComment.class, Action.INSERT));
+
         return new DbLoader<>(getActivity().getApplicationContext(),
-                tablesToTrack, new InterpretationsQuery());
+                trackedTables, new InterpretationsQuery());
     }
 
     @Override

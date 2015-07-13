@@ -42,7 +42,6 @@ import android.view.ViewGroup;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Dashboard;
@@ -56,7 +55,7 @@ import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardItemAddFragment.OnOptionSelectedListener;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -108,10 +107,10 @@ public class DashboardViewPagerFragment extends BaseFragment
     @Override
     public Loader<List<Dashboard>> onCreateLoader(int id, Bundle state) {
         if (id == LOADER_ID && isAdded()) {
-            List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
-            tablesToTrack.add(Dashboard.class);
+            List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
+                    new DbLoader.TrackedTable(Dashboard.class));
             return new DbLoader<>(getActivity().getApplicationContext(),
-                    tablesToTrack, new DashboardQuery());
+                    trackedTables, new DashboardQuery());
         }
         return null;
     }

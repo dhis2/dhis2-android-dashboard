@@ -35,30 +35,24 @@ import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
-import java.util.List;
-
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public class ModelChangeObserver<ModelClass extends Model> implements FlowContentObserver.OnModelStateChangedListener {
+public class ModelChangeObserver implements FlowContentObserver.OnModelStateChangedListener {
     private static final String TAG = ModelChangeObserver.class.getSimpleName();
 
+    private final DbLoader.TrackedTable mTrackedTable;
     private final DbLoader<?> mLoader;
-    private final Class<ModelClass> mModelClass;
     private final FlowContentObserver mObserver;
-    private final List<BaseModel.Action> mActions;
 
-    public ModelChangeObserver(Class<ModelClass> modelClass,
-                               List<BaseModel.Action> actions,
-                               DbLoader<?> loader) {
-        mModelClass = isNull(modelClass, "Class<ModelClass> object must not be null");
-        mActions = isNull(actions, "List<BaseMode.Action> must not be null");
+    public ModelChangeObserver(DbLoader.TrackedTable trackedTable, DbLoader<?> loader) {
+        mTrackedTable = isNull(trackedTable, "TrackedTable object must not be null");
         mLoader = isNull(loader, "DbLoader must not be null");
         mObserver = new FlowContentObserver();
     }
 
     public void registerObserver() {
         mObserver.registerForContentChanges(
-                mLoader.getContext(), mModelClass);
+                mLoader.getContext(), mTrackedTable.getTrackedModel());
         mObserver.addModelChangeListener(this);
     }
 
@@ -77,11 +71,11 @@ public class ModelChangeObserver<ModelClass extends Model> implements FlowConten
     }
 
     private boolean notifyLoader(BaseModel.Action action) {
-        if (mActions.isEmpty()) {
+        if (mTrackedTable.getActions().isEmpty()) {
             return true;
         }
 
-        for (BaseModel.Action modelAction : mActions) {
+        for (BaseModel.Action modelAction : mTrackedTable.getActions()) {
             if (modelAction.equals(action)) {
                 return true;
             }

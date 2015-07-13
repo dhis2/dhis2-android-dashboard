@@ -41,6 +41,8 @@ import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.models.DashboardElement;
+import org.dhis2.android.dashboard.api.models.DashboardElement$Table;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.models.DashboardItem$Table;
 import org.dhis2.android.dashboard.api.models.Interpretation;
@@ -48,6 +50,7 @@ import org.dhis2.android.dashboard.api.models.InterpretationElement;
 import org.dhis2.android.dashboard.api.models.User;
 import org.dhis2.android.dashboard.api.models.User$Table;
 import org.dhis2.android.dashboard.api.models.UserAccount;
+import org.dhis2.android.dashboard.api.models.meta.State;
 
 import java.util.List;
 
@@ -104,6 +107,15 @@ public final class InterpretationCreateFragment extends DialogFragment {
                         .ID).is(getArguments().getLong(DashboardItem$Table.ID)))
                 .querySingle();
 
+        List<DashboardElement> elements = new Select()
+                .from(DashboardElement.class)
+                .where(Condition.column(DashboardElement$Table
+                        .DASHBOARDITEM_DASHBOARDITEM).is(getArguments().getLong(DashboardItem$Table.ID)))
+                .and(Condition.column(DashboardElement$Table
+                        .STATE).isNot(State.TO_DELETE.toString()))
+                .queryList();
+
+        mDashboardItem.setDashboardElements(elements);
         mDialogLabel.setText(getString(R.string.create_interpretation));
     }
 

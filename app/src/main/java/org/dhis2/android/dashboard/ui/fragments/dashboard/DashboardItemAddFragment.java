@@ -49,7 +49,6 @@ import android.widget.TextView;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition.CombinedCondition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.Model;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent;
@@ -60,6 +59,7 @@ import org.dhis2.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter.OptionAdapterValue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -179,10 +179,10 @@ public class DashboardItemAddFragment extends DialogFragment
 
     @Override
     public Loader<List<OptionAdapterValue>> onCreateLoader(int id, Bundle args) {
-        List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
-        tablesToTrack.add(DashboardItemContent.class);
+        List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
+                new DbLoader.TrackedTable(DashboardItemContent.class));
         return new DbLoader<>(getActivity().getApplicationContext(),
-                tablesToTrack, new DbQuery(getTypesToInclude()));
+                trackedTables, new DbQuery(getTypesToInclude()));
     }
 
     @Override

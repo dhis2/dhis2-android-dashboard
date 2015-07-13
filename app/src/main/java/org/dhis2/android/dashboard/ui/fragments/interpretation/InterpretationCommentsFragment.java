@@ -47,8 +47,7 @@ import android.widget.ImageView;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.Model;
-import com.squareup.otto.Subscribe;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.IdentifiableObject;
@@ -61,13 +60,13 @@ import org.dhis2.android.dashboard.api.models.User$Table;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
+import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader.TrackedTable;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationCommentsAdapter;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationCommentsAdapter.OnCommentClickListener;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
-import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationCommentEditFragment.OnInterpretationCommentChangedEvent;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -175,9 +174,10 @@ public class InterpretationCommentsFragment extends BaseFragment
     @Override
     public Loader<List<InterpretationComment>> onCreateLoader(int id, Bundle args) {
         if (LOADER_ID == id) {
-            List<Class<? extends Model>> tablesToTrack = new ArrayList<>();
-            return new DbLoader<>(getActivity().getApplicationContext(), tablesToTrack,
-                    new CommentsQuery(args.getLong(INTERPRETATION_ID)));
+            List<TrackedTable> trackedTables = Arrays.asList(
+                    new TrackedTable(InterpretationComment.class, BaseModel.Action.UPDATE));
+            return new DbLoader<>(getActivity().getApplicationContext(),
+                    trackedTables, new CommentsQuery(args.getLong(INTERPRETATION_ID)));
         }
         return null;
     }
@@ -225,10 +225,6 @@ public class InterpretationCommentsFragment extends BaseFragment
         mNewCommentText.setText(EMPTY_FIELD);
     }
 
-    private void handleAddNewCommentButton(String text) {
-        mAddNewComment.setEnabled(!isEmpty(text));
-    }
-
     @Override
     public void onCommentEdit(InterpretationComment comment) {
         InterpretationCommentEditFragment
@@ -246,14 +242,8 @@ public class InterpretationCommentsFragment extends BaseFragment
         }
     }
 
-    // a method to be called from InterpretationCommentEditFragment
-
-    @Subscribe
-    @SuppressWarnings("unused")
-    public void onCommentEdited(OnInterpretationCommentChangedEvent event) {
-        if (mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
+    private void handleAddNewCommentButton(String text) {
+        mAddNewComment.setEnabled(!isEmpty(text));
     }
 
     private static class CommentsQuery implements Query<List<InterpretationComment>> {
