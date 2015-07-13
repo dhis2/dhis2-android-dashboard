@@ -203,7 +203,8 @@ public class DashboardFragment extends BaseFragment
     @Override
     public void onItemShareClick(DashboardItem item) {
         InterpretationCreateFragment
-                .newInstance(item).show(getChildFragmentManager());
+                .newInstance(item.getId())
+                .show(getChildFragmentManager());
     }
 
     private static class ItemsQuery implements Query<List<DashboardItem>> {

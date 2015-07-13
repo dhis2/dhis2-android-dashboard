@@ -48,6 +48,7 @@ import android.widget.ImageView;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.Model;
+import com.squareup.otto.Subscribe;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.IdentifiableObject;
@@ -64,6 +65,7 @@ import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationCommentsAdapter;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationCommentsAdapter.OnCommentClickListener;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
+import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationCommentEditFragment.OnInterpretationCommentChangedEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -245,7 +247,10 @@ public class InterpretationCommentsFragment extends BaseFragment
     }
 
     // a method to be called from InterpretationCommentEditFragment
-    public void onCommentEdited() {
+
+    @Subscribe
+    @SuppressWarnings("unused")
+    public void onCommentEdited(OnInterpretationCommentChangedEvent event) {
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
         }

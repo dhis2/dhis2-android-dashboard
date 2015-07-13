@@ -38,7 +38,7 @@
 
     <ScrollView
         android:layout_width="310dp"
-        android:layout_height="290dp">
+        android:layout_height="220dp">
 
         <org.dhis2.android.dashboard.ui.views.FontTextView
             android:id="@+id/interpretation_text"
