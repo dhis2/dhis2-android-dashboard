@@ -36,14 +36,16 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
+
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Interpretation;
+import org.dhis2.android.dashboard.api.models.Interpretation$Table;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 /**
  * Handles editing (changing text) of given interpretation.
@@ -59,11 +61,13 @@ public final class InterpretationTextEditFragment extends DialogFragment {
 
     Interpretation mInterpretation;
 
-    public static InterpretationTextEditFragment newInstance(Interpretation interpretation) {
-        isNull(interpretation, "Interpretation object must not be null");
+    public static InterpretationTextEditFragment newInstance(long interpretationId) {
+        Bundle args = new Bundle();
+        args.putLong(Interpretation$Table.ID, interpretationId);
 
         InterpretationTextEditFragment fragment = new InterpretationTextEditFragment();
-        fragment.mInterpretation = interpretation;
+        fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -86,6 +90,12 @@ public final class InterpretationTextEditFragment extends DialogFragment {
 
         mDialogLabel.setText(getString(R.string.interpretation_text));
         mInterpretationText.setText(mInterpretation.getText());
+
+        mInterpretation = new Select()
+                .from(Interpretation.class)
+                .where(Condition.column(Interpretation$Table
+                        .ID).is(getArguments().getLong(Interpretation$Table.ID)))
+                .querySingle();
     }
 
 
