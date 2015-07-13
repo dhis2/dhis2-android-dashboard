@@ -57,6 +57,7 @@ public abstract class NetworkJob<T> extends Job<ResponseHolder<T>> {
         }
 
         if (result.getApiException() != null) {
+            result.getApiException().printStackTrace();
             onFailure(result.getApiException());
         } else {
             onSuccess(result.getItem());

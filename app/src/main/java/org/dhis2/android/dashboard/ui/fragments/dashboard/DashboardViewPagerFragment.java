@@ -167,8 +167,8 @@ public class DashboardViewPagerFragment extends BaseFragment
                 return true;
             }
             case R.id.refresh: {
-                getService().syncDashboardContent();
-                getService().syncDashboards();
+                getDhisService().syncDashboardContent();
+                getDhisService().syncDashboards();
                 return true;
             }
             case R.id.add_dashboard: {

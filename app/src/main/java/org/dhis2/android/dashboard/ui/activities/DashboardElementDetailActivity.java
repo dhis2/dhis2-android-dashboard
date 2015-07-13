@@ -39,7 +39,7 @@ import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.dhis2.android.dashboard.R;
-import org.dhis2.android.dashboard.api.DhisManager;
+import org.dhis2.android.dashboard.api.controllers.DhisController;
 import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardElement$Table;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent;
@@ -73,7 +73,7 @@ public class DashboardElementDetailActivity extends BaseActivity {
     }
 
     private static String buildImageUrl(String resource, String id) {
-        return DhisManager.getInstance().getServerUrl().newBuilder()
+        return DhisController.getInstance().getServerUrl().newBuilder()
                 .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
                 .addQueryParameter("width", "480").addQueryParameter("height", "320")
                 .toString();

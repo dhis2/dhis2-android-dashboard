@@ -27,7 +27,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.persistence;
+package org.dhis2.android.dashboard.api.models.meta;
 
 import com.raizlabs.android.dbflow.annotation.Database;
 

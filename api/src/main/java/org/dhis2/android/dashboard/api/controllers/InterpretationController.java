@@ -33,7 +33,6 @@ import com.raizlabs.android.dbflow.sql.language.From;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.sql.language.Where;
 
-import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.models.Interpretation;
 import org.dhis2.android.dashboard.api.models.Interpretation$Table;
 import org.dhis2.android.dashboard.api.models.InterpretationComment;
@@ -47,7 +46,6 @@ import org.dhis2.android.dashboard.api.models.meta.DbOperation;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
-import org.dhis2.android.dashboard.api.network.RepoManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager.ResourceType;
 import org.dhis2.android.dashboard.api.utils.DbUtils;
@@ -64,8 +62,8 @@ import retrofit.client.Header;
 import retrofit.client.Response;
 import retrofit.mime.TypedString;
 
-import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toMap;
-import static org.dhis2.android.dashboard.api.utils.MergeUtils.merge;
+import static org.dhis2.android.dashboard.api.models.BaseIdentifiableObject.merge;
+import static org.dhis2.android.dashboard.api.models.BaseIdentifiableObject.toMap;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.isSuccess;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
@@ -73,19 +71,16 @@ import static org.dhis2.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-public final class InterpretationController implements IController<Object> {
+final class InterpretationController {
     private final DhisApi mDhisApi;
 
-    public InterpretationController(DhisManager dhisManager) {
-        mDhisApi = RepoManager.createService(dhisManager.getServerUrl(),
-                dhisManager.getUserCredentials());
+    public InterpretationController(DhisApi dhisApi) {
+        mDhisApi = dhisApi;
     }
 
-    @Override
-    public Object run() throws APIException {
+    public void syncInterpretations() throws APIException {
         getInterpretationDataFromServer();
         sendLocalChanges();
-        return new Object();
     }
 
     private void sendLocalChanges() throws APIException {

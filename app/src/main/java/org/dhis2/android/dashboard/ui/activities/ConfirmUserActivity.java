@@ -110,11 +110,11 @@ public class ConfirmUserActivity extends BaseActivity {
     public void checkEditTextFields() {
         mReLogIn.setEnabled(
                 !isEmpty(mUsername.getText()) &&
-                        !isEmpty(mPassword.getText())
-        );
+                        !isEmpty(mPassword.getText()));
     }
 
     @OnClick(R.id.re_log_in_button)
+    @SuppressWarnings("unused")
     public void onReLogIn() {
         showProgress(true);
 
@@ -127,6 +127,7 @@ public class ConfirmUserActivity extends BaseActivity {
     }
 
     @OnClick(R.id.delete_and_log_out_button)
+    @SuppressWarnings("unused")
     public void deleteAndLogOut() {
         showProgress(true);
         getDhisService().logOutUser();
@@ -135,12 +136,14 @@ public class ConfirmUserActivity extends BaseActivity {
     }
 
     @Subscribe
+    @SuppressWarnings("unused")
     public void onSuccess(UserAccount user) {
         startActivity(new Intent(this, LauncherActivity.class));
         finish();
     }
 
     @Subscribe
+    @SuppressWarnings("unused")
     public void onFailure(APIException apiException) {
         hideProgress(true);
         showApiExceptionMessage(apiException);

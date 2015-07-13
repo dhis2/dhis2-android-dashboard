@@ -34,12 +34,13 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import org.dhis2.android.dashboard.api.DhisManager;
+import org.dhis2.android.dashboard.api.controllers.DhisController;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.utils.ObjectMapperProvider;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.concurrent.TimeUnit;
 
 import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
@@ -52,6 +53,9 @@ import static com.squareup.okhttp.Credentials.basic;
 
 
 public final class RepoManager {
+    static final int DEFAULT_CONNECT_TIMEOUT_MILLIS = 15 * 1000; // 15s
+    static final int DEFAULT_READ_TIMEOUT_MILLIS = 20 * 1000; // 20s
+    static final int DEFAULT_WRITE_TIMEOUT_MILLIS = 20 * 1000; // 20s
 
     private RepoManager() {
         // no instances
@@ -79,9 +83,16 @@ public final class RepoManager {
     }
 
     private static OkClient provideOkClient(Credentials credentials) {
+        return new OkClient(provideOkHttpClient(credentials));
+    }
+
+    public static OkHttpClient provideOkHttpClient(Credentials credentials) {
         OkHttpClient client = new OkHttpClient();
         client.interceptors().add(provideInterceptor(credentials));
-        return new OkClient(client);
+        client.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        client.setReadTimeout(DEFAULT_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        client.setWriteTimeout(DEFAULT_WRITE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        return client;
     }
 
     private static Interceptor provideInterceptor(Credentials credentials) {
@@ -107,8 +118,8 @@ public final class RepoManager {
 
             Response response = chain.proceed(request);
             if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED &&
-                    DhisManager.getInstance().isUserLoggedIn()) {
-                DhisManager.getInstance().invalidateMetaData();
+                    DhisController.getInstance().isUserLoggedIn()) {
+                DhisController.getInstance().invalidateSession();
             }
             return response;
         }

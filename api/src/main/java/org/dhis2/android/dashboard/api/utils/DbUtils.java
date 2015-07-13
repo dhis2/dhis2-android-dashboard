@@ -4,14 +4,14 @@ import com.raizlabs.android.dbflow.runtime.TransactionManager;
 
 import org.dhis2.android.dashboard.api.models.BaseIdentifiableObject;
 import org.dhis2.android.dashboard.api.models.meta.DbOperation;
-import org.dhis2.android.dashboard.api.persistence.DbDhis;
+import org.dhis2.android.dashboard.api.models.meta.DbDhis;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toMap;
+import static org.dhis2.android.dashboard.api.models.BaseIdentifiableObject.toMap;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 /**

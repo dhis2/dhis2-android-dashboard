@@ -46,9 +46,9 @@ public class LauncherActivity extends BaseActivity {
         setTitle(R.string.app_name);
 
         Intent intent;
-        if (getDhisManager().isUserLoggedIn()) {
+        if (getDhisController().isUserLoggedIn()) {
             intent = new Intent(this, MenuActivity.class);
-        } else if (getDhisManager().isUserInvalidated()) {
+        } else if (getDhisController().isUserInvalidated()) {
             intent = new Intent(this, ConfirmUserActivity.class);
         } else {
             intent = new Intent(this, LoginActivity.class);

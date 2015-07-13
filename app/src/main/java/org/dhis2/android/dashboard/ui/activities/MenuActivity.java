@@ -106,13 +106,13 @@ public class MenuActivity extends BaseActivity
                 break;
             }
             case R.id.menu_settings_item: {
-                getDhisService().logOutUser();
+                getDhisController().logOutUser();
                 startActivity(new Intent(this, LauncherActivity.class));
                 finish();
                 break;
             }
             case R.id.menu_about_item: {
-                getDhisManager().invalidateMetaData();
+                getDhisController().invalidateSession();
                 startActivity(new Intent(this, LauncherActivity.class));
                 finish();
                 break;

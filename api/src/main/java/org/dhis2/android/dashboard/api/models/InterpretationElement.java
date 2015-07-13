@@ -33,7 +33,7 @@ import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.Table;
 
-import org.dhis2.android.dashboard.api.persistence.DbDhis;
+import org.dhis2.android.dashboard.api.models.meta.DbDhis;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.

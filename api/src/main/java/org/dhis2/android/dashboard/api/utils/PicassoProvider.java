@@ -30,23 +30,14 @@ package org.dhis2.android.dashboard.api.utils;
 
 import android.content.Context;
 
-import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
-import org.dhis2.android.dashboard.api.DhisManager;
-import org.dhis2.android.dashboard.api.models.meta.Credentials;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import org.dhis2.android.dashboard.api.controllers.DhisController;
+import org.dhis2.android.dashboard.api.network.RepoManager;
 
 public final class PicassoProvider {
-    static final int DEFAULT_CONNECT_TIMEOUT_MILLIS = 15 * 1000; // 15s
-    static final int DEFAULT_READ_TIMEOUT_MILLIS = 20 * 1000; // 20s
-    static final int DEFAULT_WRITE_TIMEOUT_MILLIS = 20 * 1000; // 20s
 
     private static Picasso mPicasso;
 
@@ -55,11 +46,8 @@ public final class PicassoProvider {
 
     public static Picasso getInstance(Context context) {
         if (mPicasso == null) {
-            OkHttpClient client = new OkHttpClient();
-            client.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-            client.setReadTimeout(DEFAULT_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-            client.setWriteTimeout(DEFAULT_WRITE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-            client.interceptors().add(new AuthInterceptor());
+            OkHttpClient client = RepoManager.provideOkHttpClient(
+                    DhisController.getInstance().getUserCredentials());
 
             mPicasso = new Picasso.Builder(context)
                     .downloader(new OkHttpDownloader(client))
@@ -67,23 +55,5 @@ public final class PicassoProvider {
         }
 
         return mPicasso;
-    }
-
-    private static class AuthInterceptor implements Interceptor {
-        private final String mToken;
-
-        public AuthInterceptor() {
-            Credentials credentials = DhisManager.getInstance()
-                    .getUserCredentials();
-            mToken = com.squareup.okhttp.Credentials.basic(credentials.getUsername(),
-                    credentials.getPassword());
-        }
-
-        @Override public Response intercept(Chain chain) throws IOException {
-            Request newRequest = chain.request().newBuilder()
-                    .addHeader("Authorization", mToken)
-                    .build();
-            return chain.proceed(newRequest);
-        }
     }
 }

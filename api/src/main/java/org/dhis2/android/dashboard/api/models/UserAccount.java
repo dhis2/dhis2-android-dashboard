@@ -39,7 +39,7 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.dhis2.android.dashboard.api.models.meta.State;
-import org.dhis2.android.dashboard.api.persistence.DbDhis;
+import org.dhis2.android.dashboard.api.models.meta.DbDhis;
 import org.joda.time.DateTime;
 
 @Table(databaseName = DbDhis.NAME)

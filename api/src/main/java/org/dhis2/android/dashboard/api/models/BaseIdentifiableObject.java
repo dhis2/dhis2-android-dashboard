@@ -36,6 +36,12 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import org.dhis2.android.dashboard.api.utils.StringUtils;
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseIdentifiableObject extends BaseModel implements IdentifiableObject {
 
@@ -68,73 +74,61 @@ public class BaseIdentifiableObject extends BaseModel implements IdentifiableObj
     @Column(name = "access")
     Access access;
 
-    @JsonIgnore
     @Override
     public long getId() {
         return id;
     }
 
-    @JsonIgnore
     @Override
     public void setId(long id) {
         this.id = id;
     }
 
-    @JsonIgnore
     @Override
     public String getUId() {
         return uId;
     }
 
-    @JsonIgnore
     @Override
     public void setUId(String uId) {
         this.uId = uId;
     }
 
-    @JsonIgnore
     @Override
     public String getName() {
         return name;
     }
 
-    @JsonIgnore
     @Override
     public void setName(String name) {
         this.name = name;
     }
 
-    @JsonIgnore
     @Override
     public String getDisplayName() {
         return displayName;
     }
 
-    @JsonIgnore
     @Override
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
-    @JsonIgnore
     @Override
     public DateTime getCreated() {
         return created;
     }
 
-    @JsonIgnore
     @Override
     public void setCreated(DateTime created) {
         this.created = created;
     }
 
-    @JsonIgnore
     @Override
     public DateTime getLastUpdated() {
         return lastUpdated;
     }
 
-    @JsonIgnore
     @Override
     public void setLastUpdated(DateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
@@ -163,5 +157,59 @@ public class BaseIdentifiableObject extends BaseModel implements IdentifiableObj
                 .append(", access=").append(access == null ? "" : access.toString())
                 .append("}")
                 .build();
+    }
+
+    public static <T extends BaseIdentifiableObject> Map<String, T> toMap(Collection<T> objects) {
+        Map<String, T> map = new HashMap<>();
+        if (objects != null && objects.size() > 0) {
+            for (T object : objects) {
+                if (object.getUId() != null) {
+                    map.put(object.getUId(), object);
+                }
+            }
+        }
+        return map;
+    }
+
+    public static <T extends BaseIdentifiableObject> List<String> toListIds(List<T> objects) {
+        List<String> ids = new ArrayList<>();
+        if (objects != null && objects.size() > 0) {
+            for (T object : objects) {
+                ids.add(object.getUId());
+            }
+        }
+        return ids;
+    }
+
+    public static <T extends BaseIdentifiableObject> List<T> merge(List<T> existingItems,
+                                                                   List<T> updatedItems,
+                                                                   List<T> persistedItems) {
+        Map<String, T> updatedItemsMap = toMap(updatedItems);
+        Map<String, T> persistedItemsMap = toMap(persistedItems);
+        Map<String, T> existingItemsMap = new HashMap<>();
+
+        if (existingItems == null || existingItems.isEmpty()) {
+            return new ArrayList<>(existingItemsMap.values());
+        }
+
+        for (T existingItem : existingItems) {
+            String id = existingItem.getUId();
+            T updatedItem = updatedItemsMap.get(id);
+            T persistedItem = persistedItemsMap.get(id);
+
+            if (updatedItem != null) {
+                if (persistedItem != null) {
+                    updatedItem.setId(persistedItem.getId());
+                }
+                existingItemsMap.put(id, updatedItem);
+                continue;
+            }
+
+            if (persistedItem != null) {
+                existingItemsMap.put(id, persistedItem);
+            }
+        }
+
+        return new ArrayList<>(existingItemsMap.values());
     }
 }

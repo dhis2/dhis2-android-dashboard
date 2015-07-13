@@ -33,16 +33,13 @@ import android.os.AsyncTask;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public abstract class Job<T> extends AsyncTask<Void, Void, T> implements IJob<T> {
-    //private final Context mContext;
     private final int mJobId;
     private JobExecutor mJobExecutor;
 
     public Job(int jobId) {
-        //mContext = isNull(context, "Context must not be null");
         mJobId = isNull(jobId, "Job ID must not be null");
     }
 
-    @Override
     public final void onBind(JobExecutor executor) {
         mJobExecutor = isNull(executor, "JobExecutor must not be null");
     }
@@ -75,7 +72,6 @@ public abstract class Job<T> extends AsyncTask<Void, Void, T> implements IJob<T>
         // overriding method here just for convenience
     }
 
-    @Override
     public final void onUnbind() {
         mJobExecutor = null;
     }
@@ -83,10 +79,4 @@ public abstract class Job<T> extends AsyncTask<Void, Void, T> implements IJob<T>
     public final int getJobId() {
         return mJobId;
     }
-
-    /*
-    protected Context getContext() {
-        return mContext;
-    }
-    */
 }

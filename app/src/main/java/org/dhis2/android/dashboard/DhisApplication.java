@@ -24,20 +24,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api.models;
+package org.dhis2.android.dashboard;
 
-import com.raizlabs.android.dbflow.annotation.Table;
+import android.app.Application;
+import android.content.Intent;
 
-import org.dhis2.android.dashboard.api.models.meta.DbDhis;
+import org.dhis2.android.dashboard.api.controllers.DhisController;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-@Table(databaseName = DbDhis.NAME)
-public final class User extends BaseIdentifiableObject {
-    // no additional fields
+public final class DhisApplication extends Application {
 
-    public User() {
-        // empty constructor
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        DhisController.init(getApplicationContext());
+        startService(new Intent(this, DhisService.class));
     }
 }

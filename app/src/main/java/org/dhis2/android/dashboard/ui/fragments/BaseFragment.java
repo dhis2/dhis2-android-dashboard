@@ -31,9 +31,9 @@ package org.dhis2.android.dashboard.ui.fragments;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 
-import org.dhis2.android.dashboard.api.DhisApplication;
-import org.dhis2.android.dashboard.api.DhisService;
+import org.dhis2.android.dashboard.DhisService;
 import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+import org.dhis2.android.dashboard.ui.activities.BaseActivity;
 import org.dhis2.android.dashboard.ui.activities.INavigationCallback;
 
 public class BaseFragment extends Fragment {
@@ -67,14 +67,6 @@ public class BaseFragment extends Fragment {
         EventBusProvider.register(this);
     }
 
-    public DhisService getService() {
-        if (isAdded() && getActivity() != null) {
-            return ((DhisApplication) getActivity().getApplication()).getDhisService();
-        } else {
-            throw new IllegalArgumentException("Fragment is not attached to Activity");
-        }
-    }
-
     public void toggleNavigationDrawer() {
         if (mNavCallback != null) {
             mNavCallback.toggleNavigationDrawer();
@@ -87,6 +79,24 @@ public class BaseFragment extends Fragment {
     public void onBackPressed() {
         if (isAdded()) {
             getActivity().onBackPressed();
+        }
+    }
+
+    public DhisService getDhisService() {
+        if (isAdded() && getActivity() instanceof BaseActivity) {
+            return ((BaseActivity) getActivity()).getDhisService();
+        } else {
+            throw new UnsupportedOperationException("The fragment must be attached to Activity " +
+                    "which extends BaseActivity");
+        }
+    }
+
+    public boolean isDhisServiceBound() {
+        if (isAdded() && getActivity() instanceof BaseActivity) {
+            return ((BaseActivity) getActivity()).isDhisServiceBound();
+        } else {
+            throw new UnsupportedOperationException("The fragment must be attached to Activity " +
+                    "which extends BaseActivity");
         }
     }
 }

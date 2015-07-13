@@ -28,13 +28,17 @@
 
 package org.dhis2.android.dashboard.ui.activities;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import org.dhis2.android.dashboard.DhisService;
 import org.dhis2.android.dashboard.R;
-import org.dhis2.android.dashboard.api.DhisApplication;
-import org.dhis2.android.dashboard.api.DhisManager;
-import org.dhis2.android.dashboard.api.DhisService;
+import org.dhis2.android.dashboard.api.controllers.DhisController;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 
@@ -43,6 +47,56 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 public class BaseActivity extends AppCompatActivity {
+
+    /**
+     * Android Service object
+     */
+    private DhisService mService;
+
+    /**
+     * If true, it means we have Service connected to this Activity.
+     */
+    private boolean mIsBound = false;
+
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to DhisService, cast the IBinder and get DhisService instance
+            DhisService.ServiceBinder binder
+                    = (DhisService.ServiceBinder) service;
+            mService = binder.getService();
+            mIsBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mIsBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Bind to LocalService
+        Intent intent = new Intent(this, DhisService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // Unbind from the service
+        if (mIsBound) {
+            unbindService(mConnection);
+            mIsBound = false;
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -54,14 +108,6 @@ public class BaseActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         EventBusProvider.unregister(this);
-    }
-
-    protected DhisService getDhisService() {
-        return ((DhisApplication) getApplication()).getDhisService();
-    }
-
-    protected DhisManager getDhisManager() {
-        return ((DhisApplication) getApplication()).getDhisManager();
     }
 
     protected void showMessage(CharSequence message) {
@@ -102,5 +148,17 @@ public class BaseActivity extends AppCompatActivity {
                 break;
             }
         }
+    }
+
+    public DhisController getDhisController() {
+        return DhisController.getInstance();
+    }
+
+    public DhisService getDhisService() {
+        return mService;
+    }
+
+    public boolean isDhisServiceBound() {
+        return mIsBound;
     }
 }

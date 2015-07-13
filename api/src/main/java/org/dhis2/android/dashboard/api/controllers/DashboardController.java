@@ -34,18 +34,18 @@ import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.sql.language.Where;
 
-import org.dhis2.android.dashboard.api.DhisManager;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.Dashboard$Table;
 import org.dhis2.android.dashboard.api.models.DashboardElement;
 import org.dhis2.android.dashboard.api.models.DashboardElement$Table;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
 import org.dhis2.android.dashboard.api.models.DashboardItem$Table;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent;
+import org.dhis2.android.dashboard.api.models.DashboardItemContent$Table;
 import org.dhis2.android.dashboard.api.models.meta.DbOperation;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
-import org.dhis2.android.dashboard.api.network.RepoManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager.ResourceType;
 import org.dhis2.android.dashboard.api.utils.DbUtils;
@@ -62,19 +62,18 @@ import retrofit.RetrofitError;
 import retrofit.client.Header;
 import retrofit.client.Response;
 
-import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toListIds;
-import static org.dhis2.android.dashboard.api.utils.CollectionUtils.toMap;
-import static org.dhis2.android.dashboard.api.utils.MergeUtils.merge;
+import static org.dhis2.android.dashboard.api.models.BaseIdentifiableObject.merge;
+import static org.dhis2.android.dashboard.api.models.BaseIdentifiableObject.toListIds;
+import static org.dhis2.android.dashboard.api.models.BaseIdentifiableObject.toMap;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.isSuccess;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
-public final class DashboardController implements IController<Object> {
+final class DashboardController {
     final DhisApi mDhisApi;
 
-    public DashboardController(DhisManager dhisManager) {
-        mDhisApi = RepoManager.createService(dhisManager.getServerUrl(),
-                dhisManager.getUserCredentials());
+    public DashboardController(DhisApi dhisApi) {
+        mDhisApi = dhisApi;
     }
 
     /* this method subtracts content of bList from aList */
@@ -119,16 +118,13 @@ public final class DashboardController implements IController<Object> {
                 .queryList();
     }
 
-    @Override
-    public Object run() throws APIException {
+    public void syncDashboards() throws APIException {
         /* first we need to fetch all changes from server
         and apply them to local database */
         getDashboardDataFromServer();
 
         /* now we can try to send changes made locally to server */
         sendLocalChanges();
-
-        return new Object();
     }
 
     private void getDashboardDataFromServer() throws RetrofitError {
@@ -225,7 +221,6 @@ public final class DashboardController implements IController<Object> {
         List<DashboardItem> actualItems = new ArrayList<>();
         if (dashboards != null && !dashboards.isEmpty()) {
             for (Dashboard dashboard : dashboards) {
-                System.out.println("DASHBOARD: " + dashboard);
                 if (dashboard.getDashboardItems() != null) {
                     actualItems.addAll(dashboard.getDashboardItems());
                 }
@@ -552,6 +547,100 @@ public final class DashboardController implements IController<Object> {
             if (isSuccess(response.getStatus())) {
                 element.delete();
             }
+        }
+    }
+
+    public void syncDashboardContent() throws APIException {
+        DateTime lastUpdated = DateTimeManager.getInstance()
+                .getLastUpdated(ResourceType.CONTENT);
+        DateTime serverDateTime = mDhisApi
+                .getSystemInfo().getServerDate();
+
+        /* first we need to update api resources, dashboards
+        and dashboard items */
+        List<DashboardItemContent> dashboardItemContent =
+                updateApiResources(lastUpdated);
+        Queue<DbOperation> operations = new LinkedList<>();
+        operations.addAll(DbUtils.createOperations(new Select()
+                .from(DashboardItemContent.class).queryList(), dashboardItemContent));
+        DbUtils.applyBatch(operations);
+        DateTimeManager.getInstance()
+                .setLastUpdated(ResourceType.CONTENT, serverDateTime);
+    }
+
+    private List<DashboardItemContent> updateApiResources(DateTime lastUpdated) throws APIException {
+        List<DashboardItemContent> dashboardItemContent = new ArrayList<>();
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_CHART, lastUpdated));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_EVENT_CHART, lastUpdated));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_MAP, lastUpdated));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_REPORT_TABLES, lastUpdated));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_EVENT_REPORT, lastUpdated));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_USERS, lastUpdated));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_REPORTS, lastUpdated));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_RESOURCES, lastUpdated));
+        return dashboardItemContent;
+    }
+
+    private List<DashboardItemContent> updateApiResourceByType(final String type,
+                                                               final DateTime lastUpdated) throws APIException {
+        final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
+        final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
+
+        QUERY_MAP_BASIC.put("fields", "id");
+        QUERY_MAP_FULL.put("fields", "id,created,lastUpdated,name,displayName");
+
+        if (lastUpdated != null) {
+            QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
+        }
+
+        List<DashboardItemContent> actualItems
+                = getApiResourceByType(type, QUERY_MAP_BASIC);
+
+        List<DashboardItemContent> updatedItems =
+                getApiResourceByType(type, QUERY_MAP_FULL);
+        if (updatedItems != null && !updatedItems.isEmpty()) {
+            for (DashboardItemContent element : updatedItems) {
+                element.setType(type);
+            }
+        }
+
+        List<DashboardItemContent> persistedItems = new Select()
+                .from(DashboardItemContent.class)
+                .where(Condition.column(DashboardItemContent$Table
+                        .TYPE).is(type))
+                .queryList();
+
+        return merge(actualItems, updatedItems, persistedItems);
+    }
+
+    private List<DashboardItemContent> getApiResourceByType(String type, Map<String, String> queryParams) throws APIException {
+        switch (type) {
+            case DashboardItemContent.TYPE_CHART:
+                return unwrapResponse(mDhisApi.getCharts(queryParams), "charts");
+            case DashboardItemContent.TYPE_EVENT_CHART:
+                return unwrapResponse(mDhisApi.getEventCharts(queryParams), "eventCharts");
+            case DashboardItemContent.TYPE_MAP:
+                return unwrapResponse(mDhisApi.getMaps(queryParams), "maps");
+            case DashboardItemContent.TYPE_REPORT_TABLES:
+                return unwrapResponse(mDhisApi.getReportTables(queryParams), "reportTables");
+            case DashboardItemContent.TYPE_EVENT_REPORT:
+                return unwrapResponse(mDhisApi.getEventReports(queryParams), "eventReports");
+            case DashboardItemContent.TYPE_USERS:
+                return unwrapResponse(mDhisApi.getUsers(queryParams), "users");
+            case DashboardItemContent.TYPE_REPORTS:
+                return unwrapResponse(mDhisApi.getReports(queryParams), "reports");
+            case DashboardItemContent.TYPE_RESOURCES:
+                return unwrapResponse(mDhisApi.getResources(queryParams), "documents");
+            default:
+                throw new IllegalArgumentException("Unsupported DashboardItemContent type");
         }
     }
 }

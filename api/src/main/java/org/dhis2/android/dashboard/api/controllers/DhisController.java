@@ -26,38 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.dhis2.android.dashboard.api;
+package org.dhis2.android.dashboard.api.controllers;
 
 import android.content.Context;
 
+import com.raizlabs.android.dbflow.config.FlowManager;
 import com.squareup.okhttp.HttpUrl;
 
-import org.dhis2.android.dashboard.api.controllers.ContentController;
-import org.dhis2.android.dashboard.api.controllers.DashboardController;
-import org.dhis2.android.dashboard.api.controllers.IController;
-import org.dhis2.android.dashboard.api.controllers.InterpretationController;
-import org.dhis2.android.dashboard.api.controllers.InvalidateUserController;
-import org.dhis2.android.dashboard.api.controllers.LogInUserController;
-import org.dhis2.android.dashboard.api.controllers.LogOutUserController;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.models.meta.Session;
 import org.dhis2.android.dashboard.api.network.APIException;
+import org.dhis2.android.dashboard.api.network.DhisApi;
+import org.dhis2.android.dashboard.api.network.RepoManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
 
-import java.net.HttpURLConnection;
-
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public class DhisManager {
-    private static DhisManager mDhisManager;
+public class DhisController {
+    private static DhisController mDhisController;
     private Session mSession;
+    private DhisApi mDhisApi;
 
-    private DhisManager(Context context) {
+    private DhisController(Context context) {
+        FlowManager.init(context);
         SessionManager.init(context);
         DateTimeManager.init(context);
 
@@ -67,53 +60,47 @@ public class DhisManager {
 
     public static void init(Context context) {
         isNull(context, "Context object must not be null");
-        if (mDhisManager == null) {
-            mDhisManager = new DhisManager(context);
+        if (mDhisController == null) {
+            mDhisController = new DhisController(context);
         }
     }
 
-    public static DhisManager getInstance() {
-        if (mDhisManager == null) {
+    public static DhisController getInstance() {
+        if (mDhisController == null) {
             throw new IllegalArgumentException("You need to call init() first");
         }
 
-        return mDhisManager;
+        return mDhisController;
     }
 
-    public UserAccount logInUser(HttpUrl serverUrl,
-                                 Credentials credentials) throws APIException {
+    public UserAccount logInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
         return signInUser(serverUrl, credentials);
     }
 
     public UserAccount confirmUser(Credentials credentials) throws APIException {
-        // Session session = SessionManager.getInstance().get();
         return signInUser(mSession.getServerUrl(), credentials);
     }
 
     public void logOutUser() throws APIException {
-        IController<Object> controller =
-                new LogOutUserController();
-        controller.run();
+        (new UserController(mDhisApi)).logOut();
 
         // fetch meta data from disk
         readSession();
     }
 
-    private UserAccount signInUser(HttpUrl serverUrl,
-                                   Credentials credentials) throws APIException {
-        IController<UserAccount> controller
-                = new LogInUserController(serverUrl, credentials);
-        UserAccount user = controller.run();
+    private UserAccount signInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
+        DhisApi dhisApi = RepoManager
+                .createService(serverUrl, credentials);
+        UserAccount user = (new UserController(dhisApi)
+                .logInUser(serverUrl, credentials));
 
         // fetch meta data from disk
         readSession();
         return user;
     }
 
-    public void invalidateMetaData() {
-        InvalidateUserController invalidateController
-                = new InvalidateUserController();
-        invalidateController.run();
+    public void invalidateSession() {
+        SessionManager.getInstance().invalidate();
 
         // fetch meta data from disk
         readSession();
@@ -131,22 +118,14 @@ public class DhisManager {
 
     private void readSession() {
         mSession = SessionManager.getInstance().get();
-    }
+        mDhisApi = null;
 
-    public void syncMetaData() throws APIException {
-        runController(null);
-    }
-
-    public void syncDashboardContent() throws APIException {
-        runController(new ContentController(this));
-    }
-
-    public void syncDashboards() throws APIException {
-        runController(new DashboardController(this));
-    }
-
-    public void syncInterpretations() throws RetrofitError {
-        runController(new InterpretationController(this));
+        if (isUserLoggedIn()) {
+            mDhisApi = RepoManager.createService(
+                    mSession.getServerUrl(),
+                    mSession.getCredentials()
+            );
+        }
     }
 
     public HttpUrl getServerUrl() {
@@ -157,24 +136,15 @@ public class DhisManager {
         return mSession.getCredentials();
     }
 
-    // we need this method in order to catch certain types of exceptions.
-    // For example: UnauthorizedException (HTTP 401)
-    // NOTE!: this method should be used for controllers except LogInUserController
-    private <T> T runController(IController<T> controller) throws APIException {
-        try {
-            return controller.run();
-        } catch (APIException apiException) {
-            apiException.printStackTrace();
+    public void syncDashboardContent() throws APIException {
+        (new DashboardController(mDhisApi)).syncDashboardContent();
+    }
 
-            if (apiException.getKind() == APIException.Kind.HTTP) {
-                Response response = apiException.getResponse();
-                if (response != null &&
-                        response.getStatus() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                    // invalidate the metadata in application
-                    invalidateMetaData();
-                }
-            }
-            throw apiException;
-        }
+    public void syncDashboards() throws APIException {
+        (new DashboardController(mDhisApi)).syncDashboards();
+    }
+
+    public void syncInterpretations() throws APIException {
+        (new InterpretationController(mDhisApi)).syncInterpretations();
     }
 }

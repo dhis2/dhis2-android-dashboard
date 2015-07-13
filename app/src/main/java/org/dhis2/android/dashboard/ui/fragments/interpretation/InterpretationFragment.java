@@ -157,7 +157,7 @@ public final class InterpretationFragment extends BaseFragment
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh: {
-                getService().syncInterpretations();
+                getDhisService().syncInterpretations();
                 return true;
             }
         }
