@@ -88,14 +88,14 @@ public final class InterpretationTextEditFragment extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        mDialogLabel.setText(getString(R.string.interpretation_text));
-        mInterpretationText.setText(mInterpretation.getText());
-
         mInterpretation = new Select()
                 .from(Interpretation.class)
                 .where(Condition.column(Interpretation$Table
                         .ID).is(getArguments().getLong(Interpretation$Table.ID)))
                 .querySingle();
+
+        mDialogLabel.setText(getString(R.string.interpretation_text));
+        mInterpretationText.setText(mInterpretation.getText());
     }
 
 
