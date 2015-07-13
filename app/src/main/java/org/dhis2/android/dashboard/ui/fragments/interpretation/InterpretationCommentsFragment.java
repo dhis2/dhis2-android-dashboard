@@ -229,7 +229,8 @@ public class InterpretationCommentsFragment extends BaseFragment
 
     @Override
     public void onCommentEdit(InterpretationComment comment) {
-        InterpretationCommentEditFragment.newInstance(this, comment)
+        InterpretationCommentEditFragment
+                .newInstance(comment.getId())
                 .show(getChildFragmentManager());
     }
 

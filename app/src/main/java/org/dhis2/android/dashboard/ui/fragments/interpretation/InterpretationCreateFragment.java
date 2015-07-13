@@ -42,6 +42,7 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.DashboardItem;
+import org.dhis2.android.dashboard.api.models.DashboardItem$Table;
 import org.dhis2.android.dashboard.api.models.Interpretation;
 import org.dhis2.android.dashboard.api.models.InterpretationElement;
 import org.dhis2.android.dashboard.api.models.User;
@@ -70,9 +71,12 @@ public final class InterpretationCreateFragment extends DialogFragment {
 
     DashboardItem mDashboardItem;
 
-    public static InterpretationCreateFragment newInstance(DashboardItem item) {
+    public static InterpretationCreateFragment newInstance(long itemId) {
+        Bundle args = new Bundle();
+        args.putLong(DashboardItem$Table.ID, itemId);
+
         InterpretationCreateFragment fragment = new InterpretationCreateFragment();
-        fragment.mDashboardItem = item;
+        fragment.setArguments(args);
 
         return fragment;
     }
@@ -93,6 +97,13 @@ public final class InterpretationCreateFragment extends DialogFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
+
+        mDashboardItem = new Select()
+                .from(DashboardItem.class)
+                .where(Condition.column(DashboardItem$Table
+                        .ID).is(getArguments().getLong(DashboardItem$Table.ID)))
+                .querySingle();
+
         mDialogLabel.setText(getString(R.string.create_interpretation));
     }
 

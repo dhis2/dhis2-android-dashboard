@@ -38,8 +38,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
+
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.InterpretationComment;
+import org.dhis2.android.dashboard.api.models.InterpretationComment$Table;
+import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -57,15 +62,15 @@ public class InterpretationCommentEditFragment extends DialogFragment {
     @Bind(R.id.dialog_label)
     TextView mDialogLabel;
 
-    InterpretationCommentsFragment mInterpretationCommentsFragment;
     InterpretationComment mInterpretationComment;
 
-    public static InterpretationCommentEditFragment newInstance(InterpretationCommentsFragment commentsFragment,
-                                                                InterpretationComment comment) {
+    public static InterpretationCommentEditFragment newInstance(long commentId) {
+        Bundle args = new Bundle();
+        args.putLong(InterpretationComment$Table.ID, commentId);
+
         InterpretationCommentEditFragment fragment
                 = new InterpretationCommentEditFragment();
-        fragment.mInterpretationCommentsFragment = commentsFragment;
-        fragment.mInterpretationComment = comment;
+        fragment.setArguments(args);
 
         return fragment;
     }
@@ -87,23 +92,29 @@ public class InterpretationCommentEditFragment extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
+        mInterpretationComment = new Select()
+                .from(InterpretationComment.class)
+                .where(Condition.column(InterpretationComment$Table
+                        .ID).is(getArguments().getLong(InterpretationComment$Table.ID)))
+                .querySingle();
+
         mDialogLabel.setText(getString(R.string.edit_comment));
         mCommentEditText.setText(mInterpretationComment.getText());
     }
 
     @SuppressWarnings("unused")
-    @OnClick({R.id.close_dialog_button,
+    @OnClick({
+            R.id.close_dialog_button,
             R.id.cancel_interpretation_comment_edit,
-            R.id.update_interpretation_comment})
+            R.id.update_interpretation_comment
+    })
     public void onButtonClick(View view) {
         switch (view.getId()) {
             case R.id.update_interpretation_comment: {
                 String commentText = mCommentEditText.getText().toString();
                 mInterpretationComment.updateComment(commentText);
 
-                if (mInterpretationCommentsFragment != null) {
-                    mInterpretationCommentsFragment.onCommentEdited();
-                }
+                EventBusProvider.post(new OnInterpretationCommentChangedEvent());
                 break;
             }
         }
@@ -118,5 +129,9 @@ public class InterpretationCommentEditFragment extends DialogFragment {
 
     public void show(FragmentManager manager) {
         super.show(manager, TAG);
+    }
+
+    public static class OnInterpretationCommentChangedEvent {
+        // no fields
     }
 }

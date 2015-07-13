@@ -216,7 +216,8 @@ public final class InterpretationFragment extends BaseFragment
 
     @Override
     public void onInterpretationTextClick(Interpretation interpretation) {
-        InterpretationTextFragment.newInstance(interpretation)
+        InterpretationTextFragment
+                .newInstance(interpretation.getId())
                 .show(getChildFragmentManager());
     }
 
@@ -233,7 +234,8 @@ public final class InterpretationFragment extends BaseFragment
     @Override
     public void onInterpretationEditClick(Interpretation interpretation) {
         InterpretationTextEditFragment
-                .newInstance(interpretation).show(getChildFragmentManager());
+                .newInstance(interpretation.getId())
+                .show(getChildFragmentManager());
     }
 
     @Override
