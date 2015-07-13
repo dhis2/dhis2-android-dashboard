@@ -40,7 +40,7 @@ public final class DbUtils {
             @Override
             public void run() {
                 for (DbOperation operation : operations) {
-                    switch (operation.getOperationType()) {
+                    switch (operation.getAction()) {
                         case INSERT: {
                             operation.getModel().insert();
                             break;

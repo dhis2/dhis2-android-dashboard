@@ -35,6 +35,8 @@ import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
+import java.util.List;
+
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public class ModelChangeObserver<ModelClass extends Model> implements FlowContentObserver.OnModelStateChangedListener {
@@ -43,17 +45,20 @@ public class ModelChangeObserver<ModelClass extends Model> implements FlowConten
     private final DbLoader<?> mLoader;
     private final Class<ModelClass> mModelClass;
     private final FlowContentObserver mObserver;
+    private final List<BaseModel.Action> mActions;
 
-    public ModelChangeObserver(Class<ModelClass> modelClass, DbLoader<?> loader) {
+    public ModelChangeObserver(Class<ModelClass> modelClass,
+                               List<BaseModel.Action> actions,
+                               DbLoader<?> loader) {
         mModelClass = isNull(modelClass, "Class<ModelClass> object must not be null");
+        mActions = isNull(actions, "List<BaseMode.Action> must not be null");
         mLoader = isNull(loader, "DbLoader must not be null");
         mObserver = new FlowContentObserver();
     }
 
     public void registerObserver() {
         mObserver.registerForContentChanges(
-                mLoader.getContext(), mModelClass
-        );
+                mLoader.getContext(), mModelClass);
         mObserver.addModelChangeListener(this);
     }
 
@@ -65,6 +70,23 @@ public class ModelChangeObserver<ModelClass extends Model> implements FlowConten
     @Override
     public void onModelStateChanged(Class<? extends Model> aClass, BaseModel.Action action) {
         Log.d(TAG, "onModelStateChanged() " + aClass.getSimpleName() + ": " + action);
-        mLoader.onContentChanged();
+
+        if (notifyLoader(action)) {
+            mLoader.onContentChanged();
+        }
+    }
+
+    private boolean notifyLoader(BaseModel.Action action) {
+        if (mActions.isEmpty()) {
+            return true;
+        }
+
+        for (BaseModel.Action modelAction : mActions) {
+            if (modelAction.equals(action)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

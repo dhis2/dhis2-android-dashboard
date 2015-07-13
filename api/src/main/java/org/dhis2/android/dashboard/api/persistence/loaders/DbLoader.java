@@ -32,6 +32,7 @@ package org.dhis2.android.dashboard.api.persistence.loaders;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
+import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
 import java.util.ArrayList;
@@ -43,31 +44,42 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 public class DbLoader<T> extends AsyncTaskLoader<T> {
     // A Model Class which we want to observe
     private final List<Class<? extends Model>> mModelClasses;
+
     // The object which will perform Query
     private final Query<T> mQuery;
+
+    // List of BaseModel.Action on which
+    // we want the Loader to react
+    private final List<BaseModel.Action> mActions;
+
     // The actual observer
-    // private ModelChangeObserver<ModelClass> mObserver;
     private List<ModelChangeObserver<?>> mObservers;
     private T mData;
 
     public DbLoader(Context context,
                     List<Class<? extends Model>> modelClasses,
                     Query<T> query) {
+        this(context, modelClasses, new ArrayList<BaseModel.Action>(), query);
+    }
+
+    public DbLoader(Context context,
+                    List<Class<? extends Model>> modelClasses,
+                    List<BaseModel.Action> actions,
+                    Query<T> query) {
         super(context);
 
         mModelClasses = isNull(modelClasses, "Model Class object must not be null");
         mQuery = isNull(query, "Query object must not be null");
+        mActions = actions == null ? new ArrayList<BaseModel.Action>() : actions;
     }
 
-    private void registerObservers() {
+    private void registerObservers(List<BaseModel.Action> actions) {
         mObservers = new ArrayList<>();
         for (Class<? extends Model> modelClass : mModelClasses) {
-            ModelChangeObserver<?> observer = new ModelChangeObserver<>(modelClass, this);
+            ModelChangeObserver<?> observer = new ModelChangeObserver<>(modelClass, actions, this);
             observer.registerObserver();
             mObservers.add(observer);
         }
-        // mObserver = new ModelChangeObserver<>(mModelClass, this);
-        // mObserver.registerObserver();
     }
 
     private void unregisterObservers() {
@@ -76,14 +88,11 @@ public class DbLoader<T> extends AsyncTaskLoader<T> {
                 observer.unregisterObserver();
             }
             mObservers = null;
-            // mObserver.unregisterObserver();
-            // mObserver = null;
         }
     }
 
     @Override
     public T loadInBackground() {
-        System.out.println("loadInBackground()");
         return mQuery.query(getContext());
     }
 
@@ -120,7 +129,7 @@ public class DbLoader<T> extends AsyncTaskLoader<T> {
         }
 
         // Begin monitoring the underlying data source.
-        registerObservers();
+        registerObservers(mActions);
 
         if (takeContentChanged() || mData == null) {
             // When the observer detects a change, it should call onContentChanged()

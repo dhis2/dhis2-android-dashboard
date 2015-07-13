@@ -9,39 +9,35 @@ import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
  * functionality of ContentProviderOperation for DbFlow.
  */
 public final class DbOperation {
-    private final OperationType mOperationType;
+    private final BaseModel.Action mAction;
     private final BaseModel mModel;
 
-    private DbOperation(OperationType operationType, BaseModel model) {
-        mOperationType = operationType;
+    private DbOperation(BaseModel.Action action, BaseModel model) {
         mModel = isNull(model, "BaseModel object must nto be null,");
+        mAction = isNull(action, "BaseModel.Action object must not be null");
     }
 
     public static <T extends BaseModel> DbOperation insert(T model) {
-        return new DbOperation(OperationType.INSERT, model);
+        return new DbOperation(BaseModel.Action.INSERT, model);
     }
 
     public static <T extends BaseModel> DbOperation update(T model) {
-        return new DbOperation(OperationType.UPDATE, model);
+        return new DbOperation(BaseModel.Action.UPDATE, model);
     }
 
     public static <T extends BaseModel> DbOperation save(T model) {
-        return new DbOperation(OperationType.SAVE, model);
+        return new DbOperation(BaseModel.Action.SAVE, model);
     }
 
     public static <T extends BaseModel> DbOperation delete(T model) {
-        return new DbOperation(OperationType.DELETE, model);
+        return new DbOperation(BaseModel.Action.DELETE, model);
     }
 
     public BaseModel getModel() {
         return mModel;
     }
 
-    public OperationType getOperationType() {
-        return mOperationType;
-    }
-
-    public enum OperationType {
-        INSERT, UPDATE, DELETE, SAVE
+    public BaseModel.Action getAction() {
+        return mAction;
     }
 }
