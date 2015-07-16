@@ -84,4 +84,9 @@
     <string name="interpretation_text">Interpretation text</string>
     <string name="create_interpretation">Create interpretation</string>
     <!-- END Interpretations -->
+
+
+    <!-- START Account -->
+    <string name="account">Account</string>
+    <!-- END Account -->
 </resources>
