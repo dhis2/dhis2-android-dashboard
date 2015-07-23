@@ -47,6 +47,13 @@ public final class DateTimeManager {
         return null;
     }
 
+    /**
+     * Removes all key-value pairs.
+     */
+    public void delete() {
+        mPrefs.edit().clear().commit();
+    }
+
     public void deleteLastUpdated(ResourceType type) {
         deleteString(METADATA_UPDATE_DATETIME + type.toString());
     }

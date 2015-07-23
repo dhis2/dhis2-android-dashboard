@@ -41,9 +41,10 @@ import com.squareup.okhttp.HttpUrl;
 import com.squareup.otto.Subscribe;
 
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.job.NetworkJob;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
-import org.dhis2.android.dashboard.api.network.APIException;
+import org.dhis2.android.dashboard.api.models.meta.ResponseHolder;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -51,6 +52,7 @@ import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 
+import static org.dhis2.android.dashboard.api.utils.NetworkUtils.isSuccess;
 import static org.dhis2.android.dashboard.utils.TextUtils.isEmpty;
 
 public class LoginActivity extends BaseActivity {
@@ -131,16 +133,18 @@ public class LoginActivity extends BaseActivity {
 
     @Subscribe
     @SuppressWarnings("unused")
-    public void onSuccess(UserAccount user) {
-        startActivity(new Intent(this, MenuActivity.class));
-        finish();
-    }
+    public void onResultReceived(NetworkJob.NetworkJobResult<UserAccount> jobResult) {
+        if (NetworkJob.ResponseType.USERS.equals(jobResult.getResponseType())) {
+            ResponseHolder<UserAccount> responseHolder = jobResult.getResponseHolder();
 
-    @Subscribe
-    @SuppressWarnings("unused")
-    public void onFailure(APIException apiException) {
-        hideProgress(true);
-        showApiExceptionMessage(apiException);
+            if (responseHolder.getApiException() == null) {
+                startActivity(new Intent(this, MenuActivity.class));
+                finish();
+            } else {
+                hideProgress(true);
+                showApiExceptionMessage(responseHolder.getApiException());
+            }
+        }
     }
 
     private void showProgress(boolean withAnimation) {
