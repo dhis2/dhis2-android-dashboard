@@ -24,21 +24,20 @@
   ~ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <include layout="@layout/toolbar" />
+    <item
+        android:id="@+id/refresh"
+        android:icon="@mipmap/ic_refresh"
+        android:orderInCategory="110"
+        android:title="@string/refresh"
+        app:showAsAction="always" />
 
-    <org.dhis2.android.dashboard.ui.views.FontTextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/no_dashboards"
-        android:textColor="@color/navy_blue"
-        android:textSize="20sp"
-        app:font="@string/light_font_name" />
+    <item
+        android:id="@+id/add_dashboard"
+        android:orderInCategory="111"
+        android:title="@string/add"
+        app:showAsAction="never" />
 
-</LinearLayout>
+</menu>

@@ -51,7 +51,6 @@ import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.fragments.AccountFragment;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardContainerFragment;
-import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardViewPagerFragment;
 import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationFragment;
 
 import java.util.Arrays;
@@ -110,7 +109,7 @@ public class MenuActivity extends BaseActivity
 
         switch (menuItem.getItemId()) {
             case R.id.menu_dashboard_item: {
-                attachFragmentDelayed(new DashboardViewPagerFragment());
+                attachFragmentDelayed(new DashboardContainerFragment());
                 break;
             }
             case R.id.menu_interpretations_item: {

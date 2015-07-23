@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -65,11 +66,34 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
         mToolbar.setNavigationIcon(R.mipmap.ic_menu);
         mToolbar.setNavigationOnClickListener(this);
         mToolbar.setTitle(R.string.dashboard);
-        mToolbar.inflateMenu(R.menu.menu_dashboard_fragment);
+        mToolbar.inflateMenu(R.menu.menu_dashboard_empty_fragment);
+        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return onMenuItemClicked(item);
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
         toggleNavigationDrawer();
+    }
+
+    public boolean onMenuItemClicked(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh: {
+                getDhisService().syncDashboardContent();
+                getDhisService().syncDashboards();
+                return true;
+            }
+            case R.id.add_dashboard: {
+                new DashboardAddFragment()
+                        .show(getChildFragmentManager());
+                return true;
+            }
+        }
+        return false;
     }
 }
