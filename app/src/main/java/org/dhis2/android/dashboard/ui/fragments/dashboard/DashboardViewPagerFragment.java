@@ -65,6 +65,8 @@ import butterknife.ButterKnife;
 public class DashboardViewPagerFragment extends BaseFragment
         implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener,
         ViewPager.OnPageChangeListener, OnOptionSelectedListener {
+
+    public static final String TAG = DashboardViewPagerFragment.class.getSimpleName();
     private static final int LOADER_ID = 1233432;
 
     @Bind(R.id.dashboard_tabs)

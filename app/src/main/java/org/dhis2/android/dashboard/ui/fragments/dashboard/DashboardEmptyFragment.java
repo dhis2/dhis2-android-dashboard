@@ -52,6 +52,7 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
  *         is no any dashboards in local database.
  */
 public class DashboardEmptyFragment extends BaseFragment implements View.OnClickListener {
+    public static final String TAG = DashboardEmptyFragment.class.getSimpleName();
     private static final String IS_LOADING = "state:isLoading";
 
     @Bind(R.id.toolbar)

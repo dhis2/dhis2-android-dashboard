@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Dashboard;
@@ -74,8 +75,10 @@ public class DashboardContainerFragment extends BaseFragment
 
     @Override
     public Loader<Boolean> onCreateLoader(int id, Bundle args) {
+        List<BaseModel.Action> actionsToTrack = Arrays.asList(
+                BaseModel.Action.INSERT, BaseModel.Action.DELETE);
         List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
-                new DbLoader.TrackedTable(Dashboard.class));
+                new DbLoader.TrackedTable(Dashboard.class, actionsToTrack));
         return new DbLoader<>(getActivity().getApplicationContext(),
                 trackedTables, new DashboardsQuery());
     }
@@ -84,9 +87,16 @@ public class DashboardContainerFragment extends BaseFragment
     public void onLoadFinished(Loader<Boolean> loader, Boolean hasData) {
         if (loader != null && loader.getId() == LOADER_ID) {
             if (hasData) {
-                attachFragment(new DashboardViewPagerFragment());
+                // we don't want to attach the same fragment
+                if (!isFragmentAttached(DashboardViewPagerFragment.TAG)) {
+                    attachFragment(new DashboardViewPagerFragment(),
+                            DashboardViewPagerFragment.TAG);
+                }
             } else {
-                attachFragment(new DashboardEmptyFragment());
+                if (!isFragmentAttached(DashboardEmptyFragment.TAG)) {
+                    attachFragment(new DashboardEmptyFragment(),
+                            DashboardEmptyFragment.TAG);
+                }
             }
         }
     }
@@ -96,10 +106,15 @@ public class DashboardContainerFragment extends BaseFragment
         // stub implementation
     }
 
-    private void attachFragment(Fragment fragment) {
+    private void attachFragment(Fragment fragment, String tag) {
+        System.out.println("ATTACH_FRAGMENT IS CALLED");
         getChildFragmentManager().beginTransaction()
-                .replace(R.id.fragment_content_frame, fragment)
+                .replace(R.id.fragment_content_frame, fragment, tag)
                 .commitAllowingStateLoss();
+    }
+
+    private boolean isFragmentAttached(String tag) {
+        return getChildFragmentManager().findFragmentByTag(tag) != null;
     }
 
     private static class DashboardsQuery implements Query<Boolean> {
