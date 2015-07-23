@@ -32,6 +32,8 @@
 
     <include layout="@layout/toolbar" />
 
+    <include layout="@layout/progress_bar_horizontal" />
+
     <org.dhis2.android.dashboard.ui.views.FontTextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

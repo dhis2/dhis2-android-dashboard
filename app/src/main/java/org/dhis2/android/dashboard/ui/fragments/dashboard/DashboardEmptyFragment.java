@@ -34,11 +34,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.otto.Subscribe;
+
+import org.dhis2.android.dashboard.DhisService;
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.job.NetworkJob;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -47,9 +52,13 @@ import butterknife.ButterKnife;
  *         is no any dashboards in local database.
  */
 public class DashboardEmptyFragment extends BaseFragment implements View.OnClickListener {
+    private static final String IS_LOADING = "state:isLoading";
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
+
+    @Bind(R.id.progress_bar)
+    SmoothProgressBar mProgressBar;
 
     @Nullable
     @Override
@@ -74,6 +83,15 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
                 return onMenuItemClicked(item);
             }
         });
+
+        boolean isLoading = isDhisServiceBound() && getDhisService()
+                .isJobRunning(DhisService.SYNC_DASHBOARDS);
+        if ((savedInstanceState != null &&
+                savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -84,8 +102,7 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     public boolean onMenuItemClicked(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh: {
-                getDhisService().syncDashboardContent();
-                getDhisService().syncDashboards();
+                syncDashboards();
                 return true;
             }
             case R.id.add_dashboard: {
@@ -95,5 +112,22 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
             }
         }
         return false;
+    }
+
+    private void syncDashboards() {
+        if (isDhisServiceBound()) {
+            getDhisService().syncDashboardContent();
+            getDhisService().syncDashboards();
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Subscribe
+    @SuppressWarnings("unused")
+    public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
+        if (result.getResponseType() ==
+                NetworkJob.ResponseType.DASHBOARDS) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
     }
 }
