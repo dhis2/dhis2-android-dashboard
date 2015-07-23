@@ -36,6 +36,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.models.Access;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.Dashboard$Table;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent;
@@ -150,9 +152,13 @@ public class DashboardViewPagerFragment extends BaseFragment
     @Override
     public void onPageSelected(int position) {
         Dashboard dashboard = mDashboardAdapter.getDashboard(position);
-        if (dashboard != null) {
-            boolean isDashboardEditable = dashboard.getAccess().isManage();
-        }
+        Access dashboardAccess = dashboard.getAccess();
+
+        Menu menu = mToolbar.getMenu();
+        menu.findItem(R.id.add_dashboard_item)
+                .setVisible(dashboardAccess.isUpdate());
+        menu.findItem(R.id.manage_dashboard)
+                .setVisible(dashboardAccess.isUpdate());
     }
 
     @Override
@@ -198,8 +204,9 @@ public class DashboardViewPagerFragment extends BaseFragment
             case R.id.manage_dashboard: {
                 Dashboard dashboard = mDashboardAdapter
                         .getDashboard(mViewPager.getCurrentItem());
-                DashboardManageFragment.newInstance(
-                        dashboard).show(getChildFragmentManager());
+                DashboardManageFragment
+                        .newInstance(dashboard.getId())
+                        .show(getChildFragmentManager());
                 return true;
             }
         }

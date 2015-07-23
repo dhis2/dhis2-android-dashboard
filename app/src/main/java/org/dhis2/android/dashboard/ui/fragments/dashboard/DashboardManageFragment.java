@@ -39,15 +39,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
+
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.Dashboard$Table;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
-
-import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 /**
  * Handles editing (changing name) and removal of given dashboard.
@@ -75,11 +77,12 @@ public final class DashboardManageFragment extends DialogFragment {
 
     Dashboard mDashboard;
 
-    public static DashboardManageFragment newInstance(Dashboard dashboard) {
-        isNull(dashboard, "Dashboard object must not be null");
+    public static DashboardManageFragment newInstance(long dashboardId) {
+        Bundle args = new Bundle();
+        args.putLong(Dashboard$Table.ID, dashboardId);
 
         DashboardManageFragment fragment = new DashboardManageFragment();
-        fragment.mDashboard = dashboard;
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -98,6 +101,12 @@ public final class DashboardManageFragment extends DialogFragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        mDashboard = new Select()
+                .from(Dashboard.class)
+                .where(Condition.column(Dashboard$Table
+                        .ID).is(getArguments().getLong(Dashboard$Table.ID)))
+                .querySingle();
+
         ButterKnife.bind(this, view);
 
         mDialogLabel.setText(getString(R.string.manage_dashboard));
