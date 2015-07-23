@@ -28,12 +28,15 @@
 
 package org.dhis2.android.dashboard.ui.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
@@ -44,9 +47,15 @@ import android.widget.TextView;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.UserAccount;
+import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
+import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.fragments.AccountFragment;
+import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardContainerFragment;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardViewPagerFragment;
 import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationFragment;
+
+import java.util.Arrays;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -55,7 +64,10 @@ import butterknife.OnClick;
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
 public class MenuActivity extends BaseActivity
-        implements OnNavigationItemSelectedListener, DrawerListener, INavigationCallback {
+        implements OnNavigationItemSelectedListener, DrawerListener,
+        INavigationCallback, LoaderManager.LoaderCallbacks<UserAccount> {
+
+    private static final int LOADER_ID = 589352;
 
     @Bind(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -80,10 +92,6 @@ public class MenuActivity extends BaseActivity
         mDrawerLayout.setDrawerListener(this);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mNavigationView.setNavigationItemSelectedListener(this);
-
-        UserAccount user = UserAccount.getCurrentUserAccountFromDb();
-        mUsername.setText(user.getDisplayName());
-        mUserInfo.setText(user.getEmail());
     }
 
     @Override
@@ -91,8 +99,10 @@ public class MenuActivity extends BaseActivity
         super.onPostCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            attachFragment(new DashboardViewPagerFragment());
+            attachFragment(new DashboardContainerFragment());
         }
+
+        getSupportLoaderManager().initLoader(LOADER_ID, savedInstanceState, this);
     }
 
     @Override
@@ -186,5 +196,34 @@ public class MenuActivity extends BaseActivity
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();
+    }
+
+    @Override
+    public Loader<UserAccount> onCreateLoader(int id, Bundle args) {
+        List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
+                new DbLoader.TrackedTable(UserAccount.class));
+        return new DbLoader<>(getApplicationContext(),
+                trackedTables, new UserAccountQuery());
+    }
+
+    @Override
+    public void onLoadFinished(Loader<UserAccount> loader, UserAccount user) {
+        if (loader != null && loader.getId() == LOADER_ID && user != null) {
+            mUsername.setText(user.getDisplayName());
+            mUserInfo.setText(user.getEmail());
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<UserAccount> loader) {
+        // stub implementation
+    }
+
+    private static class UserAccountQuery implements Query<UserAccount> {
+
+        @Override
+        public UserAccount query(Context context) {
+            return UserAccount.getCurrentUserAccountFromDb();
+        }
     }
 }

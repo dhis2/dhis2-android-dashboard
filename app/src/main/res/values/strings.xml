@@ -65,6 +65,7 @@
     <string name="manage_dashboard">Manage dashboard</string>
     <string name="share_interpretation">Share interpretation</string>
     <string name="edit_name">Edit name</string>
+    <string name="no_dashboards">No dashboards</string>
 
     <string name="charts">Charts</string>
     <string name="event_charts">Event charts</string>
