@@ -52,7 +52,6 @@ import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 
-import static org.dhis2.android.dashboard.api.utils.NetworkUtils.isSuccess;
 import static org.dhis2.android.dashboard.utils.TextUtils.isEmpty;
 
 public class LoginActivity extends BaseActivity {

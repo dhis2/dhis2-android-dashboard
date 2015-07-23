@@ -180,7 +180,11 @@ public class DbLoader<T> extends AsyncTaskLoader<T> {
         private final List<BaseModel.Action> mActions;
 
         public TrackedTable(Class<? extends Model> trackedModel) {
-            this(trackedModel, new ArrayList<BaseModel.Action>());
+            this(trackedModel, Arrays.asList(
+                    BaseModel.Action.INSERT,
+                    BaseModel.Action.UPDATE,
+                    BaseModel.Action.DELETE,
+                    BaseModel.Action.SAVE));
         }
 
         public TrackedTable(Class<? extends Model> trackedModel,
