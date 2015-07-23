@@ -61,6 +61,8 @@
             app:tabSelectedTextColor="@color/white"
             app:tabTextColor="@color/transparent_white" />
 
+        <include layout="@layout/progress_bar_horizontal" />
+
     </android.support.design.widget.AppBarLayout>
 
 </android.support.design.widget.CoordinatorLayout>

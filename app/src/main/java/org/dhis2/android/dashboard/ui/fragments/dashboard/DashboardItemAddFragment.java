@@ -95,8 +95,7 @@ public class DashboardItemAddFragment extends DialogFragment
     OnOptionSelectedListener mListener;
 
     public static DashboardItemAddFragment newInstance(OnOptionSelectedListener listener) {
-        DashboardItemAddFragment fragment
-                = new DashboardItemAddFragment();
+        DashboardItemAddFragment fragment = new DashboardItemAddFragment();
         fragment.mListener = listener;
         return fragment;
     }
@@ -140,11 +139,13 @@ public class DashboardItemAddFragment extends DialogFragment
 
     @OnTextChanged(value = R.id.filter_options,
             callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
+    @SuppressWarnings("unused")
     public void afterTextChanged(Editable s) {
         mAdapter.getFilter().filter(s.toString());
     }
 
     @OnClick({R.id.close_dialog_button, R.id.filter_resources})
+    @SuppressWarnings("unused")
     public void onButtonClick(View v) {
         if (R.id.close_dialog_button == v.getId()) {
             dismiss();

@@ -43,8 +43,11 @@ import android.view.ViewGroup;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.squareup.otto.Subscribe;
 
+import org.dhis2.android.dashboard.DhisService;
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.job.NetworkJob;
 import org.dhis2.android.dashboard.api.models.Access;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.Dashboard$Table;
@@ -63,13 +66,15 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class DashboardViewPagerFragment extends BaseFragment
         implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener,
         ViewPager.OnPageChangeListener, OnOptionSelectedListener {
 
-    public static final String TAG = DashboardViewPagerFragment.class.getSimpleName();
-    private static final int LOADER_ID = 1233432;
+    static final String TAG = DashboardViewPagerFragment.class.getSimpleName();
+    static final String IS_LOADING = "state:isLoading";
+    static final int LOADER_ID = 1233432;
 
     @Bind(R.id.dashboard_tabs)
     TabLayout mTabs;
@@ -79,6 +84,9 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
+
+    @Bind(R.id.progress_bar)
+    SmoothProgressBar mProgressBar;
 
     DashboardAdapter mDashboardAdapter;
 
@@ -105,12 +113,29 @@ public class DashboardViewPagerFragment extends BaseFragment
                 return onMenuItemClicked(item);
             }
         });
+
+
+        boolean isLoading = isDhisServiceBound() && getDhisService()
+                .isJobRunning(DhisService.SYNC_INTERPRETATIONS);
+        if ((savedInstanceState != null &&
+                savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(LOADER_ID, savedInstanceState, this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(IS_LOADING, mProgressBar
+                .getVisibility() == View.VISIBLE);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -181,19 +206,22 @@ public class DashboardViewPagerFragment extends BaseFragment
     private void setDashboards(List<Dashboard> dashboards) {
         mDashboardAdapter.swapData(dashboards);
         mTabs.removeAllTabs();
-        mTabs.setupWithViewPager(mViewPager);
+
+        if (dashboards != null && !dashboards.isEmpty()) {
+            mTabs.setupWithViewPager(mViewPager);
+        }
     }
 
     public boolean onMenuItemClicked(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_dashboard_item: {
-                DashboardItemAddFragment.newInstance(this)
+                DashboardItemAddFragment
+                        .newInstance(this)
                         .show(getChildFragmentManager());
                 return true;
             }
             case R.id.refresh: {
-                getDhisService().syncDashboardContent();
-                getDhisService().syncDashboards();
+                syncDashboards();
                 return true;
             }
             case R.id.add_dashboard: {
@@ -211,6 +239,23 @@ public class DashboardViewPagerFragment extends BaseFragment
             }
         }
         return false;
+    }
+
+    private void syncDashboards() {
+        if (isDhisServiceBound()) {
+            getDhisService().syncDashboardContent();
+            getDhisService().syncDashboards();
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Subscribe
+    @SuppressWarnings("unused")
+    public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
+        if (result.getResponseType() ==
+                NetworkJob.ResponseType.DASHBOARDS) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
     }
 
     private static class DashboardQuery implements Query<List<Dashboard>> {

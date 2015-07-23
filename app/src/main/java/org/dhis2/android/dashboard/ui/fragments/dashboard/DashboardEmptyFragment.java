@@ -96,6 +96,13 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(IS_LOADING, mProgressBar
+                .getVisibility() == View.VISIBLE);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onClick(View v) {
         toggleNavigationDrawer();
     }
