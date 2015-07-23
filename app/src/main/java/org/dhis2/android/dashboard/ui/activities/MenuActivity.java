@@ -50,6 +50,7 @@ import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationFra
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
@@ -159,6 +160,15 @@ public class MenuActivity extends BaseActivity
             mDrawerLayout.closeDrawer(Gravity.LEFT);
         }
     }
+
+    @OnClick(R.id.drawer_user_avatar)
+    @SuppressWarnings("unused")
+    public void onClick() {
+        MenuItem item = mNavigationView.getMenu()
+                .findItem(R.id.menu_account_item);
+        onNavigationItemSelected(item);
+    }
+
 
     private void attachFragmentDelayed(final Fragment fragment) {
         isNull(fragment, "Fragment must not be null");

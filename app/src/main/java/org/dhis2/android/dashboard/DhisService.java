@@ -143,11 +143,6 @@ public final class DhisService extends Service {
                 NetworkJob.ResponseType.INTERPRETATIONS) {
             @Override
             public Object execute() throws APIException {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 mDhisController.syncInterpretations();
                 return new Object();
             }
