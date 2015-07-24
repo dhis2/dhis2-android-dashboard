@@ -79,7 +79,7 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
  */
 public final class InterpretationFragment extends BaseFragment
         implements LoaderCallbacks<List<Interpretation>>, InterpretationAdapter.OnItemClickListener {
-
+    public static final String TAG = InterpretationFragment.class.getSimpleName();
     private static final int LOADER_ID = 23452435;
     private static final String IS_LOADING = "state:isLoading";
 

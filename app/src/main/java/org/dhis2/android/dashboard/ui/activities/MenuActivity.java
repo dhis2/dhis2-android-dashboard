@@ -51,7 +51,7 @@ import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.fragments.AccountFragment;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardContainerFragment;
-import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationFragment;
+import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationContainerFragment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -113,7 +113,7 @@ public class MenuActivity extends BaseActivity
                 break;
             }
             case R.id.menu_interpretations_item: {
-                attachFragmentDelayed(new InterpretationFragment());
+                attachFragmentDelayed(new InterpretationContainerFragment());
                 break;
             }
             case R.id.menu_account_item: {
