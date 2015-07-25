@@ -217,10 +217,10 @@ final class InterpretationController {
      * @param interpretation Interpretation to update.
      */
     private void updateInterpretationTimeStamp(Interpretation interpretation) {
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("fields", "[created,lastUpdated]");
+        final Map<String, String> QUERY_PARAMS = new HashMap<>();
+        QUERY_PARAMS.put("fields", "[created,lastUpdated]");
         Interpretation updatedInterpretation = mDhisApi
-                .getInterpretation(interpretation.getUId(), queryParams);
+                .getInterpretation(interpretation.getUId(), QUERY_PARAMS);
 
         // merging updated timestamp to local interpretation model
         interpretation.setCreated(updatedInterpretation.getCreated());
