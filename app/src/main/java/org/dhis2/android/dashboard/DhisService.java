@@ -115,7 +115,7 @@ public final class DhisService extends Service {
         });
     }
 
-    public void syncDashboardContent() {
+    public void syncDashboardContents() {
         JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARD_CONTENT,
                 ResourceType.DASHBOARDS_CONTENT) {
 

@@ -54,6 +54,7 @@ import org.dhis2.android.dashboard.api.models.Dashboard$Table;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent$Table;
 import org.dhis2.android.dashboard.api.models.meta.State;
+import org.dhis2.android.dashboard.api.network.SessionManager;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
@@ -115,9 +116,14 @@ public class DashboardViewPagerFragment extends BaseFragment
             }
         });
 
+        if (isDhisServiceBound() &&
+                !getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS) &&
+                !SessionManager.getInstance().isResourceTypeSynced(ResourceType.DASHBOARDS)) {
+            syncDashboards();
+        }
 
-        boolean isLoading = isDhisServiceBound() && getDhisService()
-                .isJobRunning(DhisService.SYNC_INTERPRETATIONS);
+        boolean isLoading = isDhisServiceBound() &&
+                getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS);
         if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -244,7 +250,6 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     private void syncDashboards() {
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboardContent();
             getDhisService().syncDashboards();
             mProgressBar.setVisibility(View.VISIBLE);
         }
@@ -255,6 +260,8 @@ public class DashboardViewPagerFragment extends BaseFragment
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         if (result.getResourceType() == ResourceType.DASHBOARDS) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            SessionManager.getInstance()
+                    .setResourceTypeSynced(ResourceType.DASHBOARDS);
         }
     }
 

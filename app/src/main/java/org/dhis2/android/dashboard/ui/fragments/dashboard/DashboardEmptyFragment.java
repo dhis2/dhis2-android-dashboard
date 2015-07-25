@@ -38,7 +38,9 @@ import com.squareup.otto.Subscribe;
 
 import org.dhis2.android.dashboard.DhisService;
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.job.JobExecutor;
 import org.dhis2.android.dashboard.api.job.NetworkJob;
+import org.dhis2.android.dashboard.api.network.SessionManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 
@@ -86,8 +88,15 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
             }
         });
 
-        boolean isLoading = isDhisServiceBound() && getDhisService()
-                .isJobRunning(DhisService.SYNC_DASHBOARDS);
+
+        if (isDhisServiceBound() &&
+                !getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS) &&
+                !SessionManager.getInstance().isResourceTypeSynced(ResourceType.DASHBOARDS)) {
+            syncDashboards();
+        }
+
+        boolean isLoading = isDhisServiceBound() &&
+                getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS);
         if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -125,7 +134,6 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
 
     private void syncDashboards() {
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboardContent();
             getDhisService().syncDashboards();
             mProgressBar.setVisibility(View.VISIBLE);
         }
@@ -136,6 +144,8 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         if (result.getResourceType() == ResourceType.DASHBOARDS) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            SessionManager.getInstance()
+                    .setResourceTypeSynced(ResourceType.DASHBOARDS);
         }
     }
 }
