@@ -139,6 +139,9 @@ public interface DhisApi {
     @GET("/interpretations/?paging=false")
     Map<String, List<Interpretation>> getInterpretations(@QueryMap Map<String, String> queryMap);
 
+    @GET("/interpretations/{uid}")
+    Interpretation getInterpretation(@Path("uid") String uId, @QueryMap Map<String, String> queryMap);
+
     @Headers("Content-Type: text/plain")
     @POST("/interpretations/chart/{uid}")
     Response postChartInterpretation(@Path("uid") String elementUid,

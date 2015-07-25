@@ -157,6 +157,8 @@ final class InterpretationController {
             interpretation.setUId(interpretationUid);
             interpretation.setState(State.SYNCED);
             interpretation.save();
+
+            updateInterpretationTimeStamp(interpretation);
         }
     }
 
@@ -167,6 +169,8 @@ final class InterpretationController {
         if (isSuccess(response.getStatus())) {
             interpretation.setState(State.SYNCED);
             interpretation.save();
+
+            updateInterpretationTimeStamp(interpretation);
         }
     }
 
@@ -176,6 +180,24 @@ final class InterpretationController {
         if (isSuccess(response.getStatus())) {
             interpretation.delete();
         }
+    }
+
+    /**
+     * This method gets only time stamp from server
+     * for given interpretation and updates it locally.
+     *
+     * @param interpretation Interpretation to update.
+     */
+    private void updateInterpretationTimeStamp(Interpretation interpretation) {
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("fields", "[created,lastUpdated]");
+        Interpretation updatedInterpretation = mDhisApi
+                .getInterpretation(interpretation.getUId(), queryParams);
+
+        // merging updated timestamp to local interpretation model
+        interpretation.setCreated(updatedInterpretation.getCreated());
+        interpretation.setLastUpdated(updatedInterpretation.getLastUpdated());
+        interpretation.save();
     }
 
     private void sendInterpretationCommentChanges() throws APIException {
@@ -227,6 +249,31 @@ final class InterpretationController {
                         .getValue()).getLastPathSegment();
                 comment.setUId(commentUid);
                 comment.setState(State.SYNCED);
+
+                // after posting comment, timestamp both of interpretation and comment will change.
+                // we have to reflect these changes here in order not to break data integrity during
+                // next synchronizations to server.
+                Map<String, String> queryParams = new HashMap<>();
+                queryParams.put("fields", "created,lastUpdated,comments[id,created,lastUpdated]");
+                Interpretation persistedInterpretation = comment.getInterpretation();
+                Interpretation updatedInterpretation = mDhisApi
+                        .getInterpretation(persistedInterpretation.getUId(), queryParams);
+
+                // first, update timestamp of interpretation
+                persistedInterpretation.setCreated(updatedInterpretation.getCreated());
+                persistedInterpretation.setLastUpdated(updatedInterpretation.getLastUpdated());
+                persistedInterpretation.save();
+
+                // second, find comment which we have added recently and update its timestamp
+                Map<String, InterpretationComment> updatedComments
+                        = toMap(updatedInterpretation.getComments());
+                if (updatedComments.containsKey(commentUid)) {
+                    InterpretationComment updatedComment = updatedComments.get(commentUid);
+
+                    // set timestamp here
+                    comment.setCreated(updatedComment.getCreated());
+                    comment.setLastUpdated(updatedComment.getLastUpdated());
+                }
                 comment.save();
             }
         }
@@ -249,6 +296,8 @@ final class InterpretationController {
             if (isSuccess(response.getStatus())) {
                 comment.setState(State.SYNCED);
                 comment.save();
+
+                updateInterpretationTimeStamp(comment.getInterpretation());
             }
         }
     }
@@ -260,6 +309,13 @@ final class InterpretationController {
             boolean isInterpretationSynced = (interpretation.getState().equals(State.SYNCED) ||
                     interpretation.getState().equals(State.TO_UPDATE));
 
+            // 1) If State of Interpretation is TO_DELETE,
+            //    there is no meaning to remove its comments by hand.
+            //    They will be removed automatically when interpretation is removed.
+            // 2) If State of Interpretation is TO_POST,
+            //    we cannot create comment on server, since we don't have
+            //    interpretation UUID to associate comment with.
+            // In all other State cases (TO_UPDATE, SYNCED), we can delete comments
             if (!isInterpretationSynced) {
                 return;
             }
@@ -269,6 +325,8 @@ final class InterpretationController {
 
             if (isSuccess(response.getStatus())) {
                 comment.delete();
+
+                updateInterpretationTimeStamp(comment.getInterpretation());
             }
         }
     }
