@@ -13,6 +13,7 @@ import com.squareup.otto.Subscribe;
 import org.dhis2.android.dashboard.DhisService;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.job.NetworkJob;
+import org.dhis2.android.dashboard.api.network.SessionManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 
@@ -57,8 +58,13 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
             }
         });
 
+        if (!SessionManager.getInstance()
+                .isResourceTypeSynced(ResourceType.INTERPRETATIONS)) {
+            syncInterpretations();
+        }
+
         boolean isLoading = isDhisServiceBound() && getDhisService()
-                .isJobRunning(DhisService.SYNC_DASHBOARDS);
+                .isJobRunning(DhisService.SYNC_INTERPRETATIONS);
         if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -101,6 +107,8 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            SessionManager.getInstance()
+                    .setResourceTypeSynced(ResourceType.INTERPRETATIONS);
         }
     }
 }

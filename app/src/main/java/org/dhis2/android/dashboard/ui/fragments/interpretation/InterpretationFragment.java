@@ -141,7 +141,7 @@ public final class InterpretationFragment extends BaseFragment
             }
         });
 
-        if (SessionManager.getInstance()
+        if (!SessionManager.getInstance()
                 .isResourceTypeSynced(ResourceType.INTERPRETATIONS)) {
             syncInterpretations();
         }
