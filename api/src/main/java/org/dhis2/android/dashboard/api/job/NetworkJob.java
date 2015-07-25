@@ -30,6 +30,7 @@ package org.dhis2.android.dashboard.api.job;
 
 import org.dhis2.android.dashboard.api.models.meta.ResponseHolder;
 import org.dhis2.android.dashboard.api.network.APIException;
+import org.dhis2.android.dashboard.api.network.SessionManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 
@@ -56,7 +57,10 @@ public abstract class NetworkJob<T> extends Job<ResponseHolder<T>> {
 
     @Override
     public final void onFinish(ResponseHolder<T> result) {
-        EventBusProvider.post(new NetworkJobResult<>(mResourceType, result));
+        SessionManager.getInstance()
+                .setResourceTypeSynced(mResourceType);
+        EventBusProvider.post(
+                new NetworkJobResult<>(mResourceType, result));
     }
 
     public static class NetworkJobResult<Type> {

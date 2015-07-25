@@ -260,8 +260,6 @@ public class DashboardViewPagerFragment extends BaseFragment
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         if (result.getResourceType() == ResourceType.DASHBOARDS) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            SessionManager.getInstance()
-                    .setResourceTypeSynced(ResourceType.DASHBOARDS);
         }
     }
 

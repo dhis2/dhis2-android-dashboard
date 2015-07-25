@@ -267,8 +267,6 @@ public final class InterpretationFragment extends BaseFragment
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            SessionManager.getInstance()
-                    .setResourceTypeSynced(ResourceType.INTERPRETATIONS);
         }
     }
 

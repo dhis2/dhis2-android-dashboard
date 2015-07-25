@@ -38,7 +38,6 @@ import com.squareup.otto.Subscribe;
 
 import org.dhis2.android.dashboard.DhisService;
 import org.dhis2.android.dashboard.R;
-import org.dhis2.android.dashboard.api.job.JobExecutor;
 import org.dhis2.android.dashboard.api.job.NetworkJob;
 import org.dhis2.android.dashboard.api.network.SessionManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
@@ -144,8 +143,6 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         if (result.getResourceType() == ResourceType.DASHBOARDS) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            SessionManager.getInstance()
-                    .setResourceTypeSynced(ResourceType.DASHBOARDS);
         }
     }
 }
