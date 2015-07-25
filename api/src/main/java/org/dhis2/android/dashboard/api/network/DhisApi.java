@@ -71,6 +71,9 @@ public interface DhisApi {
     @GET("/dashboards?paging=false")
     Map<String, List<Dashboard>> getDashboards(@QueryMap Map<String, String> queryMap);
 
+    @GET("/dashboards/{uid}")
+    Dashboard getDashboard(@Path("uid") String uId, @QueryMap Map<String, String> queryMap);
+
     @POST("/dashboards/")
     Response postDashboard(@Body Dashboard dashboard);
 
@@ -83,11 +86,13 @@ public interface DhisApi {
     @GET("/dashboardItems?paging=false")
     Map<String, List<DashboardItem>> getDashboardItems(@QueryMap Map<String, String> queryMap);
 
+    @GET("/dashboardItems/{uid}")
+    DashboardItem getDashboardItem(@Path("uid") String uId, @QueryMap Map<String, String> queryMap);
+
     @POST("/dashboards/{dashboardUId}/items/content")
     Response postDashboardItem(@Path("dashboardUId") String dashboardUId,
                                @Query("type") String type,
-                               @Query("id") String uid,
-                               @Body String emptyBody);
+                               @Query("id") String uid);
 
     @DELETE("/dashboards/{dashboardUId}/items/{itemUId}")
     Response deleteDashboardItem(@Path("dashboardUId") String dashboardUId,

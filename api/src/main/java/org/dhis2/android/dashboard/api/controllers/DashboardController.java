@@ -363,6 +363,8 @@ final class DashboardController {
             dashboard.setUId(dashboardId);
             dashboard.setState(State.SYNCED);
             dashboard.save();
+
+            updateDashboardTimeStamp(dashboard);
         }
     }
 
@@ -372,6 +374,8 @@ final class DashboardController {
         if (isSuccess(response.getStatus())) {
             dashboard.setState(State.SYNCED);
             dashboard.save();
+
+            updateDashboardTimeStamp(dashboard);
         }
     }
 
@@ -388,7 +392,8 @@ final class DashboardController {
     private void sendDashboardItemChanges() throws RetrofitError {
         List<DashboardItem> dashboardItems = new Select()
                 .from(DashboardItem.class)
-                .where(Condition.column(DashboardItem$Table.STATE).isNot(State.SYNCED))
+                .where(Condition.column(DashboardItem$Table
+                        .STATE).isNot(State.SYNCED))
                 .orderBy(true, DashboardItem$Table.ID)
                 .queryList();
 
@@ -434,7 +439,7 @@ final class DashboardController {
 
             DashboardElement element = elements.get(0);
             Response response = mDhisApi.postDashboardItem(dashboard.getUId(),
-                    dashboardItem.getType(), element.getUId(), "");
+                    dashboardItem.getType(), element.getUId());
 
             if (isSuccess(response.getStatus())) {
                 Header locationHeader = findLocationHeader(response.getHeaders());
@@ -446,6 +451,9 @@ final class DashboardController {
 
                 element.setState(State.SYNCED);
                 element.save();
+
+                // we have to update timestamp of dashboard after adding new item.
+                updateDashboardTimeStamp(dashboardItem.getDashboard());
             }
         }
     }
@@ -465,6 +473,9 @@ final class DashboardController {
                     dashboardItem.getUId());
             if (isSuccess(response.getStatus())) {
                 dashboardItem.delete();
+
+                // we have to update timestamp of dashboard after adding new item.
+                updateDashboardTimeStamp(dashboardItem.getDashboard());
             }
         }
     }
@@ -514,11 +525,13 @@ final class DashboardController {
                 item.getState().equals(State.TO_UPDATE);
         if (isDashboardSynced && isItemSynced) {
             Response response = mDhisApi.postDashboardItem(
-                    dashboard.getUId(), item.getType(), element.getUId(), "");
+                    dashboard.getUId(), item.getType(), element.getUId());
 
             if (isSuccess(response.getStatus())) {
                 element.setState(State.SYNCED);
                 element.save();
+
+                updateDashboardTimeStamp(item.getDashboard());
             }
         }
     }
@@ -546,8 +559,25 @@ final class DashboardController {
 
             if (isSuccess(response.getStatus())) {
                 element.delete();
+
+                // removal of elements changes
+                // dashboard's timestamp on server. In order to stay in sync,
+                // we need to get dashboard from server.
+                updateDashboardTimeStamp(item.getDashboard());
             }
         }
+    }
+
+    private void updateDashboardTimeStamp(Dashboard dashboard) throws RetrofitError {
+        final Map<String, String> QUERY_PARAMS = new HashMap<>();
+        QUERY_PARAMS.put("fields", "created,lastUpdated");
+        Dashboard updatedDashboard = mDhisApi
+                .getDashboard(dashboard.getUId(), QUERY_PARAMS);
+
+        // merging updated timestamp to local dashboard model
+        dashboard.setCreated(updatedDashboard.getCreated());
+        dashboard.setLastUpdated(updatedDashboard.getLastUpdated());
+        dashboard.save();
     }
 
     public void syncDashboardContent() throws APIException {
