@@ -41,7 +41,7 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.models.meta.DbDhis;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager.ResourceType;
+import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -116,7 +116,7 @@ public final class Interpretation extends BaseIdentifiableObject {
      */
     public static InterpretationComment addComment(Interpretation interpretation, User user, String text) {
         DateTime lastUpdated = DateTimeManager.getInstance()
-                .getLastUpdated(DateTimeManager.ResourceType.INTERPRETATIONS);
+                .getLastUpdated(ResourceType.INTERPRETATIONS);
 
         InterpretationComment comment = new InterpretationComment();
         comment.setCreated(lastUpdated);

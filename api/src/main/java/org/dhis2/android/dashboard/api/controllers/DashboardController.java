@@ -47,7 +47,7 @@ import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager.ResourceType;
+import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.dhis2.android.dashboard.api.utils.DbUtils;
 import org.joda.time.DateTime;
 
@@ -552,7 +552,7 @@ final class DashboardController {
 
     public void syncDashboardContent() throws APIException {
         DateTime lastUpdated = DateTimeManager.getInstance()
-                .getLastUpdated(ResourceType.CONTENT);
+                .getLastUpdated(ResourceType.DASHBOARDS_CONTENT);
         DateTime serverDateTime = mDhisApi
                 .getSystemInfo().getServerDate();
 
@@ -565,7 +565,7 @@ final class DashboardController {
                 .from(DashboardItemContent.class).queryList(), dashboardItemContent));
         DbUtils.applyBatch(operations);
         DateTimeManager.getInstance()
-                .setLastUpdated(ResourceType.CONTENT, serverDateTime);
+                .setLastUpdated(ResourceType.DASHBOARDS_CONTENT, serverDateTime);
     }
 
     private List<DashboardItemContent> updateApiResources(DateTime lastUpdated) throws APIException {

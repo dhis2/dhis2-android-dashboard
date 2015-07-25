@@ -74,7 +74,4 @@ public final class DateTimeManager {
         mPrefs.edit().remove(key).commit();
     }
 
-    public enum ResourceType {
-        CONTENT, DASHBOARDS, INTERPRETATIONS,
-    }
 }

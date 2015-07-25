@@ -42,6 +42,7 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.models.meta.DbDhis;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
+import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -122,7 +123,7 @@ public final class DashboardItem extends BaseIdentifiableObject {
     public static DashboardItem createDashboardItem(Dashboard dashboard,
                                                     DashboardItemContent content) {
         DateTime lastUpdatedDateTime = DateTimeManager.getInstance()
-                .getLastUpdated(DateTimeManager.ResourceType.DASHBOARDS);
+                .getLastUpdated(ResourceType.DASHBOARDS);
 
         DashboardItem item = new DashboardItem();
         item.setCreated(lastUpdatedDateTime);

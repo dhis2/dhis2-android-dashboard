@@ -47,7 +47,7 @@ import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager.ResourceType;
+import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.dhis2.android.dashboard.api.utils.DbUtils;
 import org.joda.time.DateTime;
 
