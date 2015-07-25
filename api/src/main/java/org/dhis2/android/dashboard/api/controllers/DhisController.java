@@ -40,7 +40,7 @@ import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
 import org.dhis2.android.dashboard.api.network.RepoManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
+import org.dhis2.android.dashboard.api.persistence.preferences.LastUpdatedManager;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
@@ -51,7 +51,7 @@ public class DhisController {
 
     private DhisController(Context context) {
         FlowManager.init(context);
-        SessionManager.init(context);
+        LastUpdatedManager.init(context);
         DateTimeManager.init(context);
 
         // fetch meta data from disk
@@ -100,7 +100,7 @@ public class DhisController {
     }
 
     public void invalidateSession() {
-        SessionManager.getInstance().invalidate();
+        LastUpdatedManager.getInstance().invalidate();
 
         // fetch meta data from disk
         readSession();
@@ -117,7 +117,7 @@ public class DhisController {
     }
 
     private void readSession() {
-        mSession = SessionManager.getInstance().get();
+        mSession = LastUpdatedManager.getInstance().get();
         mDhisApi = null;
 
         if (isUserLoggedIn()) {

@@ -38,27 +38,27 @@ import org.dhis2.android.dashboard.api.models.meta.Session;
 
 import static org.dhis2.android.dashboard.api.utils.Preconditions.isNull;
 
-public final class SessionManager {
+public final class LastUpdatedManager {
     private static final String PREFERENCES = "preferences:Session";
     private static final String SERVER_URI = "key:Uri";
     private static final String USERNAME = "key:username";
     private static final String PASSWORD = "key:password";
 
-    private static SessionManager mSessionManager;
+    private static LastUpdatedManager mLastUpdatedManager;
     private SharedPreferences mPrefs;
 
-    private SessionManager(Context context) {
+    private LastUpdatedManager(Context context) {
         mPrefs = context.getSharedPreferences(PREFERENCES,
                 Context.MODE_PRIVATE);
     }
 
     public static void init(Context context) {
         isNull(context, "Context object must not be null");
-        mSessionManager = new SessionManager(context);
+        mLastUpdatedManager = new LastUpdatedManager(context);
     }
 
-    public static SessionManager getInstance() {
-        return mSessionManager;
+    public static LastUpdatedManager getInstance() {
+        return mLastUpdatedManager;
     }
 
     public Session get() {

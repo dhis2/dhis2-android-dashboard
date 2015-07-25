@@ -43,7 +43,7 @@ import org.dhis2.android.dashboard.api.models.meta.Session;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
-import org.dhis2.android.dashboard.api.persistence.preferences.SessionManager;
+import org.dhis2.android.dashboard.api.persistence.preferences.LastUpdatedManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,7 +72,7 @@ final class UserController {
 
         /* save user credentials */
         Session session = new Session(serverUrl, credentials);
-        SessionManager.getInstance().put(session);
+        LastUpdatedManager.getInstance().put(session);
 
         /* save user account details */
         userAccount.save();
@@ -81,7 +81,7 @@ final class UserController {
     }
 
     public void logOut() {
-        SessionManager.getInstance().delete();
+        LastUpdatedManager.getInstance().delete();
         DateTimeManager.getInstance().delete();
 
         // remove data
