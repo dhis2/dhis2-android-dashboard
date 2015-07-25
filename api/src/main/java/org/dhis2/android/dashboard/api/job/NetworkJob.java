@@ -30,15 +30,16 @@ package org.dhis2.android.dashboard.api.job;
 
 import org.dhis2.android.dashboard.api.models.meta.ResponseHolder;
 import org.dhis2.android.dashboard.api.network.APIException;
+import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 
 public abstract class NetworkJob<T> extends Job<ResponseHolder<T>> {
-    private final ResponseType mResponseType;
+    private final ResourceType mResourceType;
 
-    public NetworkJob(int jobId, ResponseType responseType) {
+    public NetworkJob(int jobId, ResourceType responseType) {
         super(jobId);
 
-        mResponseType = responseType;
+        mResourceType = responseType;
     }
 
     @Override
@@ -55,30 +56,26 @@ public abstract class NetworkJob<T> extends Job<ResponseHolder<T>> {
 
     @Override
     public final void onFinish(ResponseHolder<T> result) {
-        EventBusProvider.post(new NetworkJobResult<>(mResponseType, result));
+        EventBusProvider.post(new NetworkJobResult<>(mResourceType, result));
     }
 
     public static class NetworkJobResult<Type> {
-        private final ResponseType mResponseType;
+        private final ResourceType mResourceType;
         private final ResponseHolder<Type> mResponseHolder;
 
-        public NetworkJobResult(ResponseType responseType,
+        public NetworkJobResult(ResourceType resourceType,
                                 ResponseHolder<Type> responseHolder) {
-            mResponseType = responseType;
+            mResourceType = resourceType;
             mResponseHolder = responseHolder;
         }
 
-        public ResponseType getResponseType() {
-            return mResponseType;
+        public ResourceType getResourceType() {
+            return mResourceType;
         }
 
         public ResponseHolder<Type> getResponseHolder() {
             return mResponseHolder;
         }
-    }
-
-    public enum ResponseType {
-        INTERPRETATIONS, DASHBOARDS, USERS, DASHBOARD_CONTENT,
     }
 
     public abstract T execute() throws APIException;

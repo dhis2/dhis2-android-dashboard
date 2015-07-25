@@ -57,9 +57,11 @@ import org.dhis2.android.dashboard.api.models.InterpretationComment$Table;
 import org.dhis2.android.dashboard.api.models.InterpretationElement;
 import org.dhis2.android.dashboard.api.models.InterpretationElement$Table;
 import org.dhis2.android.dashboard.api.models.meta.State;
+import org.dhis2.android.dashboard.api.network.SessionManager;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader.TrackedTable;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
+import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.dhis2.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.dhis2.android.dashboard.ui.activities.InterpretationCommentsActivity;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationAdapter;
@@ -139,9 +141,8 @@ public final class InterpretationFragment extends BaseFragment
             }
         });
 
-        // if savedInstanceState is null, it means user
-        // got to interpretations page first time.
-        if (savedInstanceState == null) {
+        if (SessionManager.getInstance()
+                .isResourceTypeSynced(ResourceType.INTERPRETATIONS)) {
             syncInterpretations();
         }
 
@@ -263,9 +264,10 @@ public final class InterpretationFragment extends BaseFragment
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
-        if (result.getResponseType() ==
-                NetworkJob.ResponseType.INTERPRETATIONS) {
+        if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            SessionManager.getInstance()
+                    .setResourceTypeSynced(ResourceType.INTERPRETATIONS);
         }
     }
 

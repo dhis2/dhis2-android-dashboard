@@ -45,6 +45,7 @@ import org.dhis2.android.dashboard.api.job.NetworkJob;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.models.meta.ResponseHolder;
+import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -133,7 +134,7 @@ public class LoginActivity extends BaseActivity {
     @Subscribe
     @SuppressWarnings("unused")
     public void onResultReceived(NetworkJob.NetworkJobResult<UserAccount> jobResult) {
-        if (NetworkJob.ResponseType.USERS.equals(jobResult.getResponseType())) {
+        if (ResourceType.USERS.equals(jobResult.getResourceType())) {
             ResponseHolder<UserAccount> responseHolder = jobResult.getResponseHolder();
 
             if (responseHolder.getApiException() == null) {

@@ -40,6 +40,7 @@ import org.dhis2.android.dashboard.api.job.NetworkJob;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.network.APIException;
+import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -79,7 +80,7 @@ public final class DhisService extends Service {
 
     public void logInUser(final HttpUrl serverUrl, final Credentials credentials) {
         JobExecutor.enqueueJob(new NetworkJob<UserAccount>(LOG_IN,
-                NetworkJob.ResponseType.USERS) {
+                ResourceType.USERS) {
 
             @Override
             public UserAccount execute() throws APIException {
@@ -100,7 +101,7 @@ public final class DhisService extends Service {
 
     public void confirmUser(final Credentials credentials) {
         JobExecutor.enqueueJob(new NetworkJob<UserAccount>(CONFIRM_USER,
-                NetworkJob.ResponseType.USERS) {
+                ResourceType.USERS) {
 
             @Override
             public UserAccount execute() throws APIException {
@@ -116,7 +117,7 @@ public final class DhisService extends Service {
 
     public void syncDashboardContent() {
         JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARD_CONTENT,
-                NetworkJob.ResponseType.DASHBOARD_CONTENT) {
+                ResourceType.DASHBOARDS_CONTENT) {
 
             @Override
             public Object execute() throws APIException {
@@ -128,7 +129,7 @@ public final class DhisService extends Service {
 
     public void syncDashboards() {
         JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS,
-                NetworkJob.ResponseType.DASHBOARDS) {
+                ResourceType.DASHBOARDS) {
 
             @Override
             public Object execute() throws APIException {
@@ -140,7 +141,7 @@ public final class DhisService extends Service {
 
     public void syncInterpretations() {
         JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_INTERPRETATIONS,
-                NetworkJob.ResponseType.INTERPRETATIONS) {
+                ResourceType.INTERPRETATIONS) {
             @Override
             public Object execute() throws APIException {
                 mDhisController.syncInterpretations();

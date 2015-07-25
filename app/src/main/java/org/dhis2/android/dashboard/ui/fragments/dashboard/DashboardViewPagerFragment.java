@@ -56,6 +56,7 @@ import org.dhis2.android.dashboard.api.models.DashboardItemContent$Table;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
+import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardItemAddFragment.OnOptionSelectedListener;
@@ -252,8 +253,7 @@ public class DashboardViewPagerFragment extends BaseFragment
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
-        if (result.getResponseType() ==
-                NetworkJob.ResponseType.DASHBOARDS) {
+        if (result.getResourceType() == ResourceType.DASHBOARDS) {
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }

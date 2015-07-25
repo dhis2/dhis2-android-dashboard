@@ -13,6 +13,7 @@ import com.squareup.otto.Subscribe;
 import org.dhis2.android.dashboard.DhisService;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.job.NetworkJob;
+import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 
 import butterknife.Bind;
@@ -98,8 +99,7 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
-        if (result.getResponseType() ==
-                NetworkJob.ResponseType.INTERPRETATIONS) {
+        if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }
