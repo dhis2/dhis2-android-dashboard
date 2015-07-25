@@ -128,37 +128,65 @@ final class InterpretationController {
     }
 
     public void postInterpretation(Interpretation interpretation) throws APIException {
-        Response response;
+        try {
+            Response response;
 
-        switch (interpretation.getType()) {
-            case Interpretation.TYPE_CHART: {
-                response = mDhisApi.postChartInterpretation(
-                        interpretation.getChart().getUId(), new TypedString(interpretation.getText()));
-                break;
+            switch (interpretation.getType()) {
+                case Interpretation.TYPE_CHART: {
+                    response = mDhisApi.postChartInterpretation(
+                            interpretation.getChart().getUId(), new TypedString(interpretation.getText()));
+                    break;
+                }
+                case Interpretation.TYPE_MAP: {
+                    response = mDhisApi.postMapInterpretation(
+                            interpretation.getMap().getUId(), new TypedString(interpretation.getText()));
+                    break;
+                }
+                case Interpretation.TYPE_REPORT_TABLE: {
+                    response = mDhisApi.postReportTableInterpretation(
+                            interpretation.getReportTable().getUId(), new TypedString(interpretation.getText()));
+                    break;
+                }
+                default:
+                    throw new IllegalArgumentException("Unsupported interpretation type");
             }
-            case Interpretation.TYPE_MAP: {
-                response = mDhisApi.postMapInterpretation(
-                        interpretation.getMap().getUId(), new TypedString(interpretation.getText()));
-                break;
-            }
-            case Interpretation.TYPE_REPORT_TABLE: {
-                response = mDhisApi.postReportTableInterpretation(
-                        interpretation.getReportTable().getUId(), new TypedString(interpretation.getText()));
-                break;
-            }
-            default:
-                throw new IllegalArgumentException("Unsupported interpretation type");
-        }
 
-        if (isSuccess(response.getStatus())) {
-            Header header = findLocationHeader(response.getHeaders());
-            String interpretationUid = Uri.parse(header
-                    .getValue()).getLastPathSegment();
-            interpretation.setUId(interpretationUid);
-            interpretation.setState(State.SYNCED);
-            interpretation.save();
+            if (isSuccess(response.getStatus())) {
+                Header header = findLocationHeader(response.getHeaders());
+                String interpretationUid = Uri.parse(header
+                        .getValue()).getLastPathSegment();
+                interpretation.setUId(interpretationUid);
+                interpretation.setState(State.SYNCED);
+                interpretation.save();
 
-            updateInterpretationTimeStamp(interpretation);
+                updateInterpretationTimeStamp(interpretation);
+            }
+        } catch (APIException apiException) {
+            switch (apiException.getKind()) {
+                case HTTP: {
+                    int status = apiException.getResponse().getStatus();
+
+                    if (status >= 400 && status < 500) {
+
+                    } else if (status >= 500) {
+                        // server side error
+                        // implement possibility to show error status
+                    }
+
+                    break;
+                }
+                case NETWORK: {
+                    // retry later
+                    break;
+                }
+                case CONVERSION:
+                case UNEXPECTED: {
+                    // implement possibility to show error status
+                    // in most cases, this types of errors
+                    // won't be resolved automatically
+                    break;
+                }
+            }
         }
     }
 
