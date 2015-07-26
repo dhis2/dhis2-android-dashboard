@@ -53,10 +53,6 @@ public class NetworkUtils {
         }
     }
 
-    public static boolean isSuccess(int status) {
-        return status >= 200 && status < 300;
-    }
-
     public static Header findLocationHeader(List<Header> headers) {
         final String LOCATION = "location";
         if (headers != null && !headers.isEmpty()) {
