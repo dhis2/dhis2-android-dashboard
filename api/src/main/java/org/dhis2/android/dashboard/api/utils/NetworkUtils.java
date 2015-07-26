@@ -144,7 +144,9 @@ public class NetworkUtils {
                 // TODO Implement mechanism for handling HTTP errors (allow user to resolve it).
                 // implement possibility to show error status. In most cases, this types of errors
                 // won't be resolved automatically.
-                break;
+
+                // for now, just rethrow exception.
+                throw apiException;
             }
         }
     }
