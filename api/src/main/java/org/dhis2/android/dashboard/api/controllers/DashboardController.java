@@ -58,7 +58,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import retrofit.RetrofitError;
 import retrofit.client.Header;
 import retrofit.client.Response;
 
@@ -66,7 +65,7 @@ import static org.dhis2.android.dashboard.api.models.BaseIdentifiableObject.merg
 import static org.dhis2.android.dashboard.api.models.BaseIdentifiableObject.toListIds;
 import static org.dhis2.android.dashboard.api.models.BaseIdentifiableObject.toMap;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
-import static org.dhis2.android.dashboard.api.utils.NetworkUtils.isSuccess;
+import static org.dhis2.android.dashboard.api.utils.NetworkUtils.handleApiException;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
 final class DashboardController {
@@ -127,7 +126,7 @@ final class DashboardController {
         sendLocalChanges();
     }
 
-    private void getDashboardDataFromServer() throws RetrofitError {
+    private void getDashboardDataFromServer() throws APIException {
         DateTime lastUpdated = DateTimeManager.getInstance()
                 .getLastUpdated(ResourceType.DASHBOARDS);
         DateTime serverDateTime = mDhisApi.getSystemInfo()
@@ -146,7 +145,7 @@ final class DashboardController {
                 .setLastUpdated(ResourceType.DASHBOARDS, serverDateTime);
     }
 
-    private List<Dashboard> updateDashboards(DateTime lastUpdated) throws RetrofitError {
+    private List<Dashboard> updateDashboards(DateTime lastUpdated) throws APIException {
         final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
         final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
         final String BASE = "id,created,lastUpdated,name,displayName,access";
@@ -209,7 +208,7 @@ final class DashboardController {
         return merge(actualDashboards, updatedDashboards, persistedDashboards);
     }
 
-    private List<DashboardItem> updateDashboardItems(List<Dashboard> dashboards, DateTime lastUpdated) throws RetrofitError {
+    private List<DashboardItem> updateDashboardItems(List<Dashboard> dashboards, DateTime lastUpdated) throws APIException {
         final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
         QUERY_MAP_BASIC.put("fields", "id,created,lastUpdated,shape");
 
@@ -311,13 +310,13 @@ final class DashboardController {
         return dbOperations;
     }
 
-    private void sendLocalChanges() throws RetrofitError {
+    private void sendLocalChanges() throws APIException {
         sendDashboardChanges();
         sendDashboardItemChanges();
         sendDashboardElements();
     }
 
-    private void sendDashboardChanges() throws RetrofitError {
+    private void sendDashboardChanges() throws APIException {
         // we need to sort dashboards in natural order.
         // In order they were inserted in local database.
         List<Dashboard> dashboards = new Select()
@@ -349,11 +348,9 @@ final class DashboardController {
         }
     }
 
-    private void postDashboard(Dashboard dashboard) throws RetrofitError {
-        Response response = mDhisApi.postDashboard(dashboard);
-
-        // we need to make sure that server has successfully created new dashboard
-        if (isSuccess(response.getStatus())) {
+    private void postDashboard(Dashboard dashboard) throws APIException {
+        try {
+            Response response = mDhisApi.postDashboard(dashboard);
             // also, we will need to find UUID of newly created dashboard,
             // which is contained inside of HTTP Location header
             Header header = findLocationHeader(response.getHeaders());
@@ -365,31 +362,34 @@ final class DashboardController {
             dashboard.save();
 
             updateDashboardTimeStamp(dashboard);
+        } catch (APIException apiException) {
+            handleApiException(apiException);
         }
     }
 
-    private void putDashboard(Dashboard dashboard) throws RetrofitError {
-        Response response = mDhisApi.putDashboard(dashboard.getUId(), dashboard);
+    private void putDashboard(Dashboard dashboard) throws APIException {
+        try {
+            mDhisApi.putDashboard(dashboard.getUId(), dashboard);
 
-        if (isSuccess(response.getStatus())) {
             dashboard.setState(State.SYNCED);
             dashboard.save();
 
             updateDashboardTimeStamp(dashboard);
+        } catch (APIException apiException) {
+            handleApiException(apiException, dashboard);
         }
     }
 
-    private void deleteDashboard(Dashboard dashboard) throws RetrofitError {
-        Response response = mDhisApi.deleteDashboard(dashboard.getUId());
-
-        // if the network operation is performed successfully,
-        // we can remove local copy of dashboard
-        if (isSuccess(response.getStatus())) {
+    private void deleteDashboard(Dashboard dashboard) throws APIException {
+        try {
+            mDhisApi.deleteDashboard(dashboard.getUId());
             dashboard.delete();
+        } catch (APIException apiException) {
+            handleApiException(apiException, dashboard);
         }
     }
 
-    private void sendDashboardItemChanges() throws RetrofitError {
+    private void sendDashboardItemChanges() throws APIException {
         List<DashboardItem> dashboardItems = new Select()
                 .from(DashboardItem.class)
                 .where(Condition.column(DashboardItem$Table
@@ -415,7 +415,7 @@ final class DashboardController {
         }
     }
 
-    private void postDashboardItem(DashboardItem dashboardItem) throws RetrofitError {
+    private void postDashboardItem(DashboardItem dashboardItem) throws APIException {
         Dashboard dashboard = dashboardItem.getDashboard();
 
         if (dashboard != null && dashboard.getState() != null) {
@@ -437,11 +437,11 @@ final class DashboardController {
                 return;
             }
 
-            DashboardElement element = elements.get(0);
-            Response response = mDhisApi.postDashboardItem(dashboard.getUId(),
-                    dashboardItem.getType(), element.getUId());
+            try {
+                DashboardElement element = elements.get(0);
+                Response response = mDhisApi.postDashboardItem(dashboard.getUId(),
+                        dashboardItem.getType(), element.getUId());
 
-            if (isSuccess(response.getStatus())) {
                 Header locationHeader = findLocationHeader(response.getHeaders());
                 String dashboardItemUId = Uri.parse(locationHeader
                         .getValue()).getLastPathSegment();
@@ -454,11 +454,13 @@ final class DashboardController {
 
                 // we have to update timestamp of dashboard after adding new item.
                 updateDashboardTimeStamp(dashboardItem.getDashboard());
+            } catch (APIException apiException) {
+                handleApiException(apiException, dashboardItem);
             }
         }
     }
 
-    private void deleteDashboardItem(DashboardItem dashboardItem) throws RetrofitError {
+    private void deleteDashboardItem(DashboardItem dashboardItem) throws APIException {
         Dashboard dashboard = dashboardItem.getDashboard();
 
         if (dashboard != null && dashboard.getState() != null) {
@@ -469,18 +471,20 @@ final class DashboardController {
                 return;
             }
 
-            Response response = mDhisApi.deleteDashboardItem(dashboard.getUId(),
-                    dashboardItem.getUId());
-            if (isSuccess(response.getStatus())) {
+            try {
+                mDhisApi.deleteDashboardItem(dashboard.getUId(),
+                        dashboardItem.getUId());
                 dashboardItem.delete();
 
                 // we have to update timestamp of dashboard after adding new item.
                 updateDashboardTimeStamp(dashboardItem.getDashboard());
+            } catch (APIException apiException) {
+                handleApiException(apiException, dashboardItem);
             }
         }
     }
 
-    private void sendDashboardElements() throws RetrofitError {
+    private void sendDashboardElements() throws APIException {
         List<DashboardElement> elements = new Select()
                 .from(DashboardElement.class)
                 .where(Condition.column(DashboardElement$Table
@@ -506,7 +510,7 @@ final class DashboardController {
         }
     }
 
-    private void postDashboardElement(DashboardElement element) throws RetrofitError {
+    private void postDashboardElement(DashboardElement element) throws APIException {
         DashboardItem item = element.getDashboardItem();
         if (item == null || item.getState() == null) {
             return;
@@ -524,19 +528,21 @@ final class DashboardController {
         boolean isItemSynced = item.getState().equals(State.SYNCED) ||
                 item.getState().equals(State.TO_UPDATE);
         if (isDashboardSynced && isItemSynced) {
-            Response response = mDhisApi.postDashboardItem(
-                    dashboard.getUId(), item.getType(), element.getUId());
 
-            if (isSuccess(response.getStatus())) {
+            try {
+                mDhisApi.postDashboardItem(dashboard.getUId(),
+                        item.getType(), element.getUId());
                 element.setState(State.SYNCED);
                 element.save();
 
                 updateDashboardTimeStamp(item.getDashboard());
+            } catch (APIException apiException) {
+                handleApiException(apiException, element);
             }
         }
     }
 
-    private void deleteDashboardElement(DashboardElement element) throws RetrofitError {
+    private void deleteDashboardElement(DashboardElement element) throws APIException {
         DashboardItem item = element.getDashboardItem();
         if (item == null || item.getState() == null) {
             return;
@@ -554,30 +560,36 @@ final class DashboardController {
         boolean isItemSynced = item.getState().equals(State.SYNCED) ||
                 item.getState().equals(State.TO_UPDATE);
         if (isDashboardSynced && isItemSynced) {
-            Response response = mDhisApi.deleteDashboardItemContent(
-                    dashboard.getUId(), item.getUId(), element.getUId());
+            try {
+                mDhisApi.deleteDashboardItemContent(dashboard.getUId(),
+                        item.getUId(), element.getUId());
 
-            if (isSuccess(response.getStatus())) {
                 element.delete();
 
                 // removal of elements changes
                 // dashboard's timestamp on server. In order to stay in sync,
                 // we need to get dashboard from server.
                 updateDashboardTimeStamp(item.getDashboard());
+            } catch (APIException apiException) {
+                handleApiException(apiException, element);
             }
         }
     }
 
-    private void updateDashboardTimeStamp(Dashboard dashboard) throws RetrofitError {
-        final Map<String, String> QUERY_PARAMS = new HashMap<>();
-        QUERY_PARAMS.put("fields", "created,lastUpdated");
-        Dashboard updatedDashboard = mDhisApi
-                .getDashboard(dashboard.getUId(), QUERY_PARAMS);
+    private void updateDashboardTimeStamp(Dashboard dashboard) throws APIException {
+        try {
+            final Map<String, String> QUERY_PARAMS = new HashMap<>();
+            QUERY_PARAMS.put("fields", "created,lastUpdated");
+            Dashboard updatedDashboard = mDhisApi
+                    .getDashboard(dashboard.getUId(), QUERY_PARAMS);
 
-        // merging updated timestamp to local dashboard model
-        dashboard.setCreated(updatedDashboard.getCreated());
-        dashboard.setLastUpdated(updatedDashboard.getLastUpdated());
-        dashboard.save();
+            // merging updated timestamp to local dashboard model
+            dashboard.setCreated(updatedDashboard.getCreated());
+            dashboard.setLastUpdated(updatedDashboard.getLastUpdated());
+            dashboard.save();
+        } catch (APIException apiException) {
+            handleApiException(apiException);
+        }
     }
 
     public void syncDashboardContent() throws APIException {
