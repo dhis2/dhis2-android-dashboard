@@ -65,7 +65,7 @@ import retrofit.mime.TypedString;
 import static org.dhis2.android.dashboard.api.models.BaseIdentifiableObject.merge;
 import static org.dhis2.android.dashboard.api.models.BaseIdentifiableObject.toMap;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
-import static org.dhis2.android.dashboard.api.utils.NetworkUtils.isSuccess;
+import static org.dhis2.android.dashboard.api.utils.NetworkUtils.handleApiException;
 import static org.dhis2.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
 /**
@@ -151,81 +151,40 @@ final class InterpretationController {
                     throw new IllegalArgumentException("Unsupported interpretation type");
             }
 
-            if (isSuccess(response.getStatus())) {
-                Header header = findLocationHeader(response.getHeaders());
-                String interpretationUid = Uri.parse(header
-                        .getValue()).getLastPathSegment();
-                interpretation.setUId(interpretationUid);
-                interpretation.setState(State.SYNCED);
-                interpretation.save();
-
-                updateInterpretationTimeStamp(interpretation);
-            }
-        } catch (APIException apiException) {
-            switch (apiException.getKind()) {
-                case HTTP: {
-                    int status = apiException.getResponse().getStatus();
-
-                    if (status >= 400 && status < 500) {
-
-                    } else if (status >= 500) {
-                        // server side error
-                        // implement possibility to show error status
-                    }
-
-                    break;
-                }
-                case NETWORK: {
-                    // retry later
-                    break;
-                }
-                case CONVERSION:
-                case UNEXPECTED: {
-                    // implement possibility to show error status
-                    // in most cases, this types of errors
-                    // won't be resolved automatically
-                    break;
-                }
-            }
-        }
-    }
-
-    public void putInterpretation(Interpretation interpretation) throws APIException {
-        Response response = mDhisApi.putInterpretationText(
-                interpretation.getUId(), new TypedString(interpretation.getText()));
-
-        if (isSuccess(response.getStatus())) {
+            Header header = findLocationHeader(response.getHeaders());
+            String interpretationUid = Uri.parse(header
+                    .getValue()).getLastPathSegment();
+            interpretation.setUId(interpretationUid);
             interpretation.setState(State.SYNCED);
             interpretation.save();
 
             updateInterpretationTimeStamp(interpretation);
+
+        } catch (APIException apiException) {
+            handleApiException(apiException, interpretation);
+        }
+    }
+
+    public void putInterpretation(Interpretation interpretation) throws APIException {
+        try {
+            mDhisApi.putInterpretationText(interpretation.getUId(),
+                    new TypedString(interpretation.getText()));
+            interpretation.setState(State.SYNCED);
+            interpretation.save();
+
+            updateInterpretationTimeStamp(interpretation);
+        } catch (APIException apiException) {
+            handleApiException(apiException, interpretation);
         }
     }
 
     public void deleteInterpretation(Interpretation interpretation) throws APIException {
-        Response response = mDhisApi.deleteInterpretation(interpretation.getUId());
-
-        if (isSuccess(response.getStatus())) {
+        try {
+            mDhisApi.deleteInterpretation(interpretation.getUId());
             interpretation.delete();
+        } catch (APIException apiException) {
+            handleApiException(apiException, interpretation);
         }
-    }
-
-    /**
-     * This method gets only time stamp from server
-     * for given interpretation and updates it locally.
-     *
-     * @param interpretation Interpretation to update.
-     */
-    private void updateInterpretationTimeStamp(Interpretation interpretation) {
-        final Map<String, String> QUERY_PARAMS = new HashMap<>();
-        QUERY_PARAMS.put("fields", "[created,lastUpdated]");
-        Interpretation updatedInterpretation = mDhisApi
-                .getInterpretation(interpretation.getUId(), QUERY_PARAMS);
-
-        // merging updated timestamp to local interpretation model
-        interpretation.setCreated(updatedInterpretation.getCreated());
-        interpretation.setLastUpdated(updatedInterpretation.getLastUpdated());
-        interpretation.save();
     }
 
     private void sendInterpretationCommentChanges() throws APIException {
@@ -268,41 +227,20 @@ final class InterpretationController {
                 return;
             }
 
-            Response response = mDhisApi.postInterpretationComment(
-                    interpretation.getUId(), new TypedString(comment.getText()));
+            try {
+                Response response = mDhisApi.postInterpretationComment(
+                        interpretation.getUId(), new TypedString(comment.getText()));
 
-            if (isSuccess(response.getStatus())) {
                 Header locationHeader = findLocationHeader(response.getHeaders());
                 String commentUid = Uri.parse(locationHeader
                         .getValue()).getLastPathSegment();
                 comment.setUId(commentUid);
                 comment.setState(State.SYNCED);
-
-                // after posting comment, timestamp both of interpretation and comment will change.
-                // we have to reflect these changes here in order not to break data integrity during
-                // next synchronizations to server.
-                Map<String, String> queryParams = new HashMap<>();
-                queryParams.put("fields", "created,lastUpdated,comments[id,created,lastUpdated]");
-                Interpretation persistedInterpretation = comment.getInterpretation();
-                Interpretation updatedInterpretation = mDhisApi
-                        .getInterpretation(persistedInterpretation.getUId(), queryParams);
-
-                // first, update timestamp of interpretation
-                persistedInterpretation.setCreated(updatedInterpretation.getCreated());
-                persistedInterpretation.setLastUpdated(updatedInterpretation.getLastUpdated());
-                persistedInterpretation.save();
-
-                // second, find comment which we have added recently and update its timestamp
-                Map<String, InterpretationComment> updatedComments
-                        = toMap(updatedInterpretation.getComments());
-                if (updatedComments.containsKey(commentUid)) {
-                    InterpretationComment updatedComment = updatedComments.get(commentUid);
-
-                    // set timestamp here
-                    comment.setCreated(updatedComment.getCreated());
-                    comment.setLastUpdated(updatedComment.getLastUpdated());
-                }
                 comment.save();
+
+                updateInterpretationCommentTimeStamp(comment);
+            } catch (APIException apiException) {
+                handleApiException(apiException, comment);
             }
         }
     }
@@ -318,14 +256,16 @@ final class InterpretationController {
                 return;
             }
 
-            Response response = mDhisApi.putInterpretationComment(
-                    interpretation.getUId(), comment.getUId(), new TypedString(comment.getText()));
+            try {
+                mDhisApi.putInterpretationComment(interpretation.getUId(),
+                        comment.getUId(), new TypedString(comment.getText()));
 
-            if (isSuccess(response.getStatus())) {
                 comment.setState(State.SYNCED);
                 comment.save();
 
                 updateInterpretationTimeStamp(comment.getInterpretation());
+            } catch (APIException apiException) {
+                handleApiException(apiException);
             }
         }
     }
@@ -348,14 +288,70 @@ final class InterpretationController {
                 return;
             }
 
-            Response response = mDhisApi.deleteInterpretationComment(
-                    interpretation.getUId(), comment.getUId());
-
-            if (isSuccess(response.getStatus())) {
+            try {
+                mDhisApi.deleteInterpretationComment(
+                        interpretation.getUId(), comment.getUId());
                 comment.delete();
 
                 updateInterpretationTimeStamp(comment.getInterpretation());
+            } catch (APIException apiException) {
+                handleApiException(apiException, comment);
             }
+        }
+    }
+
+    /**
+     * This method gets only time stamp from server
+     * for given interpretation and updates it locally.
+     *
+     * @param interpretation Interpretation to update.
+     */
+    private void updateInterpretationTimeStamp(Interpretation interpretation) throws APIException {
+        try {
+            final Map<String, String> QUERY_PARAMS = new HashMap<>();
+            QUERY_PARAMS.put("fields", "[created,lastUpdated]");
+
+            Interpretation updatedInterpretation = mDhisApi
+                    .getInterpretation(interpretation.getUId(), QUERY_PARAMS);
+
+            // merging updated timestamp to local interpretation model
+            interpretation.setCreated(updatedInterpretation.getCreated());
+            interpretation.setLastUpdated(updatedInterpretation.getLastUpdated());
+            interpretation.save();
+        } catch (APIException apiException) {
+            handleApiException(apiException, interpretation);
+        }
+    }
+
+    private void updateInterpretationCommentTimeStamp(InterpretationComment comment) throws APIException {
+        try {
+            // after posting comment, timestamp both of interpretation and comment will change.
+            // we have to reflect these changes here in order not to break data integrity during
+            // next synchronizations to server.
+            Map<String, String> queryParams = new HashMap<>();
+            queryParams.put("fields", "created,lastUpdated,comments[id,created,lastUpdated]");
+            Interpretation persistedInterpretation = comment.getInterpretation();
+            Interpretation updatedInterpretation = mDhisApi
+                    .getInterpretation(persistedInterpretation.getUId(), queryParams);
+
+            // first, update timestamp of interpretation
+            persistedInterpretation.setCreated(updatedInterpretation.getCreated());
+            persistedInterpretation.setLastUpdated(updatedInterpretation.getLastUpdated());
+            persistedInterpretation.save();
+
+            // second, find comment which we have added recently and update its timestamp
+            Map<String, InterpretationComment> updatedComments
+                    = toMap(updatedInterpretation.getComments());
+            if (updatedComments.containsKey(comment.getUId())) {
+                InterpretationComment updatedComment = updatedComments.get(comment.getUId());
+
+                // set timestamp here
+                comment.setCreated(updatedComment.getCreated());
+                comment.setLastUpdated(updatedComment.getLastUpdated());
+                comment.save();
+            }
+        } catch (APIException apiException) {
+            handleApiException(apiException);
         }
     }
 

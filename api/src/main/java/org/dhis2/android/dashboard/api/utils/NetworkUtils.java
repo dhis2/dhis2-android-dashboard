@@ -26,6 +26,11 @@
 
 package org.dhis2.android.dashboard.api.utils;
 
+import com.raizlabs.android.dbflow.structure.BaseModel;
+
+import org.dhis2.android.dashboard.api.network.APIException;
+
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,5 +68,84 @@ public class NetworkUtils {
         }
 
         return null;
+    }
+
+    public static void handleApiException(APIException apiException) throws APIException {
+        handleApiException(apiException, null);
+    }
+
+    /**
+     * List of errors which this method should handle:
+     * <p/>
+     * 400 Bad Request
+     * 401 Unauthorized (user password has changed)
+     * 403 Forbidden (access denied)
+     * 404 Not found (object was already removed for example)
+     * 405 Method not allowed (wrong HTTP request method)
+     * 408 Request Time Out (too slow internet connection, long processing time, etc)
+     * 409 Conflict (you are trying to treat some resource as another.
+     * For example to create interpretation for map through chart URI)
+     * 500 Internal server error (for example NullPointerException)
+     * 501 Not implemented (no such method or resource)
+     * 502 Bad Gateway (can be retried later)
+     * 503 Service unavailable (can be temporary issue)
+     * 504 Gateway Timeout (we need to retry request later)
+     */
+    public static void handleApiException(APIException apiException, BaseModel model) throws APIException {
+        switch (apiException.getKind()) {
+            case HTTP: {
+                switch (apiException.getResponse().getStatus()) {
+                    case HttpURLConnection.HTTP_BAD_REQUEST: {
+                        // TODO Implement mechanism for handling HTTP errors (allow user to resolve it).
+                        break;
+                    }
+                    case HttpURLConnection.HTTP_UNAUTHORIZED: {
+                        // if the user password has changed, none of other network
+                        // requests won't pass. So we need to stop synchronization.
+                        throw apiException;
+                    }
+                    case HttpURLConnection.HTTP_FORBIDDEN: {
+                        // TODO Implement mechanism for handling HTTP errors (allow user to resolve it).
+                        // User does not has access to given resource anymore.
+                        // We need to handle this in a special way
+                        break;
+                    }
+                    case HttpURLConnection.HTTP_NOT_FOUND: {
+                        // The given resource does not exist on the server anymore.
+                        // Remove it locally.
+                        if (model != null) {
+                            model.delete();
+                        }
+                        break;
+                    }
+                    case HttpURLConnection.HTTP_CONFLICT: {
+                        // TODO Implement mechanism for handling HTTP errors (allow user to resolve it).
+                        // Trying to access wrong resource.
+                        break;
+                    }
+                    case HttpURLConnection.HTTP_INTERNAL_ERROR: {
+                        // TODO Implement mechanism for handling HTTP errors (allow user to resolve it).
+                        break;
+                    }
+                    case HttpURLConnection.HTTP_NOT_IMPLEMENTED: {
+                        // TODO Implement mechanism for handling HTTP errors (allow user to resolve it).
+                        break;
+                    }
+                }
+
+                break;
+            }
+            case NETWORK: {
+                // Retry later.
+                break;
+            }
+            case CONVERSION:
+            case UNEXPECTED: {
+                // TODO Implement mechanism for handling HTTP errors (allow user to resolve it).
+                // implement possibility to show error status. In most cases, this types of errors
+                // won't be resolved automatically.
+                break;
+            }
+        }
     }
 }
