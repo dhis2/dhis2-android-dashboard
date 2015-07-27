@@ -41,6 +41,7 @@ import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
+import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 import org.dhis2.android.dashboard.ui.events.UiEvent;
 
 /**
@@ -96,6 +97,11 @@ public final class DhisService extends Service {
             public UiEvent inBackground() {
                 mDhisController.logOutUser();
                 return new UiEvent();
+            }
+
+            @Override
+            public void onFinish(UiEvent result) {
+                EventBusProvider.post(result);
             }
         });
     }

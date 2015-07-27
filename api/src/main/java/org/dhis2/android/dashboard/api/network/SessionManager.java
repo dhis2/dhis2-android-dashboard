@@ -24,6 +24,10 @@ public final class SessionManager {
         return mSessionManager;
     }
 
+    public void delete() {
+        mResources.clear();
+    }
+
     public void setResourceTypeSynced(ResourceType resourceType) {
         mResources.add(resourceType);
     }

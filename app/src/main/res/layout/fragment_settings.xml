@@ -50,25 +50,10 @@
         android:layout_margin="8dp"
         app:cardCornerRadius="2dp">
 
-        <fr.castorflex.android.circularprogressbar.CircularProgressBar
-            android:id="@+id/progress_bar_circular_navy"
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_gravity="center"
-            android:indeterminate="true"
-            app:cpb_color="@color/navy_blue"
-            app:cpb_max_sweep_angle="300"
-            app:cpb_min_sweep_angle="10"
-            app:cpb_rotation_speed="0.8"
-            app:cpb_stroke_width="6dp"
-            app:cpb_sweep_speed="1.0"/>
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.25"
-            android:gravity="center"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
             android:orientation="vertical"
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"

@@ -42,6 +42,7 @@ import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.models.meta.Session;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.network.DhisApi;
+import org.dhis2.android.dashboard.api.network.SessionManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.dhis2.android.dashboard.api.persistence.preferences.LastUpdatedManager;
 
@@ -83,6 +84,7 @@ final class UserController {
     public void logOut() {
         LastUpdatedManager.getInstance().delete();
         DateTimeManager.getInstance().delete();
+        SessionManager.getInstance().delete();
 
         // remove data
         Delete.tables(
