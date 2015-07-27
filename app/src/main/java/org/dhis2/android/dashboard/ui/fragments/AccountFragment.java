@@ -38,16 +38,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.adapters.AccountFieldAdapter;
+import org.dhis2.android.dashboard.ui.models.Field;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
@@ -56,7 +57,7 @@ import butterknife.ButterKnife;
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-public final class AccountFragment extends BaseFragment implements LoaderCallbacks<UserAccount> {
+public final class AccountFragment extends BaseFragment implements LoaderCallbacks<List<Field>> {
     private static final int LOADER_ID = 66756123;
 
     @Bind(R.id.toolbar)
@@ -105,7 +106,7 @@ public final class AccountFragment extends BaseFragment implements LoaderCallbac
     }
 
     @Override
-    public Loader<UserAccount> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Field>> onCreateLoader(int id, Bundle args) {
         if (LOADER_ID == id) {
             List<DbLoader.TrackedTable> trackedTables = new ArrayList<>();
             trackedTables.add(new DbLoader.TrackedTable(UserAccount.class));
@@ -116,23 +117,40 @@ public final class AccountFragment extends BaseFragment implements LoaderCallbac
     }
 
     @Override
-    public void onLoadFinished(Loader<UserAccount> loader, UserAccount data) {
+    public void onLoadFinished(Loader<List<Field>> loader, List<Field> data) {
         if (loader != null && loader.getId() == LOADER_ID) {
-            Toast.makeText(getActivity(), data.getDisplayName(),
-                    Toast.LENGTH_SHORT).show();
+            mAdapter.swapData(data);
         }
     }
 
     @Override
-    public void onLoaderReset(Loader<UserAccount> loader) {
+    public void onLoaderReset(Loader<List<Field>> loader) {
         // stub implementation
     }
 
-    private static class UserAccountQuery implements Query<UserAccount> {
+    private static class UserAccountQuery implements Query<List<Field>> {
 
         @Override
-        public UserAccount query(Context context) {
-            return UserAccount.getCurrentUserAccountFromDb();
+        public List<Field> query(Context context) {
+            UserAccount userAccount = UserAccount.getCurrentUserAccountFromDb();
+            return Arrays.asList(
+                    new Field(getString(context, R.string.first_name), userAccount.getFirstName()),
+                    new Field(getString(context, R.string.surname), userAccount.getSurname()),
+                    new Field(getString(context, R.string.gender), userAccount.getGender()),
+                    new Field(getString(context, R.string.birthday), userAccount.getBirthday()),
+                    new Field(getString(context, R.string.introduction), userAccount.getIntroduction()),
+                    new Field(getString(context, R.string.education), userAccount.getEducation()),
+                    new Field(getString(context, R.string.employer), userAccount.getEmployer()),
+                    new Field(getString(context, R.string.interests), userAccount.getInterests()),
+                    new Field(getString(context, R.string.job_title), userAccount.getJobTitle()),
+                    new Field(getString(context, R.string.languages), userAccount.getLanguages()),
+                    new Field(getString(context, R.string.email), userAccount.getEmail()),
+                    new Field(getString(context, R.string.phone_number), userAccount.getPhoneNumber())
+            );
+        }
+
+        private static String getString(Context context, int resource) {
+            return context.getString(resource);
         }
     }
 }
