@@ -50,6 +50,7 @@ import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.ui.fragments.AccountFragment;
+import org.dhis2.android.dashboard.ui.fragments.SettingsFragment;
 import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardContainerFragment;
 import org.dhis2.android.dashboard.ui.fragments.interpretation.InterpretationContainerFragment;
 
@@ -121,9 +122,7 @@ public class MenuActivity extends BaseActivity
                 break;
             }
             case R.id.menu_settings_item: {
-                getDhisController().logOutUser();
-                startActivity(new Intent(this, LauncherActivity.class));
-                finish();
+                attachFragmentDelayed(new SettingsFragment());
                 break;
             }
             case R.id.menu_about_item: {

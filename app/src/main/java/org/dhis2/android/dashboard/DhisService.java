@@ -41,6 +41,7 @@ import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.Credentials;
 import org.dhis2.android.dashboard.api.network.APIException;
 import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
+import org.dhis2.android.dashboard.ui.events.UiEvent;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -90,11 +91,11 @@ public final class DhisService extends Service {
     }
 
     public void logOutUser() {
-        JobExecutor.enqueueJob(new Job<Object>(LOG_OUT) {
+        JobExecutor.enqueueJob(new Job<UiEvent>(LOG_OUT) {
             @Override
-            public Object inBackground() {
+            public UiEvent inBackground() {
                 mDhisController.logOutUser();
-                return new Object();
+                return new UiEvent();
             }
         });
     }
