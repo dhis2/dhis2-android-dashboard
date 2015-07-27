@@ -44,6 +44,7 @@ import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
+import org.dhis2.android.dashboard.ui.adapters.AccountFieldAdapter;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ public final class AccountFragment extends BaseFragment implements LoaderCallbac
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
+    AccountFieldAdapter mAdapter;
 
     @Nullable
     @Override
@@ -84,12 +86,16 @@ public final class AccountFragment extends BaseFragment implements LoaderCallbac
             }
         });
 
+        mAdapter = new AccountFieldAdapter(getActivity().getApplicationContext(),
+                getLayoutInflater(savedInstanceState));
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
 
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.addItemDecoration(new GridDividerDecoration(getActivity()
                 .getApplicationContext()));
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -119,7 +125,7 @@ public final class AccountFragment extends BaseFragment implements LoaderCallbac
 
     @Override
     public void onLoaderReset(Loader<UserAccount> loader) {
-
+        // stub implementation
     }
 
     private static class UserAccountQuery implements Query<UserAccount> {
