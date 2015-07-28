@@ -46,10 +46,10 @@
             android:id="@+id/menu_settings_item"
             android:icon="@mipmap/ic_settings"
             android:title="@string/settings"/>
-        <item
+        <!-- <item
             android:id="@+id/menu_about_item"
             android:icon="@mipmap/ic_about"
-            android:title="@string/about"/>
+            android:title="@string/about"/> -->
     </group>
 
 </menu>

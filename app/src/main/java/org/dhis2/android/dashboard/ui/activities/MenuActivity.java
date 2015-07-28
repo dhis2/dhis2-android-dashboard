@@ -29,7 +29,6 @@
 package org.dhis2.android.dashboard.ui.activities;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -125,12 +124,12 @@ public class MenuActivity extends BaseActivity
                 attachFragmentDelayed(new SettingsFragment());
                 break;
             }
-            case R.id.menu_about_item: {
+            /* case R.id.menu_about_item: {
                 getDhisController().invalidateSession();
                 startActivity(new Intent(this, LauncherActivity.class));
                 finish();
                 break;
-            }
+            } */
         }
         menuItem.setChecked(true);
         mDrawerLayout.closeDrawers();
