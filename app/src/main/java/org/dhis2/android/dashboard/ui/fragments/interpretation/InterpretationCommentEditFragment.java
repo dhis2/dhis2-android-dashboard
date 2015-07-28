@@ -44,6 +44,7 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.InterpretationComment;
 import org.dhis2.android.dashboard.api.models.InterpretationComment$Table;
+import org.dhis2.android.dashboard.ui.fragments.BaseDialogFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -52,7 +53,7 @@ import butterknife.OnClick;
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-public class InterpretationCommentEditFragment extends DialogFragment {
+public class InterpretationCommentEditFragment extends BaseDialogFragment {
     private static final String TAG = InterpretationCommentEditFragment.class.getSimpleName();
 
     @Bind(R.id.interpretation_comment_edit_text)
@@ -112,6 +113,10 @@ public class InterpretationCommentEditFragment extends DialogFragment {
             case R.id.update_interpretation_comment: {
                 mInterpretationComment.updateComment(
                         mCommentEditText.getText().toString());
+
+                if (isDhisServiceBound()) {
+                    getDhisService().syncInterpretations();
+                }
                 break;
             }
         }

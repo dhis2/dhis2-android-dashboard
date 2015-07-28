@@ -51,6 +51,9 @@ import org.dhis2.android.dashboard.api.models.User;
 import org.dhis2.android.dashboard.api.models.User$Table;
 import org.dhis2.android.dashboard.api.models.UserAccount;
 import org.dhis2.android.dashboard.api.models.meta.State;
+import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+import org.dhis2.android.dashboard.ui.events.UiEvent;
+import org.dhis2.android.dashboard.ui.fragments.BaseDialogFragment;
 
 import java.util.List;
 
@@ -63,7 +66,7 @@ import static org.dhis2.android.dashboard.api.models.Interpretation.createInterp
 /**
  * Fragment responsible for creation of new dashboards.
  */
-public final class InterpretationCreateFragment extends DialogFragment {
+public final class InterpretationCreateFragment extends BaseDialogFragment {
     private static final String TAG = InterpretationCreateFragment.class.getSimpleName();
 
     @Bind(R.id.dialog_label)
@@ -148,8 +151,13 @@ public final class InterpretationCreateFragment extends DialogFragment {
                 }
             }
 
+            if (isDhisServiceBound()) {
+                getDhisService().syncInterpretations();
+                EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_INTERPRETATIONS));
+            }
+
             Toast.makeText(getActivity(),
-                    "Successfully created interpretation", Toast.LENGTH_SHORT).show();
+                    getString(R.string.successfully_created_interpretation), Toast.LENGTH_SHORT).show();
         }
         dismiss();
     }

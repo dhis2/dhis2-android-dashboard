@@ -5,7 +5,7 @@ package org.dhis2.android.dashboard.ui.events;
  */
 public final class UiEvent {
     public enum UiEventType {
-        SYNC_DASHBOARDS, USER_LOG_OUT
+        SYNC_DASHBOARDS, USER_LOG_OUT, SYNC_INTERPRETATIONS,
     }
 
     private final UiEventType mType;

@@ -42,6 +42,9 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Interpretation;
 import org.dhis2.android.dashboard.api.models.Interpretation$Table;
+import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+import org.dhis2.android.dashboard.ui.events.UiEvent;
+import org.dhis2.android.dashboard.ui.fragments.BaseDialogFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -50,7 +53,7 @@ import butterknife.OnClick;
 /**
  * Handles editing (changing text) of given interpretation.
  */
-public final class InterpretationTextEditFragment extends DialogFragment {
+public final class InterpretationTextEditFragment extends BaseDialogFragment {
     private static final String TAG = InterpretationTextEditFragment.class.getSimpleName();
 
     @Bind(R.id.dialog_label)
@@ -110,6 +113,12 @@ public final class InterpretationTextEditFragment extends DialogFragment {
             case R.id.update_interpretation_text: {
                 mInterpretation.updateInterpretation(
                         mInterpretationText.getText().toString());
+
+                if (isDhisServiceBound()) {
+                    getDhisService().syncInterpretations();
+                    EventBusProvider.post(new UiEvent(UiEvent
+                            .UiEventType.SYNC_INTERPRETATIONS));
+                }
                 break;
             }
         }

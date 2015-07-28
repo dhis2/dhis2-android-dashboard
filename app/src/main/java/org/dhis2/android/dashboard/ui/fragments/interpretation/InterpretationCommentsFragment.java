@@ -223,6 +223,10 @@ public class InterpretationCommentsFragment extends BaseFragment
 
         // we need to erase the previous comment from the field.
         mNewCommentText.setText(EMPTY_FIELD);
+
+        if (isDhisServiceBound()) {
+            getDhisService().syncInterpretations();
+        }
     }
 
     @Override
@@ -239,6 +243,10 @@ public class InterpretationCommentsFragment extends BaseFragment
             mAdapter.getData().remove(position);
             mAdapter.notifyItemRemoved(position);
             comment.deleteComment();
+
+            if (isDhisServiceBound()) {
+                getDhisService().syncInterpretations();
+            }
         }
     }
 

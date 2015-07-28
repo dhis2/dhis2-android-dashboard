@@ -85,6 +85,7 @@
     <string name="interpretation_text">Interpretation text</string>
     <string name="create_interpretation">Create interpretation</string>
     <string name="no_interpretations">No interpretations</string>
+    <string name="successfully_created_interpretation">Successfully created interpretation</string>
     <!-- END Interpretations -->
 
 

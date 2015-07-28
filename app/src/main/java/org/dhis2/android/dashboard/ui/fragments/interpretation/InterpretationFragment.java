@@ -65,6 +65,7 @@ import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.dhis2.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.dhis2.android.dashboard.ui.activities.InterpretationCommentsActivity;
 import org.dhis2.android.dashboard.ui.adapters.InterpretationAdapter;
+import org.dhis2.android.dashboard.ui.events.UiEvent;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
 import org.dhis2.android.dashboard.ui.views.GridDividerDecoration;
 
@@ -238,6 +239,18 @@ public final class InterpretationFragment extends BaseFragment
             mAdapter.getData().remove(position);
             mAdapter.notifyItemRemoved(position);
             interpretation.deleteInterpretation();
+
+            if (isDhisServiceBound()) {
+                getDhisService().syncInterpretations();
+
+                boolean isLoading = isDhisServiceBound() &&
+                        getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
+                if (isLoading) {
+                    mProgressBar.setVisibility(View.VISIBLE);
+                } else {
+                    mProgressBar.setVisibility(View.INVISIBLE);
+                }
+            }
         }
     }
 
@@ -255,18 +268,32 @@ public final class InterpretationFragment extends BaseFragment
         startActivity(intent);
     }
 
-    private void syncInterpretations() {
-        if (isDhisServiceBound()) {
-            getDhisService().syncInterpretations();
-            mProgressBar.setVisibility(View.VISIBLE);
-        }
-    }
-
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
             mProgressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Subscribe
+    @SuppressWarnings("unused")
+    public void onUiEventReceived(UiEvent uiEvent) {
+        if (uiEvent.getEventType() == UiEvent.UiEventType.SYNC_INTERPRETATIONS) {
+            boolean isLoading = isDhisServiceBound() &&
+                    getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
+            if (isLoading) {
+                mProgressBar.setVisibility(View.VISIBLE);
+            } else {
+                mProgressBar.setVisibility(View.INVISIBLE);
+            }
+        }
+    }
+
+    private void syncInterpretations() {
+        if (isDhisServiceBound()) {
+            getDhisService().syncInterpretations();
+            mProgressBar.setVisibility(View.VISIBLE);
         }
     }
 
