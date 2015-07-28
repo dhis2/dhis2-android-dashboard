@@ -53,8 +53,10 @@ import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemAdapter;
+import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.interpretation.InterpretationCreateFragment;
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
@@ -187,6 +189,11 @@ public class DashboardFragment extends BaseFragment
     public void onContentDeleteClick(DashboardElement element) {
         if (element != null) {
             element.deleteDashboardElement();
+
+            if (isDhisServiceBound()) {
+                getDhisService().syncDashboards();
+                EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
+            }
         }
     }
 
@@ -194,6 +201,11 @@ public class DashboardFragment extends BaseFragment
     public void onItemDeleteClick(DashboardItem item) {
         if (item != null) {
             item.deleteDashboardItem();
+
+            if (isDhisServiceBound()) {
+                getDhisService().syncDashboards();
+                EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
+            }
         }
     }
 

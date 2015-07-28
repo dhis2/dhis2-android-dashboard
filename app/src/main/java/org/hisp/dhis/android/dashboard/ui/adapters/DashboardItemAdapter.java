@@ -282,7 +282,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             case ITEM_WITH_LIST_TYPE: {
                 LinearLayout textViewContainer = (LinearLayout) getLayoutInflater()
                         .inflate(R.layout.recycler_view_dashboard_item_list, parent, false);
-                return new ListItemViewHolder(textViewContainer, mClickListener);
+                return new ListItemViewHolder(textViewContainer, mClickListener, mDashboardAccess);
             }
         }
         return null;
@@ -365,9 +365,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
 
         /* Handling embedded list items. */
         ButterKnife.apply(holder.elementItems,
-                ListItemViewHolder.ELEMENT_ITEMS_SETTER, elementList);
+                holder.ELEMENT_ITEMS_SETTER, elementList);
         ButterKnife.apply(holder.elementItemDeleteButtons,
-                ListItemViewHolder.ELEMENT_ITEM_BUTTONS_SETTER, elementList);
+                holder.ELEMENT_ITEM_BUTTONS_SETTER, elementList);
     }
 
     /* convenience method for removing dashboard items with animations */
@@ -588,24 +588,37 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     static class ListItemViewHolder implements IElementContentViewHolder {
 
         /* action which will be applied to list of content in item */
-        static final ButterKnife.Setter<TextView, List<DashboardElement>> ELEMENT_ITEMS_SETTER
-                = new ButterKnife.Setter<TextView, List<DashboardElement>>() {
+        static final class ElementItemsSetter implements ButterKnife.Setter<TextView, List<DashboardElement>> {
+
             @Override
             public void set(TextView textView, List<DashboardElement> elements, int index) {
                 DashboardElement element = getElement(elements, index);
                 textView.setVisibility(element == null ? View.INVISIBLE : View.VISIBLE);
                 textView.setText(element == null ? EMPTY_FIELD : element.getDisplayName());
             }
-        };
+        }
 
-        static final ButterKnife.Setter<View, List<DashboardElement>> ELEMENT_ITEM_BUTTONS_SETTER
-                = new ButterKnife.Setter<View, List<DashboardElement>>() {
+        static final class ElementItemButtonsSetter implements ButterKnife.Setter<View, List<DashboardElement>> {
+            private final Access mDashboardAccess;
+
+            public ElementItemButtonsSetter(Access dashboardAccess) {
+                mDashboardAccess = dashboardAccess;
+            }
+
             @Override
             public void set(View view, List<DashboardElement> elements, int index) {
                 DashboardElement element = getElement(elements, index);
-                view.setVisibility(element == null ? View.INVISIBLE : View.VISIBLE);
+
+                if (element == null || !mDashboardAccess.isUpdate()) {
+                    view.setVisibility(View.INVISIBLE);
+                } else {
+                    view.setVisibility(View.VISIBLE);
+                }
             }
-        };
+        }
+
+        final ElementItemsSetter ELEMENT_ITEMS_SETTER;
+        final ElementItemButtonsSetter ELEMENT_ITEM_BUTTONS_SETTER;
 
         final OnListElementInternalClickListener onListElementInternalClickListener;
         final View itemElementsContainer;
@@ -634,7 +647,10 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         })
         List<View> elementItemDeleteButtons;
 
-        public ListItemViewHolder(View view, OnItemClickListener listener) {
+        public ListItemViewHolder(View view, OnItemClickListener listener, Access dashboardAccess) {
+            ELEMENT_ITEMS_SETTER = new ElementItemsSetter();
+            ELEMENT_ITEM_BUTTONS_SETTER = new ElementItemButtonsSetter(dashboardAccess);
+
             itemElementsContainer = view;
             onListElementInternalClickListener = new OnListElementInternalClickListener(listener);
 
@@ -699,8 +715,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         /* helper method for client code, which allows to
         determine if we need to show 3-dot button*/
         public boolean isMenuVisible() {
-            return isItemShareable() ||
-                    (isDashboardManageable() && isItemDeletable());
+            return isItemShareable() || isDashboardUpdatable();
         }
 
         /* helper method which returns true if we can show share menu item */
@@ -712,13 +727,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             );
         }
 
-        private boolean isDashboardManageable() {
-            return mDashboardAccess.isManage();
-        }
-
-        private boolean isItemDeletable() {
-            // return mInterpretation.getAccess().isDelete();
-            return true;
+        private boolean isDashboardUpdatable() {
+            return mDashboardAccess.isUpdate();
         }
 
         /* here we will build popup menu and show it. */
@@ -732,7 +742,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
                         R.string.share_interpretation);
             }
 
-            if (isItemDeletable()) {
+            if (isDashboardUpdatable()) {
                 popupMenu.getMenu().add(MENU_GROUP_ID,
                         MENU_DELETE_ITEM_ID, MENU_DELETE_ITEM_ORDER,
                         R.string.delete);
