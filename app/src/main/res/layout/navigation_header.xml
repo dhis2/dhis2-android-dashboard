@@ -57,7 +57,7 @@
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <org.dhis2.android.dashboard.ui.views.FontTextView
+        <org.hisp.dhis.android.dashboard.ui.views.FontTextView
             android:id="@+id/drawer_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
             android:textSize="14sp"
             app:font="@string/medium_font_name"/>
 
-        <org.dhis2.android.dashboard.ui.views.FontTextView
+        <org.hisp.dhis.android.dashboard.ui.views.FontTextView
             android:id="@+id/drawer_user_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

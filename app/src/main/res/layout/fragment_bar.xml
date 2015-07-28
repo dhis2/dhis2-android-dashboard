@@ -35,7 +35,7 @@
     android:orientation="horizontal"
     android:weightSum="1">
 
-    <org.dhis2.android.dashboard.ui.views.FontTextView
+    <org.hisp.dhis.android.dashboard.ui.views.FontTextView
         android:id="@+id/dialog_label"
         android:layout_width="0dp"
         android:layout_height="match_parent"

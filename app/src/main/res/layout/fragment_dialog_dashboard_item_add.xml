@@ -51,7 +51,7 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <org.dhis2.android.dashboard.ui.views.FontEditText
+            <org.hisp.dhis.android.dashboard.ui.views.FontEditText
                 android:id="@+id/filter_options"
                 android:layout_width="0dp"
                 android:layout_height="48dp"

@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <org.dhis2.android.dashboard.ui.views.FontTextView
+    <org.hisp.dhis.android.dashboard.ui.views.FontTextView
         android:id="@+id/field_label_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +15,7 @@
         android:textSize="16sp"
         app:font="@string/light_font_name"/>
 
-    <org.dhis2.android.dashboard.ui.views.FontTextView
+    <org.hisp.dhis.android.dashboard.ui.views.FontTextView
         android:id="@+id/field_value_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

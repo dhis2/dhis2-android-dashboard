@@ -82,7 +82,7 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
-                <org.dhis2.android.dashboard.ui.views.FontEditText
+                <org.hisp.dhis.android.dashboard.ui.views.FontEditText
                     android:id="@+id/username"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
@@ -95,7 +95,7 @@
                     android:singleLine="true"
                     app:font="@string/regular_font_name"/>
 
-                <org.dhis2.android.dashboard.ui.views.FontEditText
+                <org.hisp.dhis.android.dashboard.ui.views.FontEditText
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
@@ -109,7 +109,7 @@
                     android:singleLine="true"
                     app:font="@string/regular_font_name"/>
 
-                <org.dhis2.android.dashboard.ui.views.FontButton
+                <org.hisp.dhis.android.dashboard.ui.views.FontButton
                     android:id="@+id/re_log_in_button"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -134,7 +134,7 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <org.dhis2.android.dashboard.ui.views.FontButton
+                <org.hisp.dhis.android.dashboard.ui.views.FontButton
                     android:id="@+id/delete_and_log_out_button"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"

@@ -59,7 +59,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginTop="32dp">
 
-            <org.dhis2.android.dashboard.ui.views.FontEditText
+            <org.hisp.dhis.android.dashboard.ui.views.FontEditText
                 android:id="@+id/dashboard_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
                 app:font="@string/regular_font_name"/>
         </android.support.design.widget.TextInputLayout>
 
-        <org.dhis2.android.dashboard.ui.views.FontButton
+        <org.hisp.dhis.android.dashboard.ui.views.FontButton
             android:id="@+id/delete_dashboard_button"
             android:layout_width="match_parent"
             android:layout_height="40dp"

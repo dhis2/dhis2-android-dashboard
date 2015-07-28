@@ -45,7 +45,7 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <org.dhis2.android.dashboard.ui.views.FontTextView
+            <org.hisp.dhis.android.dashboard.ui.views.FontTextView
                 android:id="@+id/dashboard_item_last_updated"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
                 android:src="@mipmap/ic_overflow" />
         </LinearLayout>
 
-        <org.dhis2.android.dashboard.ui.views.FontTextView
+        <org.hisp.dhis.android.dashboard.ui.views.FontTextView
             android:id="@+id/dashboard_item_name"
             android:layout_width="match_parent"
             android:layout_height="42dp"

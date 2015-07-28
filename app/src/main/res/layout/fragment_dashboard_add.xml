@@ -48,7 +48,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginTop="32dp">
 
-            <org.dhis2.android.dashboard.ui.views.FontEditText
+            <org.hisp.dhis.android.dashboard.ui.views.FontEditText
                 android:id="@+id/dashboard_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <org.dhis2.android.dashboard.ui.views.FontButton
+            <org.hisp.dhis.android.dashboard.ui.views.FontButton
                 android:id="@+id/cancel_dashboard_add"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
                 android:textSize="12sp"
                 app:font="@string/medium_font_name"/>
 
-            <org.dhis2.android.dashboard.ui.views.FontButton
+            <org.hisp.dhis.android.dashboard.ui.views.FontButton
                 android:id="@+id/save_dashboard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

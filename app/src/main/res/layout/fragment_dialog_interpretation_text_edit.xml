@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2015, dhis2
+  ~ Copyright (c) 2015, dhis
   ~ All rights reserved.
   ~
   ~ Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginTop="32dp">
 
-            <org.dhis2.android.dashboard.ui.views.FontEditText
+            <org.hisp.dhis.android.dashboard.ui.views.FontEditText
                 android:id="@+id/interpretation_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <org.dhis2.android.dashboard.ui.views.FontButton
+            <org.hisp.dhis.android.dashboard.ui.views.FontButton
                 android:id="@+id/cancel_interpretation_text_edit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                 android:textSize="12sp"
                 app:font="@string/medium_font_name" />
 
-            <org.dhis2.android.dashboard.ui.views.FontButton
+            <org.hisp.dhis.android.dashboard.ui.views.FontButton
                 android:id="@+id/update_interpretation_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
