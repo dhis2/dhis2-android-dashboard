@@ -440,7 +440,7 @@ final class DashboardController {
             try {
                 DashboardElement element = elements.get(0);
                 Response response = mDhisApi.postDashboardItem(dashboard.getUId(),
-                        dashboardItem.getType(), element.getUId());
+                        dashboardItem.getType(), element.getUId(), "");
 
                 Header locationHeader = findLocationHeader(response.getHeaders());
                 String dashboardItemUId = Uri.parse(locationHeader
@@ -531,7 +531,7 @@ final class DashboardController {
 
             try {
                 mDhisApi.postDashboardItem(dashboard.getUId(),
-                        item.getType(), element.getUId());
+                        item.getType(), element.getUId(), "");
                 element.setState(State.SYNCED);
                 element.save();
 

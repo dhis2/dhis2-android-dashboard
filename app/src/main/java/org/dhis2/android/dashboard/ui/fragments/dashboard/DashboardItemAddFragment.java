@@ -47,16 +47,22 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.builder.Condition.CombinedCondition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.dhis2.android.dashboard.R;
+import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.models.Dashboard$Table;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent;
 import org.dhis2.android.dashboard.api.models.DashboardItemContent$Table;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
+import org.dhis2.android.dashboard.api.utils.EventBusProvider;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter;
 import org.dhis2.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter.OptionAdapterValue;
+import org.dhis2.android.dashboard.ui.events.UiEvent;
+import org.dhis2.android.dashboard.ui.fragments.BaseDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,12 +77,10 @@ import butterknife.OnTextChanged;
 
 import static com.raizlabs.android.dbflow.sql.builder.Condition.column;
 
-public class DashboardItemAddFragment extends DialogFragment
+public class DashboardItemAddFragment extends BaseDialogFragment
         implements PopupMenu.OnMenuItemClickListener, LoaderCallbacks<List<OptionAdapterValue>> {
     private static final String TAG = DashboardItemAddFragment.class.getSimpleName();
     private static final int LOADER_ID = 3451234;
-
-    public static final int DIALOG_ID = 234235;
 
     @Bind(R.id.filter_options)
     EditText mFilter;
@@ -92,11 +96,15 @@ public class DashboardItemAddFragment extends DialogFragment
 
     PopupMenu mResourcesMenu;
     DashboardItemSearchDialogAdapter mAdapter;
-    OnOptionSelectedListener mListener;
 
-    public static DashboardItemAddFragment newInstance(OnOptionSelectedListener listener) {
+    Dashboard mDashboard;
+
+    public static DashboardItemAddFragment newInstance(long dashboardId) {
+        Bundle args = new Bundle();
+        args.putLong(Dashboard$Table.ID, dashboardId);
+
         DashboardItemAddFragment fragment = new DashboardItemAddFragment();
-        fragment.mListener = listener;
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -115,6 +123,13 @@ public class DashboardItemAddFragment extends DialogFragment
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        long dashboardId = getArguments().getLong(Dashboard$Table.ID);
+        mDashboard = new Select()
+                .from(Dashboard.class)
+                .where(Condition.column(Dashboard$Table
+                        .ID).is(dashboardId))
+                .querySingle();
+
         ButterKnife.bind(this, view);
 
         InputMethodManager imm = (InputMethodManager)
@@ -157,11 +172,17 @@ public class DashboardItemAddFragment extends DialogFragment
     @SuppressWarnings("unused")
     @OnItemClick(R.id.simple_listview)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (mListener != null) {
-            DashboardItemSearchDialogAdapter.OptionAdapterValue value = mAdapter.getItem(position);
-            if (value != null) {
-                mListener.onOptionSelected(DIALOG_ID, position, value.id, value.label);
-            }
+        OptionAdapterValue adapterValue = mAdapter.getItem(position);
+        DashboardItemContent resource = new Select()
+                .from(DashboardItemContent.class)
+                .where(Condition.column(DashboardItemContent$Table
+                        .UID).is(adapterValue.id))
+                .querySingle();
+        mDashboard.addItemContent(resource);
+
+        if (isDhisServiceBound()) {
+            getDhisService().syncDashboards();
+            EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
         }
 
         dismiss();
@@ -237,10 +258,6 @@ public class DashboardItemAddFragment extends DialogFragment
 
     private boolean isItemChecked(int id) {
         return mResourcesMenu.getMenu().findItem(id).isChecked();
-    }
-
-    public interface OnOptionSelectedListener {
-        void onOptionSelected(int dialogId, int position, String id, String name);
     }
 
     static class DbQuery implements Query<List<OptionAdapterValue>> {

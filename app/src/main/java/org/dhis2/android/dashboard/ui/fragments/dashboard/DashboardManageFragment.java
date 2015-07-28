@@ -45,6 +45,9 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.Dashboard$Table;
+import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+import org.dhis2.android.dashboard.ui.events.UiEvent;
+import org.dhis2.android.dashboard.ui.fragments.BaseDialogFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -54,7 +57,7 @@ import butterknife.OnFocusChange;
 /**
  * Handles editing (changing name) and removal of given dashboard.
  */
-public final class DashboardManageFragment extends DialogFragment {
+public final class DashboardManageFragment extends BaseDialogFragment {
     private static final String TAG = DashboardManageFragment.class.getSimpleName();
 
     @Bind(R.id.fragment_bar)
@@ -134,10 +137,20 @@ public final class DashboardManageFragment extends DialogFragment {
                 mDashboard.updateDashboard(
                         mDashboardName.getText().toString());
                 mDashboardName.clearFocus();
+
+                if (isDhisServiceBound()) {
+                    getDhisService().syncDashboards();
+                    EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
+                }
                 break;
             }
             case R.id.delete_dashboard_button: {
                 mDashboard.deleteDashboard();
+
+                if (isDhisServiceBound()) {
+                    getDhisService().syncDashboards();
+                    EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
+                }
             }
             case R.id.close_dialog_button: {
                 dismiss();

@@ -107,7 +107,6 @@ public class DashboardContainerFragment extends BaseFragment
     }
 
     private void attachFragment(Fragment fragment, String tag) {
-        System.out.println("ATTACH_FRAGMENT IS CALLED");
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.fragment_content_frame, fragment, tag)
                 .commitAllowingStateLoss();

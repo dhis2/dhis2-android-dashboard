@@ -92,7 +92,8 @@ public interface DhisApi {
     @POST("/dashboards/{dashboardUId}/items/content")
     Response postDashboardItem(@Path("dashboardUId") String dashboardUId,
                                @Query("type") String type,
-                               @Query("id") String uid);
+                               @Query("id") String uid,
+                               @Body String stubBody);
 
     @DELETE("/dashboards/{dashboardUId}/items/{itemUId}")
     Response deleteDashboardItem(@Path("dashboardUId") String dashboardUId,

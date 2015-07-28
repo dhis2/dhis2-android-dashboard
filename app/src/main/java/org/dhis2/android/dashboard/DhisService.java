@@ -96,7 +96,7 @@ public final class DhisService extends Service {
             @Override
             public UiEvent inBackground() {
                 mDhisController.logOutUser();
-                return new UiEvent();
+                return new UiEvent(UiEvent.UiEventType.USER_LOG_OUT);
             }
 
             @Override
@@ -112,11 +112,6 @@ public final class DhisService extends Service {
 
             @Override
             public UserAccount execute() throws APIException {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 return mDhisController.confirmUser(credentials);
             }
         });
@@ -129,6 +124,19 @@ public final class DhisService extends Service {
             @Override
             public Object execute() throws APIException {
                 mDhisController.syncDashboardContent();
+                return new Object();
+            }
+        });
+    }
+
+    public void syncDashboardsAndContent() {
+        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS,
+                ResourceType.DASHBOARDS) {
+
+            @Override
+            public Object execute() throws APIException {
+                mDhisController.syncDashboardContent();
+                mDhisController.syncDashboards();
                 return new Object();
             }
         });

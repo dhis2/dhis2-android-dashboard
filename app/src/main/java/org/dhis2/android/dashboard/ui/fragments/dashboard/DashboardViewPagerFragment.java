@@ -51,16 +51,14 @@ import org.dhis2.android.dashboard.api.job.NetworkJob;
 import org.dhis2.android.dashboard.api.models.Access;
 import org.dhis2.android.dashboard.api.models.Dashboard;
 import org.dhis2.android.dashboard.api.models.Dashboard$Table;
-import org.dhis2.android.dashboard.api.models.DashboardItemContent;
-import org.dhis2.android.dashboard.api.models.DashboardItemContent$Table;
 import org.dhis2.android.dashboard.api.models.meta.State;
 import org.dhis2.android.dashboard.api.network.SessionManager;
 import org.dhis2.android.dashboard.api.persistence.loaders.DbLoader;
 import org.dhis2.android.dashboard.api.persistence.loaders.Query;
 import org.dhis2.android.dashboard.api.persistence.preferences.ResourceType;
 import org.dhis2.android.dashboard.ui.adapters.DashboardAdapter;
+import org.dhis2.android.dashboard.ui.events.UiEvent;
 import org.dhis2.android.dashboard.ui.fragments.BaseFragment;
-import org.dhis2.android.dashboard.ui.fragments.dashboard.DashboardItemAddFragment.OnOptionSelectedListener;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,7 +70,7 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class DashboardViewPagerFragment extends BaseFragment
         implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener,
-        ViewPager.OnPageChangeListener, OnOptionSelectedListener {
+        ViewPager.OnPageChangeListener {
 
     static final String TAG = DashboardViewPagerFragment.class.getSimpleName();
     static final String IS_LOADING = "state:isLoading";
@@ -198,15 +196,17 @@ public class DashboardViewPagerFragment extends BaseFragment
         // stub implementation
     }
 
-    @Override
-    public void onOptionSelected(int dialogId, int position, String id, String name) {
-        if (dialogId == DashboardItemAddFragment.DIALOG_ID) {
-            DashboardItemContent resource = new Select().from(DashboardItemContent.class)
-                    .where(Condition.column(DashboardItemContent$Table.UID).is(id))
-                    .querySingle();
-            Dashboard dashboard = mDashboardAdapter
-                    .getDashboard(mViewPager.getCurrentItem());
-            dashboard.addItemContent(resource);
+    @Subscribe
+    @SuppressWarnings("unused")
+    public void onUiEventReceived(UiEvent uiEvent) {
+        if (uiEvent.getEventType() == UiEvent.UiEventType.SYNC_DASHBOARDS) {
+            boolean isLoading = isDhisServiceBound() &&
+                    getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS);
+            if (isLoading) {
+                mProgressBar.setVisibility(View.VISIBLE);
+            } else {
+                mProgressBar.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
@@ -222,8 +222,10 @@ public class DashboardViewPagerFragment extends BaseFragment
     public boolean onMenuItemClicked(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_dashboard_item: {
+                long dashboardId = mDashboardAdapter
+                        .getDashboard(mViewPager.getCurrentItem()).getId();
                 DashboardItemAddFragment
-                        .newInstance(this)
+                        .newInstance(dashboardId)
                         .show(getChildFragmentManager());
                 return true;
             }
@@ -250,7 +252,7 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     private void syncDashboards() {
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboards();
+            getDhisService().syncDashboardsAndContent();
             mProgressBar.setVisibility(View.VISIBLE);
         }
     }

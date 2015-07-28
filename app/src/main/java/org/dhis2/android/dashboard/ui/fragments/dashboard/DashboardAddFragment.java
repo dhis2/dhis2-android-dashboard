@@ -40,6 +40,9 @@ import android.widget.TextView;
 
 import org.dhis2.android.dashboard.R;
 import org.dhis2.android.dashboard.api.models.Dashboard;
+import org.dhis2.android.dashboard.api.utils.EventBusProvider;
+import org.dhis2.android.dashboard.ui.events.UiEvent;
+import org.dhis2.android.dashboard.ui.fragments.BaseDialogFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -48,7 +51,7 @@ import butterknife.OnClick;
 /**
  * Fragment responsible for creation of new dashboards.
  */
-public final class DashboardAddFragment extends DialogFragment {
+public final class DashboardAddFragment extends BaseDialogFragment {
     private static final String TAG = DashboardAddFragment.class.getSimpleName();
 
     @Bind(R.id.dialog_label)
@@ -83,6 +86,12 @@ public final class DashboardAddFragment extends DialogFragment {
             Dashboard newDashboard = Dashboard
                     .createDashboard(mDashboardName.getText().toString());
             newDashboard.save();
+
+            if (isDhisServiceBound()) {
+                getDhisService().syncDashboards();
+            }
+
+            EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
         }
         dismiss();
     }
