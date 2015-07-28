@@ -133,10 +133,28 @@ public final class AccountFragment extends BaseFragment implements LoaderCallbac
         @Override
         public List<Field> query(Context context) {
             UserAccount userAccount = UserAccount.getCurrentUserAccountFromDb();
+
+            String gender = userAccount.getGender();
+            if (gender != null) {
+                switch (gender) {
+                    case "gender_female": {
+                        gender = "Female";
+                        break;
+                    }
+                    case "gender_male": {
+                        gender = "Male";
+                        break;
+                    }
+                    case "gender_other": {
+                        gender = "Other";
+                        break;
+                    }
+                }
+            }
             return Arrays.asList(
                     new Field(getString(context, R.string.first_name), userAccount.getFirstName()),
                     new Field(getString(context, R.string.surname), userAccount.getSurname()),
-                    new Field(getString(context, R.string.gender), userAccount.getGender()),
+                    new Field(getString(context, R.string.gender), gender),
                     new Field(getString(context, R.string.birthday), userAccount.getBirthday()),
                     new Field(getString(context, R.string.introduction), userAccount.getIntroduction()),
                     new Field(getString(context, R.string.education), userAccount.getEducation()),
