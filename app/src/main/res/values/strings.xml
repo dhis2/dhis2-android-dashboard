@@ -75,6 +75,7 @@
     <string name="users">Users</string>
     <string name="reports">Reports</string>
     <string name="resources">Resources</string>
+    <string name="unsupported_dashboard_item_type">Unsupported dashboard item type.</string>
     <!-- END DashboardFragment -->
 
     <!-- START Interpretations -->
@@ -86,6 +87,7 @@
     <string name="create_interpretation">Create interpretation</string>
     <string name="no_interpretations">No interpretations</string>
     <string name="successfully_created_interpretation">Successfully created interpretation</string>
+    <string name="unsupported_interpretation_type">Unsupported interpretation type.</string>
     <!-- END Interpretations -->
 
 

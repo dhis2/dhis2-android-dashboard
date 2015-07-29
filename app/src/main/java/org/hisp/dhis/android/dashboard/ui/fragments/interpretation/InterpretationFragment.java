@@ -213,8 +213,8 @@ public final class InterpretationFragment extends BaseFragment
                 break;
             }
             default: {
-                Toast.makeText(getActivity(), "Unsupported interpretation type",
-                        Toast.LENGTH_SHORT).show();
+                String message = getString(R.string.unsupported_interpretation_type);
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
             }
         }
 

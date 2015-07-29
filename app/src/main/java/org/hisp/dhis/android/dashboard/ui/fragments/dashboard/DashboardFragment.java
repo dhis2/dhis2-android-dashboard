@@ -39,6 +39,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -180,9 +181,23 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onContentClick(DashboardElement element) {
-        Intent intent = DashboardElementDetailActivity
-                .newIntentForDashboardElement(getActivity(), element.getId());
-        startActivity(intent);
+        switch (element.getDashboardItem().getType()) {
+            case DashboardItemContent.TYPE_CHART:
+            case DashboardItemContent.TYPE_EVENT_CHART:
+            case DashboardItemContent.TYPE_MAP:
+            case DashboardItemContent.TYPE_REPORT_TABLE: {
+                Intent intent = DashboardElementDetailActivity
+                        .newIntentForDashboardElement(getActivity(), element.getId());
+                startActivity(intent);
+                break;
+            }
+            default: {
+                String message = getString(R.string.unsupported_dashboard_item_type);
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
     }
 
     @Override
