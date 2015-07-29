@@ -40,9 +40,11 @@ import android.widget.EditText;
 import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
-import org.hisp.dhis.android.dashboard.api.network.APIException;
+import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -131,22 +133,29 @@ public class ConfirmUserActivity extends BaseActivity {
     public void deleteAndLogOut() {
         showProgress(true);
         getDhisService().logOutUser();
-        startActivity(new Intent(this, LauncherActivity.class));
-        finish();
     }
 
     @Subscribe
     @SuppressWarnings("unused")
-    public void onSuccess(UserAccount user) {
-        startActivity(new Intent(this, LauncherActivity.class));
-        finish();
+    public void onUiEventReceived(UiEvent event) {
+        if (event.getEventType() == UiEvent.UiEventType.USER_LOG_OUT) {
+            startActivity(new Intent(this, LauncherActivity.class));
+            finish();
+        }
     }
 
     @Subscribe
     @SuppressWarnings("unused")
-    public void onFailure(APIException apiException) {
-        hideProgress(true);
-        showApiExceptionMessage(apiException);
+    public void onNetworkResultReceived(NetworkJob.NetworkJobResult<UserAccount> result) {
+        if (result.getResourceType() == ResourceType.USERS) {
+            if (result.getResponseHolder().getApiException() == null) {
+                startActivity(new Intent(this, LauncherActivity.class));
+                finish();
+            } else {
+                hideProgress(true);
+                showApiExceptionMessage(result.getResponseHolder().getApiException());
+            }
+        }
     }
 
     protected void showProgress(boolean withAnimation) {

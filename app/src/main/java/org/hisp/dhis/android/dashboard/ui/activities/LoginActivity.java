@@ -82,10 +82,6 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        mServerUrl.setText("https://apps.dhis2.org/demo");
-        mUsername.setText("admin");
-        mPassword.setText("district");
-
         hideProgress(false);
         checkEditTextFields();
     }
