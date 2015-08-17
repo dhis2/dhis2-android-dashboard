@@ -20,7 +20,7 @@
     <!-- END -->
 
     <!-- START ConfirmUserActivity resources -->
-    <string name="delete_and_log_out">Delete and log out</string>
+    <string name="clear_and_log_out">Clear and log out</string>
     <string name="re_log_in">Re-Log In</string>
     <!-- END -->
 

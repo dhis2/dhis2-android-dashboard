@@ -66,7 +66,7 @@
                 android:layout_height="40dp"
                 android:background="@drawable/button_red_selector"
                 android:singleLine="true"
-                android:text="@string/delete_and_log_out"
+                android:text="@string/clear_and_log_out"
                 android:textColor="@color/white"
                 app:font="@string/medium_font_name"/>
 
