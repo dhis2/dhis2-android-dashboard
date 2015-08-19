@@ -36,6 +36,9 @@ import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Table(databaseName = DbDhis.NAME)
 public final class DashboardFlow extends BaseIdentifiableObjectFlow {
 
@@ -81,5 +84,17 @@ public final class DashboardFlow extends BaseIdentifiableObjectFlow {
         dashboard.setDisplayName(dashboardFlow.getDisplayName());
         dashboard.setState(dashboardFlow.getState());
         return dashboard;
+    }
+
+    public static List<Dashboard> toModels(List<DashboardFlow> dashboardFlows) {
+        List<Dashboard> dashboards = new ArrayList<>();
+
+        if (dashboardFlows != null && !dashboardFlows.isEmpty()) {
+            for (DashboardFlow dashboardFlow : dashboardFlows) {
+                dashboards.add(toModel(dashboardFlow));
+            }
+        }
+
+        return dashboards;
     }
 }

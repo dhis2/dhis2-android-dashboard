@@ -1,12 +1,14 @@
 package org.hisp.dhis.android.dashboard.api.models.entities;
 
 import org.hisp.dhis.android.dashboard.api.models.entities.common.IStore;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElementStore;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItemStore;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardStore;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.IDashboardElementStore;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.IDashboardItemStore;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.IDashboardStore;
 
 /**
  * Created by arazabishov on 8/18/15.
@@ -14,9 +16,9 @@ import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardSt
 public final class Models {
     private static Models models;
 
-    private final IStore<Dashboard> dashboardRepository;
-    private final IStore<DashboardItem> dashboardItemRepository;
-    private final IStore<DashboardElement> dashboardElementRepository;
+    private final IDashboardStore dashboardRepository;
+    private final IDashboardItemStore dashboardItemRepository;
+    private final IDashboardElementStore dashboardElementRepository;
 
     public Models() {
         dashboardRepository = new DashboardStore();
@@ -32,11 +34,11 @@ public final class Models {
         return models;
     }
 
-    public static IStore<Dashboard> dashboards() {
+    public static IDashboardStore dashboards() {
         return getInstance().dashboardRepository;
     }
 
-    public static IStore<DashboardItem> dashboardItems() {
+    public static IDashboardItemStore dashboardItems() {
         return getInstance().dashboardItemRepository;
     }
 
