@@ -34,6 +34,10 @@ import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.IdentifiableObject;
 import org.joda.time.DateTime;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 public class BaseIdentifiableObjectFlow extends BaseModel implements IdentifiableObject {
 
     @Column(name = "id")
@@ -126,5 +130,17 @@ public class BaseIdentifiableObjectFlow extends BaseModel implements Identifiabl
     @Override
     public void setAccess(Access access) {
         this.access = access;
+    }
+
+    public static <T extends IdentifiableObject> Map<String, T> toMap(Collection<T> objects) {
+        Map<String, T> map = new HashMap<>();
+        if (objects != null && objects.size() > 0) {
+            for (T object : objects) {
+                if (object.getUId() != null) {
+                    map.put(object.getUId(), object);
+                }
+            }
+        }
+        return map;
     }
 }
