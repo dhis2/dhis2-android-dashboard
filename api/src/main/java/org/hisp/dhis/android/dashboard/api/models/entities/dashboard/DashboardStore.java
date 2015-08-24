@@ -79,6 +79,11 @@ public final class DashboardStore implements IDashboardStore {
         return DashboardFlow.toModels(dashboardFlows);
     }
 
+    @Override
+    public List<Dashboard> filter(State state) {
+        return null;
+    }
+
     private static Condition isState(State state) {
         return Condition.column(DashboardFlow$Table
                 .STATE).is(state.toString());

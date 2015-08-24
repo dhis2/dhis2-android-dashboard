@@ -4,7 +4,6 @@ import com.raizlabs.android.dbflow.runtime.TransactionManager;
 
 import org.hisp.dhis.android.dashboard.api.models.entities.common.IStore;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.IdentifiableObject;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.BaseIdentifiableObjectFlow;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 
 import java.util.ArrayList;
@@ -41,23 +40,7 @@ public final class DbUtils {
             @Override
             public void run() {
                 for (DbOperation operation : operations) {
-                    switch (operation.getAction()) {
-                        case INSERT: {
-                            operation.getModel().insert();
-                            break;
-                        }
-                        case UPDATE: {
-                            operation.getModel().update();
-                            break;
-                        }
-                        case SAVE:
-                            operation.getModel().save();
-                            break;
-                        case DELETE: {
-                            operation.getModel().delete();
-                            break;
-                        }
-                    }
+                    operation.execute();
                 }
             }
         });
@@ -70,8 +53,9 @@ public final class DbUtils {
      * @param oldModels List of models from local storage.
      * @param newModels List of models of distance instance of DHIS.
      */
-    public static <T extends IdentifiableObject & IStore> List<DbOperation> createOperations(List<T> oldModels,
-                                                                                             List<T> newModels) {
+    public static <T extends IdentifiableObject> List<DbOperation> createOperations(IStore<T> modelStore,
+                                                                                    List<T> oldModels,
+                                                                                    List<T> newModels) {
         List<DbOperation> ops = new ArrayList<>();
 
         Map<String, T> newModelsMap = toMap(newModels);
@@ -88,7 +72,8 @@ public final class DbUtils {
             // if there is no particular model with given uid in list of
             // actual (up to date) items, it means it was removed on the server side
             if (newModel == null) {
-                ops.add(DbOperation.delete(oldModel));
+                ops.add(DbOperation.with(modelStore)
+                        .delete(oldModel));
 
                 // in case if there is no new model object,
                 // we can jump to next iteration.
@@ -101,7 +86,8 @@ public final class DbUtils {
                 // note, we need to pass database primary id to updated model
                 // in order to avoid creation of new object.
                 newModel.setId(oldModel.getId());
-                ops.add(DbOperation.update(newModel));
+                ops.add(DbOperation.with(modelStore)
+                        .update(newModel));
             }
 
             // as we have processed given old (persisted) model,
@@ -112,7 +98,8 @@ public final class DbUtils {
         // Inserting new items.
         for (String newModelKey : newModelsMap.keySet()) {
             T item = newModelsMap.get(newModelKey);
-            ops.add(DbOperation.insert(item));
+            ops.add(DbOperation.with(modelStore)
+                    .insert(item));
         }
 
         return ops;

@@ -72,6 +72,17 @@ public final class RepoManager {
         return restAdapter.create(DhisApi.class);
     }
 
+    public static DhisApi2 createService2(HttpUrl serverUrl, Credentials credentials) {
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(provideServerUrl(serverUrl))
+                .setConverter(provideJacksonConverter())
+                .setClient(provideOkClient(credentials))
+                .setErrorHandler(new RetrofitErrorHandler())
+                .setLogLevel(RestAdapter.LogLevel.BASIC)
+                .build();
+        return restAdapter.create(DhisApi2.class);
+    }
+
     private static String provideServerUrl(HttpUrl httpUrl) {
         return httpUrl.newBuilder()
                 .addPathSegment("api")

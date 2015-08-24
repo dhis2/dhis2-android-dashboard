@@ -32,10 +32,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static android.text.TextUtils.isEmpty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class DashboardItem extends BaseIdentifiableObject {
@@ -193,5 +197,95 @@ public final class DashboardItem extends BaseIdentifiableObject {
 
     public void setMessages(boolean messages) {
         this.messages = messages;
+    }
+
+    public void setDashboardElements(List<DashboardElement> dashboardElements) {
+        if (isEmpty(getType())) {
+            return;
+        }
+
+        if (dashboardElements == null || dashboardElements.isEmpty()) {
+            return;
+        }
+
+        switch (getType()) {
+            case DashboardItemContent.TYPE_CHART: {
+                setChart(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_EVENT_CHART: {
+                setEventChart(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_MAP: {
+                setMap(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_REPORT_TABLE: {
+                setReportTable(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
+                setEventReport(dashboardElements.get(0));
+                break;
+            }
+            case DashboardItemContent.TYPE_USERS: {
+                setUsers(dashboardElements);
+                break;
+            }
+            case DashboardItemContent.TYPE_REPORTS: {
+                setReports(dashboardElements);
+                break;
+            }
+            case DashboardItemContent.TYPE_RESOURCES: {
+                setResources(dashboardElements);
+                break;
+            }
+        }
+    }
+
+    public List<DashboardElement> getDashboardElements() {
+
+        List<DashboardElement> elements = new ArrayList<>();
+        if (isEmpty(getType())) {
+            return elements;
+        }
+
+        switch (getType()) {
+            case DashboardItemContent.TYPE_CHART: {
+                elements.add(getChart());
+                break;
+            }
+            case DashboardItemContent.TYPE_EVENT_CHART: {
+                elements.add(getEventChart());
+                break;
+            }
+            case DashboardItemContent.TYPE_MAP: {
+                elements.add(getMap());
+                break;
+            }
+            case DashboardItemContent.TYPE_REPORT_TABLE: {
+                elements.add(getReportTable());
+                break;
+            }
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
+                elements.add(getEventReport());
+                break;
+            }
+            case DashboardItemContent.TYPE_USERS: {
+                elements.addAll(getUsers());
+                break;
+            }
+            case DashboardItemContent.TYPE_REPORTS: {
+                elements.addAll(getReports());
+                break;
+            }
+            case DashboardItemContent.TYPE_RESOURCES: {
+                elements.addAll(getResources());
+                break;
+            }
+        }
+
+        return elements;
     }
 }

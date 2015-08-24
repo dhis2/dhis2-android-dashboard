@@ -28,43 +28,39 @@
 
 package org.hisp.dhis.android.dashboard.api.controllers;
 
-import android.net.Uri;
-
 import org.hisp.dhis.android.dashboard.api.models.entities.Models;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbUtils;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
-import org.hisp.dhis.android.dashboard.api.network.DhisApi;
+import org.hisp.dhis.android.dashboard.api.network.DhisApi2;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import retrofit.client.Header;
-import retrofit.client.Response;
-
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.merge;
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toListIds;
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toMap;
-import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
-import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiException;
+import static org.hisp.dhis.android.dashboard.api.models.entities.common.BaseIdentifiableObject.merge;
+import static org.hisp.dhis.android.dashboard.api.models.entities.common.BaseIdentifiableObject.toListIds;
+import static org.hisp.dhis.android.dashboard.api.models.entities.common.BaseIdentifiableObject.toMap;
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
 final class DashboardController2 {
-    final DhisApi mDhisApi;
+    // final DhisApi mDhisApi;
+    final DhisApi2 mDhisApi2;
 
-    public DashboardController2(DhisApi dhisApi) {
-        mDhisApi = dhisApi;
+    public DashboardController2(DhisApi2 dhisApi2) {
+        // mDhisApi = dhisApi;
+        mDhisApi2 = dhisApi2;
     }
 
     /* this method subtracts content of bList from aList */
@@ -116,21 +112,24 @@ final class DashboardController2 {
         getDashboardDataFromServer();
 
         /* now we can try to send changes made locally to server */
-        sendLocalChanges();
+        // sendLocalChanges();
     }
 
     private void getDashboardDataFromServer() throws APIException {
         DateTime lastUpdated = DateTimeManager.getInstance()
                 .getLastUpdated(ResourceType.DASHBOARDS);
-        DateTime serverDateTime = mDhisApi.getSystemInfo()
+        DateTime serverDateTime = mDhisApi2.getSystemInfo()
                 .getServerDate();
 
         List<Dashboard> dashboards = updateDashboards(lastUpdated);
         List<DashboardItem> dashboardItems = updateDashboardItems(dashboards, lastUpdated);
+        List<State> states = Arrays.asList(State.TO_DELETE, State.SYNCED, State.TO_UPDATE);
 
         Queue<DbOperation> operations = new LinkedList<>();
-        operations.addAll(DbUtils.createOperations(Models.dashboards().query(State.TO_DELETE, State.SYNCED, State.TO_UPDATE), dashboards));
-        operations.addAll(DbUtils.createOperations(Models.dashboardItems().query(), dashboardItems));
+        operations.addAll(DbUtils.createOperations(Models.dashboards(),
+                Models.dashboards().query(states), dashboards));
+        operations.addAll(DbUtils.createOperations(Models.dashboardItems(),
+                Models.dashboardItems().query(states), dashboardItems));
         operations.addAll(createOperations(dashboardItems));
 
         DbUtils.applyBatch(operations);
@@ -162,11 +161,11 @@ final class DashboardController2 {
 
         // List of dashboards with UUIDs (without content). This list is used
         // only to determine what was removed on server.
-        List<Dashboard> actualDashboards = unwrapResponse(mDhisApi
+        List<Dashboard> actualDashboards = unwrapResponse(mDhisApi2
                 .getDashboards(QUERY_MAP_BASIC), "dashboards");
 
         // List of updated dashboards with content.
-        List<Dashboard> updatedDashboards = unwrapResponse(mDhisApi
+        List<Dashboard> updatedDashboards = unwrapResponse(mDhisApi2
                 .getDashboards(QUERY_MAP_FULL), "dashboards");
 
         // Building dashboard item to dashboard relationship.
@@ -183,16 +182,20 @@ final class DashboardController2 {
         }
 
         // List of persisted dashboards.
-        List<Dashboard> persistedDashboards = queryDashboards();
+        List<State> states = Arrays.asList(State.SYNCED, State.TO_DELETE, State.TO_UPDATE);
+        List<Dashboard> persistedDashboards = Models.dashboards().query(states);
+        ;
         if (persistedDashboards != null && !persistedDashboards.isEmpty()) {
             for (Dashboard dashboard : persistedDashboards) {
-                List<DashboardItem> items = queryDashboardItems(dashboard);
+                List<DashboardItem> items = Models.dashboardItems().query(dashboard, states);
                 if (items == null || items.isEmpty()) {
                     continue;
                 }
 
                 for (DashboardItem item : items) {
-                    item.setDashboardElements(queryDashboardElements(item));
+                    List<DashboardElement> dashboardElements
+                            = Models.dashboardElements().query(item, states);
+                    item.setDashboardElements(dashboardElements);
                 }
                 dashboard.setDashboardItems(items);
             }
@@ -220,12 +223,13 @@ final class DashboardController2 {
         }
 
         // List of persisted dashboard items
+        List<State> states = Arrays.asList(State.TO_DELETE, State.SYNCED, State.TO_UPDATE);
         Map<String, DashboardItem> persistedDashboardItems
-                = toMap(queryDashboardItems(null));
+                = toMap(Models.dashboardItems().query(states));
 
         // List of updated dashboard items. We need this only to get
         // information about updates of item shape.
-        List<DashboardItem> updatedItems = unwrapResponse(mDhisApi
+        List<DashboardItem> updatedItems = unwrapResponse(mDhisApi2
                 .getDashboardItems(QUERY_MAP_BASIC), "dashboardItems");
         // Map of items where keys are UUIDs.
         Map<String, DashboardItem> updatedItemsMap = toMap(updatedItems);
@@ -261,9 +265,11 @@ final class DashboardController2 {
 
     private List<DbOperation> createOperations(List<DashboardItem> refreshedItems) {
         List<DbOperation> dbOperations = new ArrayList<>();
+        List<State> states = Arrays.asList(State.TO_DELETE, State.SYNCED, State.TO_UPDATE);
+
         for (DashboardItem refreshedItem : refreshedItems) {
             List<DashboardElement> persistedElementList
-                    = queryDashboardElements(refreshedItem);
+                    = Models.dashboardElements().query(refreshedItem, states);
             List<DashboardElement> refreshedElementList =
                     refreshedItem.getDashboardElements();
 
@@ -284,7 +290,9 @@ final class DashboardController2 {
             for (String elementToDelete : itemIdsToDelete) {
                 int index = persistedElementIds.indexOf(elementToDelete);
                 DashboardElement element = persistedElementList.get(index);
-                dbOperations.add(DbOperation.delete(element));
+                dbOperations.add(DbOperation
+                        .with(Models.dashboardElements())
+                        .delete(element));
 
                 persistedElementIds.remove(index);
                 persistedElementList.remove(index);
@@ -293,7 +301,9 @@ final class DashboardController2 {
             for (String elementToInsert : itemIdsToInsert) {
                 int index = refreshedElementIds.indexOf(elementToInsert);
                 DashboardElement dashboardElement = refreshedElementList.get(index);
-                dbOperations.add(DbOperation.insert(dashboardElement));
+                dbOperations.add(DbOperation
+                        .with(Models.dashboardElements())
+                        .insert(dashboardElement));
 
                 refreshedElementIds.remove(index);
                 refreshedElementList.remove(index);
@@ -303,6 +313,7 @@ final class DashboardController2 {
         return dbOperations;
     }
 
+    /*
     private void sendLocalChanges() throws APIException {
         sendDashboardChanges();
         sendDashboardItemChanges();
@@ -584,4 +595,5 @@ final class DashboardController2 {
             handleApiException(apiException);
         }
     }
+    */
 }

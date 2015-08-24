@@ -42,7 +42,7 @@ public final class Models {
         return getInstance().dashboardItemRepository;
     }
 
-    public static IStore<DashboardElement> dashboardElements() {
+    public static IDashboardElementStore dashboardElements() {
         return getInstance().dashboardElementRepository;
     }
 }

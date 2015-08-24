@@ -43,13 +43,12 @@ public class DashboardElementStore implements IDashboardElementStore {
     }
 
     @Override
-    public List<DashboardElement> query(DashboardItem dashboardItem, State... states) {
-        List<State> statesList = Arrays.asList(states);
-        if (statesList.isEmpty()) {
+    public List<DashboardElement> query(DashboardItem dashboardItem, List<State> states) {
+        if (states != null && states.isEmpty()) {
             throw new IllegalArgumentException("Please, provide at least one State");
         }
 
-        Condition.CombinedCondition combinedCondition = buildCombinedCondition(statesList);
+        Condition.CombinedCondition combinedCondition = buildCombinedCondition(states);
         combinedCondition = combinedCondition.and(Condition
                 .column(DashboardElementFlow$Table
                         .DASHBOARDITEM_DASHBOARDITEM).is(dashboardItem.getId()));
@@ -61,6 +60,11 @@ public class DashboardElementStore implements IDashboardElementStore {
 
         // converting flow models to Dashboard
         return DashboardElementFlow.toModels(elementFlows);
+    }
+
+    @Override
+    public List<DashboardElement> filter(DashboardItem dashboardItem, State state) {
+        return null;
     }
 
     private static Condition.CombinedCondition buildCombinedCondition(List<State> states) {
