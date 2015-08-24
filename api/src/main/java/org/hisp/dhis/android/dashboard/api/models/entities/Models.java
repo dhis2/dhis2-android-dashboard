@@ -1,9 +1,6 @@
 package org.hisp.dhis.android.dashboard.api.models.entities;
 
-import org.hisp.dhis.android.dashboard.api.models.entities.common.IStore;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElementStore;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItemStore;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardStore;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.IDashboardElementStore;
