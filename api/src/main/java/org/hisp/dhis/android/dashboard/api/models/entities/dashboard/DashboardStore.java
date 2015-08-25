@@ -46,7 +46,6 @@ public final class DashboardStore implements IDashboardStore {
 
     @Override
     public List<Dashboard> query() {
-
         return null;
     }
 
@@ -81,7 +80,18 @@ public final class DashboardStore implements IDashboardStore {
 
     @Override
     public List<Dashboard> filter(State state) {
-        return null;
+        if (state == null) {
+            throw new IllegalArgumentException("Please, provide State");
+        }
+
+        List<DashboardFlow> dashboardFlows = new Select()
+                .from(DashboardFlow.class)
+                .where(Condition.column(DashboardFlow$Table
+                        .STATE).isNot(state.toString()))
+                .queryList();
+
+        // converting flow models to Dashboard
+        return DashboardFlow.toModels(dashboardFlows);
     }
 
     private static Condition isState(State state) {

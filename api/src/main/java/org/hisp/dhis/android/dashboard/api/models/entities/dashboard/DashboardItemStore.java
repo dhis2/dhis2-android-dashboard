@@ -80,8 +80,36 @@ public class DashboardItemStore implements IDashboardItemStore {
     }
 
     @Override
+    public List<DashboardItem> filter(State state) {
+        if (state == null) {
+            throw new IllegalArgumentException("Please, provide State");
+        }
+
+        List<DashboardItemFlow> dashboardItemFlows = new Select()
+                .from(DashboardItemFlow.class)
+                .where(Condition.column(DashboardItemFlow$Table
+                        .STATE).isNot(state.toString()))
+                .queryList();
+
+        return DashboardItemFlow.toModels(dashboardItemFlows);
+    }
+
+    @Override
     public List<DashboardItem> filter(Dashboard dashboard, State state) {
-        return null;
+        if (state == null) {
+            throw new IllegalArgumentException("Please, provide State");
+        }
+
+        List<DashboardItemFlow> dashboardItemFlows = new Select()
+                .from(DashboardItemFlow.class)
+                .where(Condition.CombinedCondition
+                        .begin(Condition.column(DashboardItemFlow$Table
+                                .STATE).isNot(state.toString()))
+                        .and(Condition.column(DashboardItemFlow$Table
+                                .DASHBOARD_DASHBOARD).is(dashboard.getId())))
+                .queryList();
+
+        return DashboardItemFlow.toModels(dashboardItemFlows);
     }
 
     private static Condition.CombinedCondition buildCombinedCondition(List<State> states) {

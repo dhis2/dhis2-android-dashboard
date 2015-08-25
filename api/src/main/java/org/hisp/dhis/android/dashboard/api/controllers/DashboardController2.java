@@ -42,7 +42,6 @@ import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,7 +111,7 @@ final class DashboardController2 {
         getDashboardDataFromServer();
 
         /* now we can try to send changes made locally to server */
-        // sendLocalChanges();
+        sendLocalChanges();
     }
 
     private void getDashboardDataFromServer() throws APIException {
@@ -123,13 +122,12 @@ final class DashboardController2 {
 
         List<Dashboard> dashboards = updateDashboards(lastUpdated);
         List<DashboardItem> dashboardItems = updateDashboardItems(dashboards, lastUpdated);
-        List<State> states = Arrays.asList(State.TO_DELETE, State.SYNCED, State.TO_UPDATE);
 
         Queue<DbOperation> operations = new LinkedList<>();
         operations.addAll(DbUtils.createOperations(Models.dashboards(),
-                Models.dashboards().query(states), dashboards));
+                Models.dashboards().filter(State.TO_POST), dashboards));
         operations.addAll(DbUtils.createOperations(Models.dashboardItems(),
-                Models.dashboardItems().query(states), dashboardItems));
+                Models.dashboardItems().filter(State.TO_POST), dashboardItems));
         operations.addAll(createOperations(dashboardItems));
 
         DbUtils.applyBatch(operations);
@@ -182,19 +180,18 @@ final class DashboardController2 {
         }
 
         // List of persisted dashboards.
-        List<State> states = Arrays.asList(State.SYNCED, State.TO_DELETE, State.TO_UPDATE);
-        List<Dashboard> persistedDashboards = Models.dashboards().query(states);
-        ;
+        List<Dashboard> persistedDashboards = Models.dashboards().filter(State.TO_POST);
         if (persistedDashboards != null && !persistedDashboards.isEmpty()) {
             for (Dashboard dashboard : persistedDashboards) {
-                List<DashboardItem> items = Models.dashboardItems().query(dashboard, states);
+                List<DashboardItem> items = Models.dashboardItems()
+                        .filter(dashboard, State.TO_POST);
                 if (items == null || items.isEmpty()) {
                     continue;
                 }
 
                 for (DashboardItem item : items) {
                     List<DashboardElement> dashboardElements
-                            = Models.dashboardElements().query(item, states);
+                            = Models.dashboardElements().filter(item, State.TO_POST);
                     item.setDashboardElements(dashboardElements);
                 }
                 dashboard.setDashboardItems(items);
@@ -223,9 +220,8 @@ final class DashboardController2 {
         }
 
         // List of persisted dashboard items
-        List<State> states = Arrays.asList(State.TO_DELETE, State.SYNCED, State.TO_UPDATE);
         Map<String, DashboardItem> persistedDashboardItems
-                = toMap(Models.dashboardItems().query(states));
+                = toMap(Models.dashboardItems().filter(State.TO_POST));
 
         // List of updated dashboard items. We need this only to get
         // information about updates of item shape.
@@ -265,11 +261,10 @@ final class DashboardController2 {
 
     private List<DbOperation> createOperations(List<DashboardItem> refreshedItems) {
         List<DbOperation> dbOperations = new ArrayList<>();
-        List<State> states = Arrays.asList(State.TO_DELETE, State.SYNCED, State.TO_UPDATE);
 
         for (DashboardItem refreshedItem : refreshedItems) {
             List<DashboardElement> persistedElementList
-                    = Models.dashboardElements().query(refreshedItem, states);
+                    = Models.dashboardElements().filter(refreshedItem, State.TO_POST);
             List<DashboardElement> refreshedElementList =
                     refreshedItem.getDashboardElements();
 
@@ -313,14 +308,14 @@ final class DashboardController2 {
         return dbOperations;
     }
 
-    /*
+
     private void sendLocalChanges() throws APIException {
         sendDashboardChanges();
         sendDashboardItemChanges();
         sendDashboardElements();
     }
 
-    private void sendDashboardChanges() throws APIException {
+    /* private void sendDashboardChanges() throws APIException {
         // we need to sort dashboards in natural order.
         // In order they were inserted in local database.
         List<Dashboard> dashboards = new Select()

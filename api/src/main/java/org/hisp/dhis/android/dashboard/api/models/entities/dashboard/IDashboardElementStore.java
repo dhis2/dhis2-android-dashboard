@@ -10,5 +10,6 @@ import java.util.List;
  */
 public interface IDashboardElementStore extends IStore<DashboardElement> {
     List<DashboardElement> query(DashboardItem dashboardItem, List<State> states);
+
     List<DashboardElement> filter(DashboardItem dashboardItem, State state);
 }
