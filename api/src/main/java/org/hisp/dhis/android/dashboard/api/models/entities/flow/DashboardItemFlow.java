@@ -103,6 +103,7 @@ public final class DashboardItemFlow extends BaseIdentifiableObjectFlow {
     public static DashboardItemFlow fromModel(DashboardItem dashboardItem) {
         DashboardItemFlow dashboardItemFlow = new DashboardItemFlow();
         dashboardItemFlow.setId(dashboardItem.getId());
+        dashboardItemFlow.setUId(dashboardItem.getUId());
         dashboardItemFlow.setCreated(dashboardItem.getCreated());
         dashboardItemFlow.setLastUpdated(dashboardItem.getLastUpdated());
         dashboardItemFlow.setAccess(dashboardItem.getAccess());
@@ -118,6 +119,7 @@ public final class DashboardItemFlow extends BaseIdentifiableObjectFlow {
     public static DashboardItem toModel(DashboardItemFlow dashboardItemFlow) {
         DashboardItem dashboardItem = new DashboardItem();
         dashboardItem.setId(dashboardItemFlow.getId());
+        dashboardItem.setUId(dashboardItemFlow.getUId());
         dashboardItem.setCreated(dashboardItemFlow.getCreated());
         dashboardItem.setLastUpdated(dashboardItemFlow.getLastUpdated());
         dashboardItem.setAccess(dashboardItemFlow.getAccess());

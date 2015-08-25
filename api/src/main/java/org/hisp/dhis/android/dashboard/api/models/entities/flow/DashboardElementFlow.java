@@ -82,6 +82,7 @@ public final class DashboardElementFlow extends BaseIdentifiableObjectFlow {
     public static DashboardElementFlow fromModel(DashboardElement dashboardElement) {
         DashboardElementFlow dashboardElementFlow = new DashboardElementFlow();
         dashboardElementFlow.setId(dashboardElement.getId());
+        dashboardElementFlow.setUId(dashboardElement.getUId());
         dashboardElementFlow.setCreated(dashboardElement.getCreated());
         dashboardElementFlow.setLastUpdated(dashboardElement.getLastUpdated());
         dashboardElementFlow.setAccess(dashboardElement.getAccess());
@@ -96,6 +97,7 @@ public final class DashboardElementFlow extends BaseIdentifiableObjectFlow {
     public static DashboardElement toModel(DashboardElementFlow dashboardElementFlow) {
         DashboardElement dashboardElement = new DashboardElement();
         dashboardElement.setId(dashboardElementFlow.getId());
+        dashboardElement.setUId(dashboardElementFlow.getUId());
         dashboardElement.setCreated(dashboardElementFlow.getCreated());
         dashboardElement.setLastUpdated(dashboardElementFlow.getLastUpdated());
         dashboardElement.setAccess(dashboardElementFlow.getAccess());
