@@ -32,23 +32,13 @@ package org.hisp.dhis.android.dashboard.api.persistence.loaders;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.raizlabs.android.dbflow.structure.Model;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
 
 public class DbLoader<T> extends AsyncTaskLoader<T> {
-    // private final List<Class<? extends Model>> mModelClasses;
-
-    // List of BaseModel.Action on which
-    // we want the Loader to react
-    // private final List<BaseModel.Action> mActions;
-
     // Model Classes which we want to observe
     private final List<TrackedTable> mTrackedTables;
 
@@ -173,37 +163,5 @@ public class DbLoader<T> extends AsyncTaskLoader<T> {
         // For a simple List, there is nothing to do. For something like a Cursor, we
         // would close it in this method. All resources associated with the Loader
         // should be released here.
-    }
-
-    public static class TrackedTable {
-        private final Class<? extends Model> mTrackedModel;
-        private final List<BaseModel.Action> mActions;
-
-        public TrackedTable(Class<? extends Model> trackedModel) {
-            this(trackedModel, Arrays.asList(
-                    BaseModel.Action.INSERT,
-                    BaseModel.Action.UPDATE,
-                    BaseModel.Action.DELETE,
-                    BaseModel.Action.SAVE));
-        }
-
-        public TrackedTable(Class<? extends Model> trackedModel,
-                            BaseModel.Action action) {
-            this(trackedModel, Arrays.asList(action));
-        }
-
-        public TrackedTable(Class<? extends Model> trackedModel,
-                            List<BaseModel.Action> actions) {
-            mTrackedModel = trackedModel;
-            mActions = actions;
-        }
-
-        public Class<? extends Model> getTrackedModel() {
-            return mTrackedModel;
-        }
-
-        public List<BaseModel.Action> getActions() {
-            return mActions;
-        }
     }
 }
