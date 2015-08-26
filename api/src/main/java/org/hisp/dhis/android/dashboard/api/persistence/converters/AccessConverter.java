@@ -41,7 +41,7 @@ import java.io.IOException;
 
 @SuppressWarnings("unused")
 @com.raizlabs.android.dbflow.annotation.TypeConverter
-public final class AccessConverter2 extends TypeConverter<String, Access> {
+public final class AccessConverter extends TypeConverter<String, Access> {
 
     @Override public String getDBValue(Access model) {
         String access = null;
