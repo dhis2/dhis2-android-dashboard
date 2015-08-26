@@ -26,16 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dashboard.api.models;
+package org.hisp.dhis.android.dashboard.api.models.entities.dashboard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.NotNull;
-import com.raizlabs.android.dbflow.annotation.Table;
 
-import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.BaseIdentifiableObject;
 
-@Table(databaseName = DbDhis.NAME)
 public final class DashboardItemContent extends BaseIdentifiableObject {
     public static final String TYPE_CHART = "chart";
     public static final String TYPE_EVENT_CHART = "eventChart";
@@ -49,19 +45,15 @@ public final class DashboardItemContent extends BaseIdentifiableObject {
     public static final String TYPE_MESSAGES = "messages";
 
     @JsonIgnore
-    @Column(name = "type")
-    @NotNull
     String type;
 
     public DashboardItemContent() {
     }
 
-    @JsonIgnore
     public String getType() {
         return type;
     }
 
-    @JsonIgnore
     public void setType(String type) {
         this.type = type;
     }

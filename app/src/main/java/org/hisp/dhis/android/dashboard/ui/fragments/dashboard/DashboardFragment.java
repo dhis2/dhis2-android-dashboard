@@ -45,6 +45,7 @@ import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.entities.Models;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
@@ -192,9 +193,7 @@ public class DashboardFragment extends BaseFragment
                 String message = getString(R.string.unsupported_dashboard_item_type);
                 Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
             }
-
         }
-
     }
 
     @Override
@@ -239,22 +238,20 @@ public class DashboardFragment extends BaseFragment
 
         @Override
         public List<DashboardItem> query(Context context) {
-            /* List<DashboardItem> dashboardItems = new Select()
-                    .from(DashboardItem.class)
-                    .where(
-                            Condition.column(DashboardItem$Table.DASHBOARD_DASHBOARD).is(mDashboardId),
-                            Condition.column(DashboardItem$Table.STATE).isNot(State.TO_DELETE.toString()),
-                            Condition.column(DashboardItem$Table.TYPE).isNot(DashboardItemContent.TYPE_MESSAGES))
-                    .queryList();
+            // temporary workaround
+            Dashboard dashboard = new Dashboard();
+            dashboard.setId(mDashboardId);
+
+            List<DashboardItem> dashboardItems = Models.dashboardItems()
+                    .filter(dashboard, State.TO_DELETE, DashboardItemContent.TYPE_MESSAGES);
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {
-                    List<DashboardElement> dashboardElements
-                            = dashboardItem.queryRelatedDashboardElements();
+                    List<DashboardElement> dashboardElements = Models.dashboardElements()
+                            .filter(dashboardItem, State.TO_DELETE);
                     dashboardItem.setDashboardElements(dashboardElements);
                 }
-            } */
-            // return dashboardItems;
-            return null;
+            }
+            return dashboardItems;
         }
     }
 }

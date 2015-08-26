@@ -26,43 +26,67 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dashboard.api.models;
+package org.hisp.dhis.android.dashboard.api.models.entities.flow;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.Table;
 
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 
-@Table(databaseName = DbDhis.NAME)
-public final class DashboardItemContent extends BaseIdentifiableObject {
-    public static final String TYPE_CHART = "chart";
-    public static final String TYPE_EVENT_CHART = "eventChart";
-    public static final String TYPE_MAP = "map";
-    public static final String TYPE_REPORT_TABLE = "reportTable";
-    public static final String TYPE_EVENT_REPORT = "eventReport";
-    public static final String TYPE_USERS = "users";
-    public static final String TYPE_REPORTS = "reports";
-    public static final String TYPE_RESOURCES = "resources";
-    public static final String TYPE_REPORT_TABLES = "reportTables";
-    public static final String TYPE_MESSAGES = "messages";
+import java.util.ArrayList;
+import java.util.List;
 
-    @JsonIgnore
+@Table(databaseName = DbDhis.NAME)
+public final class DashboardItemContent$Flow extends BaseIdentifiableObject$Flow {
+
     @Column(name = "type")
     @NotNull
     String type;
 
-    public DashboardItemContent() {
+    public DashboardItemContent$Flow() {
     }
 
-    @JsonIgnore
     public String getType() {
         return type;
     }
 
-    @JsonIgnore
     public void setType(String type) {
         this.type = type;
+    }
+
+    public static DashboardItemContent toModel(DashboardItemContent$Flow contentFlow) {
+        DashboardItemContent dashboardItemContent = new DashboardItemContent();
+        dashboardItemContent.setId(contentFlow.getId());
+        dashboardItemContent.setUId(contentFlow.getUId());
+        dashboardItemContent.setCreated(contentFlow.getCreated());
+        dashboardItemContent.setLastUpdated(contentFlow.getLastUpdated());
+        dashboardItemContent.setName(contentFlow.getName());
+        dashboardItemContent.setDisplayName(contentFlow.getDisplayName());
+        return dashboardItemContent;
+    }
+
+    public static List<DashboardItemContent> toModels(List<DashboardItemContent$Flow> flows) {
+        List<DashboardItemContent> dashboardItemContents = new ArrayList<>();
+
+        if (flows != null && flows.isEmpty()) {
+            for (DashboardItemContent$Flow flow : flows) {
+                dashboardItemContents.add(toModel(flow));
+            }
+        }
+
+        return dashboardItemContents;
+    }
+
+    public static DashboardItemContent$Flow fromModel(DashboardItemContent content) {
+        DashboardItemContent$Flow flowModel = new DashboardItemContent$Flow();
+        flowModel.setId(content.getId());
+        flowModel.setUId(content.getUId());
+        flowModel.setCreated(content.getCreated());
+        flowModel.setLastUpdated(content.getLastUpdated());
+        flowModel.setName(content.getName());
+        flowModel.setDisplayName(content.getDisplayName());
+        return flowModel;
     }
 }

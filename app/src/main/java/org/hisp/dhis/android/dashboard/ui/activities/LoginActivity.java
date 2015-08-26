@@ -84,6 +84,10 @@ public class LoginActivity extends BaseActivity {
 
         hideProgress(false);
         checkEditTextFields();
+
+        mServerUrl.setText("https://apps.dhis2.org/demo");
+        mUsername.setText("admin");
+        mPassword.setText("district");
     }
 
     @Override

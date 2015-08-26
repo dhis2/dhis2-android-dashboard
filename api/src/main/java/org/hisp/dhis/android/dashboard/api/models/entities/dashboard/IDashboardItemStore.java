@@ -18,4 +18,6 @@ public interface IDashboardItemStore extends IStore<DashboardItem> {
     List<DashboardItem> filter(State state);
 
     List<DashboardItem> filter(Dashboard dashboard, State state);
+
+    List<DashboardItem> filter(Dashboard dashboard, State state, String type);
 }
