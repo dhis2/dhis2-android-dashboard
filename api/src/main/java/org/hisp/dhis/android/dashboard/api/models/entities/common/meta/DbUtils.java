@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.hisp.dhis.android.dashboard.api.models.entities.flow.BaseIdentifiableObjectFlow.toMap;
+import static org.hisp.dhis.android.dashboard.api.models.entities.flow.BaseIdentifiableObject$Flow.toMap;
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
 /**
@@ -48,7 +48,7 @@ public final class DbUtils {
 
     /**
      * This utility method allows to determine which type of operation to apply to
-     * each BaseIdentifiableObjectFlow depending on TimeStamp.
+     * each BaseIdentifiableObject$Flow depending on TimeStamp.
      *
      * @param oldModels List of models from local storage.
      * @param newModels List of models of distance instance of DHIS.

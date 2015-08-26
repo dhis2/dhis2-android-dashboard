@@ -47,7 +47,6 @@ import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.User$Table;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItemFlow$Table;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -76,7 +75,7 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
 
     public static InterpretationCreateFragment newInstance(long itemId) {
         Bundle args = new Bundle();
-        args.putLong(DashboardItemFlow$Table.ID, itemId);
+        // args.putLong(DashboardItemFlow$Table.ID, itemId);
 
         InterpretationCreateFragment fragment = new InterpretationCreateFragment();
         fragment.setArguments(args);
@@ -101,10 +100,10 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        long dashboardItemId = getArguments().getLong(DashboardItemFlow$Table.ID);
+        // long dashboardItemId = getArguments().getLong(DashboardItemFlow$Table.ID);
         /* mDashboardItem = new Select()
                 .from(DashboardItem.class)
-                .where(Condition.column(DashboardItemFlow$Table
+                .where(Condition.column(DashboardItem$Flow$Table
                         .ID).is(dashboardItemId))
                 .querySingle(); */
 

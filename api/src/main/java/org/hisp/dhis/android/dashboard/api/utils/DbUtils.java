@@ -64,7 +64,7 @@ public final class DbUtils {
 
     /**
      * This utility method allows to determine which type of operation to apply to
-     * each BaseIdentifiableObjectFlow depending on TimeStamp.
+     * each BaseIdentifiableObject$Flow depending on TimeStamp.
      *
      * @param oldModels List of models from local storage.
      * @param newModels List of models of distance instance of DHIS.

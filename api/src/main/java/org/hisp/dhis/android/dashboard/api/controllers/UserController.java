@@ -35,9 +35,9 @@ import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardElementFlow;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardFlow;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItemFlow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.Dashboard$Flow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardElement$Flow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItem$Flow;
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.meta.Session;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
@@ -88,9 +88,9 @@ final class UserController {
 
         // remove data
         Delete.tables(
-                DashboardFlow.class,
-                DashboardElementFlow.class,
-                DashboardItemFlow.class,
+                Dashboard$Flow.class,
+                DashboardElement$Flow.class,
+                DashboardItem$Flow.class,
                 DashboardItemContent.class,
                 Interpretation.class,
                 InterpretationComment.class,

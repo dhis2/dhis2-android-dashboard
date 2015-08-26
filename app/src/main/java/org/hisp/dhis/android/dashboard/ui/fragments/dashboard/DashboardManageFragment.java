@@ -41,7 +41,6 @@ import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardFlow$Table;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -79,7 +78,7 @@ public final class DashboardManageFragment extends BaseDialogFragment {
 
     public static DashboardManageFragment newInstance(long dashboardId) {
         Bundle args = new Bundle();
-        args.putLong(DashboardFlow$Table.ID, dashboardId);
+        // args.putLong(DashboardFlow$Table.ID, dashboardId);
 
         DashboardManageFragment fragment = new DashboardManageFragment();
         fragment.setArguments(args);
@@ -103,8 +102,8 @@ public final class DashboardManageFragment extends BaseDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         /* mDashboard = new Select()
                 .from(Dashboard.class)
-                .where(Condition.column(DashboardFlow$Table
-                        .ID).is(getArguments().getLong(DashboardFlow$Table.ID)))
+                .where(Condition.column(Dashboard$Flow$Table
+                        .ID).is(getArguments().getLong(Dashboard$Flow$Table.ID)))
                 .querySingle(); */
 
         ButterKnife.bind(this, view);

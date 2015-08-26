@@ -4,8 +4,8 @@ import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItemFlow;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItemFlow$Table;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItem$Flow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItem$Flow$Table;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,8 +17,8 @@ public class DashboardItemStore implements IDashboardItemStore {
 
     @Override
     public void insert(DashboardItem object) {
-        DashboardItemFlow dashboardItemFlow
-                = DashboardItemFlow.fromModel(object);
+        DashboardItem$Flow dashboardItemFlow
+                = DashboardItem$Flow.fromModel(object);
         dashboardItemFlow.insert();
 
         object.setId(dashboardItemFlow.getId());
@@ -26,20 +26,20 @@ public class DashboardItemStore implements IDashboardItemStore {
 
     @Override
     public void update(DashboardItem object) {
-        DashboardItemFlow.fromModel(object).update();
+        DashboardItem$Flow.fromModel(object).update();
     }
 
     @Override
     public void delete(DashboardItem object) {
-        DashboardItemFlow.fromModel(object).delete();
+        DashboardItem$Flow.fromModel(object).delete();
     }
 
     @Override
     public List<DashboardItem> query() {
-        List<DashboardItemFlow> dashboardItemFlows = new Select()
-                .from(DashboardItemFlow.class)
+        List<DashboardItem$Flow> dashboardItemFlows = new Select()
+                .from(DashboardItem$Flow.class)
                 .queryList();
-        return DashboardItemFlow.toModels(dashboardItemFlows);
+        return DashboardItem$Flow.toModels(dashboardItemFlows);
     }
 
     @Override
@@ -54,12 +54,12 @@ public class DashboardItemStore implements IDashboardItemStore {
         }
 
         Condition.CombinedCondition combinedCondition = buildCombinedCondition(states);
-        List<DashboardItemFlow> dashboardItemFlows = new Select()
-                .from(DashboardItemFlow.class)
+        List<DashboardItem$Flow> dashboardItemFlows = new Select()
+                .from(DashboardItem$Flow.class)
                 .where(combinedCondition)
                 .queryList();
 
-        return DashboardItemFlow.toModels(dashboardItemFlows);
+        return DashboardItem$Flow.toModels(dashboardItemFlows);
     }
 
     @Override
@@ -69,14 +69,14 @@ public class DashboardItemStore implements IDashboardItemStore {
         }
 
         Condition.CombinedCondition combinedCondition = buildCombinedCondition(states);
-        combinedCondition = combinedCondition.and(Condition.column(DashboardItemFlow$Table
+        combinedCondition = combinedCondition.and(Condition.column(DashboardItem$Flow$Table
                 .DASHBOARD_DASHBOARD).is(dashboard.getId()));
-        List<DashboardItemFlow> dashboardItemFlows = new Select()
-                .from(DashboardItemFlow.class)
+        List<DashboardItem$Flow> dashboardItemFlows = new Select()
+                .from(DashboardItem$Flow.class)
                 .where(combinedCondition)
                 .queryList();
 
-        return DashboardItemFlow.toModels(dashboardItemFlows);
+        return DashboardItem$Flow.toModels(dashboardItemFlows);
     }
 
     @Override
@@ -85,13 +85,13 @@ public class DashboardItemStore implements IDashboardItemStore {
             throw new IllegalArgumentException("Please, provide State");
         }
 
-        List<DashboardItemFlow> dashboardItemFlows = new Select()
-                .from(DashboardItemFlow.class)
-                .where(Condition.column(DashboardItemFlow$Table
+        List<DashboardItem$Flow> dashboardItemFlows = new Select()
+                .from(DashboardItem$Flow.class)
+                .where(Condition.column(DashboardItem$Flow$Table
                         .STATE).isNot(state.toString()))
                 .queryList();
 
-        return DashboardItemFlow.toModels(dashboardItemFlows);
+        return DashboardItem$Flow.toModels(dashboardItemFlows);
     }
 
     @Override
@@ -100,16 +100,16 @@ public class DashboardItemStore implements IDashboardItemStore {
             throw new IllegalArgumentException("Please, provide State");
         }
 
-        List<DashboardItemFlow> dashboardItemFlows = new Select()
-                .from(DashboardItemFlow.class)
+        List<DashboardItem$Flow> dashboardItemFlows = new Select()
+                .from(DashboardItem$Flow.class)
                 .where(Condition.CombinedCondition
-                        .begin(Condition.column(DashboardItemFlow$Table
+                        .begin(Condition.column(DashboardItem$Flow$Table
                                 .STATE).isNot(state.toString()))
-                        .and(Condition.column(DashboardItemFlow$Table
+                        .and(Condition.column(DashboardItem$Flow$Table
                                 .DASHBOARD_DASHBOARD).is(dashboard.getId())))
                 .queryList();
 
-        return DashboardItemFlow.toModels(dashboardItemFlows);
+        return DashboardItem$Flow.toModels(dashboardItemFlows);
     }
 
     private static Condition.CombinedCondition buildCombinedCondition(List<State> states) {
@@ -125,7 +125,7 @@ public class DashboardItemStore implements IDashboardItemStore {
     }
 
     private static Condition isState(State state) {
-        return Condition.column(DashboardItemFlow$Table
+        return Condition.column(DashboardItem$Flow$Table
                 .STATE).is(state.toString());
     }
 }

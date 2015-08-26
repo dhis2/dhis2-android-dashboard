@@ -44,7 +44,7 @@ import java.util.List;
 
 
 @Table(databaseName = DbDhis.NAME)
-public final class DashboardItemFlow extends BaseIdentifiableObjectFlow {
+public final class DashboardItem$Flow extends BaseIdentifiableObject$Flow {
 
     @Column(name = "state")
     @NotNull
@@ -62,9 +62,9 @@ public final class DashboardItemFlow extends BaseIdentifiableObjectFlow {
                     @ForeignKeyReference(columnName = "dashboard", columnType = long.class, foreignColumnName = "id")
             }, saveForeignKeyModel = false, onDelete = ForeignKeyAction.CASCADE
     )
-    DashboardFlow dashboard;
+    Dashboard$Flow dashboard;
 
-    public DashboardItemFlow() {
+    public DashboardItem$Flow() {
         state = State.SYNCED;
     }
 
@@ -92,16 +92,16 @@ public final class DashboardItemFlow extends BaseIdentifiableObjectFlow {
         this.shape = shape;
     }
 
-    public DashboardFlow getDashboard() {
+    public Dashboard$Flow getDashboard() {
         return dashboard;
     }
 
-    public void setDashboard(DashboardFlow dashboard) {
+    public void setDashboard(Dashboard$Flow dashboard) {
         this.dashboard = dashboard;
     }
 
-    public static DashboardItemFlow fromModel(DashboardItem dashboardItem) {
-        DashboardItemFlow dashboardItemFlow = new DashboardItemFlow();
+    public static DashboardItem$Flow fromModel(DashboardItem dashboardItem) {
+        DashboardItem$Flow dashboardItemFlow = new DashboardItem$Flow();
         dashboardItemFlow.setId(dashboardItem.getId());
         dashboardItemFlow.setUId(dashboardItem.getUId());
         dashboardItemFlow.setCreated(dashboardItem.getCreated());
@@ -109,14 +109,14 @@ public final class DashboardItemFlow extends BaseIdentifiableObjectFlow {
         dashboardItemFlow.setAccess(dashboardItem.getAccess());
         dashboardItemFlow.setName(dashboardItem.getName());
         dashboardItemFlow.setDisplayName(dashboardItem.getDisplayName());
-        dashboardItemFlow.setDashboard(DashboardFlow.fromModel(dashboardItem.getDashboard()));
+        dashboardItemFlow.setDashboard(Dashboard$Flow.fromModel(dashboardItem.getDashboard()));
         dashboardItemFlow.setType(dashboardItem.getType());
         dashboardItemFlow.setShape(dashboardItem.getShape());
         dashboardItemFlow.setState(dashboardItem.getState());
         return dashboardItemFlow;
     }
 
-    public static DashboardItem toModel(DashboardItemFlow dashboardItemFlow) {
+    public static DashboardItem toModel(DashboardItem$Flow dashboardItemFlow) {
         DashboardItem dashboardItem = new DashboardItem();
         dashboardItem.setId(dashboardItemFlow.getId());
         dashboardItem.setUId(dashboardItemFlow.getUId());
@@ -125,18 +125,18 @@ public final class DashboardItemFlow extends BaseIdentifiableObjectFlow {
         dashboardItem.setAccess(dashboardItemFlow.getAccess());
         dashboardItem.setName(dashboardItemFlow.getName());
         dashboardItem.setDisplayName(dashboardItemFlow.getDisplayName());
-        dashboardItem.setDashboard(DashboardFlow.toModel(dashboardItemFlow.getDashboard()));
+        dashboardItem.setDashboard(Dashboard$Flow.toModel(dashboardItemFlow.getDashboard()));
         dashboardItem.setType(dashboardItemFlow.getType());
         dashboardItem.setShape(dashboardItemFlow.getShape());
         dashboardItem.setState(dashboardItemFlow.getState());
         return dashboardItem;
     }
 
-    public static List<DashboardItem> toModels(List<DashboardItemFlow> dashboardItemFlows) {
+    public static List<DashboardItem> toModels(List<DashboardItem$Flow> dashboardItemFlows) {
         List<DashboardItem> dashboardItems = new ArrayList<>();
 
         if (dashboardItemFlows != null && !dashboardItemFlows.isEmpty()) {
-            for (DashboardItemFlow dashboardItemFlow : dashboardItemFlows) {
+            for (DashboardItem$Flow dashboardItemFlow : dashboardItemFlows) {
                 dashboardItems.add(toModel(dashboardItemFlow));
             }
         }

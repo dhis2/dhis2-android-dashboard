@@ -39,9 +39,9 @@ import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbAction;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardElementFlow;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardFlow;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItemFlow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.Dashboard$Flow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardElement$Flow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItem$Flow;
 
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
@@ -62,11 +62,11 @@ public class ModelChangeObserver implements FlowContentObserver.OnModelStateChan
         Class<? extends BaseModel> trackedModel;
 
         if (Dashboard.class.equals(mTrackedTable.getTrackedModel())) {
-            trackedModel = DashboardFlow.class;
+            trackedModel = Dashboard$Flow.class;
         } else if (DashboardItem.class.equals(mTrackedTable.getTrackedModel())) {
-            trackedModel = DashboardItemFlow.class;
+            trackedModel = DashboardItem$Flow.class;
         } else if (DashboardElement.class.equals(mTrackedTable.getTrackedModel())) {
-            trackedModel = DashboardElementFlow.class;
+            trackedModel = DashboardElement$Flow.class;
         } else {
             throw new IllegalArgumentException("Unsupported model type for tracking: "
                     + mTrackedTable.getTrackedModel());

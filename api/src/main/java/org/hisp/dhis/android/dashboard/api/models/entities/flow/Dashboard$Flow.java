@@ -40,13 +40,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Table(databaseName = DbDhis.NAME)
-public final class DashboardFlow extends BaseIdentifiableObjectFlow {
+public final class Dashboard$Flow extends BaseIdentifiableObject$Flow {
 
     @Column(name = "state")
     @NotNull
     State state;
 
-    public DashboardFlow() {
+    public Dashboard$Flow() {
         state = State.SYNCED;
     }
 
@@ -62,8 +62,8 @@ public final class DashboardFlow extends BaseIdentifiableObjectFlow {
         this.state = state;
     }
 
-    public static DashboardFlow fromModel(Dashboard dashboard) {
-        DashboardFlow dashboardFlow = new DashboardFlow();
+    public static Dashboard$Flow fromModel(Dashboard dashboard) {
+        Dashboard$Flow dashboardFlow = new Dashboard$Flow();
         dashboardFlow.setId(dashboard.getId());
         dashboardFlow.setUId(dashboard.getUId());
         dashboardFlow.setCreated(dashboard.getCreated());
@@ -75,7 +75,7 @@ public final class DashboardFlow extends BaseIdentifiableObjectFlow {
         return dashboardFlow;
     }
 
-    public static Dashboard toModel(DashboardFlow dashboardFlow) {
+    public static Dashboard toModel(Dashboard$Flow dashboardFlow) {
         Dashboard dashboard = new Dashboard();
         dashboard.setId(dashboardFlow.getId());
         dashboard.setUId(dashboardFlow.getUId());
@@ -88,11 +88,11 @@ public final class DashboardFlow extends BaseIdentifiableObjectFlow {
         return dashboard;
     }
 
-    public static List<Dashboard> toModels(List<DashboardFlow> dashboardFlows) {
+    public static List<Dashboard> toModels(List<Dashboard$Flow> dashboardFlows) {
         List<Dashboard> dashboards = new ArrayList<>();
 
         if (dashboardFlows != null && !dashboardFlows.isEmpty()) {
-            for (DashboardFlow dashboardFlow : dashboardFlows) {
+            for (Dashboard$Flow dashboardFlow : dashboardFlows) {
                 dashboards.add(toModel(dashboardFlow));
             }
         }

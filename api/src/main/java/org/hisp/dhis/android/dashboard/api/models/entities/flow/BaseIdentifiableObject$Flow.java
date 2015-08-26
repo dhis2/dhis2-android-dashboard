@@ -38,7 +38,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BaseIdentifiableObjectFlow extends BaseModel implements IdentifiableObject {
+public class BaseIdentifiableObject$Flow extends BaseModel implements IdentifiableObject {
 
     @Column(name = "id")
     @PrimaryKey(autoincrement = true)

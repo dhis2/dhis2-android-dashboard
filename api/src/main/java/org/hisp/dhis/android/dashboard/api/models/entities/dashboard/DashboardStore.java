@@ -5,8 +5,8 @@ import com.raizlabs.android.dbflow.sql.builder.Condition.CombinedCondition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardFlow;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardFlow$Table;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.Dashboard$Flow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.Dashboard$Flow$Table;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,7 @@ public final class DashboardStore implements IDashboardStore {
 
     @Override
     public void insert(Dashboard object) {
-        DashboardFlow dashboardFlow = DashboardFlow
+        Dashboard$Flow dashboardFlow = Dashboard$Flow
                 .fromModel(object);
         dashboardFlow.insert();
 
@@ -27,15 +27,15 @@ public final class DashboardStore implements IDashboardStore {
 
     @Override
     public void update(Dashboard object) {
-        DashboardFlow dashboardFlow = DashboardFlow
+        Dashboard$Flow dashboardFlow = Dashboard$Flow
                 .fromModel(object);
         dashboardFlow.update();
     }
 
     @Override
     public void delete(Dashboard object) {
-        DashboardFlow dashboardFlow = new Select().from(DashboardFlow.class)
-                .where(Condition.column(DashboardFlow$Table
+        Dashboard$Flow dashboardFlow = new Select().from(Dashboard$Flow.class)
+                .where(Condition.column(Dashboard$Flow$Table
                         .ID).is(object.getId()))
                 .querySingle();
 
@@ -69,13 +69,13 @@ public final class DashboardStore implements IDashboardStore {
             }
         }
 
-        List<DashboardFlow> dashboardFlows = new Select()
-                .from(DashboardFlow.class)
+        List<Dashboard$Flow> dashboardFlows = new Select()
+                .from(Dashboard$Flow.class)
                 .where(combinedCondition)
                 .queryList();
 
         // converting flow models to Dashboard
-        return DashboardFlow.toModels(dashboardFlows);
+        return Dashboard$Flow.toModels(dashboardFlows);
     }
 
     @Override
@@ -84,18 +84,18 @@ public final class DashboardStore implements IDashboardStore {
             throw new IllegalArgumentException("Please, provide State");
         }
 
-        List<DashboardFlow> dashboardFlows = new Select()
-                .from(DashboardFlow.class)
-                .where(Condition.column(DashboardFlow$Table
+        List<Dashboard$Flow> dashboardFlows = new Select()
+                .from(Dashboard$Flow.class)
+                .where(Condition.column(Dashboard$Flow$Table
                         .STATE).isNot(state.toString()))
                 .queryList();
 
         // converting flow models to Dashboard
-        return DashboardFlow.toModels(dashboardFlows);
+        return Dashboard$Flow.toModels(dashboardFlows);
     }
 
     private static Condition isState(State state) {
-        return Condition.column(DashboardFlow$Table
+        return Condition.column(Dashboard$Flow$Table
                 .STATE).is(state.toString());
     }
 }

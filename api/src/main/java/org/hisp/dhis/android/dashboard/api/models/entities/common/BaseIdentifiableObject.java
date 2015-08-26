@@ -136,7 +136,7 @@ public class BaseIdentifiableObject implements IdentifiableObject {
     @Override
     public String toString() {
         return StringUtils.create()
-                .append("BaseIdentifiableObjectFlow {")
+                .append("BaseIdentifiableObject$Flow {")
                 .append("id=").append(id)
                 .append(", uId=").append(uId)
                 .append(", name=").append(name)
