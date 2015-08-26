@@ -7,6 +7,7 @@ import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardElementFlow;
 import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardElementFlow$Table;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -42,6 +43,11 @@ public class DashboardElementStore implements IDashboardElementStore {
     }
 
     @Override
+    public List<DashboardElement> query(DashboardItem dashboardItem, State... states) {
+        return query(dashboardItem, Arrays.asList(states));
+    }
+
+    @Override
     public List<DashboardElement> query(DashboardItem dashboardItem, List<State> states) {
         if (states != null && states.isEmpty()) {
             throw new IllegalArgumentException("Please, provide at least one State");
@@ -74,6 +80,22 @@ public class DashboardElementStore implements IDashboardElementStore {
                                 .STATE).isNot(state.toString()))
                         .and(Condition.column(DashboardElementFlow$Table
                                 .DASHBOARDITEM_DASHBOARDITEM).is(dashboardItem.getId())))
+                .queryList();
+
+        // converting flow models to Dashboard
+        return DashboardElementFlow.toModels(elementFlows);
+    }
+
+    @Override
+    public List<DashboardElement> filter(State state) {
+        if (state == null) {
+            throw new IllegalArgumentException("Please, provide State");
+        }
+
+        List<DashboardElementFlow> elementFlows = new Select()
+                .from(DashboardElementFlow.class)
+                .where(Condition.column(DashboardElementFlow$Table
+                        .STATE).isNot(state.toString()))
                 .queryList();
 
         // converting flow models to Dashboard

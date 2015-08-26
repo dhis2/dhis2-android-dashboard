@@ -28,6 +28,8 @@ package org.hisp.dhis.android.dashboard.api.utils;
 
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import org.hisp.dhis.android.dashboard.api.models.entities.common.IStore;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.IdentifiableObject;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 
 import java.net.HttpURLConnection;
@@ -67,7 +69,7 @@ public class NetworkUtils {
     }
 
     public static void handleApiException(APIException apiException) throws APIException {
-        handleApiException(apiException, null);
+        handleApiException(apiException, null, null);
     }
 
     /**
@@ -87,7 +89,8 @@ public class NetworkUtils {
      * 503 Service unavailable (can be temporary issue)
      * 504 Gateway Timeout (we need to retry request later)
      */
-    public static void handleApiException(APIException apiException, BaseModel model) throws APIException {
+    public static <T extends IdentifiableObject> void handleApiException(APIException apiException,
+                                                                         T model, IStore<T> store) throws APIException {
         switch (apiException.getKind()) {
             case HTTP: {
                 switch (apiException.getResponse().getStatus()) {
@@ -110,7 +113,8 @@ public class NetworkUtils {
                         // The given resource does not exist on the server anymore.
                         // Remove it locally.
                         if (model != null) {
-                            model.delete();
+                            store.delete(model);
+                            // model.delete();
                         }
                         break;
                     }

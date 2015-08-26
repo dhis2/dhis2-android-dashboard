@@ -28,6 +28,8 @@
 
 package org.hisp.dhis.android.dashboard.api.controllers;
 
+import android.net.Uri;
+
 import org.hisp.dhis.android.dashboard.api.models.entities.Models;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbUtils;
@@ -48,9 +50,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import retrofit.client.Header;
+import retrofit.client.Response;
+
 import static org.hisp.dhis.android.dashboard.api.models.entities.common.BaseIdentifiableObject.merge;
 import static org.hisp.dhis.android.dashboard.api.models.entities.common.BaseIdentifiableObject.toListIds;
 import static org.hisp.dhis.android.dashboard.api.models.entities.common.BaseIdentifiableObject.toMap;
+import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
+import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiException;
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
 final class DashboardController2 {
@@ -315,16 +322,11 @@ final class DashboardController2 {
         sendDashboardElements();
     }
 
-    /* private void sendDashboardChanges() throws APIException {
+    private void sendDashboardChanges() throws APIException {
         // we need to sort dashboards in natural order.
         // In order they were inserted in local database.
-        List<Dashboard> dashboards = new Select()
-                .from(Dashboard.class)
-                .where(Condition.column(Dashboard$Table
-                        .STATE).isNot(State.SYNCED.toString()))
-                .orderBy(true, Dashboard$Table.ID)
-                .queryList();
 
+        List<Dashboard> dashboards = Models.dashboards().filter(State.SYNCED);
         if (dashboards == null || dashboards.isEmpty()) {
             return;
         }
@@ -349,7 +351,7 @@ final class DashboardController2 {
 
     private void postDashboard(Dashboard dashboard) throws APIException {
         try {
-            Response response = mDhisApi.postDashboard(dashboard);
+            Response response = mDhisApi2.postDashboard(dashboard);
             // also, we will need to find UUID of newly created dashboard,
             // which is contained inside of HTTP Location header
             Header header = findLocationHeader(response.getHeaders());
@@ -358,7 +360,9 @@ final class DashboardController2 {
             // set UUID, change state and save dashboard
             dashboard.setUId(dashboardId);
             dashboard.setState(State.SYNCED);
-            dashboard.save();
+
+            //dashboard.save();
+            Models.dashboards().update(dashboard);
 
             updateDashboardTimeStamp(dashboard);
         } catch (APIException apiException) {
@@ -368,33 +372,32 @@ final class DashboardController2 {
 
     private void putDashboard(Dashboard dashboard) throws APIException {
         try {
-            mDhisApi.putDashboard(dashboard.getUId(), dashboard);
+            mDhisApi2.putDashboard(dashboard.getUId(), dashboard);
 
             dashboard.setState(State.SYNCED);
-            dashboard.save();
+            // dashboard.save();
+            Models.dashboards().update(dashboard);
 
             updateDashboardTimeStamp(dashboard);
         } catch (APIException apiException) {
-            handleApiException(apiException, dashboard);
+            handleApiException(apiException, dashboard, Models.dashboards());
         }
     }
 
     private void deleteDashboard(Dashboard dashboard) throws APIException {
         try {
-            mDhisApi.deleteDashboard(dashboard.getUId());
-            dashboard.delete();
+            mDhisApi2.deleteDashboard(dashboard.getUId());
+
+            //dashboard.delete();
+            Models.dashboards().delete(dashboard);
         } catch (APIException apiException) {
-            handleApiException(apiException, dashboard);
+            handleApiException(apiException, dashboard, Models.dashboards());
         }
     }
 
     private void sendDashboardItemChanges() throws APIException {
-        List<DashboardItem> dashboardItems = new Select()
-                .from(DashboardItem.class)
-                .where(Condition.column(DashboardItem$Table
-                        .STATE).isNot(State.SYNCED))
-                .orderBy(true, DashboardItem$Table.ID)
-                .queryList();
+        List<DashboardItem> dashboardItems = Models.dashboardItems()
+                .filter(State.SYNCED);
 
         if (dashboardItems == null || dashboardItems.isEmpty()) {
             return;
@@ -425,12 +428,14 @@ final class DashboardController2 {
                 return;
             }
 
-            List<DashboardElement> elements = new Select().from(DashboardElement.class)
+            /* List<DashboardElement> elements = new Select().from(DashboardElement.class)
                     .where(Condition.column(DashboardElement$Table
                             .DASHBOARDITEM_DASHBOARDITEM).is(dashboardItem.getId()))
                     .and(Condition.column(DashboardItem$Table
                             .STATE).is(State.TO_POST.toString()))
-                    .queryList();
+                    .queryList(); */
+            List<DashboardElement> elements = Models.dashboardElements()
+                    .query(dashboardItem, State.TO_POST);
 
             if (elements == null || elements.isEmpty()) {
                 return;
@@ -438,7 +443,7 @@ final class DashboardController2 {
 
             try {
                 DashboardElement element = elements.get(0);
-                Response response = mDhisApi.postDashboardItem(dashboard.getUId(),
+                Response response = mDhisApi2.postDashboardItem(dashboard.getUId(),
                         dashboardItem.getType(), element.getUId(), "");
 
                 Header locationHeader = findLocationHeader(response.getHeaders());
@@ -446,15 +451,19 @@ final class DashboardController2 {
                         .getValue()).getLastPathSegment();
                 dashboardItem.setUId(dashboardItemUId);
                 dashboardItem.setState(State.SYNCED);
-                dashboardItem.save();
+
+                // dashboardItem.save();
+                Models.dashboardItems().insert(dashboardItem);
 
                 element.setState(State.SYNCED);
-                element.save();
+
+                // element.save();
+                Models.dashboardElements().insert(element);
 
                 // we have to update timestamp of dashboard after adding new item.
                 updateDashboardTimeStamp(dashboardItem.getDashboard());
             } catch (APIException apiException) {
-                handleApiException(apiException, dashboardItem);
+                handleApiException(apiException, dashboardItem, Models.dashboardItems());
             }
         }
     }
@@ -471,25 +480,27 @@ final class DashboardController2 {
             }
 
             try {
-                mDhisApi.deleteDashboardItem(dashboard.getUId(),
+                mDhisApi2.deleteDashboardItem(dashboard.getUId(),
                         dashboardItem.getUId());
-                dashboardItem.delete();
+                // dashboardItem.delete();
+                Models.dashboardItems().delete(dashboardItem);
 
                 // we have to update timestamp of dashboard after adding new item.
                 updateDashboardTimeStamp(dashboardItem.getDashboard());
             } catch (APIException apiException) {
-                handleApiException(apiException, dashboardItem);
+                handleApiException(apiException, dashboardItem, Models.dashboardItems());
             }
         }
     }
 
     private void sendDashboardElements() throws APIException {
-        List<DashboardElement> elements = new Select()
+        /* List<DashboardElement> elements = new Select()
                 .from(DashboardElement.class)
                 .where(Condition.column(DashboardElement$Table
                         .STATE).isNot(State.SYNCED))
                 .orderBy(true, DashboardElement$Table.ID)
-                .queryList();
+                .queryList(); */
+        List<DashboardElement> elements = Models.dashboardElements().filter(State.SYNCED);
 
         if (elements == null || elements.isEmpty()) {
             return;
@@ -529,14 +540,15 @@ final class DashboardController2 {
         if (isDashboardSynced && isItemSynced) {
 
             try {
-                mDhisApi.postDashboardItem(dashboard.getUId(),
+                mDhisApi2.postDashboardItem(dashboard.getUId(),
                         item.getType(), element.getUId(), "");
                 element.setState(State.SYNCED);
-                element.save();
+                // element.save();
+                Models.dashboardElements().insert(element);
 
                 updateDashboardTimeStamp(item.getDashboard());
             } catch (APIException apiException) {
-                handleApiException(apiException, element);
+                handleApiException(apiException, element, Models.dashboardElements());
             }
         }
     }
@@ -560,17 +572,18 @@ final class DashboardController2 {
                 item.getState().equals(State.TO_UPDATE);
         if (isDashboardSynced && isItemSynced) {
             try {
-                mDhisApi.deleteDashboardItemContent(dashboard.getUId(),
+                mDhisApi2.deleteDashboardItemContent(dashboard.getUId(),
                         item.getUId(), element.getUId());
 
-                element.delete();
+                // element.delete();
+                Models.dashboardElements().delete(element);
 
                 // removal of elements changes
                 // dashboard's timestamp on server. In order to stay in sync,
                 // we need to get dashboard from server.
                 updateDashboardTimeStamp(item.getDashboard());
             } catch (APIException apiException) {
-                handleApiException(apiException, element);
+                handleApiException(apiException, element, Models.dashboardElements());
             }
         }
     }
@@ -579,16 +592,17 @@ final class DashboardController2 {
         try {
             final Map<String, String> QUERY_PARAMS = new HashMap<>();
             QUERY_PARAMS.put("fields", "created,lastUpdated");
-            Dashboard updatedDashboard = mDhisApi
+            Dashboard updatedDashboard = mDhisApi2
                     .getDashboard(dashboard.getUId(), QUERY_PARAMS);
 
             // merging updated timestamp to local dashboard model
             dashboard.setCreated(updatedDashboard.getCreated());
             dashboard.setLastUpdated(updatedDashboard.getLastUpdated());
-            dashboard.save();
+
+            //dashboard.save();
+            Models.dashboards().delete(dashboard);
         } catch (APIException apiException) {
             handleApiException(apiException);
         }
     }
-    */
 }
