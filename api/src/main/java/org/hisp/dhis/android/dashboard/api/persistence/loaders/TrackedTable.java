@@ -18,13 +18,11 @@ public class TrackedTable {
                 DbAction.SAVE));
     }
 
-    public TrackedTable(Class<? extends IdentifiableObject> trackedModel,
-                        DbAction action) {
+    public TrackedTable(Class<? extends IdentifiableObject> trackedModel, DbAction action) {
         this(trackedModel, Arrays.asList(action));
     }
 
-    public TrackedTable(Class<? extends IdentifiableObject> trackedModel,
-                        List<DbAction> actions) {
+    public TrackedTable(Class<? extends IdentifiableObject> trackedModel, List<DbAction> actions) {
         mTrackedModel = trackedModel;
         mActions = actions;
     }

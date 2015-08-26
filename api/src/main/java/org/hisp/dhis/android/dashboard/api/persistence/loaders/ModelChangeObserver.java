@@ -35,6 +35,14 @@ import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbAction;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardElementFlow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardFlow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItemFlow;
+
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
 public class ModelChangeObserver implements FlowContentObserver.OnModelStateChangedListener {
@@ -51,8 +59,21 @@ public class ModelChangeObserver implements FlowContentObserver.OnModelStateChan
     }
 
     public void registerObserver() {
+        Class<? extends BaseModel> trackedModel;
+
+        if (Dashboard.class.equals(mTrackedTable.getTrackedModel())) {
+            trackedModel = DashboardFlow.class;
+        } else if (DashboardItem.class.equals(DashboardItemFlow.class)) {
+            trackedModel = DashboardItemFlow.class;
+        } else if (DashboardElement.class.equals(DashboardElementFlow.class)) {
+            trackedModel = DashboardElementFlow.class;
+        } else {
+            throw new IllegalArgumentException("Unsupported model type for tracking: "
+                    + mTrackedTable.getTrackedModel());
+        }
+
         mObserver.registerForContentChanges(
-                mLoader.getContext(), mTrackedTable.getTrackedModel());
+                mLoader.getContext(), trackedModel);
         mObserver.addModelChangeListener(this);
     }
 
@@ -75,12 +96,29 @@ public class ModelChangeObserver implements FlowContentObserver.OnModelStateChan
             return true;
         }
 
-        for (BaseModel.Action modelAction : mTrackedTable.getActions()) {
-            if (modelAction.equals(action)) {
+        DbAction dbAction = toAction(action);
+        for (DbAction modelAction : mTrackedTable.getActions()) {
+            if (dbAction.equals(modelAction)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private static DbAction toAction(BaseModel.Action flowAction) {
+        switch (flowAction) {
+            case INSERT:
+                return DbAction.INSERT;
+            case UPDATE:
+                return DbAction.UPDATE;
+            case SAVE:
+                return DbAction.SAVE;
+            case DELETE:
+                return DbAction.DELETE;
+            default: {
+                return DbAction.ON_CHANGE;
+            }
+        }
     }
 }
