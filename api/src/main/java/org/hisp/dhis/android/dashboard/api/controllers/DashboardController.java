@@ -61,11 +61,9 @@ import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiEx
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
 final class DashboardController {
-    // final DhisApi mDhisApi;
     final DhisApi mDhisApi;
 
     public DashboardController(DhisApi dhisApi) {
-        // mDhisApi = dhisApi;
         mDhisApi = dhisApi;
     }
 
@@ -82,35 +80,6 @@ final class DashboardController {
         }
         return aListCopy;
     }
-
-    /* private static List<Dashboard> queryDashboards() {
-        Models.dashboards().query(State.TO_DELETE, State.SYNCED, State.TO_UPDATE);
-        return new Select().from(Dashboard.class)
-                .where(Condition.column(Dashboard$Table
-                        .STATE).isNot(State.TO_POST.toString()))
-                .queryList();
-    } */
-
-    /* private static List<DashboardItem> queryDashboardItems(Dashboard dashboard) {
-        Where<DashboardItem> where = new Select().from(DashboardItem.class)
-                .where(Condition.column(DashboardItem$Table
-                        .STATE).isNot(State.TO_POST));
-        if (dashboard != null) {
-            where = where.and(Condition.column(DashboardItem$Table
-                    .DASHBOARD_DASHBOARD).is(dashboard.getId()));
-        }
-
-        return where.queryList();
-    }
-
-    private static List<DashboardElement> queryDashboardElements(DashboardItem item) {
-        return new Select().from(DashboardElement.class)
-                .where(Condition.column(DashboardElement$Table
-                        .DASHBOARDITEM_DASHBOARDITEM).is(item.getId()))
-                .and(Condition.column(DashboardElement$Table
-                        .STATE).isNot(State.TO_POST.toString()))
-                .queryList();
-    } */
 
     public void syncDashboards() throws APIException {
         /* first we need to fetch all changes from server
