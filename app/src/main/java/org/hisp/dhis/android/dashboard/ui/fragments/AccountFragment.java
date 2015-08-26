@@ -40,7 +40,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.UserAccount;
+import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.ui.adapters.AccountFieldAdapter;
 import org.hisp.dhis.android.dashboard.ui.models.Field;
@@ -130,7 +130,8 @@ public final class AccountFragment extends BaseFragment implements LoaderCallbac
 
         @Override
         public List<Field> query(Context context) {
-            UserAccount userAccount = UserAccount.getCurrentUserAccountFromDb();
+            // UserAccount userAccount = UserAccount.getCurrentUserAccountFromDb();
+            UserAccount userAccount = null;
 
             String gender = userAccount.getGender();
             if (gender != null) {

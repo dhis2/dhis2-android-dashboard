@@ -45,8 +45,8 @@ import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.User$Table;
-import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
+import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -124,8 +124,9 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
     public void onButtonClicked(View view) {
         if (view.getId() == R.id.create_interpretation) {
             // read user
-            UserAccount userAccount = UserAccount
-                    .getCurrentUserAccountFromDb();
+            /* UserAccount userAccount = UserAccount
+                    .getCurrentUserAccountFromDb(); */
+            UserAccount userAccount = null;
             User user = new Select()
                     .from(User.class)
                     .where(Condition.column(User$Table

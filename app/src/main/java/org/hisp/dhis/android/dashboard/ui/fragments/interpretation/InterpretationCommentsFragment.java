@@ -54,7 +54,7 @@ import org.hisp.dhis.android.dashboard.api.models.Interpretation$Table;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.User$Table;
-import org.hisp.dhis.android.dashboard.api.models.UserAccount;
+import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter.OnCommentClickListener;
@@ -119,8 +119,9 @@ public class InterpretationCommentsFragment extends BaseFragment
                 .where(Condition.column(Interpretation$Table
                         .ID).is(getArguments().getLong(INTERPRETATION_ID)))
                 .querySingle();
-        UserAccount account = UserAccount
-                .getCurrentUserAccountFromDb();
+        /* UserAccount account = UserAccount
+                .getCurrentUserAccountFromDb(); */
+        UserAccount account = null;
         mUser = new Select()
                 .from(User.class)
                 .where(Condition.column(User$Table

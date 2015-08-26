@@ -33,7 +33,7 @@ import android.content.Context;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.squareup.okhttp.HttpUrl;
 
-import org.hisp.dhis.android.dashboard.api.models.UserAccount;
+import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.meta.Session;
 import org.hisp.dhis.android.dashboard.api.network.APIException;

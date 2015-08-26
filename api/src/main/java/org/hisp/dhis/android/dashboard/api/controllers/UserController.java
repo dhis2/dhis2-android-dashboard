@@ -33,11 +33,13 @@ import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.User;
-import org.hisp.dhis.android.dashboard.api.models.UserAccount;
+import org.hisp.dhis.android.dashboard.api.models.entities.Models;
 import org.hisp.dhis.android.dashboard.api.models.entities.flow.Dashboard$Flow;
 import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardElement$Flow;
 import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItem$Flow;
 import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItemContent$Flow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.UserAccount$Flow;
+import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.meta.Session;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
@@ -76,7 +78,12 @@ final class UserController {
         LastUpdatedManager.getInstance().put(session);
 
         /* save user account details */
-        userAccount.save();
+        // userAccount.save();
+        if (!Models.userAccount().query().isEmpty()) {
+            Models.userAccount().update(userAccount);
+        } else {
+            Models.userAccount().insert(userAccount);
+        }
 
         return userAccount;
     }
@@ -96,7 +103,7 @@ final class UserController {
                 InterpretationComment.class,
                 InterpretationElement.class,
                 User.class,
-                UserAccount.class
+                UserAccount$Flow.class
         );
     }
 
@@ -109,7 +116,8 @@ final class UserController {
         UserAccount userAccount =
                 mDhisApi.getCurrentUserAccount(QUERY_PARAMS);
         // update userAccount in database
-        userAccount.save();
+        // userAccount.save();
+        Models.userAccount().update(userAccount);
         return userAccount;
     }
 }

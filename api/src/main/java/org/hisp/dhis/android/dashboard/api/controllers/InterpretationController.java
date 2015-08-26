@@ -41,8 +41,8 @@ import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement$Table;
 import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.User$Table;
-import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
@@ -483,7 +483,7 @@ final class InterpretationController {
     private List<User> updateInterpretationUsers(List<Interpretation> interpretations,
                                                  List<InterpretationComment> comments) {
         Map<String, User> users = new HashMap<>();
-        UserAccount currentUserAccount
+        /* UserAccount currentUserAccount
                 = UserAccount.getCurrentUserAccountFromDb();
         User currentUser = new Select()
                 .from(User.class)
@@ -493,9 +493,9 @@ final class InterpretationController {
         if (currentUser == null) {
             currentUser = UserAccount
                     .toUser(currentUserAccount);
-        }
+        } */
 
-        users.put(currentUser.getUId(), currentUser);
+        // users.put(currentUser.getUId(), currentUser);
         if (interpretations != null && !interpretations.isEmpty()) {
             for (Interpretation interpretation : interpretations) {
                 User user = interpretation.getUser();

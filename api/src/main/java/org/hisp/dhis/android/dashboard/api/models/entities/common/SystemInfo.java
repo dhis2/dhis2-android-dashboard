@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dashboard.api.models;
+package org.hisp.dhis.android.dashboard.api.models.entities.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
