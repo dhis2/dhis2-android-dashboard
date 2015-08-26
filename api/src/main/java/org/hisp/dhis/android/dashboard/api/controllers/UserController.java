@@ -29,7 +29,6 @@ package org.hisp.dhis.android.dashboard.api.controllers;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.squareup.okhttp.HttpUrl;
 
-import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
@@ -38,6 +37,7 @@ import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.entities.flow.Dashboard$Flow;
 import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardElement$Flow;
 import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItem$Flow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItemContent$Flow;
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.meta.Session;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
@@ -91,7 +91,7 @@ final class UserController {
                 Dashboard$Flow.class,
                 DashboardElement$Flow.class,
                 DashboardItem$Flow.class,
-                DashboardItemContent.class,
+                DashboardItemContent$Flow.class,
                 Interpretation.class,
                 InterpretationComment.class,
                 InterpretationElement.class,
