@@ -40,11 +40,11 @@ import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 public class ModelChangeObserver implements FlowContentObserver.OnModelStateChangedListener {
     private static final String TAG = ModelChangeObserver.class.getSimpleName();
 
-    private final DbLoader.TrackedTable mTrackedTable;
+    private final TrackedTable mTrackedTable;
     private final DbLoader<?> mLoader;
     private final FlowContentObserver mObserver;
 
-    public ModelChangeObserver(DbLoader.TrackedTable trackedTable, DbLoader<?> loader) {
+    public ModelChangeObserver(TrackedTable trackedTable, DbLoader<?> loader) {
         mTrackedTable = isNull(trackedTable, "TrackedTable object must not be null");
         mLoader = isNull(loader, "DbLoader must not be null");
         mObserver = new FlowContentObserver();

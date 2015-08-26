@@ -1,39 +1,39 @@
 package org.hisp.dhis.android.dashboard.api.persistence.loaders;
 
-import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.raizlabs.android.dbflow.structure.Model;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.IdentifiableObject;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbAction;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class TrackedTable {
-        private final Class<? extends Model> mTrackedModel;
-        private final List<BaseModel.Action> mActions;
+    private final Class<? extends IdentifiableObject> mTrackedModel;
+    private final List<DbAction> mActions;
 
-        public TrackedTable(Class<? extends Model> trackedModel) {
-            this(trackedModel, Arrays.asList(
-                    BaseModel.Action.INSERT,
-                    BaseModel.Action.UPDATE,
-                    BaseModel.Action.DELETE,
-                    BaseModel.Action.SAVE));
-        }
-
-        public TrackedTable(Class<? extends Model> trackedModel,
-                            BaseModel.Action action) {
-            this(trackedModel, Arrays.asList(action));
-        }
-
-        public TrackedTable(Class<? extends Model> trackedModel,
-                            List<BaseModel.Action> actions) {
-            mTrackedModel = trackedModel;
-            mActions = actions;
-        }
-
-        public Class<? extends Model> getTrackedModel() {
-            return mTrackedModel;
-        }
-
-        public List<BaseModel.Action> getActions() {
-            return mActions;
-        }
+    public TrackedTable(Class<? extends IdentifiableObject> trackedModel) {
+        this(trackedModel, Arrays.asList(
+                DbAction.INSERT,
+                DbAction.UPDATE,
+                DbAction.DELETE,
+                DbAction.SAVE));
     }
+
+    public TrackedTable(Class<? extends IdentifiableObject> trackedModel,
+                        DbAction action) {
+        this(trackedModel, Arrays.asList(action));
+    }
+
+    public TrackedTable(Class<? extends IdentifiableObject> trackedModel,
+                        List<DbAction> actions) {
+        mTrackedModel = trackedModel;
+        mActions = actions;
+    }
+
+    public Class<? extends IdentifiableObject> getTrackedModel() {
+        return mTrackedModel;
+    }
+
+    public List<DbAction> getActions() {
+        return mActions;
+    }
+}

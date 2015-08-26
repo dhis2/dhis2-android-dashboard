@@ -10,13 +10,13 @@ import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
  * functionality of ContentProviderOperation for DbFlow.
  */
 public final class DbOperation<T extends IdentifiableObject> {
-    private final Action mAction;
+    private final DbAction mDbAction;
     private final T mModel;
     private final IStore<T> mModelStore;
 
-    private DbOperation(Action action, T model, IStore<T> store) {
+    private DbOperation(DbAction dbAction, T model, IStore<T> store) {
         mModel = isNull(model, "IdentifiableObject object must nto be null,");
-        mAction = isNull(action, "BaseModel.Action object must not be null");
+        mDbAction = isNull(dbAction, "BaseModel.DbAction object must not be null");
         mModelStore = isNull(store, "IStore object must not be null");
     }
 
@@ -28,8 +28,8 @@ public final class DbOperation<T extends IdentifiableObject> {
         return mModel;
     }
 
-    public Action getAction() {
-        return mAction;
+    public DbAction getAction() {
+        return mDbAction;
     }
 
     public IStore<T> getStore() {
@@ -37,7 +37,7 @@ public final class DbOperation<T extends IdentifiableObject> {
     }
 
     public void execute() {
-        switch (mAction) {
+        switch (mDbAction) {
             case INSERT: {
                 mModelStore.insert(mModel);
                 break;
@@ -64,23 +64,19 @@ public final class DbOperation<T extends IdentifiableObject> {
         }
 
         public DbOperation insert(T model) {
-            return new DbOperation<>(Action.INSERT, model, mStore);
+            return new DbOperation<>(DbAction.INSERT, model, mStore);
         }
 
         public DbOperation update(T model) {
-            return new DbOperation<>(Action.UPDATE, model, mStore);
+            return new DbOperation<>(DbAction.UPDATE, model, mStore);
         }
 
         public DbOperation save(T model) {
-            return new DbOperation<>(Action.SAVE, model, mStore);
+            return new DbOperation<>(DbAction.SAVE, model, mStore);
         }
 
         public DbOperation delete(T model) {
-            return new DbOperation<>(Action.DELETE, model, mStore);
+            return new DbOperation<>(DbAction.DELETE, model, mStore);
         }
-    }
-
-    enum Action {
-        INSERT, UPDATE, SAVE, DELETE
     }
 }
