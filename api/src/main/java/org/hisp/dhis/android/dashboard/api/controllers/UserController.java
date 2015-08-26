@@ -29,15 +29,15 @@ package org.hisp.dhis.android.dashboard.api.controllers;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.squareup.okhttp.HttpUrl;
 
-import org.hisp.dhis.android.dashboard.api.models.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardElementFlow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardFlow;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItemFlow;
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.meta.Session;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
@@ -88,9 +88,9 @@ final class UserController {
 
         // remove data
         Delete.tables(
-                Dashboard.class,
-                DashboardElement.class,
-                DashboardItem.class,
+                DashboardFlow.class,
+                DashboardElementFlow.class,
+                DashboardItemFlow.class,
                 DashboardItemContent.class,
                 Interpretation.class,
                 InterpretationComment.class,

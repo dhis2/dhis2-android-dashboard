@@ -38,7 +38,6 @@ import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.meta.Session;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
-import org.hisp.dhis.android.dashboard.api.network.DhisApi2;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
@@ -49,7 +48,6 @@ public class DhisController {
     private static DhisController mDhisController;
     private Session mSession;
     private DhisApi mDhisApi;
-    private DhisApi2 mDhisApi2;
 
     private DhisController(Context context) {
         FlowManager.init(context);
@@ -121,14 +119,14 @@ public class DhisController {
     private void readSession() {
         mSession = LastUpdatedManager.getInstance().get();
         mDhisApi = null;
-        mDhisApi2 = null;
+        mDhisApi = null;
 
         if (isUserLoggedIn()) {
             mDhisApi = RepoManager.createService(
                     mSession.getServerUrl(),
                     mSession.getCredentials()
             );
-            mDhisApi2 = RepoManager.createService2(
+            mDhisApi = RepoManager.createService2(
                     mSession.getServerUrl(),
                     mSession.getCredentials()
             );
@@ -144,12 +142,12 @@ public class DhisController {
     }
 
     public void syncDashboardContent() throws APIException {
-        (new DashboardController(mDhisApi)).syncDashboardContent();
+        // (new DashboardController(mDhisApi)).syncDashboardContent();
     }
 
     public void syncDashboards() throws APIException {
         // (new DashboardController(mDhisApi)).syncDashboards();
-        (new DashboardController2(mDhisApi2)).syncDashboards();
+        (new DashboardController(mDhisApi)).syncDashboards();
     }
 
     public void syncInterpretations() throws APIException {

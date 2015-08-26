@@ -39,12 +39,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.Dashboard$Table;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardFlow$Table;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -82,7 +79,7 @@ public final class DashboardManageFragment extends BaseDialogFragment {
 
     public static DashboardManageFragment newInstance(long dashboardId) {
         Bundle args = new Bundle();
-        args.putLong(Dashboard$Table.ID, dashboardId);
+        args.putLong(DashboardFlow$Table.ID, dashboardId);
 
         DashboardManageFragment fragment = new DashboardManageFragment();
         fragment.setArguments(args);
@@ -104,11 +101,11 @@ public final class DashboardManageFragment extends BaseDialogFragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mDashboard = new Select()
+        /* mDashboard = new Select()
                 .from(Dashboard.class)
-                .where(Condition.column(Dashboard$Table
-                        .ID).is(getArguments().getLong(Dashboard$Table.ID)))
-                .querySingle();
+                .where(Condition.column(DashboardFlow$Table
+                        .ID).is(getArguments().getLong(DashboardFlow$Table.ID)))
+                .querySingle(); */
 
         ButterKnife.bind(this, view);
 
@@ -134,8 +131,8 @@ public final class DashboardManageFragment extends BaseDialogFragment {
                 break;
             }
             case R.id.accept_action: {
-                mDashboard.updateDashboard(
-                        mDashboardName.getText().toString());
+                /* mDashboard.updateDashboard(
+                        mDashboardName.getText().toString()); */
                 mDashboardName.clearFocus();
 
                 if (isDhisServiceBound()) {
@@ -145,7 +142,7 @@ public final class DashboardManageFragment extends BaseDialogFragment {
                 break;
             }
             case R.id.delete_dashboard_button: {
-                mDashboard.deleteDashboard();
+                // mDashboard.deleteDashboard();
 
                 if (isDhisServiceBound()) {
                     getDhisService().syncDashboards();

@@ -41,16 +41,13 @@ import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.DashboardElement$Table;
-import org.hisp.dhis.android.dashboard.api.models.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.DashboardItem$Table;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.User$Table;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
+import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItemFlow$Table;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -79,7 +76,7 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
 
     public static InterpretationCreateFragment newInstance(long itemId) {
         Bundle args = new Bundle();
-        args.putLong(DashboardItem$Table.ID, itemId);
+        args.putLong(DashboardItemFlow$Table.ID, itemId);
 
         InterpretationCreateFragment fragment = new InterpretationCreateFragment();
         fragment.setArguments(args);
@@ -104,22 +101,22 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        long dashboardItemId = getArguments().getLong(DashboardItem$Table.ID);
-        mDashboardItem = new Select()
+        long dashboardItemId = getArguments().getLong(DashboardItemFlow$Table.ID);
+        /* mDashboardItem = new Select()
                 .from(DashboardItem.class)
-                .where(Condition.column(DashboardItem$Table
+                .where(Condition.column(DashboardItemFlow$Table
                         .ID).is(dashboardItemId))
-                .querySingle();
+                .querySingle(); */
 
-        List<DashboardElement> elements = new Select()
+        /* List<DashboardElement> elements = new Select()
                 .from(DashboardElement.class)
                 .where(Condition.column(DashboardElement$Table
                         .DASHBOARDITEM_DASHBOARDITEM).is(dashboardItemId))
                 .and(Condition.column(DashboardElement$Table
                         .STATE).isNot(State.TO_DELETE.toString()))
-                .queryList();
+                .queryList(); */
 
-        mDashboardItem.setDashboardElements(elements);
+        // mDashboardItem.setDashboardElements(elements);
         mDialogLabel.setText(getString(R.string.create_interpretation));
     }
 
