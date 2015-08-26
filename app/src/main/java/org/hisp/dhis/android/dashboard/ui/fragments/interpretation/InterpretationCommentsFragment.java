@@ -47,27 +47,19 @@ import android.widget.ImageView;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.IdentifiableObject;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation$Table;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationComment$Table;
 import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.User$Table;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
-import org.hisp.dhis.android.dashboard.api.models.meta.State;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader.TrackedTable;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter.OnCommentClickListener;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -174,10 +166,11 @@ public class InterpretationCommentsFragment extends BaseFragment
     @Override
     public Loader<List<InterpretationComment>> onCreateLoader(int id, Bundle args) {
         if (LOADER_ID == id) {
-            List<TrackedTable> trackedTables = Arrays.asList(
-                    new TrackedTable(InterpretationComment.class, BaseModel.Action.UPDATE));
+            /* List<TrackedTable> trackedTables = Arrays.asList(
+                    new TrackedTable(InterpretationComment.class, DbAction.UPDATE));
             return new DbLoader<>(getActivity().getApplicationContext(),
                     trackedTables, new CommentsQuery(args.getLong(INTERPRETATION_ID)));
+                    */
         }
         return null;
     }
@@ -263,7 +256,7 @@ public class InterpretationCommentsFragment extends BaseFragment
 
         @Override
         public List<InterpretationComment> query(Context context) {
-            List<InterpretationComment> comments = new Select()
+            /* List<InterpretationComment> comments = new Select()
                     .from(InterpretationComment.class)
                     .where(Condition.column(InterpretationComment$Table
                             .INTERPRETATION_INTERPRETATION).is(mInterpretationId))
@@ -271,7 +264,8 @@ public class InterpretationCommentsFragment extends BaseFragment
                             .STATE).isNot(State.TO_DELETE.toString()))
                     .queryList();
             Collections.sort(comments, IdentifiableObject.CREATED_COMPARATOR);
-            return comments;
+            return comments; */
+            return null;
         }
     }
 }

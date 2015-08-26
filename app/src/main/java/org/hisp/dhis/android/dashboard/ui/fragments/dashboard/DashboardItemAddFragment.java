@@ -47,16 +47,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.builder.Condition.CombinedCondition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.Dashboard$Table;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
-import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent$Table;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter;
@@ -65,8 +59,6 @@ import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -74,8 +66,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import butterknife.OnTextChanged;
-
-import static com.raizlabs.android.dbflow.sql.builder.Condition.column;
 
 public class DashboardItemAddFragment extends BaseDialogFragment
         implements PopupMenu.OnMenuItemClickListener, LoaderCallbacks<List<OptionAdapterValue>> {
@@ -124,11 +114,12 @@ public class DashboardItemAddFragment extends BaseDialogFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         long dashboardId = getArguments().getLong(Dashboard$Table.ID);
-        mDashboard = new Select()
+        /* mDashboard = new Select()
                 .from(Dashboard.class)
                 .where(Condition.column(Dashboard$Table
                         .ID).is(dashboardId))
                 .querySingle();
+                */
 
         ButterKnife.bind(this, view);
 
@@ -173,12 +164,12 @@ public class DashboardItemAddFragment extends BaseDialogFragment
     @OnItemClick(R.id.simple_listview)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         OptionAdapterValue adapterValue = mAdapter.getItem(position);
-        DashboardItemContent resource = new Select()
+        /* DashboardItemContent resource = new Select()
                 .from(DashboardItemContent.class)
                 .where(Condition.column(DashboardItemContent$Table
                         .UID).is(adapterValue.id))
                 .querySingle();
-        mDashboard.addItemContent(resource);
+        mDashboard.addItemContent(resource); */
 
         if (isDhisServiceBound()) {
             getDhisService().syncDashboards();
@@ -201,10 +192,11 @@ public class DashboardItemAddFragment extends BaseDialogFragment
 
     @Override
     public Loader<List<OptionAdapterValue>> onCreateLoader(int id, Bundle args) {
-        List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
-                new DbLoader.TrackedTable(DashboardItemContent.class));
+        /* List<TrackedTable> trackedTables = Arrays.asList(
+                new TrackedTable(DashboardItemContent.class));
         return new DbLoader<>(getActivity().getApplicationContext(),
-                trackedTables, new DbQuery(getTypesToInclude()));
+                trackedTables, new DbQuery(getTypesToInclude())); */
+        return null;
     }
 
     @Override
@@ -269,7 +261,7 @@ public class DashboardItemAddFragment extends BaseDialogFragment
 
         @Override
         public List<OptionAdapterValue> query(Context context) {
-            if (mTypes.isEmpty()) {
+            /* if (mTypes.isEmpty()) {
                 return new ArrayList<>();
             }
 
@@ -297,7 +289,8 @@ public class DashboardItemAddFragment extends BaseDialogFragment
                         dashboardItemContent.getDisplayName()));
             }
 
-            return adapterValues;
+            return adapterValues; */
+            return null;
         }
     }
 }

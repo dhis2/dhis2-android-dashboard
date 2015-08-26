@@ -10,20 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation$Table;
-import org.hisp.dhis.android.dashboard.api.models.meta.State;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by arazabishov on 7/24/15.
@@ -46,12 +35,13 @@ public class InterpretationContainerFragment extends BaseFragment
 
     @Override
     public Loader<Boolean> onCreateLoader(int i, Bundle bundle) {
-        List<BaseModel.Action> actionsToTrack = Arrays.asList(
+        /* List<BaseModel.Action> actionsToTrack = Arrays.asList(
                 BaseModel.Action.INSERT, BaseModel.Action.DELETE);
-        List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
-                new DbLoader.TrackedTable(Interpretation.class, actionsToTrack));
+        List<TrackedTable> trackedTables = Arrays.asList(
+                new TrackedTable(Interpretation.class, actionsToTrack));
         return new DbLoader<>(getActivity().getApplicationContext(),
-                trackedTables, new InterpretationsQuery());
+                trackedTables, new InterpretationsQuery()); */
+        return null;
     }
 
     @Override
@@ -92,13 +82,14 @@ public class InterpretationContainerFragment extends BaseFragment
 
         @Override
         public Boolean query(Context context) {
-            List<Interpretation> interpretations = new Select()
+            /* List<Interpretation> interpretations = new Select()
                     .from(Interpretation.class)
                     .where(Condition.column(Interpretation$Table
                             .STATE).isNot(State.TO_DELETE.toString()))
                     .queryList();
 
-            return interpretations != null && interpretations.size() > 0;
+            return interpretations != null && interpretations.size() > 0; */
+            return null;
         }
     }
 }

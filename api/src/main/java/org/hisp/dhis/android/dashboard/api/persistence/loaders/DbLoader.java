@@ -49,9 +49,7 @@ public class DbLoader<T> extends AsyncTaskLoader<T> {
     private List<ModelChangeObserver> mObservers;
     private T mData;
 
-    public DbLoader(Context context,
-                    List<TrackedTable> trackedTables,
-                    Query<T> query) {
+    public DbLoader(Context context, List<TrackedTable> trackedTables, Query<T> query) {
         super(context);
 
         mTrackedTables = isNull(trackedTables, "List of tables to track");

@@ -38,7 +38,8 @@ import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import org.hisp.dhis.android.dashboard.api.models.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 import org.joda.time.DateTime;
 

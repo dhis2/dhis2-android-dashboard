@@ -46,7 +46,9 @@ import com.squareup.otto.Subscribe;
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
+import org.hisp.dhis.android.dashboard.api.models.entities.Models;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
@@ -58,6 +60,7 @@ import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -265,14 +268,9 @@ public class DashboardViewPagerFragment extends BaseFragment
 
         @Override
         public List<Dashboard> query(Context context) {
-            /* List<Dashboard> dashboards = new Select()
-                    .from(Dashboard.class)
-                    .where(Condition.column(DashboarΩd$Table
-                            .STATE).isNot(State.TO_DELETE.toString()))
-                    .queryList(); */
-            //Collections.sort(dashboards, Dashboard.DISPLAY_NAME_COMPARATOR);
-            //return dashboards;
-            return null;
+            List<Dashboard> dashboards = Models.dashboards().filter(State.TO_DELETE);
+            Collections.sort(dashboards, Dashboard.DISPLAY_NAME_COMPARATOR);
+            return dashboards;
         }
     }
 }

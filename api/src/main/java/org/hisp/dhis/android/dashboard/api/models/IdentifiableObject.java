@@ -27,6 +27,7 @@
 package org.hisp.dhis.android.dashboard.api.models;
 
 
+import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
 import org.joda.time.DateTime;
 
 import java.util.Comparator;

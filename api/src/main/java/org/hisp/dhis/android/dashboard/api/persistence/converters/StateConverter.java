@@ -30,17 +30,19 @@ package org.hisp.dhis.android.dashboard.api.persistence.converters;
 
 import com.raizlabs.android.dbflow.converter.TypeConverter;
 
-import org.hisp.dhis.android.dashboard.api.models.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 
 @SuppressWarnings("unused")
 @com.raizlabs.android.dbflow.annotation.TypeConverter
 public final class StateConverter extends TypeConverter<String, State> {
 
-    @Override public String getDBValue(State model) {
+    @Override
+    public String getDBValue(State model) {
         return model.toString();
     }
 
-    @Override public State getModelValue(String data) {
+    @Override
+    public State getModelValue(String data) {
         return State.valueOf(data);
     }
 }

@@ -63,9 +63,9 @@ public class ModelChangeObserver implements FlowContentObserver.OnModelStateChan
 
         if (Dashboard.class.equals(mTrackedTable.getTrackedModel())) {
             trackedModel = DashboardFlow.class;
-        } else if (DashboardItem.class.equals(DashboardItemFlow.class)) {
+        } else if (DashboardItem.class.equals(mTrackedTable.getTrackedModel())) {
             trackedModel = DashboardItemFlow.class;
-        } else if (DashboardElement.class.equals(DashboardElementFlow.class)) {
+        } else if (DashboardElement.class.equals(mTrackedTable.getTrackedModel())) {
             trackedModel = DashboardElementFlow.class;
         } else {
             throw new IllegalArgumentException("Unsupported model type for tracking: "
@@ -86,6 +86,7 @@ public class ModelChangeObserver implements FlowContentObserver.OnModelStateChan
     public void onModelStateChanged(Class<? extends Model> aClass, BaseModel.Action action) {
         Log.d(TAG, "onModelStateChanged() " + aClass.getSimpleName() + ": " + action);
 
+        System.out.println("NOTIFY_LOADER: " + notifyLoader(action));
         if (notifyLoader(action)) {
             mLoader.onContentChanged();
         }

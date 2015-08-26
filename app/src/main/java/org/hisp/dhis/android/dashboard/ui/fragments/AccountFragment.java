@@ -41,13 +41,11 @@ import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.ui.adapters.AccountFieldAdapter;
 import org.hisp.dhis.android.dashboard.ui.models.Field;
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -107,12 +105,12 @@ public final class AccountFragment extends BaseFragment implements LoaderCallbac
 
     @Override
     public Loader<List<Field>> onCreateLoader(int id, Bundle args) {
-        if (LOADER_ID == id) {
+        /* if (LOADER_ID == id) {
             List<DbLoader.TrackedTable> trackedTables = new ArrayList<>();
             trackedTables.add(new DbLoader.TrackedTable(UserAccount.class));
             return new DbLoader<>(getActivity().getApplicationContext(),
                     trackedTables, new UserAccountQuery());
-        }
+        } */
         return null;
     }
 

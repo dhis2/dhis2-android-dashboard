@@ -46,15 +46,11 @@ import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.ui.fragments.AccountFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.SettingsFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.dashboard.DashboardContainerFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.interpretation.InterpretationContainerFragment;
-
-import java.util.Arrays;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -197,10 +193,11 @@ public class MenuActivity extends BaseActivity
 
     @Override
     public Loader<UserAccount> onCreateLoader(int id, Bundle args) {
-        List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
+        /* List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
                 new DbLoader.TrackedTable(UserAccount.class));
         return new DbLoader<>(getApplicationContext(),
-                trackedTables, new UserAccountQuery());
+                trackedTables, new UserAccountQuery()); */
+        return null;
     }
 
     @Override

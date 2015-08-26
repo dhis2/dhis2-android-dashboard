@@ -42,24 +42,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel.Action;
 import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation$Table;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationComment$Table;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationElement$Table;
-import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader.TrackedTable;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
@@ -69,8 +59,6 @@ import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -173,11 +161,13 @@ public final class InterpretationFragment extends BaseFragment
 
     @Override
     public Loader<List<Interpretation>> onCreateLoader(int id, Bundle args) {
-        List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
+        /* List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
                 new TrackedTable(Interpretation.class, Action.UPDATE),
                 new TrackedTable(InterpretationComment.class, Action.INSERT));
         return new DbLoader<>(getActivity().getApplicationContext(),
                 trackedTables, new InterpretationsQuery());
+                */
+        return null;
     }
 
     @Override
@@ -301,7 +291,7 @@ public final class InterpretationFragment extends BaseFragment
 
         @Override
         public List<Interpretation> query(Context context) {
-            List<Interpretation> interpretations
+            /* List<Interpretation> interpretations
                     = new Select()
                     .from(Interpretation.class)
                     .where(Condition.column(Interpretation$Table
@@ -328,6 +318,8 @@ public final class InterpretationFragment extends BaseFragment
             Collections.sort(interpretations,
                     Collections.reverseOrder(Interpretation.CREATED_COMPARATOR));
             return interpretations;
+            */
+            return null;
         }
     }
 }

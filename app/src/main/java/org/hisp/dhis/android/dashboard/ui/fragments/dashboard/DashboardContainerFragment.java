@@ -36,16 +36,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.Dashboard$Table;
-import org.hisp.dhis.android.dashboard.api.models.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.entities.Models;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbAction;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 
 import java.util.Arrays;
@@ -75,10 +73,10 @@ public class DashboardContainerFragment extends BaseFragment
 
     @Override
     public Loader<Boolean> onCreateLoader(int id, Bundle args) {
-        List<BaseModel.Action> actionsToTrack = Arrays.asList(
-                BaseModel.Action.INSERT, BaseModel.Action.DELETE);
-        List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
-                new DbLoader.TrackedTable(Dashboard.class, actionsToTrack));
+        List<DbAction> actionsToTrack = Arrays.asList(
+                DbAction.INSERT, DbAction.DELETE);
+        List<TrackedTable> trackedTables = Arrays.asList(
+                new TrackedTable(Dashboard.class, actionsToTrack));
         return new DbLoader<>(getActivity().getApplicationContext(),
                 trackedTables, new DashboardsQuery());
     }
@@ -120,12 +118,8 @@ public class DashboardContainerFragment extends BaseFragment
 
         @Override
         public Boolean query(Context context) {
-            List<Dashboard> dashboards = new Select()
-                    .from(Dashboard.class)
-                    .where(Condition.column(Dashboard$Table
-                            .STATE).isNot(State.TO_DELETE.toString()))
-                    .queryList();
-
+            List<Dashboard> dashboards = Models.dashboards().filter(State.TO_DELETE);
+            System.out.println("*** DASHBOARDS *** " + dashboards);
             return dashboards != null && dashboards.size() > 0;
         }
     }

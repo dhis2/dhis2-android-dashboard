@@ -33,6 +33,7 @@ import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
 import org.hisp.dhis.android.dashboard.api.utils.StringUtils;
 import org.joda.time.DateTime;
 
