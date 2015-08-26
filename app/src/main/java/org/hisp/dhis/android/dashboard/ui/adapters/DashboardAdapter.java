@@ -32,7 +32,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import org.hisp.dhis.android.dashboard.api.models.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.ui.fragments.dashboard.DashboardFragment;
 
 import java.util.List;

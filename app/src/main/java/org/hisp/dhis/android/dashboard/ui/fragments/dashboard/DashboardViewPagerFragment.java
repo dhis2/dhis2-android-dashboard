@@ -41,27 +41,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
 import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
-import org.hisp.dhis.android.dashboard.api.models.Access;
-import org.hisp.dhis.android.dashboard.api.models.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.Dashboard$Table;
-import org.hisp.dhis.android.dashboard.api.models.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardAdapter;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -146,8 +142,8 @@ public class DashboardViewPagerFragment extends BaseFragment
     @Override
     public Loader<List<Dashboard>> onCreateLoader(int id, Bundle state) {
         if (id == LOADER_ID && isAdded()) {
-            List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
-                    new DbLoader.TrackedTable(Dashboard.class));
+            List<TrackedTable> trackedTables = Arrays.asList(
+                    new TrackedTable(Dashboard.class));
             return new DbLoader<>(getActivity().getApplicationContext(),
                     trackedTables, new DashboardQuery());
         }
@@ -269,13 +265,14 @@ public class DashboardViewPagerFragment extends BaseFragment
 
         @Override
         public List<Dashboard> query(Context context) {
-            List<Dashboard> dashboards = new Select()
+            /* List<Dashboard> dashboards = new Select()
                     .from(Dashboard.class)
-                    .where(Condition.column(Dashboard$Table
+                    .where(Condition.column(DashboarΩd$Table
                             .STATE).isNot(State.TO_DELETE.toString()))
-                    .queryList();
-            Collections.sort(dashboards, Dashboard.DISPLAY_NAME_COMPARATOR);
-            return dashboards;
+                    .queryList(); */
+            //Collections.sort(dashboards, Dashboard.DISPLAY_NAME_COMPARATOR);
+            //return dashboards;
+            return null;
         }
     }
 }

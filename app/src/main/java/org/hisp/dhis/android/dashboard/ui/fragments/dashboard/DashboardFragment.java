@@ -41,19 +41,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.Access;
-import org.hisp.dhis.android.dashboard.api.models.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.DashboardItem$Table;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
-import org.hisp.dhis.android.dashboard.api.models.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.entities.Models;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemAdapter;
@@ -155,9 +152,9 @@ public class DashboardFragment extends BaseFragment
             In order to avoid strange bugs during table JOINs,
             we explicitly state that we want only not null values  */
 
-            List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
-                    new DbLoader.TrackedTable(DashboardItem.class),
-                    new DbLoader.TrackedTable(DashboardElement.class));
+            List<TrackedTable> trackedTables = Arrays.asList(
+                    new TrackedTable(DashboardItem.class),
+                    new TrackedTable(DashboardElement.class));
             return new DbLoader<>(getActivity().getApplicationContext(),
                     trackedTables, new ItemsQuery(args.getLong(DASHBOARD_ID)));
         }
@@ -203,7 +200,8 @@ public class DashboardFragment extends BaseFragment
     @Override
     public void onContentDeleteClick(DashboardElement element) {
         if (element != null) {
-            element.deleteDashboardElement();
+            // element.deleteDashboardElement();
+            Models.dashboardElements().delete(element);
 
             if (isDhisServiceBound()) {
                 getDhisService().syncDashboards();
@@ -215,7 +213,8 @@ public class DashboardFragment extends BaseFragment
     @Override
     public void onItemDeleteClick(DashboardItem item) {
         if (item != null) {
-            item.deleteDashboardItem();
+            // item.deleteDashboardItem();
+            Models.dashboardItems().delete(item);
 
             if (isDhisServiceBound()) {
                 getDhisService().syncDashboards();
@@ -240,7 +239,7 @@ public class DashboardFragment extends BaseFragment
 
         @Override
         public List<DashboardItem> query(Context context) {
-            List<DashboardItem> dashboardItems = new Select()
+            /* List<DashboardItem> dashboardItems = new Select()
                     .from(DashboardItem.class)
                     .where(
                             Condition.column(DashboardItem$Table.DASHBOARD_DASHBOARD).is(mDashboardId),
@@ -253,8 +252,9 @@ public class DashboardFragment extends BaseFragment
                             = dashboardItem.queryRelatedDashboardElements();
                     dashboardItem.setDashboardElements(dashboardElements);
                 }
-            }
-            return dashboardItems;
+            } */
+            // return dashboardItems;
+            return null;
         }
     }
 }
