@@ -59,10 +59,10 @@ public final class InterpretationComment extends BaseIdentifiableObject {
      */
     public final void deleteComment() {
         if (State.TO_POST.equals(getState())) {
-            super.delete();
+            // super.delete();
         } else {
             setState(State.TO_DELETE);
-            super.save();
+            // super.save();
         }
     }
 
@@ -80,7 +80,7 @@ public final class InterpretationComment extends BaseIdentifiableObject {
             state = State.TO_UPDATE;
         }
 
-        super.save();
+        // super.save();
     }
 
     public String getText() {

@@ -37,6 +37,10 @@ import com.raizlabs.android.dbflow.annotation.Table;
 
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbDhis;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -96,5 +100,64 @@ public final class Interpretation$Flow extends BaseIdentifiableObject$Flow {
 
     public void setUser(User$Flow user) {
         this.user = user;
+    }
+
+    public static Interpretation toModel(Interpretation$Flow interpretationFlow) {
+        Interpretation interpretation = new Interpretation();
+        interpretation.setId(interpretationFlow.getId());
+        interpretation.setUId(interpretationFlow.getUId());
+        interpretation.setCreated(interpretationFlow.getCreated());
+        interpretation.setLastUpdated(interpretationFlow.getLastUpdated());
+        interpretation.setName(interpretationFlow.getName());
+        interpretation.setDisplayName(interpretationFlow.getDisplayName());
+        interpretation.setAccess(interpretationFlow.getAccess());
+        interpretation.setText(interpretationFlow.getText());
+        interpretation.setType(interpretationFlow.getType());
+        interpretation.setState(interpretationFlow.getState());
+
+        // TODO add User converter
+        // interpretation
+        return interpretation;
+    }
+
+    public static Interpretation$Flow fromModel(Interpretation interpretation) {
+        Interpretation$Flow interpretationFlow = new Interpretation$Flow();
+        interpretationFlow.setId(interpretation.getId());
+        interpretationFlow.setUId(interpretation.getUId());
+        interpretationFlow.setCreated(interpretation.getCreated());
+        interpretationFlow.setLastUpdated(interpretation.getLastUpdated());
+        interpretationFlow.setName(interpretation.getName());
+        interpretationFlow.setDisplayName(interpretation.getDisplayName());
+        interpretationFlow.setAccess(interpretation.getAccess());
+        interpretationFlow.setText(interpretation.getText());
+        interpretationFlow.setType(interpretation.getType());
+        interpretationFlow.setState(interpretation.getState());
+
+        // TODO add User converter
+        return interpretationFlow;
+    }
+
+    public static List<Interpretation> toModels(List<Interpretation$Flow> interpretationFlows) {
+        List<Interpretation> interpretations = new ArrayList<>();
+
+        if (interpretationFlows != null && !interpretationFlows.isEmpty()) {
+            for (Interpretation$Flow interpretationFlow : interpretationFlows) {
+                interpretations.add(toModel(interpretationFlow))
+            }
+        }
+
+        return interpretations;
+    }
+
+    public static List<Interpretation$Flow> fromModels(List<Interpretation> interpretations) {
+        List<Interpretation$Flow> interpretationFlows = new ArrayList<>();
+
+        if (interpretations != null && !interpretations.isEmpty()) {
+            for (Interpretation interpretation : interpretations) {
+                interpretationFlows.add(fromModel(interpretation));
+            }
+        }
+
+        return interpretationFlows;
     }
 }

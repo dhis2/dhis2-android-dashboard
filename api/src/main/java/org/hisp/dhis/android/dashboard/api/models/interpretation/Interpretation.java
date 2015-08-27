@@ -165,7 +165,7 @@ public final class Interpretation extends BaseIdentifiableObject {
             state = State.TO_UPDATE;
         }
 
-        super.save();
+        // super.save();
     }
 
     /**
@@ -174,10 +174,10 @@ public final class Interpretation extends BaseIdentifiableObject {
      */
     public final void deleteInterpretation() {
         if (State.TO_POST.equals(getState())) {
-            super.delete();
+            // super.delete();
         } else {
             setState(State.TO_DELETE);
-            super.save();
+            // super.save();
         }
     }
 
@@ -245,15 +245,15 @@ public final class Interpretation extends BaseIdentifiableObject {
                 elements.add(getChart());
                 break;
             }
-            case org.hisp.dhis.android.dashboard.api.models.Interpretation.TYPE_MAP: {
+            case Interpretation.TYPE_MAP: {
                 elements.add(getMap());
                 break;
             }
-            case org.hisp.dhis.android.dashboard.api.models.Interpretation.TYPE_REPORT_TABLE: {
+            case Interpretation.TYPE_REPORT_TABLE: {
                 elements.add(getReportTable());
                 break;
             }
-            case org.hisp.dhis.android.dashboard.api.models.Interpretation.TYPE_DATA_SET_REPORT: {
+            case Interpretation.TYPE_DATA_SET_REPORT: {
                 elements.add(getDataSet());
                 elements.add(getPeriod());
                 elements.add(getOrganisationUnit());
