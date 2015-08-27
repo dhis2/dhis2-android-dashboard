@@ -4,11 +4,14 @@ import org.hisp.dhis.android.dashboard.api.models.entities.Models;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.joda.time.DateTime;
+
+import java.util.List;
 
 /**
  * Created by arazabishov on 8/27/15.
@@ -57,5 +60,12 @@ public final class DashboardItemService implements IDashboardItemService {
             dashboardItem.setState(State.TO_DELETE);
             Models.dashboardItems().update(dashboardItem);
         }
+    }
+
+    @Override
+    public int getContentCount(DashboardItem dashboardItem) {
+        List<DashboardElement> dashboardElements = Models.dashboardElements()
+                .filter(dashboardItem, State.TO_DELETE);
+        return dashboardElements == null ? 0 : dashboardElements.size();
     }
 }

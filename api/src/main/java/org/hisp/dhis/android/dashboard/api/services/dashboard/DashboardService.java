@@ -22,9 +22,12 @@ import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
  */
 public final class DashboardService implements IDashboardService {
     private final IDashboardItemService mDashboardItemService;
+    private final IDashboardElementService mDashboardElementService;
 
-    public DashboardService(IDashboardItemService dashboardItemService) {
+    public DashboardService(IDashboardItemService dashboardItemService,
+                            IDashboardElementService dashboardElementService) {
         mDashboardItemService = isNull(dashboardItemService, "IDashboardItemService must not be null");
+        mDashboardElementService = isNull(dashboardElementService, "IDashboardElementService must not be null");
     }
 
     /**
@@ -94,15 +97,15 @@ public final class DashboardService implements IDashboardService {
 
         if (isItemContentTypeEmbedded(content)) {
             item = mDashboardItemService.createDashboardItem(dashboard, content);
-            element = DashboardElement.createDashboardElement(item, content);
+            element = mDashboardElementService.createDashboardElement(item, content);
             itemsCount += 1;
         } else {
-            item = getAvailableItemByType(content.getType());
+            item = getAvailableItemByType(dashboard, content.getType());
             if (item == null) {
                 item = mDashboardItemService.createDashboardItem(dashboard, content);
                 itemsCount += 1;
             }
-            element = DashboardElement.createDashboardElement(item, content);
+            element = mDashboardElementService.createDashboardElement(item, content);
         }
 
         if (itemsCount > Dashboard.MAX_ITEMS) {
@@ -135,7 +138,7 @@ public final class DashboardService implements IDashboardService {
 
         for (DashboardItem item : items) {
             if (type.equals(item.getType()) &&
-                    item.getContentCount() < DashboardItem.MAX_CONTENT) {
+                    mDashboardItemService.getContentCount(item) < DashboardItem.MAX_CONTENT) {
                 return item;
             }
         }
