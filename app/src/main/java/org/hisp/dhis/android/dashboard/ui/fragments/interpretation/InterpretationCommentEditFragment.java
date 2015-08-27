@@ -42,8 +42,7 @@ import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationComment$Table;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
 import butterknife.Bind;
@@ -66,7 +65,7 @@ public class InterpretationCommentEditFragment extends BaseDialogFragment {
 
     public static InterpretationCommentEditFragment newInstance(long commentId) {
         Bundle args = new Bundle();
-        args.putLong(InterpretationComment$Table.ID, commentId);
+        // args.putLong(InterpretationComment$Table.ID, commentId);
 
         InterpretationCommentEditFragment fragment
                 = new InterpretationCommentEditFragment();
@@ -92,11 +91,11 @@ public class InterpretationCommentEditFragment extends BaseDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        mInterpretationComment = new Select()
+        /* mInterpretationComment = new Select()
                 .from(InterpretationComment.class)
                 .where(Condition.column(InterpretationComment$Table
                         .ID).is(getArguments().getLong(InterpretationComment$Table.ID)))
-                .querySingle();
+                .querySingle(); */
 
         mDialogLabel.setText(getString(R.string.edit_comment));
         mCommentEditText.setText(mInterpretationComment.getText());
@@ -111,8 +110,8 @@ public class InterpretationCommentEditFragment extends BaseDialogFragment {
     public void onButtonClick(View view) {
         switch (view.getId()) {
             case R.id.update_interpretation_comment: {
-                mInterpretationComment.updateComment(
-                        mCommentEditText.getText().toString());
+                /* mInterpretationComment.updateComment(
+                        mCommentEditText.getText().toString()); */
 
                 if (isDhisServiceBound()) {
                     getDhisService().syncInterpretations();

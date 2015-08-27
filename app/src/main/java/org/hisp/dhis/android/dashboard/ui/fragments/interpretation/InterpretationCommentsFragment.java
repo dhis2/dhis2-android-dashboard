@@ -45,15 +45,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation$Table;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
-import org.hisp.dhis.android.dashboard.api.models.User;
-import org.hisp.dhis.android.dashboard.api.models.User$Table;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
+import org.hisp.dhis.android.dashboard.api.models.user.User;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter;
@@ -114,19 +109,19 @@ public class InterpretationCommentsFragment extends BaseFragment
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mInterpretation = new Select()
+        /* mInterpretation = new Select()
                 .from(Interpretation.class)
                 .where(Condition.column(Interpretation$Table
                         .ID).is(getArguments().getLong(INTERPRETATION_ID)))
-                .querySingle();
+                .querySingle(); */
         /* UserAccount account = UserAccount
                 .getCurrentUserAccountFromDb(); */
         UserAccount account = null;
-        mUser = new Select()
+        /* mUser = new Select()
                 .from(User.class)
                 .where(Condition.column(User$Table
                         .UID).is(account.getUId()))
-                .querySingle();
+                .querySingle(); */
 
         ButterKnife.bind(this, view);
 
@@ -205,12 +200,12 @@ public class InterpretationCommentsFragment extends BaseFragment
         String newCommentText = mNewCommentText.getText().toString();
 
         // creating and saving new comment
-        InterpretationComment comment = Interpretation
+        /* InterpretationComment comment = Interpretation
                 .addComment(mInterpretation, mUser, newCommentText);
-        comment.save();
+        comment.save(); */
 
         // now we need to new item to list and play animation.
-        mAdapter.getData().add(comment);
+        // mAdapter.getData().add(comment);
         mRecyclerView.scrollToPosition(
                 mAdapter.getItemCount() > 0 ? mAdapter.getItemCount() - 1 : 0);
         mAdapter.notifyItemInserted(mAdapter.getItemCount() - 1);
@@ -236,7 +231,7 @@ public class InterpretationCommentsFragment extends BaseFragment
         if (!(position < 0)) {
             mAdapter.getData().remove(position);
             mAdapter.notifyItemRemoved(position);
-            comment.deleteComment();
+            // comment.deleteComment();
 
             if (isDhisServiceBound()) {
                 getDhisService().syncInterpretations();

@@ -34,8 +34,8 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import org.hisp.dhis.android.dashboard.api.models.IdentifiableObject;
 import org.hisp.dhis.android.dashboard.api.models.common.Access;
+import org.hisp.dhis.android.dashboard.api.models.common.IdentifiableObject;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbDhis;

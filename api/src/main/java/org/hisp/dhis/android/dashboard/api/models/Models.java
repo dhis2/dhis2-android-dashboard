@@ -19,7 +19,9 @@ import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationC
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElementStore;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationStore;
 import org.hisp.dhis.android.dashboard.api.models.user.IUserAccountStore;
+import org.hisp.dhis.android.dashboard.api.models.user.IUserStore;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccountStore;
+import org.hisp.dhis.android.dashboard.api.models.user.UserStore;
 
 /**
  * Created by arazabishov on 8/18/15.
@@ -28,9 +30,9 @@ public final class Models {
     private static Models models;
 
     // Dashboard store objects
-    private final IDashboardStore dashboardRepository;
-    private final IDashboardItemStore dashboardItemRepository;
-    private final IDashboardElementStore dashboardElementRepository;
+    private final IDashboardStore dashboardStore;
+    private final IDashboardItemStore dashboardItemStore;
+    private final IDashboardElementStore dashboardElementStore;
     private final IDashboardItemContentStore dashboardItemContentStore;
 
     // Interpretation store objects
@@ -40,13 +42,14 @@ public final class Models {
 
     // User store object
     private final IUserAccountStore userAccountStore;
+    private final IUserStore userStore;
 
     public Models(Context context) {
         FlowManager.init(context);
 
-        dashboardRepository = new DashboardStore();
-        dashboardItemRepository = new DashboardItemStore();
-        dashboardElementRepository = new DashboardElementStore();
+        dashboardStore = new DashboardStore();
+        dashboardItemStore = new DashboardItemStore();
+        dashboardElementStore = new DashboardElementStore();
         dashboardItemContentStore = new DashboardItemContentStore();
 
         interpretationStore = new InterpretationStore();
@@ -54,6 +57,7 @@ public final class Models {
         interpretationElementStore = new InterpretationElementStore();
 
         userAccountStore = new UserAccountStore();
+        userStore = new UserStore();
     }
 
     public static void init(Context context) {
@@ -69,15 +73,15 @@ public final class Models {
     }
 
     public static IDashboardStore dashboards() {
-        return getInstance().dashboardRepository;
+        return getInstance().dashboardStore;
     }
 
     public static IDashboardItemStore dashboardItems() {
-        return getInstance().dashboardItemRepository;
+        return getInstance().dashboardItemStore;
     }
 
     public static IDashboardElementStore dashboardElements() {
-        return getInstance().dashboardElementRepository;
+        return getInstance().dashboardElementStore;
     }
 
     public static IDashboardItemContentStore dashboardItemContent() {
@@ -98,5 +102,9 @@ public final class Models {
 
     public static IUserAccountStore userAccount() {
         return getInstance().userAccountStore;
+    }
+
+    public static IUserStore users() {
+        return getInstance().userStore;
     }
 }

@@ -37,27 +37,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
-import org.hisp.dhis.android.dashboard.api.models.User;
-import org.hisp.dhis.android.dashboard.api.models.User$Table;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
-import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.hisp.dhis.android.dashboard.api.models.Interpretation.createInterpretation;
 
 /**
  * Fragment responsible for creation of new dashboards.
@@ -127,7 +116,7 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
             /* UserAccount userAccount = UserAccount
                     .getCurrentUserAccountFromDb(); */
             UserAccount userAccount = null;
-            User user = new Select()
+            /* User user = new Select()
                     .from(User.class)
                     .where(Condition.column(User$Table
                             .UID).is(userAccount.getUId()))
@@ -137,16 +126,16 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
             Interpretation interpretation = createInterpretation(mDashboardItem,
                     user, mInterpretationText.getText().toString());
             List<InterpretationElement> elements = interpretation
-                    .getInterpretationElements();
+                    .getInterpretationElements(); */
 
             // save interpretation
-            interpretation.save();
+            /* interpretation.save();
             if (elements != null && !elements.isEmpty()) {
                 for (InterpretationElement element : elements) {
                     // save corresponding interpretation elements
                     element.save();
                 }
-            }
+            } */
 
             if (isDhisServiceBound()) {
                 getDhisService().syncInterpretations();

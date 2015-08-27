@@ -29,19 +29,19 @@ package org.hisp.dhis.android.dashboard.api.controllers;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.squareup.okhttp.HttpUrl;
 
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
-import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.Models;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.Session;
 import org.hisp.dhis.android.dashboard.api.models.flow.Dashboard$Flow;
 import org.hisp.dhis.android.dashboard.api.models.flow.DashboardElement$Flow;
 import org.hisp.dhis.android.dashboard.api.models.flow.DashboardItem$Flow;
 import org.hisp.dhis.android.dashboard.api.models.flow.DashboardItemContent$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.Interpretation$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.InterpretationComment$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.InterpretationElement$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.User$Flow;
 import org.hisp.dhis.android.dashboard.api.models.flow.UserAccount$Flow;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
-import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
-import org.hisp.dhis.android.dashboard.api.models.common.meta.Session;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
@@ -99,10 +99,10 @@ final class UserController {
                 DashboardElement$Flow.class,
                 DashboardItem$Flow.class,
                 DashboardItemContent$Flow.class,
-                Interpretation.class,
-                InterpretationComment.class,
-                InterpretationElement.class,
-                User.class,
+                Interpretation$Flow.class,
+                InterpretationComment$Flow.class,
+                InterpretationElement$Flow.class,
+                User$Flow.class,
                 UserAccount$Flow.class
         );
     }

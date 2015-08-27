@@ -36,12 +36,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation$Table;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -66,7 +62,7 @@ public final class InterpretationTextEditFragment extends BaseDialogFragment {
 
     public static InterpretationTextEditFragment newInstance(long interpretationId) {
         Bundle args = new Bundle();
-        args.putLong(Interpretation$Table.ID, interpretationId);
+        // args.putLong(Interpretation$Table.ID, interpretationId);
 
         InterpretationTextEditFragment fragment = new InterpretationTextEditFragment();
         fragment.setArguments(args);
@@ -91,11 +87,11 @@ public final class InterpretationTextEditFragment extends BaseDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        mInterpretation = new Select()
+        /* mInterpretation = new Select()
                 .from(Interpretation.class)
                 .where(Condition.column(Interpretation$Table
                         .ID).is(getArguments().getLong(Interpretation$Table.ID)))
-                .querySingle();
+                .querySingle(); */
 
         mDialogLabel.setText(getString(R.string.interpretation_text));
         mInterpretationText.setText(mInterpretation.getText());
@@ -111,8 +107,8 @@ public final class InterpretationTextEditFragment extends BaseDialogFragment {
     public void onButtonClick(View view) {
         switch (view.getId()) {
             case R.id.update_interpretation_text: {
-                mInterpretation.updateInterpretation(
-                        mInterpretationText.getText().toString());
+                /* mInterpretation.updateInterpretation(
+                        mInterpretationText.getText().toString()); */
 
                 if (isDhisServiceBound()) {
                     getDhisService().syncInterpretations();

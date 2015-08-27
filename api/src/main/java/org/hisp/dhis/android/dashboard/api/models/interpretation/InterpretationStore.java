@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
+import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.flow.Interpretation$Flow;
 
 import java.util.List;
@@ -39,6 +40,20 @@ public final class InterpretationStore implements IInterpretationStore {
 
     @Override
     public List<Interpretation> query() {
+        return null;
+    }
+
+    /*
+    private static List<Interpretation> queryInterpretations() {
+        return new Select()
+                .from(Interpretation.class)
+                .where(Condition.column(Interpretation$Table
+                        .STATE).isNot(State.TO_POST.toString()))
+                .queryList();
+    }*/
+
+    @Override
+    public List<Interpretation> filter(State state) {
         return null;
     }
 }

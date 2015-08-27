@@ -29,6 +29,11 @@ public final class UserAccountStore implements IUserAccountStore {
     }
 
     @Override
+    public void save(UserAccount object) {
+        UserAccount$Flow.fromModel(object).save();
+    }
+
+    @Override
     public void delete(UserAccount object) {
         UserAccount$Flow.fromModel(object).delete();
     }

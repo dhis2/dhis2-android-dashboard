@@ -37,12 +37,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation$Table;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -64,7 +60,7 @@ public final class InterpretationTextFragment extends DialogFragment {
 
     public static InterpretationTextFragment newInstance(long interpretationId) {
         Bundle args = new Bundle();
-        args.putLong(Interpretation$Table.ID, interpretationId);
+        // args.putLong(Interpretation$Table.ID, interpretationId);
 
         InterpretationTextFragment fragment = new InterpretationTextFragment();
         fragment.setArguments(args);
@@ -89,11 +85,11 @@ public final class InterpretationTextFragment extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        mInterpretation = new Select()
+        /* mInterpretation = new Select()
                 .from(Interpretation.class)
                 .where(Condition.column(Interpretation$Table
                         .ID).is(getArguments().getLong(Interpretation$Table.ID)))
-                .querySingle();
+                .querySingle(); */
 
         mDialogLabel.setText(getString(R.string.interpretation_text));
         mInterpretationText.setText(mInterpretation.getText());

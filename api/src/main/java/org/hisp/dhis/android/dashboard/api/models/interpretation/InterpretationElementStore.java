@@ -31,4 +31,9 @@ public class InterpretationElementStore implements IInterpretationElementStore {
     public List<InterpretationElement> query() {
         return null;
     }
+
+    @Override
+    public List<InterpretationElement> query(Interpretation interpretation) {
+        return null;
+    }
 }

@@ -151,6 +151,6 @@ public class DhisController {
     }
 
     public void syncInterpretations() throws APIException {
-        (new InterpretationController(mDhisApi)).syncInterpretations();
+        (new InterpretationController(mDhisApi, null, null, null)).syncInterpretations();
     }
 }

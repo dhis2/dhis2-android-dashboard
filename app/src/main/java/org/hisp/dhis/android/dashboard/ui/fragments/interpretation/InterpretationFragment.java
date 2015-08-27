@@ -47,8 +47,8 @@ import com.squareup.otto.Subscribe;
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
@@ -228,7 +228,7 @@ public final class InterpretationFragment extends BaseFragment
         if (!(position < 0)) {
             mAdapter.getData().remove(position);
             mAdapter.notifyItemRemoved(position);
-            interpretation.deleteInterpretation();
+            // interpretation.deleteInterpretation();
 
             if (isDhisServiceBound()) {
                 getDhisService().syncInterpretations();

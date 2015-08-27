@@ -1,5 +1,7 @@
 package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
+import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
+
 import java.util.List;
 
 /**
@@ -29,6 +31,16 @@ public class InterpretationCommentStore implements IInterpretationCommentStore {
 
     @Override
     public List<InterpretationComment> query() {
+        return null;
+    }
+
+    @Override
+    public List<InterpretationComment> filter(State state) {
+        return null;
+    }
+
+    @Override
+    public List<InterpretationComment> filter(Interpretation interpretation, State state) {
         return null;
     }
 }

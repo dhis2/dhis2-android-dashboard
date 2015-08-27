@@ -20,8 +20,10 @@ import java.util.List;
  */
 public final class InterpretationService implements IInterpretationsService {
 
-    public InterpretationService() {
-        // empty constructor
+    private final IInterpretationElementService mInterpretationElementService;
+
+    public InterpretationService(IInterpretationElementService service) {
+        mInterpretationElementService = service;
     }
 
     /**
@@ -51,7 +53,7 @@ public final class InterpretationService implements IInterpretationsService {
     /**
      * This method allows to create interpretation from: chart, map,
      * reportTable. Please note, it won't work for data sets.
-     * <p>
+     * <p/>
      * Note, model won't be saved to database automatically. You have to call .save()
      * both on interpretation and interpretation elements of current object.
      *
@@ -75,22 +77,22 @@ public final class InterpretationService implements IInterpretationsService {
 
         switch (item.getType()) {
             case Interpretation.TYPE_CHART: {
-                InterpretationElement element = InterpretationElement
-                        .fromDashboardElement(interpretation, item.getChart(), Interpretation.TYPE_CHART);
+                InterpretationElement element = mInterpretationElementService
+                        .createInterpretationElement(interpretation, item.getChart(), Interpretation.TYPE_CHART);
                 interpretation.setType(Interpretation.TYPE_CHART);
                 interpretation.setChart(element);
                 break;
             }
             case Interpretation.TYPE_MAP: {
-                InterpretationElement element = InterpretationElement
-                        .fromDashboardElement(interpretation, item.getMap(), Interpretation.TYPE_MAP);
+                InterpretationElement element = mInterpretationElementService
+                        .createInterpretationElement(interpretation, item.getMap(), Interpretation.TYPE_MAP);
                 interpretation.setType(Interpretation.TYPE_MAP);
                 interpretation.setMap(element);
                 break;
             }
             case Interpretation.TYPE_REPORT_TABLE: {
-                InterpretationElement element = InterpretationElement
-                        .fromDashboardElement(interpretation, item.getReportTable(), Interpretation.TYPE_REPORT_TABLE);
+                InterpretationElement element = mInterpretationElementService
+                        .createInterpretationElement(interpretation, item.getReportTable(), Interpretation.TYPE_REPORT_TABLE);
                 interpretation.setType(Interpretation.TYPE_REPORT_TABLE);
                 interpretation.setReportTable(element);
                 break;

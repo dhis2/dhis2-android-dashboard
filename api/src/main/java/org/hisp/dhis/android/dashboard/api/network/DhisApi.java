@@ -28,11 +28,11 @@
 
 package org.hisp.dhis.android.dashboard.api.network;
 
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.common.SystemInfo;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 
 import java.util.List;

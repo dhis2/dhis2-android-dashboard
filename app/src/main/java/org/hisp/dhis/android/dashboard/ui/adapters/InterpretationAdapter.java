@@ -41,8 +41,8 @@ import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationAdapter.InterpretationHolder;
 

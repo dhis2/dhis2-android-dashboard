@@ -40,11 +40,10 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
-import org.hisp.dhis.android.dashboard.api.models.InterpretationElement$Table;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
 import org.hisp.dhis.android.dashboard.ui.fragments.ImageViewFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.WebViewFragment;
 
@@ -117,12 +116,12 @@ public class DashboardElementDetailActivity extends BaseActivity {
         }
 
         if (interpretationElementId > 0) {
-            InterpretationElement element = new Select()
+            /* InterpretationElement element = new Select()
                     .from(InterpretationElement.class)
                     .where(Condition.column(InterpretationElement$Table
                             .ID).is(interpretationElementId))
                     .querySingle();
-            handleInterpretationElement(element);
+            handleInterpretationElement(element); */
         }
     }
 
