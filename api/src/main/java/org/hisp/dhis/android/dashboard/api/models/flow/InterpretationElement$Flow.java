@@ -33,25 +33,16 @@ import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.Table;
 
-import org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbDhis;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
- *         <p/>
+ *         <p>
  *         This model class is intended to represent content of Interpretation {map, chart,
  *         reportTable, dataSet, period, organisationUnit}
  */
 @Table(databaseName = DbDhis.NAME)
-public final class InterpretationElement$Flow extends BaseIdentifiableObject {
-    public static final String TYPE_CHART = "chart";
-    public static final String TYPE_MAP = "map";
-    public static final String TYPE_REPORT_TABLE = "reportTable";
-    public static final String TYPE_DATA_SET = "dataSet";
-    public static final String TYPE_PERIOD = "period";
-    public static final String TYPE_ORGANISATION_UNIT = "organisationUnit";
+public final class InterpretationElement$Flow extends BaseIdentifiableObject$Flow {
 
     @Column
     @NotNull
@@ -64,41 +55,10 @@ public final class InterpretationElement$Flow extends BaseIdentifiableObject {
                             columnType = long.class, foreignColumnName = "id")
             }, saveForeignKeyModel = false, onDelete = ForeignKeyAction.CASCADE
     )
-    Interpretation interpretation;
+    Interpretation$Flow interpretation;
 
     public InterpretationElement$Flow() {
         // empty constructor
-    }
-
-    /**
-     * Factory method which allows to create InterpretationElement
-     * by using DashboardElement as main source of data.
-     *
-     * @param interpretation   Interpretation to which we will assign interpretation element
-     * @param dashboardElement DashboardElement from which we want to create interpretation element.
-     * @return new InterpretationElement
-     */
-    public static InterpretationElement$Flow fromDashboardElement(Interpretation interpretation,
-                                                             DashboardElement dashboardElement,
-                                                             String mimeType) {
-        InterpretationElement$Flow interpretationElement = new InterpretationElement$Flow();
-        interpretationElement.setUId(dashboardElement.getUId());
-        interpretationElement.setName(dashboardElement.getName());
-        interpretationElement.setDisplayName(dashboardElement.getDisplayName());
-        interpretationElement.setCreated(dashboardElement.getCreated());
-        interpretationElement.setLastUpdated(dashboardElement.getLastUpdated());
-        interpretationElement.setAccess(dashboardElement.getAccess());
-        interpretationElement.setType(mimeType);
-        interpretationElement.setInterpretation(interpretation);
-        return interpretationElement;
-    }
-
-    public Interpretation getInterpretation() {
-        return interpretation;
-    }
-
-    public void setInterpretation(Interpretation interpretation) {
-        this.interpretation = interpretation;
     }
 
     public String getType() {
@@ -107,5 +67,13 @@ public final class InterpretationElement$Flow extends BaseIdentifiableObject {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Interpretation$Flow getInterpretation() {
+        return interpretation;
+    }
+
+    public void setInterpretation(Interpretation$Flow interpretation) {
+        this.interpretation = interpretation;
     }
 }

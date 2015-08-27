@@ -26,13 +26,12 @@
 
 package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
-import org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
+import org.hisp.dhis.android.dashboard.api.models.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
- *         <p/>
+ *         <p>
  *         This model class is intended to represent content of Interpretation {map, chart,
  *         reportTable, dataSet, period, organisationUnit}
  */
@@ -46,7 +45,7 @@ public final class InterpretationElement extends BaseIdentifiableObject {
 
     String type;
 
-    org.hisp.dhis.android.dashboard.api.models.Interpretation interpretation;
+    Interpretation interpretation;
 
     public InterpretationElement() {
         // empty constructor
@@ -60,7 +59,7 @@ public final class InterpretationElement extends BaseIdentifiableObject {
      * @param dashboardElement DashboardElement from which we want to create interpretation element.
      * @return new InterpretationElement
      */
-    public static InterpretationElement fromDashboardElement(org.hisp.dhis.android.dashboard.api.models.Interpretation interpretation,
+    public static InterpretationElement fromDashboardElement(Interpretation interpretation,
                                                              DashboardElement dashboardElement,
                                                              String mimeType) {
         InterpretationElement interpretationElement = new InterpretationElement();
@@ -75,7 +74,7 @@ public final class InterpretationElement extends BaseIdentifiableObject {
         return interpretationElement;
     }
 
-    public org.hisp.dhis.android.dashboard.api.models.Interpretation getInterpretation() {
+    public Interpretation getInterpretation() {
         return interpretation;
     }
 

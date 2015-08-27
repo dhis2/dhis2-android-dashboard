@@ -26,8 +26,6 @@
 
 package org.hisp.dhis.android.dashboard.api.models.flow;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.ForeignKeyAction;
@@ -35,9 +33,6 @@ import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.Table;
 
-import org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject;
-import org.hisp.dhis.android.dashboard.api.models.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbDhis;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 
@@ -45,21 +40,18 @@ import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
 @Table(databaseName = DbDhis.NAME)
-@JsonIgnoreProperties(ignoreUnknown = true)
-public final class InterpretationComment$Flow extends BaseIdentifiableObject {
+public final class InterpretationComment$Flow extends BaseIdentifiableObject$Flow {
 
-    @JsonProperty("text")
     @Column(name = "text")
     String text;
 
-    @JsonProperty("user")
     @Column
     @ForeignKey(
             references = {
                     @ForeignKeyReference(columnName = "user", columnType = long.class, foreignColumnName = "id")
             }, saveForeignKeyModel = false, onDelete = ForeignKeyAction.CASCADE
     )
-    User user;
+    User$Flow user;
 
     @Column
     @ForeignKey(
@@ -67,7 +59,7 @@ public final class InterpretationComment$Flow extends BaseIdentifiableObject {
                     @ForeignKeyReference(columnName = "interpretation", columnType = long.class, foreignColumnName = "id")
             }, saveForeignKeyModel = false, onDelete = ForeignKeyAction.CASCADE
     )
-    Interpretation interpretation;
+    Interpretation$Flow interpretation;
 
     @NotNull
     @Column(name = "state")
@@ -75,36 +67,6 @@ public final class InterpretationComment$Flow extends BaseIdentifiableObject {
 
     public InterpretationComment$Flow() {
         state = State.SYNCED;
-    }
-
-    /**
-     * Performs soft delete of model. If State of object was SYNCED, it will be set to TO_DELETE.
-     * If the model is persisted only in the local database, it will be removed immediately.
-     */
-    public final void deleteComment() {
-        if (State.TO_POST.equals(getState())) {
-            super.delete();
-        } else {
-            setState(State.TO_DELETE);
-            super.save();
-        }
-    }
-
-    /**
-     * Method modifies the original comment text and sets TO_UPDATE as state,
-     * if the object was received from server. If the model was persisted only locally,
-     * the State will be the TO_POST.
-     *
-     * @param newText Edited text of comment.
-     */
-    public final void updateComment(String newText) {
-        setText(newText);
-
-        if (state != State.TO_DELETE && state != State.TO_POST) {
-            state = State.TO_UPDATE;
-        }
-
-        super.save();
     }
 
     public String getText() {
@@ -115,19 +77,19 @@ public final class InterpretationComment$Flow extends BaseIdentifiableObject {
         this.text = text;
     }
 
-    public User getUser() {
+    public User$Flow getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(User$Flow user) {
         this.user = user;
     }
 
-    public Interpretation getInterpretation() {
+    public Interpretation$Flow getInterpretation() {
         return interpretation;
     }
 
-    public void setInterpretation(Interpretation interpretation) {
+    public void setInterpretation(Interpretation$Flow interpretation) {
         this.interpretation = interpretation;
     }
 
