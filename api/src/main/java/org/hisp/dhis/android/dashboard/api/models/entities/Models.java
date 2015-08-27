@@ -1,5 +1,9 @@
 package org.hisp.dhis.android.dashboard.api.models.entities;
 
+import android.content.Context;
+
+import com.raizlabs.android.dbflow.config.FlowManager;
+
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElementStore;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItemContentStore;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItemStore;
@@ -26,7 +30,9 @@ public final class Models {
     // User store object
     private final IUserAccountStore userAccountStore;
 
-    public Models() {
+    public Models(Context context) {
+        FlowManager.init(context);
+
         dashboardRepository = new DashboardStore();
         dashboardItemRepository = new DashboardItemStore();
         dashboardElementRepository = new DashboardElementStore();
@@ -34,9 +40,13 @@ public final class Models {
         userAccountStore = new UserAccountStore();
     }
 
+    public static void init(Context context) {
+        models = new Models(context);
+    }
+
     private static Models getInstance() {
         if (models == null) {
-            models = new Models();
+            throw new IllegalArgumentException("You should call inti method first");
         }
 
         return models;
