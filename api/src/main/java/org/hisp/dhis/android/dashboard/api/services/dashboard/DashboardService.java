@@ -21,6 +21,11 @@ import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
  * Created by arazabishov on 8/27/15.
  */
 public final class DashboardService implements IDashboardService {
+    private final IDashboardItemService mDashboardItemService;
+
+    public DashboardService(IDashboardItemService dashboardItemService) {
+        mDashboardItemService = isNull(dashboardItemService, "IDashboardItemService must not be null");
+    }
 
     /**
      * Creates and returns new Dashboard with given name.
@@ -88,19 +93,19 @@ public final class DashboardService implements IDashboardService {
         int itemsCount = getDashboardItemCount(dashboard);
 
         if (isItemContentTypeEmbedded(content)) {
-            item = DashboardItem.createDashboardItem(this, content);
+            item = mDashboardItemService.createDashboardItem(dashboard, content);
             element = DashboardElement.createDashboardElement(item, content);
             itemsCount += 1;
         } else {
             item = getAvailableItemByType(content.getType());
             if (item == null) {
-                item = DashboardItem.createDashboardItem(this, content);
+                item = mDashboardItemService.createDashboardItem(dashboard, content);
                 itemsCount += 1;
             }
             element = DashboardElement.createDashboardElement(item, content);
         }
 
-        if (itemsCount > MAX_ITEMS) {
+        if (itemsCount > Dashboard.MAX_ITEMS) {
             return false;
         }
 
