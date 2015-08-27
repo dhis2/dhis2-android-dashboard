@@ -40,47 +40,17 @@ import org.hisp.dhis.android.dashboard.api.models.user.User;
 public final class InterpretationComment extends BaseIdentifiableObject {
 
     @JsonProperty("text")
-    String text;
+    private String text;
 
     @JsonProperty("user")
-    User user;
+    private User user;
 
-    Interpretation interpretation;
+    private State state;
 
-    State state;
+    private Interpretation interpretation;
 
     public InterpretationComment() {
         state = State.SYNCED;
-    }
-
-    /**
-     * Performs soft delete of model. If State of object was SYNCED, it will be set to TO_DELETE.
-     * If the model is persisted only in the local database, it will be removed immediately.
-     */
-    public final void deleteComment() {
-        if (State.TO_POST.equals(getState())) {
-            // super.delete();
-        } else {
-            setState(State.TO_DELETE);
-            // super.save();
-        }
-    }
-
-    /**
-     * Method modifies the original comment text and sets TO_UPDATE as state,
-     * if the object was received from server. If the model was persisted only locally,
-     * the State will be the TO_POST.
-     *
-     * @param newText Edited text of comment.
-     */
-    public final void updateComment(String newText) {
-        setText(newText);
-
-        if (state != State.TO_DELETE && state != State.TO_POST) {
-            state = State.TO_UPDATE;
-        }
-
-        // super.save();
     }
 
     public String getText() {
@@ -99,19 +69,19 @@ public final class InterpretationComment extends BaseIdentifiableObject {
         this.user = user;
     }
 
-    public Interpretation getInterpretation() {
-        return interpretation;
-    }
-
-    public void setInterpretation(Interpretation interpretation) {
-        this.interpretation = interpretation;
-    }
-
     public State getState() {
         return state;
     }
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    public Interpretation getInterpretation() {
+        return interpretation;
+    }
+
+    public void setInterpretation(Interpretation interpretation) {
+        this.interpretation = interpretation;
     }
 }

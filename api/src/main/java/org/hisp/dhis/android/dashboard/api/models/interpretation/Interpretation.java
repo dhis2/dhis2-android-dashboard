@@ -32,16 +32,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.hisp.dhis.android.dashboard.api.models.common.Access;
 import org.hisp.dhis.android.dashboard.api.models.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.user.User;
-import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
-import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
-import org.joda.time.DateTime;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,213 +49,40 @@ public final class Interpretation extends BaseIdentifiableObject {
     public static final String TYPE_DATA_SET_REPORT = "dataSetReport";
 
     @JsonProperty("text")
-    String text;
+    private String text;
 
     @JsonProperty("type")
-    String type;
+    private String type;
 
     @JsonIgnore
-    State state;
+    private State state;
 
     @JsonProperty("user")
-    User user;
+    private User user;
 
     @JsonProperty("chart")
-    InterpretationElement chart;
+    private InterpretationElement chart;
 
     @JsonProperty("map")
-    InterpretationElement map;
+    private InterpretationElement map;
 
     @JsonProperty("reportTable")
-    InterpretationElement reportTable;
+    private InterpretationElement reportTable;
 
     @JsonProperty("dataSet")
-    InterpretationElement dataSet;
+    private InterpretationElement dataSet;
 
     @JsonProperty("period")
-    InterpretationElement period;
+    private InterpretationElement period;
 
     @JsonProperty("organisationUnit")
-    InterpretationElement organisationUnit;
+    private InterpretationElement organisationUnit;
 
     @JsonProperty("comments")
-    List<InterpretationComment> comments;
+    private List<InterpretationComment> comments;
 
     public Interpretation() {
         state = State.SYNCED;
-    }
-
-
-    public static InterpretationComment addComment(Interpretation interpretation, User user, String text) {
-        DateTime lastUpdated = DateTimeManager.getInstance()
-                .getLastUpdated(ResourceType.INTERPRETATIONS);
-
-        InterpretationComment comment = new InterpretationComment();
-        comment.setCreated(lastUpdated);
-        comment.setLastUpdated(lastUpdated);
-        comment.setAccess(Access.provideDefaultAccess());
-        comment.setText(text);
-        comment.setState(State.TO_POST);
-        comment.setUser(user);
-        comment.setInterpretation(interpretation);
-        return comment;
-    }
-
-
-    public static Interpretation createInterpretation(DashboardItem item, User user, String text) {
-        DateTime lastUpdated = DateTimeManager.getInstance()
-                .getLastUpdated(ResourceType.INTERPRETATIONS);
-
-        Interpretation interpretation = new Interpretation();
-        interpretation.setCreated(lastUpdated);
-        interpretation.setLastUpdated(lastUpdated);
-        interpretation.setAccess(Access.provideDefaultAccess());
-        interpretation.setText(text);
-        interpretation.setState(State.TO_POST);
-        interpretation.setUser(user);
-
-        switch (item.getType()) {
-            case TYPE_CHART: {
-                InterpretationElement element = InterpretationElement
-                        .fromDashboardElement(interpretation, item.getChart(), TYPE_CHART);
-                interpretation.setType(TYPE_CHART);
-                interpretation.setChart(element);
-                break;
-            }
-            case TYPE_MAP: {
-                InterpretationElement element = InterpretationElement
-                        .fromDashboardElement(interpretation, item.getMap(), TYPE_MAP);
-                interpretation.setType(TYPE_MAP);
-                interpretation.setMap(element);
-                break;
-            }
-            case TYPE_REPORT_TABLE: {
-                InterpretationElement element = InterpretationElement
-                        .fromDashboardElement(interpretation, item.getReportTable(), TYPE_REPORT_TABLE);
-                interpretation.setType(TYPE_REPORT_TABLE);
-                interpretation.setReportTable(element);
-                break;
-            }
-            default: {
-                throw new IllegalArgumentException("Unsupported DashboardItem type");
-            }
-        }
-
-        return interpretation;
-    }
-
-    /**
-     * Method modifies the original interpretation text and sets TO_UPDATE as state,
-     * if the object was received from server.
-     * <p>
-     * If the model was persisted only locally, the State will remain TO_POST.
-     *
-     * @param text Edited text of interpretation.
-     */
-    public void updateInterpretation(String text) {
-        setText(text);
-
-        if (state != State.TO_DELETE && state != State.TO_POST) {
-            state = State.TO_UPDATE;
-        }
-
-        // super.save();
-    }
-
-    /**
-     * Performs soft delete of model. If State of object was SYNCED, it will be set to TO_DELETE.
-     * If the model is persisted only in the local database, it will be removed immediately.
-     */
-    public final void deleteInterpretation() {
-        if (State.TO_POST.equals(getState())) {
-            // super.delete();
-        } else {
-            setState(State.TO_DELETE);
-            // super.save();
-        }
-    }
-
-    /**
-     * Convenience method which allows to set InterpretationElements
-     * to Interpretation depending on their mime-type.
-     *
-     * @param elements List of interpretation elements.
-     */
-    public void setInterpretationElements(List<InterpretationElement> elements) {
-        if (elements == null || elements.isEmpty()) {
-            return;
-        }
-
-        if (getType() == null) {
-            return;
-        }
-
-        if (getType().equals(TYPE_DATA_SET_REPORT)) {
-            for (InterpretationElement element : elements) {
-                switch (element.getType()) {
-                    case InterpretationElement.TYPE_DATA_SET: {
-                        setDataSet(element);
-                        break;
-                    }
-                    case InterpretationElement.TYPE_PERIOD: {
-                        setPeriod(element);
-                        break;
-                    }
-                    case InterpretationElement.TYPE_ORGANISATION_UNIT: {
-                        setOrganisationUnit(element);
-                        break;
-                    }
-                }
-            }
-        } else {
-            switch (getType()) {
-                case InterpretationElement.TYPE_CHART: {
-                    setChart(elements.get(0));
-                    break;
-                }
-                case InterpretationElement.TYPE_MAP: {
-                    setMap(elements.get(0));
-                    break;
-                }
-                case InterpretationElement.TYPE_REPORT_TABLE: {
-                    setReportTable(elements.get(0));
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * Convenience method which allows to get
-     * interpretation elements assigned to current object.
-     *
-     * @return List of interpretation elements.
-     */
-    public List<InterpretationElement> getInterpretationElements() {
-        List<InterpretationElement> elements = new ArrayList<>();
-
-        switch (getType()) {
-            case Interpretation.TYPE_CHART: {
-                elements.add(getChart());
-                break;
-            }
-            case Interpretation.TYPE_MAP: {
-                elements.add(getMap());
-                break;
-            }
-            case Interpretation.TYPE_REPORT_TABLE: {
-                elements.add(getReportTable());
-                break;
-            }
-            case Interpretation.TYPE_DATA_SET_REPORT: {
-                elements.add(getDataSet());
-                elements.add(getPeriod());
-                elements.add(getOrganisationUnit());
-                break;
-            }
-        }
-
-        return elements;
     }
 
     public String getText() {

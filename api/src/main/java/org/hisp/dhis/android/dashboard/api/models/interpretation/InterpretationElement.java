@@ -27,7 +27,6 @@
 package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
 import org.hisp.dhis.android.dashboard.api.models.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -43,35 +42,12 @@ public final class InterpretationElement extends BaseIdentifiableObject {
     public static final String TYPE_PERIOD = "period";
     public static final String TYPE_ORGANISATION_UNIT = "organisationUnit";
 
-    String type;
+    private String type;
 
-    Interpretation interpretation;
+    private Interpretation interpretation;
 
     public InterpretationElement() {
         // empty constructor
-    }
-
-    /**
-     * Factory method which allows to create InterpretationElement
-     * by using DashboardElement as main source of data.
-     *
-     * @param interpretation   Interpretation to which we will assign interpretation element
-     * @param dashboardElement DashboardElement from which we want to create interpretation element.
-     * @return new InterpretationElement
-     */
-    public static InterpretationElement fromDashboardElement(Interpretation interpretation,
-                                                             DashboardElement dashboardElement,
-                                                             String mimeType) {
-        InterpretationElement interpretationElement = new InterpretationElement();
-        interpretationElement.setUId(dashboardElement.getUId());
-        interpretationElement.setName(dashboardElement.getName());
-        interpretationElement.setDisplayName(dashboardElement.getDisplayName());
-        interpretationElement.setCreated(dashboardElement.getCreated());
-        interpretationElement.setLastUpdated(dashboardElement.getLastUpdated());
-        interpretationElement.setAccess(dashboardElement.getAccess());
-        interpretationElement.setType(mimeType);
-        interpretationElement.setInterpretation(interpretation);
-        return interpretationElement;
     }
 
     public Interpretation getInterpretation() {

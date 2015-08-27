@@ -40,7 +40,6 @@ public final class DashboardService implements IDashboardService {
     public Dashboard createDashboard(String name) {
         DateTime lastUpdatedDateTime = DateTimeManager.getInstance()
                 .getLastUpdated(ResourceType.DASHBOARDS);
-
         Dashboard dashboard = new Dashboard();
         dashboard.setState(State.TO_POST);
         dashboard.setName(name);
@@ -48,7 +47,6 @@ public final class DashboardService implements IDashboardService {
         dashboard.setCreated(lastUpdatedDateTime);
         dashboard.setLastUpdated(lastUpdatedDateTime);
         dashboard.setAccess(Access.provideDefaultAccess());
-
         return dashboard;
     }
 

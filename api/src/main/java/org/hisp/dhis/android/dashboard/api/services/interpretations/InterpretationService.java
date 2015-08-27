@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dashboard.api.services.interpretations;
 
+import org.hisp.dhis.android.dashboard.api.models.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.Access;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
@@ -10,6 +11,9 @@ import org.hisp.dhis.android.dashboard.api.models.user.User;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by arazabishov on 8/27/15.
@@ -108,16 +112,101 @@ public final class InterpretationService implements IInterpretationsService {
             interpretation.setState(State.TO_UPDATE);
         }
 
-        // super.save();
+        Models.interpretations().save(interpretation);
     }
 
     @Override
     public void deleteInterpretation(Interpretation interpretation) {
         if (State.TO_POST.equals(interpretation.getState())) {
-            // super.delete();
+            Models.interpretations().delete(interpretation);
         } else {
             interpretation.setState(State.TO_DELETE);
-            // super.save();
+            Models.interpretations().save(interpretation);
         }
+    }
+
+    /**
+     * Convenience method which allows to set InterpretationElements
+     * to Interpretation depending on their mime-type.
+     *
+     * @param elements List of interpretation elements.
+     */
+    @Override
+    public void setInterpretationElements(Interpretation interpretation, List<InterpretationElement> elements) {
+        if (elements == null || elements.isEmpty()) {
+            return;
+        }
+
+        if (interpretation.getType() == null) {
+            return;
+        }
+
+        if (interpretation.getType().equals(Interpretation.TYPE_DATA_SET_REPORT)) {
+            for (InterpretationElement element : elements) {
+                switch (element.getType()) {
+                    case InterpretationElement.TYPE_DATA_SET: {
+                        interpretation.setDataSet(element);
+                        break;
+                    }
+                    case InterpretationElement.TYPE_PERIOD: {
+                        interpretation.setPeriod(element);
+                        break;
+                    }
+                    case InterpretationElement.TYPE_ORGANISATION_UNIT: {
+                        interpretation.setOrganisationUnit(element);
+                        break;
+                    }
+                }
+            }
+        } else {
+            switch (interpretation.getType()) {
+                case InterpretationElement.TYPE_CHART: {
+                    interpretation.setChart(elements.get(0));
+                    break;
+                }
+                case InterpretationElement.TYPE_MAP: {
+                    interpretation.setMap(elements.get(0));
+                    break;
+                }
+                case InterpretationElement.TYPE_REPORT_TABLE: {
+                    interpretation.setReportTable(elements.get(0));
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Convenience method which allows to get
+     * interpretation elements assigned to current object.
+     *
+     * @return List of interpretation elements.
+     */
+    @Override
+    public List<InterpretationElement> getInterpretationElements(Interpretation interpretation) {
+        List<InterpretationElement> elements = new ArrayList<>();
+
+        switch (interpretation.getType()) {
+            case Interpretation.TYPE_CHART: {
+                elements.add(interpretation.getChart());
+                break;
+            }
+            case Interpretation.TYPE_MAP: {
+                elements.add(interpretation.getMap());
+                break;
+            }
+            case Interpretation.TYPE_REPORT_TABLE: {
+                elements.add(interpretation.getReportTable());
+                break;
+            }
+            case Interpretation.TYPE_DATA_SET_REPORT: {
+                elements.add(interpretation.getDataSet());
+                elements.add(interpretation.getPeriod());
+                elements.add(interpretation.getOrganisationUnit());
+                break;
+            }
+        }
+
+        return elements;
     }
 }

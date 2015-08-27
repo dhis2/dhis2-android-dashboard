@@ -1,0 +1,39 @@
+package org.hisp.dhis.android.dashboard.api.services.interpretations;
+
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
+
+/**
+ * Created by arazabishov on 8/27/15.
+ */
+public final class InterpretationElementService implements IInterpretationElementService {
+
+    public InterpretationElementService() {
+        // empty constructor
+    }
+
+    /**
+     * Factory method which allows to create InterpretationElement
+     * by using DashboardElement as main source of data.
+     *
+     * @param interpretation   Interpretation to which we will assign interpretation element
+     * @param dashboardElement DashboardElement from which we want to create interpretation element.
+     * @return new InterpretationElement
+     */
+    @Override
+    public InterpretationElement createInterpretationElement(Interpretation interpretation,
+                                                             DashboardElement dashboardElement,
+                                                             String mimeType) {
+        InterpretationElement interpretationElement = new InterpretationElement();
+        interpretationElement.setUId(dashboardElement.getUId());
+        interpretationElement.setName(dashboardElement.getName());
+        interpretationElement.setDisplayName(dashboardElement.getDisplayName());
+        interpretationElement.setCreated(dashboardElement.getCreated());
+        interpretationElement.setLastUpdated(dashboardElement.getLastUpdated());
+        interpretationElement.setAccess(dashboardElement.getAccess());
+        interpretationElement.setType(mimeType);
+        interpretationElement.setInterpretation(interpretation);
+        return interpretationElement;
+    }
+}
