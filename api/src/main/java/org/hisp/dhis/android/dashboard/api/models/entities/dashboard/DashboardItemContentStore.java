@@ -17,7 +17,8 @@ public final class DashboardItemContentStore implements IDashboardItemContentSto
 
     @Override
     public void insert(DashboardItemContent object) {
-        DashboardItemContent$Flow flowModel = DashboardItemContent$Flow.fromModel(object);
+        DashboardItemContent$Flow flowModel
+                = DashboardItemContent$Flow.fromModel(object);
         flowModel.insert();
 
         object.setId(flowModel.getId());
@@ -26,6 +27,15 @@ public final class DashboardItemContentStore implements IDashboardItemContentSto
     @Override
     public void update(DashboardItemContent object) {
         DashboardItemContent$Flow.fromModel(object).update();
+    }
+
+    @Override
+    public void save(DashboardItemContent object) {
+        DashboardItemContent$Flow flowModel
+                = DashboardItemContent$Flow.fromModel(object);
+        flowModel.save();
+
+        object.setId(flowModel.getId());
     }
 
     @Override

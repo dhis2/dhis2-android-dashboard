@@ -11,6 +11,8 @@ public interface IStore<T extends IdentifiableObject> {
 
     void update(T object);
 
+    void save(T object);
+
     void delete(T object);
 
     List<T> query();

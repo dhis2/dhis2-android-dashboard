@@ -112,8 +112,8 @@ public final class DashboardService implements IDashboardService {
             return false;
         }
 
-        item.save();
-        element.save();
+        Models.dashboardItems().save(item);
+        Models.dashboardElements().save(element);
 
         return true;
     }

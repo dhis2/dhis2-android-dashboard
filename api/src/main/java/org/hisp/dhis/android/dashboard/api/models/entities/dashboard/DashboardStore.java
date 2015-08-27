@@ -18,8 +18,8 @@ public final class DashboardStore implements IDashboardStore {
 
     @Override
     public void insert(Dashboard object) {
-        Dashboard$Flow dashboardFlow = Dashboard$Flow
-                .fromModel(object);
+        Dashboard$Flow dashboardFlow
+                = Dashboard$Flow.fromModel(object);
         dashboardFlow.insert();
 
         object.setId(dashboardFlow.getId());
@@ -27,9 +27,18 @@ public final class DashboardStore implements IDashboardStore {
 
     @Override
     public void update(Dashboard object) {
-        Dashboard$Flow dashboardFlow = Dashboard$Flow
-                .fromModel(object);
+        Dashboard$Flow dashboardFlow
+                = Dashboard$Flow.fromModel(object);
         dashboardFlow.update();
+    }
+
+    @Override
+    public void save(Dashboard object) {
+        Dashboard$Flow dashboardFlow
+                = Dashboard$Flow.fromModel(object);
+        dashboardFlow.save();
+
+        object.setId(dashboardFlow.getId());
     }
 
     @Override

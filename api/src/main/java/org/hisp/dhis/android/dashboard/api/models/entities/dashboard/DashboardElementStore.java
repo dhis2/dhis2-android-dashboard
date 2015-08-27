@@ -30,6 +30,15 @@ public class DashboardElementStore implements IDashboardElementStore {
     }
 
     @Override
+    public void save(DashboardElement object) {
+        DashboardElement$Flow elementFlow
+                = DashboardElement$Flow.fromModel(object);
+        elementFlow.save();
+
+        object.setId(elementFlow.getId());
+    }
+
+    @Override
     public void delete(DashboardElement object) {
         DashboardElement$Flow.fromModel(object).delete();
     }
