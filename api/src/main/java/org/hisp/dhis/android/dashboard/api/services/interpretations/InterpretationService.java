@@ -108,16 +108,16 @@ public final class InterpretationService implements IInterpretationsService {
             interpretation.setState(State.TO_UPDATE);
         }
 
-        super.save();
+        // super.save();
     }
 
     @Override
     public void deleteInterpretation(Interpretation interpretation) {
         if (State.TO_POST.equals(interpretation.getState())) {
-            super.delete();
+            // super.delete();
         } else {
             interpretation.setState(State.TO_DELETE);
-            super.save();
+            // super.save();
         }
     }
 }
