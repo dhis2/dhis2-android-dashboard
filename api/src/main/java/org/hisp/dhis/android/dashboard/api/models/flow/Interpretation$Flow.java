@@ -114,9 +114,7 @@ public final class Interpretation$Flow extends BaseIdentifiableObject$Flow {
         interpretation.setText(interpretationFlow.getText());
         interpretation.setType(interpretationFlow.getType());
         interpretation.setState(interpretationFlow.getState());
-
-        // TODO add User converter
-        // interpretation
+        interpretation.setUser(User$Flow.toModel(interpretationFlow.getUser()));
         return interpretation;
     }
 
@@ -132,8 +130,7 @@ public final class Interpretation$Flow extends BaseIdentifiableObject$Flow {
         interpretationFlow.setText(interpretation.getText());
         interpretationFlow.setType(interpretation.getType());
         interpretationFlow.setState(interpretation.getState());
-
-        // TODO add User converter
+        interpretationFlow.setUser(User$Flow.fromModel(interpretation.getUser()));
         return interpretationFlow;
     }
 
@@ -142,7 +139,7 @@ public final class Interpretation$Flow extends BaseIdentifiableObject$Flow {
 
         if (interpretationFlows != null && !interpretationFlows.isEmpty()) {
             for (Interpretation$Flow interpretationFlow : interpretationFlows) {
-                interpretations.add(toModel(interpretationFlow))
+                interpretations.add(toModel(interpretationFlow));
             }
         }
 

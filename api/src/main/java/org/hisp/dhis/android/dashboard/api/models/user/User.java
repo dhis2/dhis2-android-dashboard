@@ -26,7 +26,7 @@
 
 package org.hisp.dhis.android.dashboard.api.models.user;
 
-import org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject;
+import org.hisp.dhis.android.dashboard.api.models.common.BaseIdentifiableObject;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.

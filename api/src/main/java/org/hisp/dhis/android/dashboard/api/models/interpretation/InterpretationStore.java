@@ -1,5 +1,7 @@
 package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
+import org.hisp.dhis.android.dashboard.api.models.flow.Interpretation$Flow;
+
 import java.util.List;
 
 /**
@@ -13,22 +15,26 @@ public final class InterpretationStore implements IInterpretationStore {
 
     @Override
     public void insert(Interpretation object) {
+        Interpretation$Flow interpretationFlow
+                = Interpretation$Flow.fromModel(object);
+        interpretationFlow.insert();
 
+        object.setId(interpretationFlow.getId());
     }
 
     @Override
     public void update(Interpretation object) {
-
+        Interpretation$Flow.fromModel(object).update();
     }
 
     @Override
     public void save(Interpretation object) {
-
+        Interpretation$Flow.fromModel(object).save();
     }
 
     @Override
     public void delete(Interpretation object) {
-
+        Interpretation$Flow.fromModel(object).delete();
     }
 
     @Override

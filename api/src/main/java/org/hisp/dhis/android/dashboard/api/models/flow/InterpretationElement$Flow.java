@@ -34,6 +34,10 @@ import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.Table;
 
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbDhis;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -75,5 +79,59 @@ public final class InterpretationElement$Flow extends BaseIdentifiableObject$Flo
 
     public void setInterpretation(Interpretation$Flow interpretation) {
         this.interpretation = interpretation;
+    }
+
+    public static InterpretationElement toModel(InterpretationElement$Flow elementFlow) {
+        InterpretationElement element = new InterpretationElement();
+        element.setId(elementFlow.getId());
+        element.setUId(elementFlow.getUId());
+        element.setCreated(elementFlow.getCreated());
+        element.setLastUpdated(elementFlow.getLastUpdated());
+        element.setName(elementFlow.getName());
+        element.setDisplayName(elementFlow.getDisplayName());
+        element.setAccess(elementFlow.getAccess());
+        element.setType(elementFlow.getType());
+        element.setInterpretation(Interpretation$Flow
+                .toModel(elementFlow.getInterpretation()));
+        return element;
+    }
+
+    public static InterpretationElement$Flow fromModel(InterpretationElement element) {
+        InterpretationElement$Flow elementFlow = new InterpretationElement$Flow();
+        elementFlow.setId(element.getId());
+        elementFlow.setUId(element.getUId());
+        elementFlow.setCreated(element.getCreated());
+        elementFlow.setLastUpdated(element.getLastUpdated());
+        elementFlow.setName(element.getName());
+        elementFlow.setDisplayName(element.getDisplayName());
+        elementFlow.setAccess(element.getAccess());
+        elementFlow.setType(element.getType());
+        elementFlow.setInterpretation(Interpretation$Flow
+                .fromModel(element.getInterpretation()));
+        return elementFlow;
+    }
+
+    public static List<InterpretationElement> toModels(List<InterpretationElement$Flow> elementFlows) {
+        List<InterpretationElement> elements = new ArrayList<>();
+
+        if (elementFlows != null && !elementFlows.isEmpty()) {
+            for (InterpretationElement$Flow elementFlow : elementFlows) {
+                elements.add(InterpretationElement$Flow.toModel(elementFlow));
+            }
+        }
+
+        return elements;
+    }
+
+    public static List<InterpretationElement$Flow> fromModels(List<InterpretationElement> elements) {
+        List<InterpretationElement$Flow> elementFlows = new ArrayList<>();
+
+        if (elements != null && !elements.isEmpty()) {
+            for (InterpretationElement element : elements) {
+                elementFlows.add(InterpretationElement$Flow.fromModel(element));
+            }
+        }
+
+        return elementFlows;
     }
 }

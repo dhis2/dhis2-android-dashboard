@@ -28,17 +28,68 @@ package org.hisp.dhis.android.dashboard.api.models.flow;
 
 import com.raizlabs.android.dbflow.annotation.Table;
 
-import org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbDhis;
+import org.hisp.dhis.android.dashboard.api.models.user.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
 @Table(databaseName = DbDhis.NAME)
-public final class User$Flow extends BaseIdentifiableObject {
+public final class User$Flow extends BaseIdentifiableObject$Flow {
     // no additional fields
 
     public User$Flow() {
         // empty constructor
+    }
+
+    public static User toModel(User$Flow userFlow) {
+        User user = new User();
+        user.setId(userFlow.getId());
+        user.setUId(userFlow.getUId());
+        user.setCreated(userFlow.getCreated());
+        user.setLastUpdated(userFlow.getLastUpdated());
+        user.setName(userFlow.getName());
+        user.setDisplayName(userFlow.getDisplayName());
+        user.setAccess(userFlow.getAccess());
+        return user;
+    }
+
+    public static User$Flow fromModel(User user) {
+        User$Flow userFlow = new User$Flow();
+        userFlow.setId(user.getId());
+        userFlow.setUId(user.getUId());
+        userFlow.setCreated(user.getCreated());
+        userFlow.setLastUpdated(user.getLastUpdated());
+        userFlow.setName(user.getName());
+        userFlow.setDisplayName(user.getDisplayName());
+        userFlow.setAccess(user.getAccess());
+        return userFlow;
+    }
+
+    public static List<User> toModels(List<User$Flow> userFlows) {
+        List<User> users = new ArrayList<>();
+
+        if (userFlows != null && !userFlows.isEmpty()) {
+            for (User$Flow userFlow : userFlows) {
+                users.add(toModel(userFlow));
+            }
+        }
+
+        return users;
+    }
+
+    public static List<User$Flow> fromModels(List<User> users) {
+        List<User$Flow> userFlows = new ArrayList<>();
+
+        if (users != null && !users.isEmpty()) {
+            for (User user : users) {
+                userFlows.add(fromModel(user));
+            }
+        }
+
+        return userFlows;
     }
 }

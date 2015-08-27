@@ -35,6 +35,10 @@ import com.raizlabs.android.dbflow.annotation.Table;
 
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbDhis;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -99,5 +103,41 @@ public final class InterpretationComment$Flow extends BaseIdentifiableObject$Flo
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    public static InterpretationComment$Flow fromModel(InterpretationComment comment) {
+        InterpretationComment$Flow commentFlow = new InterpretationComment$Flow();
+        commentFlow.setId(comment.getId());
+        commentFlow.setUId(comment.getUId());
+        commentFlow.setCreated(comment.getCreated());
+        commentFlow.setLastUpdated(comment.getLastUpdated());
+        commentFlow.setName(comment.getName());
+        commentFlow.setDisplayName(comment.getDisplayName());
+        commentFlow.setAccess(comment.getAccess());
+        return commentFlow;
+    }
+
+    public static InterpretationComment toModel(InterpretationComment$Flow commentFlow) {
+        InterpretationComment comment = new InterpretationComment();
+        comment.setId(commentFlow.getId());
+        comment.setUId(commentFlow.getUId());
+        comment.setCreated(commentFlow.getCreated());
+        comment.setLastUpdated(commentFlow.getLastUpdated());
+        comment.setName(commentFlow.getName());
+        comment.setDisplayName(commentFlow.getDisplayName());
+        comment.setAccess(commentFlow.getAccess());
+        return comment;
+    }
+
+    public static List<InterpretationComment> toModels(List<InterpretationComment$Flow> commentFlows) {
+        List<InterpretationComment> comments = new ArrayList<>();
+
+        if (commentFlows != null && !commentFlows.isEmpty()) {
+            for (InterpretationComment$Flow commentFlow : commentFlows) {
+                comments.add(toModel(commentFlow));
+            }
+        }
+
+        return comments;
     }
 }
