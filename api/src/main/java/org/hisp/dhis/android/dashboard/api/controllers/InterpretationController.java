@@ -40,7 +40,7 @@ import org.hisp.dhis.android.dashboard.api.models.InterpretationComment$Table;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement$Table;
 import org.hisp.dhis.android.dashboard.api.models.User;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.entities.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;

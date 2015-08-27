@@ -2,13 +2,13 @@ package org.hisp.dhis.android.dashboard.api.services.dashboard;
 
 import android.support.annotation.Nullable;
 
-import org.hisp.dhis.android.dashboard.api.models.entities.Models;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItemContent;
+import org.hisp.dhis.android.dashboard.api.models.Models;
+import org.hisp.dhis.android.dashboard.api.models.common.Access;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.joda.time.DateTime;

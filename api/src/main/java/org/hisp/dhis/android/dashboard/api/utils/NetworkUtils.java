@@ -28,8 +28,8 @@ package org.hisp.dhis.android.dashboard.api.utils;
 
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import org.hisp.dhis.android.dashboard.api.models.entities.common.IStore;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.IdentifiableObject;
+import org.hisp.dhis.android.dashboard.api.models.common.IStore;
+import org.hisp.dhis.android.dashboard.api.models.common.IdentifiableObject;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 
 import java.net.HttpURLConnection;

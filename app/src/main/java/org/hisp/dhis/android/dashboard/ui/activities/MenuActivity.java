@@ -45,7 +45,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
+import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.ui.fragments.AccountFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.SettingsFragment;

@@ -2,17 +2,17 @@ package org.hisp.dhis.android.dashboard.api.utils;
 
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 
-import org.hisp.dhis.android.dashboard.api.models.entities.common.IStore;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.IdentifiableObject;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbDhis;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbOperation;
+import org.hisp.dhis.android.dashboard.api.models.common.IStore;
+import org.hisp.dhis.android.dashboard.api.models.common.IdentifiableObject;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.DbDhis;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.DbOperation;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.hisp.dhis.android.dashboard.api.models.entities.flow.BaseIdentifiableObject$Flow.toMap;
+import static org.hisp.dhis.android.dashboard.api.models.flow.BaseIdentifiableObject$Flow.toMap;
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
 /**

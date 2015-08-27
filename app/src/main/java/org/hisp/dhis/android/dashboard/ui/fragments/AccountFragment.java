@@ -40,7 +40,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
+import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.ui.adapters.AccountFieldAdapter;
 import org.hisp.dhis.android.dashboard.ui.models.Field;

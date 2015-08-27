@@ -30,13 +30,13 @@ package org.hisp.dhis.android.dashboard.api.controllers;
 
 import android.net.Uri;
 
-import org.hisp.dhis.android.dashboard.api.models.entities.Models;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbOperation;
+import org.hisp.dhis.android.dashboard.api.models.Models;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
@@ -53,9 +53,9 @@ import java.util.Queue;
 import retrofit.client.Header;
 import retrofit.client.Response;
 
-import static org.hisp.dhis.android.dashboard.api.models.entities.common.BaseIdentifiableObject.merge;
-import static org.hisp.dhis.android.dashboard.api.models.entities.common.BaseIdentifiableObject.toListIds;
-import static org.hisp.dhis.android.dashboard.api.models.entities.common.BaseIdentifiableObject.toMap;
+import static org.hisp.dhis.android.dashboard.api.models.common.BaseIdentifiableObject.merge;
+import static org.hisp.dhis.android.dashboard.api.models.common.BaseIdentifiableObject.toListIds;
+import static org.hisp.dhis.android.dashboard.api.models.common.BaseIdentifiableObject.toMap;
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiException;
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;

@@ -35,7 +35,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.Credentials;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.utils.ObjectMapperProvider;
 
 import java.io.IOException;

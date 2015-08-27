@@ -35,13 +35,13 @@ import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
 
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbAction;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.Dashboard$Flow;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardElement$Flow;
-import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItem$Flow;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.DbAction;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
+import org.hisp.dhis.android.dashboard.api.models.flow.Dashboard$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.DashboardElement$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.DashboardItem$Flow;
 
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 

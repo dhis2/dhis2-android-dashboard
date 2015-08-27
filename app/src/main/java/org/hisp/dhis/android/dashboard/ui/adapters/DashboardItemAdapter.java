@@ -43,10 +43,10 @@ import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItemContent;
+import org.hisp.dhis.android.dashboard.api.models.common.Access;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 
 import java.util.List;

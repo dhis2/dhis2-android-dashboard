@@ -1,7 +1,7 @@
 package org.hisp.dhis.android.dashboard.api.persistence.loaders;
 
-import org.hisp.dhis.android.dashboard.api.models.entities.common.IdentifiableObject;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbAction;
+import org.hisp.dhis.android.dashboard.api.models.common.IdentifiableObject;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.DbAction;
 
 import java.util.Arrays;
 import java.util.List;

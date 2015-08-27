@@ -34,7 +34,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.raizlabs.android.dbflow.converter.TypeConverter;
 
-import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
+import org.hisp.dhis.android.dashboard.api.models.common.Access;
 import org.hisp.dhis.android.dashboard.api.utils.ObjectMapperProvider;
 
 import java.io.IOException;

@@ -54,7 +54,7 @@ import org.hisp.dhis.android.dashboard.api.models.Interpretation$Table;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.User$Table;
-import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
+import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter.OnCommentClickListener;

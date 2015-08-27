@@ -1,10 +1,10 @@
 package org.hisp.dhis.android.dashboard.api.services.dashboard;
 
-import org.hisp.dhis.android.dashboard.api.models.entities.Models;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItemContent;
+import org.hisp.dhis.android.dashboard.api.models.Models;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
 
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 

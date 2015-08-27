@@ -42,9 +42,9 @@ import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
-import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.Credentials;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.ResponseHolder;
+import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.ResponseHolder;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 
 import butterknife.Bind;

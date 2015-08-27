@@ -28,7 +28,7 @@
 
 package org.hisp.dhis.android.dashboard.api.job;
 
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.ResponseHolder;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.ResponseHolder;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;

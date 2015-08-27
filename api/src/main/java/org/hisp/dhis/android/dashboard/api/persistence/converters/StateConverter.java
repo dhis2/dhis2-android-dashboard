@@ -30,7 +30,7 @@ package org.hisp.dhis.android.dashboard.api.persistence.converters;
 
 import com.raizlabs.android.dbflow.converter.TypeConverter;
 
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 
 @SuppressWarnings("unused")
 @com.raizlabs.android.dbflow.annotation.TypeConverter
