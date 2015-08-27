@@ -40,8 +40,8 @@ import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItem$Fl
 import org.hisp.dhis.android.dashboard.api.models.entities.flow.DashboardItemContent$Flow;
 import org.hisp.dhis.android.dashboard.api.models.entities.flow.UserAccount$Flow;
 import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
-import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
-import org.hisp.dhis.android.dashboard.api.models.meta.Session;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.Credentials;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.Session;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;

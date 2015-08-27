@@ -34,7 +34,7 @@ import com.raizlabs.android.dbflow.annotation.Table;
 
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbDhis;
 
 import java.util.ArrayList;
 import java.util.List;

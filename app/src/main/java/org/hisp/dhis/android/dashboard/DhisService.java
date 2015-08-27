@@ -38,7 +38,7 @@ import org.hisp.dhis.android.dashboard.api.job.Job;
 import org.hisp.dhis.android.dashboard.api.job.JobExecutor;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
-import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;

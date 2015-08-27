@@ -38,7 +38,7 @@ import org.hisp.dhis.android.dashboard.api.models.IdentifiableObject;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
-import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbDhis;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;

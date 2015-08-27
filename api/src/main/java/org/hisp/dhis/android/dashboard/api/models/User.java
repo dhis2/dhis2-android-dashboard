@@ -28,7 +28,7 @@ package org.hisp.dhis.android.dashboard.api.models;
 
 import com.raizlabs.android.dbflow.annotation.Table;
 
-import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbDhis;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.

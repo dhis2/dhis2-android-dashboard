@@ -32,7 +32,7 @@ import android.net.Uri;
 
 import org.hisp.dhis.android.dashboard.api.models.entities.Models;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbOperation;
-import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbUtils;
+import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardElement;

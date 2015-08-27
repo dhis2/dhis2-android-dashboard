@@ -41,7 +41,7 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.Access;
 import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.entities.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.DbDhis;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.joda.time.DateTime;

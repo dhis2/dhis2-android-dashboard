@@ -34,8 +34,8 @@ import com.raizlabs.android.dbflow.config.FlowManager;
 import com.squareup.okhttp.HttpUrl;
 
 import org.hisp.dhis.android.dashboard.api.models.entities.user.UserAccount;
-import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
-import org.hisp.dhis.android.dashboard.api.models.meta.Session;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.Credentials;
+import org.hisp.dhis.android.dashboard.api.models.entities.common.meta.Session;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
