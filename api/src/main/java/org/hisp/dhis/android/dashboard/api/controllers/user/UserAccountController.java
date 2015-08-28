@@ -24,15 +24,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dashboard.api.controllers;
+package org.hisp.dhis.android.dashboard.api.controllers.user;
 
 import com.squareup.okhttp.HttpUrl;
 
-import org.hisp.dhis.android.dashboard.api.api.Models;
-import org.hisp.dhis.android.dashboard.api.controllers.common.IController;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Session;
-import org.hisp.dhis.android.dashboard.api.models.user.User;
+import org.hisp.dhis.android.dashboard.api.models.user.IUserAccountStore;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
@@ -44,20 +42,24 @@ import java.util.Map;
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-public final class UserController implements IController<User> {
-    private final DhisApi mDhisApi;
+public final class UserAccountController implements IUserAccountController {
+    private final DhisApi dhisApi;
+    private final IUserAccountStore userAccountStore;
 
-    public UserController(DhisApi dhisApi) {
-        mDhisApi = dhisApi;
+    public UserAccountController(DhisApi dhisApi, IUserAccountStore userAccountStore) {
+        this.dhisApi = dhisApi;
+        this.userAccountStore = userAccountStore;
     }
 
-    public UserAccount logInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
+    @Override
+    public UserAccount logIn(HttpUrl serverUrl, Credentials credentials) throws APIException {
         final Map<String, String> QUERY_PARAMS = new HashMap<>();
         QUERY_PARAMS.put("fields", "id,created,lastUpdated,name,displayName," +
                 "firstName,surname,gender,birthday,introduction," +
                 "education,employer,interests,jobTitle,languages,email,phoneNumber," +
                 "organisationUnits[id]");
-        UserAccount userAccount = mDhisApi
+
+        UserAccount userAccount = dhisApi
                 .getCurrentUserAccount(QUERY_PARAMS);
 
         // if we got here, it means http
@@ -68,22 +70,24 @@ public final class UserController implements IController<User> {
         LastUpdatedManager.getInstance().put(session);
 
         /* save user account details */
-        Models.userAccount().save(userAccount);
+        userAccountStore.save(userAccount);
 
         return userAccount;
     }
 
-    public UserAccount updateUserAccount() throws APIException {
+    @Override
+    public UserAccount updateAccount() throws APIException {
         final Map<String, String> QUERY_PARAMS = new HashMap<>();
         QUERY_PARAMS.put("fields", "id,created,lastUpdated,name,displayName," +
                 "firstName,surname,gender,birthday,introduction," +
                 "education,employer,interests,jobTitle,languages,email,phoneNumber," +
                 "organisationUnits[id]");
+
         UserAccount userAccount =
-                mDhisApi.getCurrentUserAccount(QUERY_PARAMS);
+                dhisApi.getCurrentUserAccount(QUERY_PARAMS);
 
         // update userAccount in database
-        Models.userAccount().save(userAccount);
+        userAccountStore.save(userAccount);
         return userAccount;
     }
 }

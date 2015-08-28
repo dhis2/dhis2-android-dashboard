@@ -6,11 +6,9 @@ import com.squareup.okhttp.HttpUrl;
 
 import org.hisp.dhis.android.dashboard.api.controllers.DashboardController;
 import org.hisp.dhis.android.dashboard.api.controllers.InterpretationController;
-import org.hisp.dhis.android.dashboard.api.controllers.UserController;
-import org.hisp.dhis.android.dashboard.api.controllers.common.IDataController;
+import org.hisp.dhis.android.dashboard.api.controllers.user.UserAccountController;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Session;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
@@ -28,6 +26,7 @@ public final class Dhis2 {
 
     private final DashboardScope dashboardScope;
     private final InterpretationScope interpretationScope;
+    private final UserAccountScope userAccountScope;
 
     private Dhis2(Context context) {
         Models.init(context);
@@ -42,11 +41,14 @@ public final class Dhis2 {
                 = new DashboardController(null, Models.dashboards(), Models.dashboardItems(), Models.dashboardElements());
         InterpretationController interpretationController
                 = new InterpretationController(null, Services.interpretations(), null);
+        UserAccountController userAccountController
+                = new UserAccountController(null, Models.userAccount());
 
         dashboardScope = new DashboardScope(dashboardController, Services.dashboards(),
                 Services.dashboardItems(), Services.dashboardElements());
         interpretationScope = new InterpretationScope(interpretationController, Services.interpretations(),
                 Services.interpretationElements(), Services.interpretationComments());
+        userAccountScope = new UserAccountScope(userAccountController, Services.userAccount());
     }
 
     public static void init(Context context) {
@@ -92,7 +94,7 @@ public final class Dhis2 {
 
     private UserAccount signInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
         DhisApi dhisApi = RepoManager.createService(serverUrl, credentials);
-        UserAccount user = (new UserController(dhisApi).logInUser(serverUrl, credentials));
+        UserAccount user = (new UserAccountController(dhisApi).logInUser(serverUrl, credentials));
 
         // fetch meta data from disk
         readSession();
@@ -130,5 +132,9 @@ public final class Dhis2 {
 
     public static InterpretationScope interpretations() {
         return getInstance().interpretationScope;
+    }
+
+    public static UserAccountScope userAccount() {
+        return getInstance().userAccountScope;
     }
 }
