@@ -1,11 +1,11 @@
-package org.hisp.dhis.android.dashboard.api.services.interpretations;
+package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.user.User;
-import org.hisp.dhis.android.dashboard.api.services.common.IService;
+import org.hisp.dhis.android.dashboard.api.models.common.IService;
 
 import java.util.List;
 

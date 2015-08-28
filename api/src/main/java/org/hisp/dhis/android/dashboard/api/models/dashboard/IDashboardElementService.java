@@ -1,9 +1,9 @@
-package org.hisp.dhis.android.dashboard.api.services.dashboard;
+package org.hisp.dhis.android.dashboard.api.models.dashboard;
 
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
-import org.hisp.dhis.android.dashboard.api.services.common.IService;
+import org.hisp.dhis.android.dashboard.api.models.common.IService;
 
 /**
  * Created by arazabishov on 8/27/15.

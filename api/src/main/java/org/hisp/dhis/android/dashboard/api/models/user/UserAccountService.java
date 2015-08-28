@@ -1,8 +1,6 @@
-package org.hisp.dhis.android.dashboard.api.services.user;
+package org.hisp.dhis.android.dashboard.api.models.user;
 
-import org.hisp.dhis.android.dashboard.api.models.Models;
-import org.hisp.dhis.android.dashboard.api.models.user.User;
-import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
+import org.hisp.dhis.android.dashboard.api.models.common.IModelsStore;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
@@ -13,15 +11,17 @@ import java.util.List;
  * Created by arazabishov on 8/27/15.
  */
 public class UserAccountService implements IUserAccountService {
+    private final IUserAccountStore userAccountStore;
+    private final IModelsStore modelsStore;
 
-    public UserAccountService() {
-        // empty constructor
+    public UserAccountService(IUserAccountStore userAccountStore, IModelsStore modelsStore) {
+        this.userAccountStore = userAccountStore;
+        this.modelsStore = modelsStore;
     }
 
     @Override
     public UserAccount getCurrentUserAccount() {
-        List<UserAccount> userAccounts =
-                Models.userAccount().query();
+        List<UserAccount> userAccounts = userAccountStore.query();
         return userAccounts != null && !userAccounts.isEmpty() ? userAccounts.get(0) : null;
     }
 
@@ -44,6 +44,6 @@ public class UserAccountService implements IUserAccountService {
         SessionManager.getInstance().delete();
 
         // removing all existing data
-        Models.modelsStore().deleteAllTables();
+        modelsStore.deleteAllTables();
     }
 }

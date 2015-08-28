@@ -61,7 +61,7 @@ import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.findLocatio
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiException;
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
-final class DashboardController implements IDataController {
+public final class DashboardController implements IDataController<Dashboard> {
     final DhisApi mDhisApi;
 
     public DashboardController(DhisApi dhisApi) {

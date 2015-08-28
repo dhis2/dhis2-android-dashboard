@@ -33,15 +33,15 @@ import android.content.Context;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.squareup.okhttp.HttpUrl;
 
-import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Session;
+import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
-import org.hisp.dhis.android.dashboard.api.services.user.UserAccountService;
+import org.hisp.dhis.android.dashboard.api.models.user.UserAccountService;
 
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
@@ -121,13 +121,8 @@ public class DhisController {
     private void readSession() {
         mSession = LastUpdatedManager.getInstance().get();
         mDhisApi = null;
-        mDhisApi = null;
 
         if (isUserLoggedIn()) {
-            mDhisApi = RepoManager.createService(
-                    mSession.getServerUrl(),
-                    mSession.getCredentials()
-            );
             mDhisApi = RepoManager.createService2(
                     mSession.getServerUrl(),
                     mSession.getCredentials()

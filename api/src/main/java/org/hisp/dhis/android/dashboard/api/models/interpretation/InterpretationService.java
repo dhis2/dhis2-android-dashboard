@@ -1,12 +1,8 @@
-package org.hisp.dhis.android.dashboard.api.services.interpretations;
+package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
-import org.hisp.dhis.android.dashboard.api.models.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.Access;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.user.User;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
@@ -19,11 +15,13 @@ import java.util.List;
  * Created by arazabishov on 8/27/15.
  */
 public final class InterpretationService implements IInterpretationsService {
+    private final IInterpretationStore interpretationStore;
+    private final IInterpretationElementService interpretationElementService;
 
-    private final IInterpretationElementService mInterpretationElementService;
-
-    public InterpretationService(IInterpretationElementService service) {
-        mInterpretationElementService = service;
+    public InterpretationService(IInterpretationStore interpretationStore,
+                                 IInterpretationElementService interpretationElementService) {
+        this.interpretationStore = interpretationStore;
+        this.interpretationElementService = interpretationElementService;
     }
 
     /**
@@ -77,21 +75,21 @@ public final class InterpretationService implements IInterpretationsService {
 
         switch (item.getType()) {
             case Interpretation.TYPE_CHART: {
-                InterpretationElement element = mInterpretationElementService
+                InterpretationElement element = interpretationElementService
                         .createInterpretationElement(interpretation, item.getChart(), Interpretation.TYPE_CHART);
                 interpretation.setType(Interpretation.TYPE_CHART);
                 interpretation.setChart(element);
                 break;
             }
             case Interpretation.TYPE_MAP: {
-                InterpretationElement element = mInterpretationElementService
+                InterpretationElement element = interpretationElementService
                         .createInterpretationElement(interpretation, item.getMap(), Interpretation.TYPE_MAP);
                 interpretation.setType(Interpretation.TYPE_MAP);
                 interpretation.setMap(element);
                 break;
             }
             case Interpretation.TYPE_REPORT_TABLE: {
-                InterpretationElement element = mInterpretationElementService
+                InterpretationElement element = interpretationElementService
                         .createInterpretationElement(interpretation, item.getReportTable(), Interpretation.TYPE_REPORT_TABLE);
                 interpretation.setType(Interpretation.TYPE_REPORT_TABLE);
                 interpretation.setReportTable(element);
@@ -114,16 +112,17 @@ public final class InterpretationService implements IInterpretationsService {
             interpretation.setState(State.TO_UPDATE);
         }
 
-        Models.interpretations().save(interpretation);
+        //Models.interpretations().save(interpretation);
+        interpretationStore.save(interpretation);
     }
 
     @Override
     public void deleteInterpretation(Interpretation interpretation) {
         if (State.TO_POST.equals(interpretation.getState())) {
-            Models.interpretations().delete(interpretation);
+            interpretationStore.delete(interpretation);
         } else {
             interpretation.setState(State.TO_DELETE);
-            Models.interpretations().save(interpretation);
+            interpretationStore.save(interpretation);
         }
     }
 

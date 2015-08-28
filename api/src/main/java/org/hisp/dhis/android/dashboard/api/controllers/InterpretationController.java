@@ -32,6 +32,7 @@ import org.hisp.dhis.android.dashboard.api.controllers.common.IDataController;
 import org.hisp.dhis.android.dashboard.api.models.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
@@ -41,9 +42,9 @@ import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
-import org.hisp.dhis.android.dashboard.api.services.interpretations.IInterpretationElementService;
-import org.hisp.dhis.android.dashboard.api.services.interpretations.IInterpretationsService;
-import org.hisp.dhis.android.dashboard.api.services.user.IUserAccountService;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.IInterpretationElementService;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.IInterpretationsService;
+import org.hisp.dhis.android.dashboard.api.models.user.IUserAccountService;
 import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
 import org.joda.time.DateTime;
 
@@ -67,7 +68,7 @@ import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapRespo
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-final class InterpretationController implements IDataController {
+public final class InterpretationController implements IDataController<Dashboard> {
     private final DhisApi mDhisApi;
 
     private final IInterpretationsService mInterpretationService;

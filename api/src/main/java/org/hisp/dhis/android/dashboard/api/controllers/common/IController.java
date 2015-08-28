@@ -1,9 +1,9 @@
 package org.hisp.dhis.android.dashboard.api.controllers.common;
 
-import org.hisp.dhis.android.dashboard.api.network.APIException;
+import org.hisp.dhis.android.dashboard.api.models.common.IdentifiableObject;
 
 /**
  * Created by arazabishov on 8/28/15.
  */
-public interface IController {
+public interface IController<T extends IdentifiableObject> {
 }

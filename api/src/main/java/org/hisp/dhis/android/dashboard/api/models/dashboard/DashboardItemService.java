@@ -1,12 +1,7 @@
-package org.hisp.dhis.android.dashboard.api.services.dashboard;
+package org.hisp.dhis.android.dashboard.api.models.dashboard;
 
-import org.hisp.dhis.android.dashboard.api.models.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.Access;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.joda.time.DateTime;
@@ -17,9 +12,13 @@ import java.util.List;
  * Created by arazabishov on 8/27/15.
  */
 public final class DashboardItemService implements IDashboardItemService {
+    private final IDashboardItemStore dashboardItemStore;
+    private final IDashboardElementStore dashboardElementStore;
 
-    public DashboardItemService() {
-        // empty constructor
+    public DashboardItemService(IDashboardItemStore dashboardItemStore,
+                                IDashboardElementStore dashboardElementStore) {
+        this.dashboardItemStore = dashboardItemStore;
+        this.dashboardElementStore = dashboardElementStore;
     }
 
     /**
@@ -48,23 +47,23 @@ public final class DashboardItemService implements IDashboardItemService {
     /**
      * This method will change the state of the model to TO_DELETE
      * if the model was already synced to the server.
-     * <p>
+     * <p/>
      * If model was created only locally, it will delete it
      * from embedded database.
      */
     @Override
     public void deleteDashboardItem(DashboardItem dashboardItem) {
         if (dashboardItem.getState() == State.TO_POST) {
-            Models.dashboardItems().delete(dashboardItem);
+            dashboardItemStore.delete(dashboardItem);
         } else {
             dashboardItem.setState(State.TO_DELETE);
-            Models.dashboardItems().update(dashboardItem);
+            dashboardItemStore.update(dashboardItem);
         }
     }
 
     @Override
     public int getContentCount(DashboardItem dashboardItem) {
-        List<DashboardElement> dashboardElements = Models.dashboardElements()
+        List<DashboardElement> dashboardElements = dashboardElementStore
                 .filter(dashboardItem, State.TO_DELETE);
         return dashboardElements == null ? 0 : dashboardElements.size();
     }

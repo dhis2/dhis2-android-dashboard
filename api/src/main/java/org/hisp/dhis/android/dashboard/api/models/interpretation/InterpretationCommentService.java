@@ -1,16 +1,15 @@
-package org.hisp.dhis.android.dashboard.api.services.interpretations;
+package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
-import org.hisp.dhis.android.dashboard.api.models.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
 
 /**
  * Created by arazabishov on 8/27/15.
  */
 public final class InterpretationCommentService implements IInterpretationCommentService {
+    private final IInterpretationCommentStore interpretationCommentStore;
 
-    public InterpretationCommentService() {
-        // empty constructor
+    public InterpretationCommentService(IInterpretationCommentStore interpretationCommentStore) {
+        this.interpretationCommentStore = interpretationCommentStore;
     }
 
     /**
@@ -20,10 +19,10 @@ public final class InterpretationCommentService implements IInterpretationCommen
     @Override
     public void deleteComment(InterpretationComment comment) {
         if (State.TO_POST.equals(comment.getState())) {
-            Models.interpretationComments().delete(comment);
+            interpretationCommentStore.delete(comment);
         } else {
             comment.setState(State.TO_DELETE);
-            Models.interpretationComments().save(comment);
+            interpretationCommentStore.save(comment);
         }
     }
 
@@ -43,6 +42,6 @@ public final class InterpretationCommentService implements IInterpretationCommen
             comment.setState(State.TO_UPDATE);
         }
 
-        Models.interpretationComments().save(comment);
+        interpretationCommentStore.save(comment);
     }
 }

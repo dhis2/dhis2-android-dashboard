@@ -1,22 +1,19 @@
-package org.hisp.dhis.android.dashboard.api.services.dashboard;
+package org.hisp.dhis.android.dashboard.api.models.dashboard;
 
-import org.hisp.dhis.android.dashboard.api.models.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
-
-import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
 /**
  * Created by arazabishov on 8/27/15.
  */
 public final class DashboardElementService implements IDashboardElementService {
 
-    private final IDashboardItemService mDashboardItemService;
+    private final IDashboardElementStore dashboardElementStore;
+    private final IDashboardItemService dashboardItemService;
 
-    public DashboardElementService(IDashboardItemService dashboardItemService) {
-        mDashboardItemService = isNull(dashboardItemService, "IDashboardItemService must not be null");
+    public DashboardElementService(IDashboardElementStore dashboardElementStore,
+                                   IDashboardItemService dashboardItemService) {
+        this.dashboardElementStore = dashboardElementStore;
+        this.dashboardItemService = dashboardItemService;
     }
 
     /**
@@ -43,16 +40,16 @@ public final class DashboardElementService implements IDashboardElementService {
     @Override
     public void deleteDashboardElement(DashboardItem dashboardItem, DashboardElement dashboardElement) {
         if (State.TO_POST.equals(dashboardElement.getState())) {
-            Models.dashboardElements().delete(dashboardElement);
+            dashboardElementStore.delete(dashboardElement);
         } else {
             dashboardElement.setState(State.TO_DELETE);
-            Models.dashboardElements().update(dashboardElement);
+            dashboardElementStore.update(dashboardElement);
         }
 
         /* if count of elements in item is zero, it means
         we don't need this item anymore */
-        if (!(mDashboardItemService.getContentCount(dashboardItem) > 0)) {
-            mDashboardItemService.deleteDashboardItem(dashboardItem);
+        if (!(dashboardItemService.getContentCount(dashboardItem) > 0)) {
+            dashboardItemService.deleteDashboardItem(dashboardItem);
         }
     }
 }

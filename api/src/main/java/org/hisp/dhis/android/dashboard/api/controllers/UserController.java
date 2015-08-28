@@ -42,7 +42,7 @@ import java.util.Map;
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-final class UserController {
+public final class UserController {
     private final DhisApi mDhisApi;
 
     public UserController(DhisApi dhisApi) {
