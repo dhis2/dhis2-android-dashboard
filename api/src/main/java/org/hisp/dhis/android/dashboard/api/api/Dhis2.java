@@ -31,24 +31,18 @@ public final class Dhis2 {
     private Dhis2(Context context) {
         Models.init(context);
         Services.init(context);
+
         LastUpdatedManager.init(context);
         DateTimeManager.init(context);
 
         readSession();
 
-        // IController objects initialization.
-        DashboardController dashboardController
-                = new DashboardController(null, Models.dashboards(), Models.dashboardItems(), Models.dashboardElements());
-        InterpretationController interpretationController
-                = new InterpretationController(null, Services.interpretations(), null);
-        UserAccountController userAccountController
-                = new UserAccountController(null, Models.userAccount());
-
-        dashboardScope = new DashboardScope(dashboardController, Services.dashboards(),
-                Services.dashboardItems(), Services.dashboardElements());
-        interpretationScope = new InterpretationScope(interpretationController, Services.interpretations(),
-                Services.interpretationElements(), Services.interpretationComments());
-        userAccountScope = new UserAccountScope(userAccountController, Services.userAccount());
+        dashboardScope = new DashboardScope(Controllers.dashboards(),
+                Services.dashboards(), Services.dashboardItems(), Services.dashboardElements());
+        interpretationScope = new InterpretationScope(Controllers.interpretations(),
+                Services.interpretations(), Services.interpretationElements(), Services.interpretationComments());
+        userAccountScope = new UserAccountScope(Controllers.userAccount(),
+                Services.userAccount());
     }
 
     public static void init(Context context) {
@@ -66,14 +60,19 @@ public final class Dhis2 {
     }
 
     private void readSession() {
+        // we need to nullify all controllers since they contain
+        // reference to DhisApi with outdated session
+        Controllers.reset();
+
         session = LastUpdatedManager.getInstance().get();
         dhisApi = null;
 
         if (isUserLoggedIn()) {
             dhisApi = RepoManager.createService(
-                    session.getServerUrl(),
-                    session.getCredentials()
-            );
+                    session.getServerUrl(), session.getCredentials());
+
+            // reinitializing controllers with fresh DhisApi instance
+            Controllers.init(dhisApi);
         }
     }
 
@@ -93,8 +92,8 @@ public final class Dhis2 {
     }
 
     private UserAccount signInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
-        DhisApi dhisApi = RepoManager.createService(serverUrl, credentials);
-        UserAccount user = (new UserAccountController(dhisApi).logInUser(serverUrl, credentials));
+        Controllers.init(RepoManager.createService(serverUrl, credentials));
+        UserAccount user = userAccount().logIn(serverUrl, credentials);
 
         // fetch meta data from disk
         readSession();
@@ -125,6 +124,10 @@ public final class Dhis2 {
     public static Credentials getUserCredentials() {
         return getInstance().session.getCredentials();
     }
+
+    ///////////////
+    // Main logic
+    ///////////////
 
     public static DashboardScope dashboards() {
         return getInstance().dashboardScope;
