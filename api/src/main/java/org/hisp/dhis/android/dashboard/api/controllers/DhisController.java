@@ -41,6 +41,7 @@ import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
+import org.hisp.dhis.android.dashboard.api.services.user.UserAccountService;
 
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
@@ -82,7 +83,8 @@ public class DhisController {
     }
 
     public void logOutUser() throws APIException {
-        (new UserController(mDhisApi)).logOut();
+        // (new UserController(mDhisApi)).logOut();
+        (new UserAccountService()).logOut();
 
         // fetch meta data from disk
         readSession();
@@ -147,10 +149,10 @@ public class DhisController {
 
     public void syncDashboards() throws APIException {
         // (new DashboardController(mDhisApi)).syncDashboards();
-        (new DashboardController(mDhisApi)).syncDashboards();
+        (new DashboardController(mDhisApi)).sync();
     }
 
     public void syncInterpretations() throws APIException {
-        (new InterpretationController(mDhisApi, null, null, null)).syncInterpretations();
+        (new InterpretationController(mDhisApi, null, null, null)).sync();
     }
 }
