@@ -11,4 +11,6 @@ public interface IUserAccountService extends IService {
     UserAccount getCurrentUserAccount();
 
     User toUser(UserAccount userAccount);
+
+    void logOut();
 }

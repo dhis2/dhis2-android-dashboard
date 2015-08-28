@@ -28,6 +28,7 @@ package org.hisp.dhis.android.dashboard.api.controllers;
 
 import android.net.Uri;
 
+import org.hisp.dhis.android.dashboard.api.controllers.common.IDataController;
 import org.hisp.dhis.android.dashboard.api.models.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
@@ -66,7 +67,7 @@ import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapRespo
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-final class InterpretationController {
+final class InterpretationController implements IDataController {
     private final DhisApi mDhisApi;
 
     private final IInterpretationsService mInterpretationService;
@@ -80,11 +81,6 @@ final class InterpretationController {
         mInterpretationElementService = elementService;
         mInterpretationService = interpretationsService;
         mUserAccountService = userAccountService;
-    }
-
-    public void syncInterpretations() throws APIException {
-        getInterpretationDataFromServer();
-        sendLocalChanges();
     }
 
     private void sendLocalChanges() throws APIException {
@@ -605,6 +601,12 @@ final class InterpretationController {
         }
 
         return ops;
+    }
+
+    @Override
+    public void sync() throws APIException {
+        getInterpretationDataFromServer();
+        sendLocalChanges();
     }
 
     /*

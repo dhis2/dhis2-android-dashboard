@@ -30,9 +30,9 @@ package org.hisp.dhis.android.dashboard.api.controllers;
 
 import android.net.Uri;
 
+import org.hisp.dhis.android.dashboard.api.controllers.common.IDataController;
 import org.hisp.dhis.android.dashboard.api.models.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbOperation;
-import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
@@ -41,6 +41,7 @@ import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.findLocatio
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiException;
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
-final class DashboardController {
+final class DashboardController implements IDataController {
     final DhisApi mDhisApi;
 
     public DashboardController(DhisApi dhisApi) {
@@ -79,15 +80,6 @@ final class DashboardController {
             }
         }
         return aListCopy;
-    }
-
-    public void syncDashboards() throws APIException {
-        /* first we need to fetch all changes from server
-        and apply them to local database */
-        getDashboardDataFromServer();
-
-        /* now we can try to send changes made locally to server */
-        sendLocalChanges();
     }
 
     private void getDashboardDataFromServer() throws APIException {
@@ -573,5 +565,15 @@ final class DashboardController {
         } catch (APIException apiException) {
             handleApiException(apiException);
         }
+    }
+
+    @Override
+    public void sync() throws APIException {
+        /* first we need to fetch all changes from server
+        and apply them to local database */
+        getDashboardDataFromServer();
+
+        /* now we can try to send changes made locally to server */
+        sendLocalChanges();
     }
 }

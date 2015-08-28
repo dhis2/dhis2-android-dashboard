@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dashboard.api.services.user;
 
+import org.hisp.dhis.android.dashboard.api.models.Models;
 import org.hisp.dhis.android.dashboard.api.models.user.User;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 
@@ -20,5 +21,10 @@ public class UserAccountService implements IUserAccountService {
     @Override
     public User toUser(UserAccount userAccount) {
         return null;
+    }
+
+    @Override
+    public void logOut() {
+        Models.modelsStore().deleteAllTables();
     }
 }

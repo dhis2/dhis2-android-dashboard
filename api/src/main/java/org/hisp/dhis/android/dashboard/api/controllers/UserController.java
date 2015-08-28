@@ -78,12 +78,7 @@ final class UserController {
         LastUpdatedManager.getInstance().put(session);
 
         /* save user account details */
-        // userAccount.save();
-        if (!Models.userAccount().query().isEmpty()) {
-            Models.userAccount().update(userAccount);
-        } else {
-            Models.userAccount().insert(userAccount);
-        }
+        Models.userAccount().save(userAccount);
 
         return userAccount;
     }
@@ -92,19 +87,6 @@ final class UserController {
         LastUpdatedManager.getInstance().delete();
         DateTimeManager.getInstance().delete();
         SessionManager.getInstance().delete();
-
-        // remove data
-        Delete.tables(
-                Dashboard$Flow.class,
-                DashboardElement$Flow.class,
-                DashboardItem$Flow.class,
-                DashboardItemContent$Flow.class,
-                Interpretation$Flow.class,
-                InterpretationComment$Flow.class,
-                InterpretationElement$Flow.class,
-                User$Flow.class,
-                UserAccount$Flow.class
-        );
     }
 
     public UserAccount updateUserAccount() throws APIException {
@@ -116,8 +98,7 @@ final class UserController {
         UserAccount userAccount =
                 mDhisApi.getCurrentUserAccount(QUERY_PARAMS);
         // update userAccount in database
-        // userAccount.save();
-        Models.userAccount().update(userAccount);
+        Models.userAccount().save(userAccount);
         return userAccount;
     }
 }
