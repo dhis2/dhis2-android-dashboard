@@ -42,7 +42,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.Models;
+import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.Access;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;

@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by arazabishov on 8/27/15.
  */
-public final class InterpretationService implements IInterpretationsService {
+public final class InterpretationService implements IInterpretationService {
     private final IInterpretationStore interpretationStore;
     private final IInterpretationElementService interpretationElementService;
 

@@ -29,7 +29,7 @@ package org.hisp.dhis.android.dashboard;
 import android.app.Application;
 import android.content.Intent;
 
-import org.hisp.dhis.android.dashboard.api.models.Models;
+import org.hisp.dhis.android.dashboard.api.api.Models;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.

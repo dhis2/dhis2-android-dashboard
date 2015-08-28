@@ -28,9 +28,11 @@ package org.hisp.dhis.android.dashboard.api.controllers;
 
 import com.squareup.okhttp.HttpUrl;
 
-import org.hisp.dhis.android.dashboard.api.models.Models;
+import org.hisp.dhis.android.dashboard.api.api.Models;
+import org.hisp.dhis.android.dashboard.api.controllers.common.IController;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Session;
+import org.hisp.dhis.android.dashboard.api.models.user.User;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
@@ -42,7 +44,7 @@ import java.util.Map;
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-public final class UserController {
+public final class UserController implements IController<User> {
     private final DhisApi mDhisApi;
 
     public UserController(DhisApi dhisApi) {
@@ -79,6 +81,7 @@ public final class UserController {
                 "organisationUnits[id]");
         UserAccount userAccount =
                 mDhisApi.getCurrentUserAccount(QUERY_PARAMS);
+
         // update userAccount in database
         Models.userAccount().save(userAccount);
         return userAccount;

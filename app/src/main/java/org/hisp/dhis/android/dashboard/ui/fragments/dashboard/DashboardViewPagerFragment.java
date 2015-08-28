@@ -46,7 +46,7 @@ import com.squareup.otto.Subscribe;
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
-import org.hisp.dhis.android.dashboard.api.models.Models;
+import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.Access;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;

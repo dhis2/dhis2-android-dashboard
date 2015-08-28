@@ -1,9 +1,8 @@
-package org.hisp.dhis.android.dashboard.api.models;
+package org.hisp.dhis.android.dashboard.api.api;
 
 import android.content.Context;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
-import com.raizlabs.android.dbflow.sql.language.Delete;
 
 import org.hisp.dhis.android.dashboard.api.models.common.IModelsStore;
 import org.hisp.dhis.android.dashboard.api.models.common.ModelsStore;
@@ -15,15 +14,6 @@ import org.hisp.dhis.android.dashboard.api.models.dashboard.IDashboardElementSto
 import org.hisp.dhis.android.dashboard.api.models.dashboard.IDashboardItemContentStore;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.IDashboardItemStore;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.IDashboardStore;
-import org.hisp.dhis.android.dashboard.api.models.flow.Dashboard$Flow;
-import org.hisp.dhis.android.dashboard.api.models.flow.DashboardElement$Flow;
-import org.hisp.dhis.android.dashboard.api.models.flow.DashboardItem$Flow;
-import org.hisp.dhis.android.dashboard.api.models.flow.DashboardItemContent$Flow;
-import org.hisp.dhis.android.dashboard.api.models.flow.Interpretation$Flow;
-import org.hisp.dhis.android.dashboard.api.models.flow.InterpretationComment$Flow;
-import org.hisp.dhis.android.dashboard.api.models.flow.InterpretationElement$Flow;
-import org.hisp.dhis.android.dashboard.api.models.flow.User$Flow;
-import org.hisp.dhis.android.dashboard.api.models.flow.UserAccount$Flow;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.IInterpretationCommentStore;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.IInterpretationElementStore;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.IInterpretationStore;

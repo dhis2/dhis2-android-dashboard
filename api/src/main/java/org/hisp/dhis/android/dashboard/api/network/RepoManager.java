@@ -34,7 +34,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.utils.ObjectMapperProvider;
 
@@ -62,17 +62,6 @@ public final class RepoManager {
     }
 
     public static DhisApi createService(HttpUrl serverUrl, Credentials credentials) {
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(provideServerUrl(serverUrl))
-                .setConverter(provideJacksonConverter())
-                .setClient(provideOkClient(credentials))
-                .setErrorHandler(new RetrofitErrorHandler())
-                .setLogLevel(RestAdapter.LogLevel.BASIC)
-                .build();
-        return restAdapter.create(DhisApi.class);
-    }
-
-    public static DhisApi createService2(HttpUrl serverUrl, Credentials credentials) {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(provideServerUrl(serverUrl))
                 .setConverter(provideJacksonConverter())
@@ -129,8 +118,8 @@ public final class RepoManager {
 
             Response response = chain.proceed(request);
             if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED &&
-                    DhisController.getInstance().isUserLoggedIn()) {
-                DhisController.getInstance().invalidateSession();
+                    Dhis2.isUserLoggedIn()) {
+                Dhis2.invalidateSession();
             }
             return response;
         }

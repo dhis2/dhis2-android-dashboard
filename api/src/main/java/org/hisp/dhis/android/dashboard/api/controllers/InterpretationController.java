@@ -28,23 +28,21 @@ package org.hisp.dhis.android.dashboard.api.controllers;
 
 import android.net.Uri;
 
+import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.controllers.common.IDataController;
-import org.hisp.dhis.android.dashboard.api.models.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.IInterpretationService;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
+import org.hisp.dhis.android.dashboard.api.models.user.IUserAccountService;
 import org.hisp.dhis.android.dashboard.api.models.user.User;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.IInterpretationElementService;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.IInterpretationsService;
-import org.hisp.dhis.android.dashboard.api.models.user.IUserAccountService;
 import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
 import org.joda.time.DateTime;
 
@@ -68,18 +66,15 @@ import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapRespo
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-public final class InterpretationController implements IDataController<Dashboard> {
+public final class InterpretationController implements IDataController<Interpretation> {
     private final DhisApi mDhisApi;
 
-    private final IInterpretationsService mInterpretationService;
-    private final IInterpretationElementService mInterpretationElementService;
+    private final IInterpretationService mInterpretationService;
     private final IUserAccountService mUserAccountService;
 
-    public InterpretationController(DhisApi dhisApi, IInterpretationElementService elementService,
-                                    IInterpretationsService interpretationsService,
+    public InterpretationController(DhisApi dhisApi, IInterpretationService interpretationsService,
                                     IUserAccountService userAccountService) {
         mDhisApi = dhisApi;
-        mInterpretationElementService = elementService;
         mInterpretationService = interpretationsService;
         mUserAccountService = userAccountService;
     }

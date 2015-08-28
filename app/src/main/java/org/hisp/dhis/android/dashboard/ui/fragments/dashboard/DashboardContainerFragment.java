@@ -37,7 +37,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.Models;
+import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.DbAction;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;

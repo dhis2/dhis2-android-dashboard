@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by arazabishov on 8/27/15.
  */
-public interface IInterpretationsService extends IService {
+public interface IInterpretationService extends IService {
     InterpretationComment addComment(Interpretation interpretation, User user, String text);
 
     Interpretation createInterpretation(DashboardItem item, User user, String text);

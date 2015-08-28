@@ -6,7 +6,6 @@ import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
  * Created by arazabishov on 8/27/15.
  */
 public final class DashboardElementService implements IDashboardElementService {
-
     private final IDashboardElementStore dashboardElementStore;
     private final IDashboardItemService dashboardItemService;
 
