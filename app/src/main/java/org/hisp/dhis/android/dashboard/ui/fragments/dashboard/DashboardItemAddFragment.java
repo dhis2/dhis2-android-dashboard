@@ -52,7 +52,9 @@ import org.hisp.dhis.android.dashboard.api.api.Dhis2;
 import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
+import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter.OptionAdapterValue;
@@ -60,6 +62,7 @@ import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
@@ -161,12 +164,8 @@ public class DashboardItemAddFragment extends BaseDialogFragment
     @OnItemClick(R.id.simple_listview)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         OptionAdapterValue adapterValue = mAdapter.getItem(position);
-        /* DashboardItemContent resource = new Select()
-                .from(DashboardItemContent.class)
-                .where(Condition.column(DashboardItemContent$Table
-                        .UID).is(adapterValue.id))
-                .querySingle();
-        mDashboard.addItemContent(resource); */
+        DashboardItemContent resource = Models.dashboardItemContent().query(adapterValue.id);
+        Dhis2.dashboards().addDashboardContent(mDashboard, resource);
 
         if (isDhisServiceBound()) {
             getDhisService().syncDashboards();
@@ -189,11 +188,10 @@ public class DashboardItemAddFragment extends BaseDialogFragment
 
     @Override
     public Loader<List<OptionAdapterValue>> onCreateLoader(int id, Bundle args) {
-        /* List<TrackedTable> trackedTables = Arrays.asList(
+        List<TrackedTable> trackedTables = Arrays.asList(
                 new TrackedTable(DashboardItemContent.class));
         return new DbLoader<>(getActivity().getApplicationContext(),
-                trackedTables, new DbQuery(getTypesToInclude())); */
-        return null;
+                trackedTables, new DbQuery(getTypesToInclude()));
     }
 
     @Override
@@ -258,36 +256,18 @@ public class DashboardItemAddFragment extends BaseDialogFragment
 
         @Override
         public List<OptionAdapterValue> query(Context context) {
-            /* if (mTypes.isEmpty()) {
+            if (mTypes.isEmpty()) {
                 return new ArrayList<>();
             }
 
-            CombinedCondition generalCondition =
-                    CombinedCondition.begin(column(DashboardItemContent$Table.TYPE).isNotNull());
-            CombinedCondition columnConditions = null;
-            for (String type : mTypes) {
-                if (columnConditions == null) {
-                    columnConditions = CombinedCondition
-                            .begin(column(DashboardItemContent$Table.TYPE).is(type));
-                } else {
-                    columnConditions = columnConditions
-                            .or(column(DashboardItemContent$Table.TYPE).is(type));
-                }
-            }
-            generalCondition.and(columnConditions);
-
-            List<DashboardItemContent> resources = new Select().from(DashboardItemContent.class)
-                    .where(generalCondition).queryList();
-            Collections.sort(resources, DashboardItemContent.DISPLAY_NAME_COMPARATOR);
-
+            List<DashboardItemContent> resources = Models.dashboardItemContent().query(mTypes);
             List<OptionAdapterValue> adapterValues = new ArrayList<>();
             for (DashboardItemContent dashboardItemContent : resources) {
                 adapterValues.add(new OptionAdapterValue(dashboardItemContent.getUId(),
                         dashboardItemContent.getDisplayName()));
             }
 
-            return adapterValues; */
-            return null;
+            return adapterValues;
         }
     }
 }

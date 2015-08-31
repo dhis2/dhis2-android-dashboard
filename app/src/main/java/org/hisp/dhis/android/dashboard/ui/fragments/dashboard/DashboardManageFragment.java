@@ -40,7 +40,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
+import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.flow.Dashboard$Flow$Table;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -100,11 +103,8 @@ public final class DashboardManageFragment extends BaseDialogFragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        /* mDashboard = new Select()
-                .from(Dashboard.class)
-                .where(Condition.column(Dashboard$Flow$Table
-                        .ID).is(getArguments().getLong(Dashboard$Flow$Table.ID)))
-                .querySingle(); */
+        mDashboard = Models.dashboards().query(getArguments()
+                .getLong(Dashboard$Flow$Table.ID));
 
         ButterKnife.bind(this, view);
 
@@ -130,8 +130,8 @@ public final class DashboardManageFragment extends BaseDialogFragment {
                 break;
             }
             case R.id.accept_action: {
-                /* mDashboard.updateDashboard(
-                        mDashboardName.getText().toString()); */
+                Dhis2.dashboards().updateDashboardName(mDashboard,
+                        mDashboardName.getText().toString());
                 mDashboardName.clearFocus();
 
                 if (isDhisServiceBound()) {
@@ -141,7 +141,7 @@ public final class DashboardManageFragment extends BaseDialogFragment {
                 break;
             }
             case R.id.delete_dashboard_button: {
-                // mDashboard.deleteDashboard();
+                Dhis2.dashboards().deleteDashboard(mDashboard);
 
                 if (isDhisServiceBound()) {
                     getDhisService().syncDashboards();

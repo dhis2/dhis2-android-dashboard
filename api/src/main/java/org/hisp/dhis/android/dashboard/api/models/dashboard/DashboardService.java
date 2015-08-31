@@ -74,6 +74,16 @@ public final class DashboardService implements IDashboardService {
         dashboardStore.update(dashboard);
     }
 
+    @Override
+    public void deleteDashboard(Dashboard dashboard) {
+        if (dashboard.getState() == State.TO_DELETE) {
+            dashboardStore.delete(dashboard);
+        } else {
+            dashboard.setState(State.TO_DELETE);
+            dashboardStore.update(dashboard);
+        }
+    }
+
     /**
      * Will try to append DashboardItemContent to current dashboard.
      * If the type of DashboardItemContent is embedded (chart, eventChart, map, eventReport, reportTable),

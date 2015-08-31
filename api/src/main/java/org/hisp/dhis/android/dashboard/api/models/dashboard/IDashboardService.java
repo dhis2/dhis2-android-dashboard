@@ -1,8 +1,5 @@
 package org.hisp.dhis.android.dashboard.api.models.dashboard;
 
-import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.common.IService;
 
 /**
@@ -12,6 +9,8 @@ public interface IDashboardService extends IService {
     Dashboard createDashboard(String name);
 
     void updateDashboardName(Dashboard dashboard, String name);
+
+    void deleteDashboard(Dashboard dashboard);
 
     boolean addDashboardContent(Dashboard dashboard, DashboardItemContent content);
 
