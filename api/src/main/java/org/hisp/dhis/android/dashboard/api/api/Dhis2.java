@@ -21,9 +21,9 @@ public final class Dhis2 {
     private Session session;
     private DhisApi dhisApi;
 
-    private final DashboardScope dashboardScope;
-    private final InterpretationScope interpretationScope;
-    private final UserAccountScope userAccountScope;
+    private DashboardScope dashboardScope;
+    private InterpretationScope interpretationScope;
+    private UserAccountScope userAccountScope;
 
     private Dhis2(Context context) {
         Models.init(context);
@@ -33,14 +33,11 @@ public final class Dhis2 {
         DateTimeManager.init(context);
 
         readSession();
-
-        dashboardScope = new DashboardScope(Controllers.dashboards(),
-                Services.dashboards(), Services.dashboardItems(), Services.dashboardElements());
-        interpretationScope = new InterpretationScope(Controllers.interpretations(),
-                Services.interpretations(), Services.interpretationElements(), Services.interpretationComments());
-        userAccountScope = new UserAccountScope(Controllers.userAccount(),
-                Services.userAccount());
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Dhis2 API public methods.
+    ////////////////////////////////////////////////////////////////////////////////////////
 
     public static void init(Context context) {
         if (dhis2 == null) {
@@ -48,35 +45,9 @@ public final class Dhis2 {
         }
     }
 
-    private static Dhis2 getInstance() {
-        if (dhis2 == null) {
-            throw new IllegalArgumentException("You have to call init() method first.");
-        }
-
-        return dhis2;
-    }
-
-    private void readSession() {
-        // we need to nullify all controllers since they contain
-        // reference to DhisApi with outdated session
-        Controllers.reset();
-
-        session = LastUpdatedManager.getInstance().get();
-        dhisApi = null;
-
-        if (isUserLoggedIn()) {
-            dhisApi = RepoManager.createService(
-                    session.getServerUrl(), session.getCredentials());
-
-            // reinitializing controllers with fresh DhisApi instance
-            Controllers.init(dhisApi);
-        }
-    }
-
     public static UserAccount logIn(HttpUrl serverUrl, Credentials credentials) throws APIException {
         return getInstance().signIn(serverUrl, credentials);
     }
-
 
     public static void logOut() throws APIException {
         getInstance().userAccountScope.logOut();
@@ -89,15 +60,6 @@ public final class Dhis2 {
         return getInstance().signIn(getServerUrl(), credentials);
     }
 
-    private UserAccount signIn(HttpUrl serverUrl, Credentials credentials) throws APIException {
-        Controllers.init(RepoManager.createService(serverUrl, credentials));
-        UserAccount user = userAccountScope.logIn(serverUrl, credentials);
-
-        // fetch meta data from disk
-        readSession();
-        return user;
-    }
-
     public static void invalidateSession() {
         LastUpdatedManager.getInstance().invalidate();
 
@@ -105,9 +67,12 @@ public final class Dhis2 {
         getInstance().readSession();
     }
 
+    public static UserAccount getCurrentUserAccount() {
+        return getInstance().userAccountScope.getCurrentUserAccount();
+    }
+
     public static boolean isUserLoggedIn() {
-        return getInstance().session.getServerUrl() != null &&
-                getInstance().session.getCredentials() != null;
+        return isUserLoggedIn(getInstance().session);
     }
 
     public static boolean isUserInvalidated() {
@@ -123,9 +88,67 @@ public final class Dhis2 {
         return getInstance().session.getCredentials();
     }
 
-    ///////////////
-    // Main logic
-    ///////////////
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Utility methods.
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    private static Dhis2 getInstance() {
+        if (dhis2 == null) {
+            throw new IllegalArgumentException("You have to call init() method first.");
+        }
+
+        return dhis2;
+    }
+
+    private void readSession() {
+        // we need to nullify all controllers since they contain
+        // reference to DhisApi with outdated session
+        reset();
+
+        session = LastUpdatedManager.getInstance().get();
+        if (isUserLoggedIn(session)) {
+            init();
+        }
+    }
+
+    private void reset() {
+        Controllers.reset();
+        // dhisApi = null;
+
+        dashboardScope = null;
+        interpretationScope = null;
+        userAccountScope = null;
+    }
+
+    private void init() {
+        dhisApi = RepoManager.createService();
+
+        // reinitializing controllers with fresh DhisApi instance
+        Controllers.init(dhisApi);
+
+        dashboardScope = new DashboardScope(Controllers.dashboards(),
+                Services.dashboards(), Services.dashboardItems(), Services.dashboardElements());
+        interpretationScope = new InterpretationScope(Controllers.interpretations(),
+                Services.interpretations(), Services.interpretationElements(), Services.interpretationComments());
+        userAccountScope = new UserAccountScope(Controllers.userAccount(), Services.userAccount());
+    }
+
+    private UserAccount signIn(HttpUrl serverUrl, Credentials credentials) throws APIException {
+        Controllers.init(RepoManager.createService(serverUrl, credentials));
+        UserAccount user = userAccountScope.logIn(serverUrl, credentials);
+
+        // fetch meta data from disk
+        readSession();
+        return user;
+    }
+
+    private static boolean isUserLoggedIn(Session session) {
+        return session.getServerUrl() != null && session.getCredentials() != null;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Scopes
+    ////////////////////////////////////////////////////////////////////////////////////////
 
     public static DashboardScope dashboards() {
         return getInstance().dashboardScope;

@@ -46,11 +46,18 @@ import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
+import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.DbAction;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
+import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.hisp.dhis.android.dashboard.ui.activities.InterpretationCommentsActivity;
@@ -59,6 +66,8 @@ import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -161,13 +170,11 @@ public final class InterpretationFragment extends BaseFragment
 
     @Override
     public Loader<List<Interpretation>> onCreateLoader(int id, Bundle args) {
-        /* List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
-                new TrackedTable(Interpretation.class, Action.UPDATE),
-                new TrackedTable(InterpretationComment.class, Action.INSERT));
+        List<TrackedTable> trackedTables = Arrays.asList(
+                new TrackedTable(Interpretation.class, DbAction.UPDATE),
+                new TrackedTable(InterpretationComment.class, DbAction.INSERT));
         return new DbLoader<>(getActivity().getApplicationContext(),
                 trackedTables, new InterpretationsQuery());
-                */
-        return null;
     }
 
     @Override
@@ -228,7 +235,8 @@ public final class InterpretationFragment extends BaseFragment
         if (!(position < 0)) {
             mAdapter.getData().remove(position);
             mAdapter.notifyItemRemoved(position);
-            // interpretation.deleteInterpretation();
+
+            Dhis2.interpretations().deleteInterpretation(interpretation);
 
             if (isDhisServiceBound()) {
                 getDhisService().syncInterpretations();
@@ -291,26 +299,14 @@ public final class InterpretationFragment extends BaseFragment
 
         @Override
         public List<Interpretation> query(Context context) {
-            /* List<Interpretation> interpretations
-                    = new Select()
-                    .from(Interpretation.class)
-                    .where(Condition.column(Interpretation$Table
-                            .STATE).isNot(State.TO_DELETE.toString()))
-                    .queryList();
+            List<Interpretation> interpretations = Models.interpretations()
+                    .filter(State.TO_DELETE);
             for (Interpretation interpretation : interpretations) {
-                List<InterpretationElement> elements = new Select()
-                        .from(InterpretationElement.class)
-                        .where(Condition.column(InterpretationElement$Table
-                                .INTERPRETATION_INTERPRETATION).is(interpretation.getId()))
-                        .queryList();
-                List<InterpretationComment> comments = new Select()
-                        .from(InterpretationComment.class)
-                        .where(Condition.column(InterpretationComment$Table
-                                .INTERPRETATION_INTERPRETATION).is(interpretation.getId()))
-                        .and(Condition.column(InterpretationComment$Table
-                                .STATE).isNot(State.TO_DELETE.toString()))
-                        .queryList();
-                interpretation.setInterpretationElements(elements);
+                List<InterpretationElement> elements =
+                        Models.interpretationElements().query(interpretation);
+                List<InterpretationComment> comments =
+                        Models.interpretationComments().filter(interpretation, State.TO_DELETE);
+                Dhis2.interpretations().setInterpretationElements(interpretation, elements);
                 interpretation.setComments(comments);
             }
 
@@ -318,8 +314,6 @@ public final class InterpretationFragment extends BaseFragment
             Collections.sort(interpretations,
                     Collections.reverseOrder(Interpretation.CREATED_COMPARATOR));
             return interpretations;
-            */
-            return null;
         }
     }
 }

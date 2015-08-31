@@ -39,9 +39,21 @@ import org.hisp.dhis.android.dashboard.api.models.common.meta.DbAction;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.flow.Dashboard$Flow;
 import org.hisp.dhis.android.dashboard.api.models.flow.DashboardElement$Flow;
 import org.hisp.dhis.android.dashboard.api.models.flow.DashboardItem$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.DashboardItemContent$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.Interpretation$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.InterpretationComment$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.InterpretationElement$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.User$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.UserAccount$Flow;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
+import org.hisp.dhis.android.dashboard.api.models.user.User;
+import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
@@ -67,6 +79,18 @@ public class ModelChangeObserver implements FlowContentObserver.OnModelStateChan
             trackedModel = DashboardItem$Flow.class;
         } else if (DashboardElement.class.equals(mTrackedTable.getTrackedModel())) {
             trackedModel = DashboardElement$Flow.class;
+        } else if (DashboardItemContent.class.equals(mTrackedTable.getTrackedModel())) {
+            trackedModel = DashboardItemContent$Flow.class;
+        } else if (Interpretation.class.equals(mTrackedTable.getTrackedModel())) {
+            trackedModel = Interpretation$Flow.class;
+        } else if (InterpretationComment.class.equals(mTrackedTable.getTrackedModel())) {
+            trackedModel = InterpretationComment$Flow.class;
+        } else if (InterpretationElement.class.equals(mTrackedTable.getTrackedModel())) {
+            trackedModel = InterpretationElement$Flow.class;
+        } else if (User.class.equals(mTrackedTable.getTrackedModel())) {
+            trackedModel = User$Flow.class;
+        } else if (UserAccount.class.equals(mTrackedTable.getTrackedModel())) {
+            trackedModel = UserAccount$Flow.class;
         } else {
             throw new IllegalArgumentException("Unsupported model type for tracking: "
                     + mTrackedTable.getTrackedModel());

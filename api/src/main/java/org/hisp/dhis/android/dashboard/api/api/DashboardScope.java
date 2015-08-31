@@ -40,6 +40,11 @@ public final class DashboardScope implements IDataController<Dashboard>, IDashbo
     }
 
     @Override
+    public void deleteDashboard(Dashboard dashboard) {
+        dashboardService.deleteDashboard(dashboard);
+    }
+
+    @Override
     public boolean addDashboardContent(Dashboard dashboard, DashboardItemContent content) {
         return dashboardService.addDashboardContent(dashboard, content);
     }

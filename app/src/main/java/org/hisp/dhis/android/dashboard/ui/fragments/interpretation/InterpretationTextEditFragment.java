@@ -37,6 +37,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
+import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
@@ -51,6 +53,7 @@ import butterknife.OnClick;
  */
 public final class InterpretationTextEditFragment extends BaseDialogFragment {
     private static final String TAG = InterpretationTextEditFragment.class.getSimpleName();
+    private static final String INTERPRETATION_ID = "arg:interpretationId";
 
     @Bind(R.id.dialog_label)
     TextView mDialogLabel;
@@ -62,7 +65,7 @@ public final class InterpretationTextEditFragment extends BaseDialogFragment {
 
     public static InterpretationTextEditFragment newInstance(long interpretationId) {
         Bundle args = new Bundle();
-        // args.putLong(Interpretation$Table.ID, interpretationId);
+        args.putLong(INTERPRETATION_ID, interpretationId);
 
         InterpretationTextEditFragment fragment = new InterpretationTextEditFragment();
         fragment.setArguments(args);
@@ -87,11 +90,8 @@ public final class InterpretationTextEditFragment extends BaseDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        /* mInterpretation = new Select()
-                .from(Interpretation.class)
-                .where(Condition.column(Interpretation$Table
-                        .ID).is(getArguments().getLong(Interpretation$Table.ID)))
-                .querySingle(); */
+        mInterpretation = Models.interpretations().query(
+                getArguments().getLong(INTERPRETATION_ID));
 
         mDialogLabel.setText(getString(R.string.interpretation_text));
         mInterpretationText.setText(mInterpretation.getText());
@@ -107,8 +107,8 @@ public final class InterpretationTextEditFragment extends BaseDialogFragment {
     public void onButtonClick(View view) {
         switch (view.getId()) {
             case R.id.update_interpretation_text: {
-                /* mInterpretation.updateInterpretation(
-                        mInterpretationText.getText().toString()); */
+                Dhis2.interpretations().updateInterpretationText(mInterpretation,
+                        mInterpretationText.getText().toString());
 
                 if (isDhisServiceBound()) {
                     getDhisService().syncInterpretations();

@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
 
 import butterknife.Bind;
@@ -49,6 +50,7 @@ import butterknife.OnClick;
  */
 public final class InterpretationTextFragment extends DialogFragment {
     private static final String TAG = InterpretationTextFragment.class.getSimpleName();
+    private static final String INTERPRETATION_ID = "arg:interpretationId";
 
     @Bind(R.id.dialog_label)
     TextView mDialogLabel;
@@ -60,7 +62,7 @@ public final class InterpretationTextFragment extends DialogFragment {
 
     public static InterpretationTextFragment newInstance(long interpretationId) {
         Bundle args = new Bundle();
-        // args.putLong(Interpretation$Table.ID, interpretationId);
+        args.putLong(INTERPRETATION_ID, interpretationId);
 
         InterpretationTextFragment fragment = new InterpretationTextFragment();
         fragment.setArguments(args);
@@ -85,11 +87,8 @@ public final class InterpretationTextFragment extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        /* mInterpretation = new Select()
-                .from(Interpretation.class)
-                .where(Condition.column(Interpretation$Table
-                        .ID).is(getArguments().getLong(Interpretation$Table.ID)))
-                .querySingle(); */
+        mInterpretation = Models.interpretations().query(
+                getArguments().getLong(INTERPRETATION_ID));
 
         mDialogLabel.setText(getString(R.string.interpretation_text));
         mInterpretationText.setText(mInterpretation.getText());

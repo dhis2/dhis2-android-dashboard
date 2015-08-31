@@ -36,6 +36,7 @@ import com.squareup.okhttp.Response;
 
 import org.hisp.dhis.android.dashboard.api.api.Dhis2;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.Session;
 import org.hisp.dhis.android.dashboard.api.utils.ObjectMapperProvider;
 
 import java.io.IOException;
@@ -64,6 +65,20 @@ public final class RepoManager {
     public static DhisApi createService(HttpUrl serverUrl, Credentials credentials) {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(provideServerUrl(serverUrl))
+                .setConverter(provideJacksonConverter())
+                .setClient(provideOkClient(credentials))
+                .setErrorHandler(new RetrofitErrorHandler())
+                .setLogLevel(RestAdapter.LogLevel.BASIC)
+                .build();
+        return restAdapter.create(DhisApi.class);
+    }
+
+    public static DhisApi createService() {
+        HttpUrl url = Dhis2.getServerUrl();
+        Credentials credentials = Dhis2.getUserCredentials();
+
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(provideServerUrl(url))
                 .setConverter(provideJacksonConverter())
                 .setClient(provideOkClient(credentials))
                 .setErrorHandler(new RetrofitErrorHandler())

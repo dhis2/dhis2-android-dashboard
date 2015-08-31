@@ -46,15 +46,24 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
+import org.hisp.dhis.android.dashboard.api.api.Models;
+import org.hisp.dhis.android.dashboard.api.models.common.IdentifiableObject;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.DbAction;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.user.User;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
+import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter.OnCommentClickListener;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -109,19 +118,10 @@ public class InterpretationCommentsFragment extends BaseFragment
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        /* mInterpretation = new Select()
-                .from(Interpretation.class)
-                .where(Condition.column(Interpretation$Table
-                        .ID).is(getArguments().getLong(INTERPRETATION_ID)))
-                .querySingle(); */
-        /* UserAccount account = UserAccount
-                .getCurrentUserAccountFromDb(); */
-        UserAccount account = null;
-        /* mUser = new Select()
-                .from(User.class)
-                .where(Condition.column(User$Table
-                        .UID).is(account.getUId()))
-                .querySingle(); */
+        mInterpretation = Models.interpretations()
+                .query(getArguments().getLong(INTERPRETATION_ID));
+        UserAccount account = Dhis2.getCurrentUserAccount();
+        mUser = Models.users().query(account.getUId());
 
         ButterKnife.bind(this, view);
 
@@ -162,11 +162,10 @@ public class InterpretationCommentsFragment extends BaseFragment
     @Override
     public Loader<List<InterpretationComment>> onCreateLoader(int id, Bundle args) {
         if (LOADER_ID == id) {
-            /* List<TrackedTable> trackedTables = Arrays.asList(
+            List<TrackedTable> trackedTables = Arrays.asList(
                     new TrackedTable(InterpretationComment.class, DbAction.UPDATE));
             return new DbLoader<>(getActivity().getApplicationContext(),
                     trackedTables, new CommentsQuery(args.getLong(INTERPRETATION_ID)));
-                    */
         }
         return null;
     }
@@ -200,12 +199,12 @@ public class InterpretationCommentsFragment extends BaseFragment
         String newCommentText = mNewCommentText.getText().toString();
 
         // creating and saving new comment
-        /* InterpretationComment comment = Interpretation
+        InterpretationComment comment = Dhis2.interpretations()
                 .addComment(mInterpretation, mUser, newCommentText);
-        comment.save(); */
+        Models.interpretationComments().save(comment);
 
         // now we need to new item to list and play animation.
-        // mAdapter.getData().add(comment);
+        mAdapter.getData().add(comment);
         mRecyclerView.scrollToPosition(
                 mAdapter.getItemCount() > 0 ? mAdapter.getItemCount() - 1 : 0);
         mAdapter.notifyItemInserted(mAdapter.getItemCount() - 1);
@@ -231,7 +230,7 @@ public class InterpretationCommentsFragment extends BaseFragment
         if (!(position < 0)) {
             mAdapter.getData().remove(position);
             mAdapter.notifyItemRemoved(position);
-            // comment.deleteComment();
+            Dhis2.interpretations().deleteComment(comment);
 
             if (isDhisServiceBound()) {
                 getDhisService().syncInterpretations();
@@ -252,16 +251,12 @@ public class InterpretationCommentsFragment extends BaseFragment
 
         @Override
         public List<InterpretationComment> query(Context context) {
-            /* List<InterpretationComment> comments = new Select()
-                    .from(InterpretationComment.class)
-                    .where(Condition.column(InterpretationComment$Table
-                            .INTERPRETATION_INTERPRETATION).is(mInterpretationId))
-                    .and(Condition.column(InterpretationComment$Table
-                            .STATE).isNot(State.TO_DELETE.toString()))
-                    .queryList();
+            Interpretation interpretation = new Interpretation();
+            interpretation.setId(mInterpretationId);
+            List<InterpretationComment> comments = Models.interpretationComments()
+                    .filter(interpretation, State.TO_DELETE);
             Collections.sort(comments, IdentifiableObject.CREATED_COMPARATOR);
-            return comments; */
-            return null;
+            return comments;
         }
     }
 }

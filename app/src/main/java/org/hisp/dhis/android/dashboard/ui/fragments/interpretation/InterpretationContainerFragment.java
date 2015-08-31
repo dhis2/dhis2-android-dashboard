@@ -11,8 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.api.Models;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.DbAction;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
+import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by arazabishov on 7/24/15.
@@ -35,13 +44,12 @@ public class InterpretationContainerFragment extends BaseFragment
 
     @Override
     public Loader<Boolean> onCreateLoader(int i, Bundle bundle) {
-        /* List<BaseModel.Action> actionsToTrack = Arrays.asList(
-                BaseModel.Action.INSERT, BaseModel.Action.DELETE);
+        List<DbAction> actionsToTrack = Arrays.asList(
+                DbAction.INSERT, DbAction.DELETE);
         List<TrackedTable> trackedTables = Arrays.asList(
                 new TrackedTable(Interpretation.class, actionsToTrack));
         return new DbLoader<>(getActivity().getApplicationContext(),
-                trackedTables, new InterpretationsQuery()); */
-        return null;
+                trackedTables, new InterpretationsQuery());
     }
 
     @Override
@@ -68,7 +76,6 @@ public class InterpretationContainerFragment extends BaseFragment
     }
 
     private void attachFragment(Fragment fragment, String tag) {
-        System.out.println("ATTACH_FRAGMENT IS CALLED");
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.fragment_content_frame, fragment, tag)
                 .commitAllowingStateLoss();
@@ -82,14 +89,9 @@ public class InterpretationContainerFragment extends BaseFragment
 
         @Override
         public Boolean query(Context context) {
-            /* List<Interpretation> interpretations = new Select()
-                    .from(Interpretation.class)
-                    .where(Condition.column(Interpretation$Table
-                            .STATE).isNot(State.TO_DELETE.toString()))
-                    .queryList();
-
-            return interpretations != null && interpretations.size() > 0; */
-            return null;
+            List<Interpretation> interpretations = Models.interpretations()
+                    .filter(State.TO_DELETE);
+            return interpretations != null && interpretations.size() > 0;
         }
     }
 }

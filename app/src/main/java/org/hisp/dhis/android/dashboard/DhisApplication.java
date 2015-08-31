@@ -29,7 +29,7 @@ package org.hisp.dhis.android.dashboard;
 import android.app.Application;
 import android.content.Intent;
 
-import org.hisp.dhis.android.dashboard.api.api.Models;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -40,7 +40,7 @@ public final class DhisApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Models.init(this);
+        Dhis2.init(getApplicationContext());
         startService(new Intent(this, DhisService.class));
     }
 }

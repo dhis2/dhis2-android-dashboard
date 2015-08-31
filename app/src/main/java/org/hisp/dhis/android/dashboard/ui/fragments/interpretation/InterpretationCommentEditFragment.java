@@ -38,10 +38,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
+import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
@@ -54,6 +53,7 @@ import butterknife.OnClick;
  */
 public class InterpretationCommentEditFragment extends BaseDialogFragment {
     private static final String TAG = InterpretationCommentEditFragment.class.getSimpleName();
+    private static final String INTERPRETATION_COMMENT_ID = "arg:interpretationCommentId";
 
     @Bind(R.id.interpretation_comment_edit_text)
     EditText mCommentEditText;
@@ -65,7 +65,7 @@ public class InterpretationCommentEditFragment extends BaseDialogFragment {
 
     public static InterpretationCommentEditFragment newInstance(long commentId) {
         Bundle args = new Bundle();
-        // args.putLong(InterpretationComment$Table.ID, commentId);
+        args.putLong(INTERPRETATION_COMMENT_ID, commentId);
 
         InterpretationCommentEditFragment fragment
                 = new InterpretationCommentEditFragment();
@@ -91,11 +91,8 @@ public class InterpretationCommentEditFragment extends BaseDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        /* mInterpretationComment = new Select()
-                .from(InterpretationComment.class)
-                .where(Condition.column(InterpretationComment$Table
-                        .ID).is(getArguments().getLong(InterpretationComment$Table.ID)))
-                .querySingle(); */
+        mInterpretationComment = Models.interpretationComments()
+                .query(getArguments().getLong(INTERPRETATION_COMMENT_ID));
 
         mDialogLabel.setText(getString(R.string.edit_comment));
         mCommentEditText.setText(mInterpretationComment.getText());
@@ -110,8 +107,8 @@ public class InterpretationCommentEditFragment extends BaseDialogFragment {
     public void onButtonClick(View view) {
         switch (view.getId()) {
             case R.id.update_interpretation_comment: {
-                /* mInterpretationComment.updateComment(
-                        mCommentEditText.getText().toString()); */
+                Dhis2.interpretations().updateCommentText(
+                        mInterpretationComment, mCommentEditText.getText().toString());
 
                 if (isDhisServiceBound()) {
                     getDhisService().syncInterpretations();

@@ -38,11 +38,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
+import org.hisp.dhis.android.dashboard.api.api.Models;
+import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
+import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
+import org.hisp.dhis.android.dashboard.api.models.user.User;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -53,6 +62,7 @@ import butterknife.OnClick;
  */
 public final class InterpretationCreateFragment extends BaseDialogFragment {
     private static final String TAG = InterpretationCreateFragment.class.getSimpleName();
+    private static final String DASHBOARD_ITEM_ID = "arg:dashboardItemId";
 
     @Bind(R.id.dialog_label)
     TextView mDialogLabel;
@@ -64,7 +74,7 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
 
     public static InterpretationCreateFragment newInstance(long itemId) {
         Bundle args = new Bundle();
-        // args.putLong(DashboardItemFlow$Table.ID, itemId);
+        args.putLong(DASHBOARD_ITEM_ID, itemId);
 
         InterpretationCreateFragment fragment = new InterpretationCreateFragment();
         fragment.setArguments(args);
@@ -89,22 +99,13 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        // long dashboardItemId = getArguments().getLong(DashboardItemFlow$Table.ID);
-        /* mDashboardItem = new Select()
-                .from(DashboardItem.class)
-                .where(Condition.column(DashboardItem$Flow$Table
-                        .ID).is(dashboardItemId))
-                .querySingle(); */
+        long dashboardItemId = getArguments().getLong(DASHBOARD_ITEM_ID);
+        mDashboardItem = Models.dashboardItems().query(dashboardItemId);
 
-        /* List<DashboardElement> elements = new Select()
-                .from(DashboardElement.class)
-                .where(Condition.column(DashboardElement$Table
-                        .DASHBOARDITEM_DASHBOARDITEM).is(dashboardItemId))
-                .and(Condition.column(DashboardElement$Table
-                        .STATE).isNot(State.TO_DELETE.toString()))
-                .queryList(); */
+        List<DashboardElement> elements = Models.dashboardElements()
+                .filter(mDashboardItem, State.TO_DELETE);
+        mDashboardItem.setDashboardElements(elements);
 
-        // mDashboardItem.setDashboardElements(elements);
         mDialogLabel.setText(getString(R.string.create_interpretation));
     }
 
@@ -113,29 +114,23 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
     public void onButtonClicked(View view) {
         if (view.getId() == R.id.create_interpretation) {
             // read user
-            /* UserAccount userAccount = UserAccount
-                    .getCurrentUserAccountFromDb(); */
-            UserAccount userAccount = null;
-            /* User user = new Select()
-                    .from(User.class)
-                    .where(Condition.column(User$Table
-                            .UID).is(userAccount.getUId()))
-                    .querySingle();
+            UserAccount userAccount = Dhis2.getCurrentUserAccount();
+            User user = Models.users().query(userAccount.getUId());
 
             // create interpretation
-            Interpretation interpretation = createInterpretation(mDashboardItem,
-                    user, mInterpretationText.getText().toString());
-            List<InterpretationElement> elements = interpretation
-                    .getInterpretationElements(); */
+            Interpretation interpretation = Dhis2.interpretations()
+                    .createInterpretation(mDashboardItem, user, mInterpretationText.getText().toString());
+            List<InterpretationElement> elements = Dhis2.interpretations()
+                    .getInterpretationElements(interpretation);
 
             // save interpretation
-            /* interpretation.save();
+            Models.interpretations().save(interpretation);
             if (elements != null && !elements.isEmpty()) {
                 for (InterpretationElement element : elements) {
                     // save corresponding interpretation elements
-                    element.save();
+                    Models.interpretationElements().save(element);
                 }
-            } */
+            }
 
             if (isDhisServiceBound()) {
                 getDhisService().syncInterpretations();
