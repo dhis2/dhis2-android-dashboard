@@ -1,7 +1,11 @@
 package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
+
 import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.flow.Interpretation$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.Interpretation$Flow$Table;
 
 import java.util.List;
 
@@ -40,30 +44,37 @@ public final class InterpretationStore implements IInterpretationStore {
 
     @Override
     public List<Interpretation> query() {
-        return null;
+        List<Interpretation$Flow> interpretationFlows = new Select()
+                .from(Interpretation$Flow.class)
+                .queryList();
+        return Interpretation$Flow.toModels(interpretationFlows);
     }
 
     @Override
     public Interpretation query(long id) {
-        return null;
+        Interpretation$Flow interpretationFlow = new Select()
+                .from(Interpretation$Flow.class)
+                .where(Condition.column(Interpretation$Flow$Table.ID).is(id))
+                .querySingle();
+        return Interpretation$Flow.toModel(interpretationFlow);
     }
 
     @Override
     public Interpretation query(String uid) {
-        return null;
+        Interpretation$Flow interpretationFlow = new Select()
+                .from(Interpretation$Flow.class)
+                .where(Condition.column(Interpretation$Flow$Table.UID).is(uid))
+                .querySingle();
+        return Interpretation$Flow.toModel(interpretationFlow);
     }
-
-    /*
-    private static List<Interpretation> queryInterpretations() {
-        return new Select()
-                .from(Interpretation.class)
-                .where(Condition.column(Interpretation$Table
-                        .STATE).isNot(State.TO_POST.toString()))
-                .queryList();
-    }*/
 
     @Override
     public List<Interpretation> filter(State state) {
-        return null;
+        List<Interpretation$Flow> interpretationFlows = new Select()
+                .from(Interpretation$Flow.class)
+                .where(Condition.column(Interpretation$Flow$Table
+                        .STATE).isNot(state.toString()))
+                .queryList();
+        return Interpretation$Flow.toModels(interpretationFlows);
     }
 }

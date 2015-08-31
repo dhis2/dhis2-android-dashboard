@@ -1,7 +1,6 @@
 package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
 import org.hisp.dhis.android.dashboard.api.models.common.IStore;
-import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
 
 import java.util.List;
 

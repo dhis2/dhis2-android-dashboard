@@ -1,6 +1,5 @@
 package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
-import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.common.IService;
 
 /**

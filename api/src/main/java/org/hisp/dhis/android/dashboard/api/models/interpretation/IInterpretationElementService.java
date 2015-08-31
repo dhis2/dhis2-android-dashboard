@@ -1,9 +1,7 @@
 package org.hisp.dhis.android.dashboard.api.models.interpretation;
 
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.common.IService;
+import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
 
 /**
  * Created by arazabishov on 8/27/15.
