@@ -4,9 +4,6 @@ import android.content.Context;
 
 import com.squareup.okhttp.HttpUrl;
 
-import org.hisp.dhis.android.dashboard.api.controllers.DashboardController;
-import org.hisp.dhis.android.dashboard.api.controllers.InterpretationController;
-import org.hisp.dhis.android.dashboard.api.controllers.user.UserAccountController;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.common.meta.Session;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
@@ -76,24 +73,25 @@ public final class Dhis2 {
         }
     }
 
-    public UserAccount logInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
-        return signInUser(serverUrl, credentials);
+    public UserAccount logIn(HttpUrl serverUrl, Credentials credentials) throws APIException {
+        return signIn(serverUrl, credentials);
     }
 
-    public UserAccount confirmUser(Credentials credentials) throws APIException {
-        return signInUser(session.getServerUrl(), credentials);
-    }
 
-    public void logOutUser() throws APIException {
-        Services.userAccount().logOut();
+    public void logOut() throws APIException {
+        userAccountScope.logOut();
 
         // fetch meta data from disk
         readSession();
     }
 
-    private UserAccount signInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
+    public UserAccount confirmUser(Credentials credentials) throws APIException {
+        return signIn(session.getServerUrl(), credentials);
+    }
+
+    private UserAccount signIn(HttpUrl serverUrl, Credentials credentials) throws APIException {
         Controllers.init(RepoManager.createService(serverUrl, credentials));
-        UserAccount user = userAccount().logIn(serverUrl, credentials);
+        UserAccount user = userAccountScope.logIn(serverUrl, credentials);
 
         // fetch meta data from disk
         readSession();
@@ -135,9 +133,5 @@ public final class Dhis2 {
 
     public static InterpretationScope interpretations() {
         return getInstance().interpretationScope;
-    }
-
-    public static UserAccountScope userAccount() {
-        return getInstance().userAccountScope;
     }
 }

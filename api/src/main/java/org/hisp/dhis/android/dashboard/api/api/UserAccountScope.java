@@ -12,7 +12,7 @@ import org.hisp.dhis.android.dashboard.api.network.APIException;
 /**
  * Created by arazabishov on 8/28/15.
  */
-public final class UserAccountScope implements IUserAccountController, IUserAccountService {
+final class UserAccountScope implements IUserAccountController, IUserAccountService {
     private final IUserAccountController userAccountController;
     private final IUserAccountService userAccountService;
 
