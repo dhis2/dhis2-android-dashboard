@@ -17,4 +17,7 @@ public interface IStore<T extends IdentifiableObject> {
 
     List<T> query();
 
+    T query(long id);
+
+    T query(String uid);
 }

@@ -33,6 +33,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
 
 public class LauncherActivity extends BaseActivity {
 
@@ -46,9 +47,9 @@ public class LauncherActivity extends BaseActivity {
         setTitle(R.string.app_name);
 
         Intent intent;
-        if (getDhisController().isUserLoggedIn()) {
+        if (Dhis2.isUserLoggedIn()) {
             intent = new Intent(this, MenuActivity.class);
-        } else if (getDhisController().isUserInvalidated()) {
+        } else if (Dhis2.isUserInvalidated()) {
             intent = new Intent(this, ConfirmUserActivity.class);
         } else {
             intent = new Intent(this, LoginActivity.class);

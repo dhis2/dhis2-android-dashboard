@@ -42,6 +42,11 @@ public final class UserStore implements IUserStore {
     }
 
     @Override
+    public User query(long id) {
+        return null;
+    }
+
+    @Override
     public User query(String uid) {
         return null;
     }

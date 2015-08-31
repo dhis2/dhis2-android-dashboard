@@ -48,6 +48,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
+import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
@@ -68,6 +70,7 @@ import butterknife.OnTextChanged;
 
 public class DashboardItemAddFragment extends BaseDialogFragment
         implements PopupMenu.OnMenuItemClickListener, LoaderCallbacks<List<OptionAdapterValue>> {
+    private static final String DASHBOARD_ID = "arg:dashboardId";
     private static final String TAG = DashboardItemAddFragment.class.getSimpleName();
     private static final int LOADER_ID = 3451234;
 
@@ -90,7 +93,7 @@ public class DashboardItemAddFragment extends BaseDialogFragment
 
     public static DashboardItemAddFragment newInstance(long dashboardId) {
         Bundle args = new Bundle();
-        // args.putLong(DashboardFlow$Table.ID, dashboardId);
+        args.putLong(DASHBOARD_ID, dashboardId);
 
         DashboardItemAddFragment fragment = new DashboardItemAddFragment();
         fragment.setArguments(args);
@@ -112,13 +115,8 @@ public class DashboardItemAddFragment extends BaseDialogFragment
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        // long dashboardId = getArguments().getLong(DashboardFlow$Table.ID);
-        /* mDashboard = new Select()
-                .from(Dashboard.class)
-                .where(Condition.column(Dashboard$Table
-                        .ID).is(dashboardId))
-                .querySingle();
-                */
+        long dashboardId = getArguments().getLong(DASHBOARD_ID);
+        mDashboard = Models.dashboards().query(dashboardId);
 
         ButterKnife.bind(this, view);
 

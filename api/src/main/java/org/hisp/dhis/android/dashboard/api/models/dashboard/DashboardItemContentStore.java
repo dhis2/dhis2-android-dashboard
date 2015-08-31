@@ -1,8 +1,10 @@
 package org.hisp.dhis.android.dashboard.api.models.dashboard;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.hisp.dhis.android.dashboard.api.models.flow.DashboardItemContent$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.DashboardItemContent$Flow$Table;
 
 import java.util.List;
 
@@ -49,5 +51,25 @@ public final class DashboardItemContentStore implements IDashboardItemContentSto
                 .from(DashboardItemContent$Flow.class)
                 .queryList();
         return DashboardItemContent$Flow.toModels(flows);
+    }
+
+    @Override
+    public DashboardItemContent query(long id) {
+        DashboardItemContent$Flow dashboardItemContentFlow = new Select()
+                .from(DashboardItemContent$Flow.class)
+                .where(Condition.column(DashboardItemContent$Flow$Table
+                        .ID).is(id))
+                .querySingle();
+        return DashboardItemContent$Flow.toModel(dashboardItemContentFlow);
+    }
+
+    @Override
+    public DashboardItemContent query(String uid) {
+        DashboardItemContent$Flow dashboardItemContentFlow = new Select()
+                .from(DashboardItemContent$Flow.class)
+                .where(Condition.column(DashboardItemContent$Flow$Table
+                        .UID).is(uid))
+                .querySingle();
+        return DashboardItemContent$Flow.toModel(dashboardItemContentFlow);
     }
 }

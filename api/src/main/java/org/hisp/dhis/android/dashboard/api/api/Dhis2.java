@@ -73,20 +73,20 @@ public final class Dhis2 {
         }
     }
 
-    public UserAccount logIn(HttpUrl serverUrl, Credentials credentials) throws APIException {
-        return signIn(serverUrl, credentials);
+    public static UserAccount logIn(HttpUrl serverUrl, Credentials credentials) throws APIException {
+        return getInstance().signIn(serverUrl, credentials);
     }
 
 
-    public void logOut() throws APIException {
-        userAccountScope.logOut();
+    public static void logOut() throws APIException {
+        getInstance().userAccountScope.logOut();
 
         // fetch meta data from disk
-        readSession();
+        getInstance().readSession();
     }
 
-    public UserAccount confirmUser(Credentials credentials) throws APIException {
-        return signIn(session.getServerUrl(), credentials);
+    public static UserAccount confirmUser(Credentials credentials) throws APIException {
+        return getInstance().signIn(getServerUrl(), credentials);
     }
 
     private UserAccount signIn(HttpUrl serverUrl, Credentials credentials) throws APIException {

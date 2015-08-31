@@ -52,6 +52,24 @@ public class DashboardElementStore implements IDashboardElementStore {
     }
 
     @Override
+    public DashboardElement query(long id) {
+        DashboardElement$Flow dashboardElementFlow = new Select()
+                .from(DashboardElement$Flow.class)
+                .where(Condition.column(DashboardElement$Flow$Table.ID).is(id))
+                .querySingle();
+        return DashboardElement$Flow.toModel(dashboardElementFlow);
+    }
+
+    @Override
+    public DashboardElement query(String uid) {
+        DashboardElement$Flow dashboardElementFlow = new Select()
+                .from(DashboardElement$Flow.class)
+                .where(Condition.column(DashboardElement$Flow$Table.UID).is(uid))
+                .querySingle();
+        return DashboardElement$Flow.toModel(dashboardElementFlow);
+    }
+
+    @Override
     public List<DashboardElement> query(DashboardItem dashboardItem, State... states) {
         return query(dashboardItem, Arrays.asList(states));
     }

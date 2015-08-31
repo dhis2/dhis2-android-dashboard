@@ -55,7 +55,29 @@ public final class DashboardStore implements IDashboardStore {
 
     @Override
     public List<Dashboard> query() {
-        return null;
+        List<Dashboard$Flow> dashboardFlows =
+                new Select().from(Dashboard$Flow.class).queryList();
+        return Dashboard$Flow.toModels(dashboardFlows);
+    }
+
+    @Override
+    public Dashboard query(long id) {
+        Dashboard$Flow dashboardFlow = new Select()
+                .from(Dashboard$Flow.class)
+                .where(Condition.column(Dashboard$Flow$Table
+                        .ID).is(id))
+                .querySingle();
+        return Dashboard$Flow.toModel(dashboardFlow);
+    }
+
+    @Override
+    public Dashboard query(String uid) {
+        Dashboard$Flow dashboardFlow = new Select()
+                .from(Dashboard$Flow.class)
+                .where(Condition.column(Dashboard$Flow$Table
+                        .UID).is(uid))
+                .querySingle();
+        return Dashboard$Flow.toModel(dashboardFlow);
     }
 
     @Override

@@ -35,6 +35,16 @@ public class InterpretationCommentStore implements IInterpretationCommentStore {
     }
 
     @Override
+    public InterpretationComment query(long id) {
+        return null;
+    }
+
+    @Override
+    public InterpretationComment query(String uid) {
+        return null;
+    }
+
+    @Override
     public List<InterpretationComment> filter(State state) {
         return null;
     }

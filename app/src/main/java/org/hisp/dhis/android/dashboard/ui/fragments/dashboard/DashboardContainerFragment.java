@@ -119,7 +119,6 @@ public class DashboardContainerFragment extends BaseFragment
         @Override
         public Boolean query(Context context) {
             List<Dashboard> dashboards = Models.dashboards().filter(State.TO_DELETE);
-            System.out.println("*** DASHBOARDS *** " + dashboards);
             return dashboards != null && dashboards.size() > 0;
         }
     }

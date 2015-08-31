@@ -34,7 +34,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
-import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
 
 public final class PicassoProvider {
@@ -47,7 +47,7 @@ public final class PicassoProvider {
     public static Picasso getInstance(Context context) {
         if (mPicasso == null) {
             OkHttpClient client = RepoManager.provideOkHttpClient(
-                    DhisController.getInstance().getUserCredentials());
+                    Dhis2.getUserCredentials());
 
             mPicasso = new Picasso.Builder(context)
                     .downloader(new OkHttpDownloader(client))

@@ -45,4 +45,14 @@ public final class UserAccountStore implements IUserAccountStore {
                 .queryList();
         return UserAccount$Flow.toModels(userAccounts);
     }
+
+    @Override
+    public UserAccount query(long id) {
+        return null;
+    }
+
+    @Override
+    public UserAccount query(String uid) {
+        return null;
+    }
 }

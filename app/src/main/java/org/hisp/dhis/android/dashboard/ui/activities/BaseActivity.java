@@ -40,7 +40,6 @@ import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
@@ -111,10 +110,6 @@ public class BaseActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         EventBusProvider.unregister(this);
-    }
-
-    public DhisController getDhisController() {
-        return DhisController.getInstance();
     }
 
     public DhisService getDhisService() {

@@ -43,6 +43,16 @@ public final class InterpretationStore implements IInterpretationStore {
         return null;
     }
 
+    @Override
+    public Interpretation query(long id) {
+        return null;
+    }
+
+    @Override
+    public Interpretation query(String uid) {
+        return null;
+    }
+
     /*
     private static List<Interpretation> queryInterpretations() {
         return new Select()

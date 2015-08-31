@@ -40,7 +40,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
@@ -75,7 +75,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
     }
 
     private static String buildImageUrl(String resource, String id) {
-        return DhisController.getInstance().getServerUrl().newBuilder()
+        return Dhis2.getServerUrl().newBuilder()
                 .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
                 .addQueryParameter("width", "480").addQueryParameter("height", "320")
                 .toString();

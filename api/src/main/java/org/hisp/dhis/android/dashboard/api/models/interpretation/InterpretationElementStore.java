@@ -33,6 +33,16 @@ public class InterpretationElementStore implements IInterpretationElementStore {
     }
 
     @Override
+    public InterpretationElement query(long id) {
+        return null;
+    }
+
+    @Override
+    public InterpretationElement query(String uid) {
+        return null;
+    }
+
+    @Override
     public List<InterpretationElement> query(Interpretation interpretation) {
         return null;
     }

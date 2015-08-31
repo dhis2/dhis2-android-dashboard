@@ -33,7 +33,7 @@ import android.os.IBinder;
 
 import com.squareup.okhttp.HttpUrl;
 
-import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
+import org.hisp.dhis.android.dashboard.api.api.Dhis2;
 import org.hisp.dhis.android.dashboard.api.job.Job;
 import org.hisp.dhis.android.dashboard.api.job.JobExecutor;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
@@ -56,12 +56,10 @@ public final class DhisService extends Service {
     public static final int SYNC_INTERPRETATIONS = 7;
 
     private final IBinder mBinder = new ServiceBinder();
-    private DhisController mDhisController;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mDhisController = DhisController.getInstance();
     }
 
     @Override
@@ -86,7 +84,7 @@ public final class DhisService extends Service {
 
             @Override
             public UserAccount execute() throws APIException {
-                return mDhisController.logInUser(serverUrl, credentials);
+                return Dhis2.logIn(serverUrl, credentials);
             }
         });
     }
@@ -95,7 +93,7 @@ public final class DhisService extends Service {
         JobExecutor.enqueueJob(new Job<UiEvent>(LOG_OUT) {
             @Override
             public UiEvent inBackground() {
-                mDhisController.logOutUser();
+                Dhis2.logOut();
                 return new UiEvent(UiEvent.UiEventType.USER_LOG_OUT);
             }
 
@@ -112,7 +110,7 @@ public final class DhisService extends Service {
 
             @Override
             public UserAccount execute() throws APIException {
-                return mDhisController.confirmUser(credentials);
+                return Dhis2.confirmUser(credentials);
             }
         });
     }
@@ -123,7 +121,7 @@ public final class DhisService extends Service {
 
             @Override
             public Object execute() throws APIException {
-                mDhisController.syncDashboardContent();
+                // Dhis2.dashboards().syncDashboardContent();
                 return new Object();
             }
         });
@@ -135,8 +133,8 @@ public final class DhisService extends Service {
 
             @Override
             public Object execute() throws APIException {
-                mDhisController.syncDashboardContent();
-                mDhisController.syncDashboards();
+                // mDhis2.syncDashboardContent();
+                Dhis2.dashboards().sync();
                 return new Object();
             }
         });
@@ -148,7 +146,7 @@ public final class DhisService extends Service {
 
             @Override
             public Object execute() throws APIException {
-                mDhisController.syncDashboards();
+                Dhis2.dashboards().sync();
                 return new Object();
             }
         });
@@ -159,7 +157,7 @@ public final class DhisService extends Service {
                 ResourceType.INTERPRETATIONS) {
             @Override
             public Object execute() throws APIException {
-                mDhisController.syncInterpretations();
+                Dhis2.interpretations().sync();
                 return new Object();
             }
         });
