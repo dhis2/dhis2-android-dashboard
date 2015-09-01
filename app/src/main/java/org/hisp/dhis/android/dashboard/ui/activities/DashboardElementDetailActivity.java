@@ -35,11 +35,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
-
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.api.Dhis2;
+import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
@@ -107,21 +105,15 @@ public class DashboardElementDetailActivity extends BaseActivity {
         long interpretationElementId = getInterpretationElementId();
 
         if (dashboardElementId > 0) {
-            /* DashboardElement element = new Select()
-                    .from(DashboardElement.class)
-                    .where(Condition.column(DashboardElement$Table.ID)
-                            .is(getDashboardElementId()))
-                    .querySingle();
-            handleDashboardElement(element); */
+            DashboardElement element = Models.dashboardElements()
+                    .query(getDashboardElementId());
+            handleDashboardElement(element);
         }
 
         if (interpretationElementId > 0) {
-            /* InterpretationElement element = new Select()
-                    .from(InterpretationElement.class)
-                    .where(Condition.column(InterpretationElement$Table
-                            .ID).is(interpretationElementId))
-                    .querySingle();
-            handleInterpretationElement(element); */
+            InterpretationElement element = Models.interpretationElements()
+                    .query(interpretationElementId);
+            handleInterpretationElement(element);
         }
     }
 

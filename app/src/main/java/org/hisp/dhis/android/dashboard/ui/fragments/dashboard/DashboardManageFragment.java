@@ -43,7 +43,6 @@ import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.api.Dhis2;
 import org.hisp.dhis.android.dashboard.api.api.Models;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.flow.Dashboard$Flow$Table;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -58,6 +57,7 @@ import butterknife.OnFocusChange;
  */
 public final class DashboardManageFragment extends BaseDialogFragment {
     private static final String TAG = DashboardManageFragment.class.getSimpleName();
+    private static final String DASHBOARD_ID = "arg:dashboardId";
 
     @Bind(R.id.fragment_bar)
     View mFragmentBar;
@@ -81,7 +81,7 @@ public final class DashboardManageFragment extends BaseDialogFragment {
 
     public static DashboardManageFragment newInstance(long dashboardId) {
         Bundle args = new Bundle();
-        // args.putLong(DashboardFlow$Table.ID, dashboardId);
+        args.putLong(DASHBOARD_ID, dashboardId);
 
         DashboardManageFragment fragment = new DashboardManageFragment();
         fragment.setArguments(args);
@@ -103,8 +103,8 @@ public final class DashboardManageFragment extends BaseDialogFragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mDashboard = Models.dashboards().query(getArguments()
-                .getLong(Dashboard$Flow$Table.ID));
+        mDashboard = Models.dashboards()
+                .query(getArguments().getLong(DASHBOARD_ID));
 
         ButterKnife.bind(this, view);
 
