@@ -47,6 +47,7 @@ public final class DbOperation<T extends IdentifiableObject> {
                 break;
             }
             case SAVE: {
+                mModelStore.save(mModel);
                 break;
             }
             case DELETE: {

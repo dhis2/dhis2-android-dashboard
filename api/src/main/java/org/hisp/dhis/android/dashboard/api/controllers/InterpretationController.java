@@ -40,7 +40,7 @@ import org.hisp.dhis.android.dashboard.api.models.user.IUserAccountService;
 import org.hisp.dhis.android.dashboard.api.models.user.User;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
-import org.hisp.dhis.android.dashboard.api.network.DhisApi;
+import org.hisp.dhis.android.dashboard.api.network.IDhisApi;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
@@ -67,12 +67,12 @@ import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapRespo
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
 public final class InterpretationController implements IDataController<Interpretation> {
-    private final DhisApi mDhisApi;
+    private final IDhisApi mDhisApi;
 
     private final IInterpretationService mInterpretationService;
     private final IUserAccountService mUserAccountService;
 
-    public InterpretationController(DhisApi dhisApi, IInterpretationService interpretationsService,
+    public InterpretationController(IDhisApi dhisApi, IInterpretationService interpretationsService,
                                     IUserAccountService userAccountService) {
         mDhisApi = dhisApi;
         mInterpretationService = interpretationsService;

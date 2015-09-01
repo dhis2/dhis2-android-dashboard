@@ -46,6 +46,10 @@ public final class User$Flow extends BaseIdentifiableObject$Flow {
     }
 
     public static User toModel(User$Flow userFlow) {
+        if (userFlow == null) {
+            return null;
+        }
+
         User user = new User();
         user.setId(userFlow.getId());
         user.setUId(userFlow.getUId());
@@ -58,6 +62,10 @@ public final class User$Flow extends BaseIdentifiableObject$Flow {
     }
 
     public static User$Flow fromModel(User user) {
+        if (user == null) {
+            return null;
+        }
+
         User$Flow userFlow = new User$Flow();
         userFlow.setId(user.getId());
         userFlow.setUId(user.getUId());

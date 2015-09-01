@@ -28,21 +28,19 @@
 
 package org.hisp.dhis.android.dashboard.api.network;
 
-import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.hisp.dhis.android.dashboard.api.api.Dhis2;
-import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
-import org.hisp.dhis.android.dashboard.api.models.common.meta.Session;
 import org.hisp.dhis.android.dashboard.api.utils.ObjectMapperProvider;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 
+import retrofit.Endpoint;
 import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -50,81 +48,71 @@ import retrofit.client.OkClient;
 import retrofit.converter.Converter;
 import retrofit.converter.JacksonConverter;
 
+import static android.text.TextUtils.isEmpty;
 import static com.squareup.okhttp.Credentials.basic;
 
 
-public final class RepoManager {
+public final class RepositoryManager {
     static final int DEFAULT_CONNECT_TIMEOUT_MILLIS = 15 * 1000; // 15s
     static final int DEFAULT_READ_TIMEOUT_MILLIS = 20 * 1000; // 20s
     static final int DEFAULT_WRITE_TIMEOUT_MILLIS = 20 * 1000; // 20s
 
-    private RepoManager() {
+    private static ServerEndpoint serverEndpoint;
+    private static AuthInterceptor interceptor;
+    private static Converter converter;
+    private static OkHttpClient okHttpClient;
+    private static OkClient okClient;
+
+    static {
+        serverEndpoint = new ServerEndpoint();
+        interceptor = new AuthInterceptor();
+        converter = new JacksonConverter(ObjectMapperProvider.getInstance());
+
+        // configuring OkHttpClient
+        okHttpClient = new OkHttpClient();
+        okHttpClient.interceptors().add(interceptor);
+        okHttpClient.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        okHttpClient.setReadTimeout(DEFAULT_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        okHttpClient.setWriteTimeout(DEFAULT_WRITE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+
+        okClient = new OkClient(okHttpClient);
+    }
+
+    private RepositoryManager() {
         // no instances
     }
 
-    public static DhisApi createService(HttpUrl serverUrl, Credentials credentials) {
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(provideServerUrl(serverUrl))
-                .setConverter(provideJacksonConverter())
-                .setClient(provideOkClient(credentials))
-                .setErrorHandler(new RetrofitErrorHandler())
-                .setLogLevel(RestAdapter.LogLevel.BASIC)
-                .build();
-        return restAdapter.create(DhisApi.class);
-    }
-
     public static DhisApi createService() {
-        HttpUrl url = Dhis2.getServerUrl();
-        Credentials credentials = Dhis2.getUserCredentials();
-
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(provideServerUrl(url))
-                .setConverter(provideJacksonConverter())
-                .setClient(provideOkClient(credentials))
+                .setEndpoint(serverEndpoint)
+                .setConverter(converter)
+                .setClient(okClient)
                 .setErrorHandler(new RetrofitErrorHandler())
                 .setLogLevel(RestAdapter.LogLevel.BASIC)
                 .build();
-        return restAdapter.create(DhisApi.class);
+        IDhisApi dhisApi = restAdapter.create(IDhisApi.class);
+
+        return new DhisApi(serverEndpoint, interceptor, dhisApi);
     }
 
-    private static String provideServerUrl(HttpUrl httpUrl) {
-        return httpUrl.newBuilder()
-                .addPathSegment("api")
-                .build().toString();
+    public static OkHttpClient provideOkHttpClient() {
+        return okHttpClient;
     }
 
-    private static Converter provideJacksonConverter() {
-        return new JacksonConverter(ObjectMapperProvider.getInstance());
-    }
+    static class AuthInterceptor implements Interceptor {
+        private String mUsername;
+        private String mPassword;
 
-    private static OkClient provideOkClient(Credentials credentials) {
-        return new OkClient(provideOkHttpClient(credentials));
-    }
-
-    public static OkHttpClient provideOkHttpClient(Credentials credentials) {
-        OkHttpClient client = new OkHttpClient();
-        client.interceptors().add(provideInterceptor(credentials));
-        client.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-        client.setReadTimeout(DEFAULT_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-        client.setWriteTimeout(DEFAULT_WRITE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-        return client;
-    }
-
-    private static Interceptor provideInterceptor(Credentials credentials) {
-        return new AuthInterceptor(credentials.getUsername(), credentials.getPassword());
-    }
-
-    private static class AuthInterceptor implements Interceptor {
-        private final String mUsername;
-        private final String mPassword;
-
-        public AuthInterceptor(String username, String password) {
-            mUsername = username;
-            mPassword = password;
+        public AuthInterceptor() {
+            // Empty constructor
         }
 
         @Override
         public Response intercept(Chain chain) throws IOException {
+            if (isEmpty(mUsername) || isEmpty(mPassword)) {
+                return chain.proceed(chain.request());
+            }
+
             String base64Credentials = basic(mUsername, mPassword);
             Request request = chain.request()
                     .newBuilder()
@@ -137,6 +125,33 @@ public final class RepoManager {
                 Dhis2.invalidateSession();
             }
             return response;
+        }
+
+        public void setUsername(String username) {
+            mUsername = username;
+        }
+
+        public void setPassword(String password) {
+            mPassword = password;
+        }
+    }
+
+    static class ServerEndpoint implements Endpoint {
+        private static final String DHIS2 = "dhis2";
+        private String mServerUrl;
+
+        @Override
+        public String getUrl() {
+            return mServerUrl;
+        }
+
+        @Override
+        public String getName() {
+            return DHIS2;
+        }
+
+        public void setServerUrl(String serverUrl) {
+            mServerUrl = serverUrl;
         }
     }
 

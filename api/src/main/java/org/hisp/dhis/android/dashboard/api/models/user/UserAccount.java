@@ -114,7 +114,7 @@ public final class UserAccount implements IdentifiableObject {
 
     @Override
     public void setId(long id) {
-        throw new UnsupportedOperationException("You cannot set id on UserAccount");
+        this.id = id;
     }
 
     @Override

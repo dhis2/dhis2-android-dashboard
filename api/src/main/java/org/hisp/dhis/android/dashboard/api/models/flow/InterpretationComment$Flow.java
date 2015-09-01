@@ -106,6 +106,10 @@ public final class InterpretationComment$Flow extends BaseIdentifiableObject$Flo
     }
 
     public static InterpretationComment$Flow fromModel(InterpretationComment comment) {
+        if (comment == null) {
+            return null;
+        }
+
         InterpretationComment$Flow commentFlow = new InterpretationComment$Flow();
         commentFlow.setId(comment.getId());
         commentFlow.setUId(comment.getUId());
@@ -114,10 +118,19 @@ public final class InterpretationComment$Flow extends BaseIdentifiableObject$Flo
         commentFlow.setName(comment.getName());
         commentFlow.setDisplayName(comment.getDisplayName());
         commentFlow.setAccess(comment.getAccess());
+        commentFlow.setState(comment.getState());
+        commentFlow.setText(comment.getText());
+        commentFlow.setInterpretation(Interpretation$Flow
+                .fromModel(comment.getInterpretation()));
+        commentFlow.setUser(User$Flow.fromModel(comment.getUser()));
         return commentFlow;
     }
 
     public static InterpretationComment toModel(InterpretationComment$Flow commentFlow) {
+        if (commentFlow == null) {
+            return null;
+        }
+
         InterpretationComment comment = new InterpretationComment();
         comment.setId(commentFlow.getId());
         comment.setUId(commentFlow.getUId());
@@ -126,6 +139,11 @@ public final class InterpretationComment$Flow extends BaseIdentifiableObject$Flo
         comment.setName(commentFlow.getName());
         comment.setDisplayName(commentFlow.getDisplayName());
         comment.setAccess(commentFlow.getAccess());
+        comment.setState(commentFlow.getState());
+        comment.setText(commentFlow.getText());
+        comment.setInterpretation(Interpretation$Flow
+                .toModel(commentFlow.getInterpretation()));
+        comment.setUser(User$Flow.toModel(commentFlow.getUser()));
         return comment;
     }
 

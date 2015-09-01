@@ -291,8 +291,13 @@ public final class UserAccount$Flow extends BaseModel implements IdentifiableObj
 
 
     public static UserAccount$Flow fromModel(UserAccount userAccount) {
+        if (userAccount == null) {
+            return null;
+        }
+
+        // flowAccount.setId(userAccount.getId());
+
         UserAccount$Flow flowAccount = new UserAccount$Flow();
-        flowAccount.setId(userAccount.getId());
         flowAccount.setUId(userAccount.getUId());
         flowAccount.setCreated(userAccount.getCreated());
         flowAccount.setLastUpdated(userAccount.getLastUpdated());
@@ -316,6 +321,10 @@ public final class UserAccount$Flow extends BaseModel implements IdentifiableObj
     }
 
     public static UserAccount toModel(UserAccount$Flow flowAccount) {
+        if (flowAccount == null) {
+            return null;
+        }
+
         UserAccount account = new UserAccount();
         account.setId(flowAccount.getId());
         account.setUId(flowAccount.getUId());

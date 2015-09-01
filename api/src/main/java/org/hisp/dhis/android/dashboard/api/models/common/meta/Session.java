@@ -34,6 +34,11 @@ public final class Session {
     private final HttpUrl serverUrl;
     private final Credentials credentials;
 
+    public Session() {
+        serverUrl = null;
+        credentials = null;
+    }
+
     public Session(HttpUrl serverUrl, Credentials credentials) {
         this.serverUrl = serverUrl;
         this.credentials = credentials;

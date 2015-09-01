@@ -33,7 +33,7 @@ import org.hisp.dhis.android.dashboard.api.models.common.meta.Session;
 import org.hisp.dhis.android.dashboard.api.models.user.IUserAccountStore;
 import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
-import org.hisp.dhis.android.dashboard.api.network.DhisApi;
+import org.hisp.dhis.android.dashboard.api.network.IDhisApi;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
 
 import java.util.HashMap;
@@ -43,10 +43,10 @@ import java.util.Map;
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
 public final class UserAccountController implements IUserAccountController {
-    private final DhisApi dhisApi;
+    private final IDhisApi dhisApi;
     private final IUserAccountStore userAccountStore;
 
-    public UserAccountController(DhisApi dhisApi, IUserAccountStore userAccountStore) {
+    public UserAccountController(IDhisApi dhisApi, IUserAccountStore userAccountStore) {
         this.dhisApi = dhisApi;
         this.userAccountStore = userAccountStore;
     }

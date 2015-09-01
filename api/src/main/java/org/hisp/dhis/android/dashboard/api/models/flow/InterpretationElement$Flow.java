@@ -82,6 +82,10 @@ public final class InterpretationElement$Flow extends BaseIdentifiableObject$Flo
     }
 
     public static InterpretationElement toModel(InterpretationElement$Flow elementFlow) {
+        if (elementFlow == null) {
+            return null;
+        }
+
         InterpretationElement element = new InterpretationElement();
         element.setId(elementFlow.getId());
         element.setUId(elementFlow.getUId());
@@ -97,6 +101,10 @@ public final class InterpretationElement$Flow extends BaseIdentifiableObject$Flo
     }
 
     public static InterpretationElement$Flow fromModel(InterpretationElement element) {
+        if (element == null) {
+            return null;
+        }
+
         InterpretationElement$Flow elementFlow = new InterpretationElement$Flow();
         elementFlow.setId(element.getId());
         elementFlow.setUId(element.getUId());

@@ -38,8 +38,8 @@ import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.api.Dhis2;
 import org.hisp.dhis.android.dashboard.api.job.Job;
 import org.hisp.dhis.android.dashboard.api.job.JobExecutor;
-import org.hisp.dhis.android.dashboard.api.network.DhisApi;
-import org.hisp.dhis.android.dashboard.api.network.RepoManager;
+import org.hisp.dhis.android.dashboard.api.network.IDhisApi;
+import org.hisp.dhis.android.dashboard.api.network.RepositoryManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -119,9 +119,10 @@ public class WebViewFragment extends BaseFragment {
 
         @Override
         public String inBackground() {
-            DhisApi dhisApi = RepoManager.createService(
-                    Dhis2.getServerUrl(), Dhis2.getUserCredentials());
-            return readInputStream(dhisApi.getReportTableData(mDashboardElementId).getBody());
+            /* IDhisApi dhisApi = RepositoryManager.createService(
+                    Dhis2.getServerUrl(), Dhis2.getUserCredentials()); */
+            // return readInputStream(dhisApi.getReportTableData(mDashboardElementId).getBody());
+            return null;
         }
 
         @Override

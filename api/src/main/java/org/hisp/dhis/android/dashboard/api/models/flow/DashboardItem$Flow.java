@@ -101,6 +101,10 @@ public final class DashboardItem$Flow extends BaseIdentifiableObject$Flow {
     }
 
     public static DashboardItem$Flow fromModel(DashboardItem dashboardItem) {
+        if (dashboardItem == null) {
+            return null;
+        }
+
         DashboardItem$Flow dashboardItemFlow = new DashboardItem$Flow();
         dashboardItemFlow.setId(dashboardItem.getId());
         dashboardItemFlow.setUId(dashboardItem.getUId());
@@ -117,6 +121,10 @@ public final class DashboardItem$Flow extends BaseIdentifiableObject$Flow {
     }
 
     public static DashboardItem toModel(DashboardItem$Flow dashboardItemFlow) {
+        if (dashboardItemFlow == null) {
+            return null;
+        }
+
         DashboardItem dashboardItem = new DashboardItem();
         dashboardItem.setId(dashboardItemFlow.getId());
         dashboardItem.setUId(dashboardItemFlow.getUId());

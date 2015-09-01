@@ -79,9 +79,9 @@ public class InterpretationCommentStore implements IInterpretationCommentStore {
         List<InterpretationComment$Flow> commentFlows = new Select()
                 .from(InterpretationComment$Flow.class)
                 .where(Condition.column(InterpretationComment$Flow$Table
-                        .INTERPRETATION_INTERPRETATION).is(interpretation.getId()).isNot(state.toString()))
+                        .INTERPRETATION_INTERPRETATION).is(interpretation.getId()))
                 .and(Condition.column(InterpretationComment$Flow$Table
-                        .STATE))
+                        .STATE).isNot(state.toString()))
                 .queryList();
         return InterpretationComment$Flow.toModels(commentFlows);
     }

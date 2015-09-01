@@ -40,7 +40,7 @@ import org.hisp.dhis.android.dashboard.api.models.dashboard.IDashboardElementSto
 import org.hisp.dhis.android.dashboard.api.models.dashboard.IDashboardItemStore;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.IDashboardStore;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
-import org.hisp.dhis.android.dashboard.api.network.DhisApi;
+import org.hisp.dhis.android.dashboard.api.network.IDhisApi;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
@@ -64,12 +64,12 @@ import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiEx
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
 public final class DashboardController implements IDataController<Dashboard> {
-    private final DhisApi dhisApi;
+    private final IDhisApi dhisApi;
     private final IDashboardStore dashboardStore;
     private final IDashboardItemStore dashboardItemStore;
     private final IDashboardElementStore dashboardElementStore;
 
-    public DashboardController(DhisApi dhisApi, IDashboardStore dashboardStore,
+    public DashboardController(IDhisApi dhisApi, IDashboardStore dashboardStore,
                                IDashboardItemStore dashboardItemStore,
                                IDashboardElementStore dashboardElementStore) {
         this.dhisApi = dhisApi;

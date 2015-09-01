@@ -7,7 +7,7 @@ import org.hisp.dhis.android.dashboard.api.controllers.user.IUserAccountControll
 import org.hisp.dhis.android.dashboard.api.controllers.user.UserAccountController;
 import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
-import org.hisp.dhis.android.dashboard.api.network.DhisApi;
+import org.hisp.dhis.android.dashboard.api.network.IDhisApi;
 
 /**
  * Created by arazabishov on 8/28/15.
@@ -19,7 +19,7 @@ final class Controllers {
     private final IDataController<Interpretation> interpretationController;
     private final IUserAccountController userAccountController;
 
-    private Controllers(DhisApi dhisApi) {
+    private Controllers(IDhisApi dhisApi) {
         dashboardController = new DashboardController(dhisApi, Models.dashboards(),
                 Models.dashboardItems(), Models.dashboardElements());
         interpretationController = new InterpretationController(dhisApi,
@@ -27,12 +27,10 @@ final class Controllers {
         userAccountController = new UserAccountController(dhisApi, Models.userAccount());
     }
 
-    public static void init(DhisApi dhisApi) {
-        controllers = new Controllers(dhisApi);
-    }
-
-    public static void reset() {
-        controllers = null;
+    public static void init(IDhisApi dhisApi) {
+        if (controllers == null) {
+            controllers = new Controllers(dhisApi);
+        }
     }
 
     private static Controllers getInstance() {

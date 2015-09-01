@@ -1,8 +1,10 @@
 package org.hisp.dhis.android.dashboard.api.models.user;
 
+import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.hisp.dhis.android.dashboard.api.models.flow.UserAccount$Flow;
+import org.hisp.dhis.android.dashboard.api.models.flow.UserAccount$Flow$Table;
 
 import java.util.List;
 
@@ -48,11 +50,19 @@ public final class UserAccountStore implements IUserAccountStore {
 
     @Override
     public UserAccount query(long id) {
-        return null;
+        UserAccount$Flow userAccount = new Select()
+                .from(UserAccount$Flow.class)
+                .where(Condition.column(UserAccount$Flow$Table.ID).is(id))
+                .querySingle();
+        return UserAccount$Flow.toModel(userAccount);
     }
 
     @Override
     public UserAccount query(String uid) {
-        return null;
+        UserAccount$Flow userAccount = new Select()
+                .from(UserAccount$Flow.class)
+                .where(Condition.column(UserAccount$Flow$Table.UID).is(uid))
+                .querySingle();
+        return UserAccount$Flow.toModel(userAccount);
     }
 }
