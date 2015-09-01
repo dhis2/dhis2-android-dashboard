@@ -30,7 +30,11 @@ public class InterpretationElementStore implements IInterpretationElementStore {
 
     @Override
     public void save(InterpretationElement object) {
-        InterpretationElement$Flow.fromModel(object).save();
+        InterpretationElement$Flow elementFlow =
+                InterpretationElement$Flow.fromModel(object);
+        elementFlow.save();
+
+        object.setId(elementFlow.getId());
     }
 
     @Override

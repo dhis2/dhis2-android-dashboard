@@ -34,7 +34,11 @@ public final class InterpretationStore implements IInterpretationStore {
 
     @Override
     public void save(Interpretation object) {
-        Interpretation$Flow.fromModel(object).save();
+        Interpretation$Flow interpretationFlow =
+                Interpretation$Flow.fromModel(object);
+        interpretationFlow.save();
+
+        object.setId(interpretationFlow.getId());
     }
 
     @Override

@@ -32,7 +32,11 @@ public final class UserAccountStore implements IUserAccountStore {
 
     @Override
     public void save(UserAccount object) {
-        UserAccount$Flow.fromModel(object).save();
+        UserAccount$Flow accountFlow =
+                UserAccount$Flow.fromModel(object);
+        accountFlow.save();
+
+        object.setId(accountFlow.getId());
     }
 
     @Override

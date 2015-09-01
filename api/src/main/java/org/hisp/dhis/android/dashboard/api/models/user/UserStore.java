@@ -32,7 +32,11 @@ public final class UserStore implements IUserStore {
 
     @Override
     public void save(User object) {
-        User$Flow.fromModel(object).update();
+        User$Flow userFlow =
+                User$Flow.fromModel(object);
+        userFlow.save();
+
+        object.setId(userFlow.getId());
     }
 
     @Override

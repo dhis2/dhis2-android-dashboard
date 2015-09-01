@@ -30,7 +30,11 @@ public class InterpretationCommentStore implements IInterpretationCommentStore {
 
     @Override
     public void save(InterpretationComment object) {
-        InterpretationComment$Flow.fromModel(object).save();
+        InterpretationComment$Flow commentFlow =
+                InterpretationComment$Flow.fromModel(object);
+        commentFlow.save();
+
+        object.setId(commentFlow.getId());
     }
 
     @Override
