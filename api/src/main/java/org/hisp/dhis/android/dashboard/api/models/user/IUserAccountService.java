@@ -1,7 +1,5 @@
 package org.hisp.dhis.android.dashboard.api.models.user;
 
-import org.hisp.dhis.android.dashboard.api.models.user.User;
-import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.common.IService;
 
 /**

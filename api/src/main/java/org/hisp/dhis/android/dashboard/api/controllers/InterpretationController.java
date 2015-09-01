@@ -85,12 +85,6 @@ public final class InterpretationController implements IDataController<Interpret
     }
 
     private void sendInterpretationChanges() throws APIException {
-        /* List<Interpretation> interpretations = new Select()
-                .from(Interpretation.class)
-                .where(Condition.column(Interpretation$Table
-                        .STATE).isNot(State.SYNCED.toString()))
-                .orderBy(true, Interpretation$Table.ID)
-                .queryList(); */
         List<Interpretation> interpretations =
                 Models.interpretations().filter(State.SYNCED);
 
@@ -99,12 +93,6 @@ public final class InterpretationController implements IDataController<Interpret
         }
 
         for (Interpretation interpretation : interpretations) {
-            /* List<InterpretationElement> elements = new Select()
-                    .from(InterpretationElement.class)
-                    .where(Condition.column(InterpretationElement$Table
-                            .INTERPRETATION_INTERPRETATION).is(interpretation.getId()))
-                    .queryList();
-            interpretation.setInterpretationElements(elements); */
             List<InterpretationElement> elements =
                     Models.interpretationElements().query(interpretation);
             mInterpretationService.setInterpretationElements(interpretation, elements);
@@ -157,7 +145,6 @@ public final class InterpretationController implements IDataController<Interpret
                     .getValue()).getLastPathSegment();
             interpretation.setUId(interpretationUid);
             interpretation.setState(State.SYNCED);
-            // interpretation.save();
             Models.interpretations().save(interpretation);
 
             updateInterpretationTimeStamp(interpretation);
@@ -173,7 +160,6 @@ public final class InterpretationController implements IDataController<Interpret
                     new TypedString(interpretation.getText()));
             interpretation.setState(State.SYNCED);
 
-            // interpretation.save();
             Models.interpretations().save(interpretation);
 
             updateInterpretationTimeStamp(interpretation);
@@ -186,7 +172,6 @@ public final class InterpretationController implements IDataController<Interpret
         try {
             mDhisApi.deleteInterpretation(interpretation.getUId());
 
-            // interpretation.delete();
             Models.interpretations().delete(interpretation);
         } catch (APIException apiException) {
             handleApiException(apiException, interpretation, Models.interpretations());
@@ -194,11 +179,6 @@ public final class InterpretationController implements IDataController<Interpret
     }
 
     private void sendInterpretationCommentChanges() throws APIException {
-        /* List<InterpretationComment> comments = new Select()
-                .from(InterpretationComment.class)
-                .where(Condition.column(InterpretationComment$Table
-                        .STATE).isNot(State.SYNCED.toString()))
-                .queryList(); */
         List<InterpretationComment> comments =
                 Models.interpretationComments().filter(State.SYNCED);
 
@@ -245,7 +225,6 @@ public final class InterpretationController implements IDataController<Interpret
                 comment.setUId(commentUid);
                 comment.setState(State.SYNCED);
 
-                // comment.save();
                 Models.interpretations().save(interpretation);
 
                 updateInterpretationCommentTimeStamp(comment);
@@ -272,7 +251,6 @@ public final class InterpretationController implements IDataController<Interpret
 
                 comment.setState(State.SYNCED);
 
-                //comment.save();
                 Models.interpretationComments().save(comment);
 
                 updateInterpretationTimeStamp(comment.getInterpretation());
@@ -304,7 +282,6 @@ public final class InterpretationController implements IDataController<Interpret
                 mDhisApi.deleteInterpretationComment(
                         interpretation.getUId(), comment.getUId());
 
-                // comment.delete();
                 Models.interpretationComments().delete(comment);
 
                 updateInterpretationTimeStamp(comment.getInterpretation());
@@ -332,7 +309,6 @@ public final class InterpretationController implements IDataController<Interpret
             interpretation.setCreated(updatedInterpretation.getCreated());
             interpretation.setLastUpdated(updatedInterpretation.getLastUpdated());
 
-            // interpretation.save();
             Models.interpretations().save(interpretation);
         } catch (APIException apiException) {
             handleApiException(apiException, interpretation, Models.interpretations());
@@ -354,7 +330,6 @@ public final class InterpretationController implements IDataController<Interpret
             persistedInterpretation.setCreated(updatedInterpretation.getCreated());
             persistedInterpretation.setLastUpdated(updatedInterpretation.getLastUpdated());
 
-            // persistedInterpretation.save();
             Models.interpretations().save(persistedInterpretation);
 
             // second, find comment which we have added recently and update its timestamp
@@ -367,7 +342,6 @@ public final class InterpretationController implements IDataController<Interpret
                 comment.setCreated(updatedComment.getCreated());
                 comment.setLastUpdated(updatedComment.getLastUpdated());
 
-                // comment.save();
                 Models.interpretationComments().save(comment);
             }
         } catch (APIException apiException) {
@@ -481,14 +455,12 @@ public final class InterpretationController implements IDataController<Interpret
         if (persistedInterpretations != null
                 && !persistedInterpretations.isEmpty()) {
             for (Interpretation interpretation : persistedInterpretations) {
-                // interpretation.setInterpretationElements(queryInterpretationElements(interpretation));
                 List<InterpretationElement> elements =
                         Models.interpretationElements().query(interpretation);
                 mInterpretationService.setInterpretationElements(interpretation, elements);
 
                 List<InterpretationComment> comments =
                         Models.interpretationComments().filter(interpretation, State.TO_POST);
-                // interpretation.setComments(queryInterpretationComments(interpretation));
                 interpretation.setComments(comments);
             }
         }
@@ -519,19 +491,6 @@ public final class InterpretationController implements IDataController<Interpret
 
         users.put(currentUser.getUId(), currentUser);
 
-        /* UserAccount currentUserAccount
-                = UserAccount.getCurrentUserAccountFromDb();
-        User currentUser = new Select()
-                .from(User.class)
-                .where(Condition.column(User$Table
-                        .UID).is(currentUserAccount.getUId()))
-                .querySingle();
-        if (currentUser == null) {
-            currentUser = UserAccount
-                    .toUser(currentUserAccount);
-        } */
-
-        // users.put(currentUser.getUId(), currentUser);
         if (interpretations != null && !interpretations.isEmpty()) {
             for (Interpretation interpretation : interpretations) {
                 User user = interpretation.getUser();
@@ -604,45 +563,4 @@ public final class InterpretationController implements IDataController<Interpret
         getInterpretationDataFromServer();
         sendLocalChanges();
     }
-
-    /*
-    private static List<Interpretation> queryInterpretations() {
-        return new Select()
-                .from(Interpretation.class)
-                .where(Condition.column(Interpretation$Table
-                        .STATE).isNot(State.TO_POST.toString()))
-                .queryList();
-    }
-
-    private static List<User> queryInterpretationUsers() {
-        return new Select().from(User.class).queryList();
-    }
-
-    private static List<InterpretationElement> queryInterpretationElements(Interpretation interpretation) {
-        From<InterpretationElement> from = new Select().from(InterpretationElement.class);
-
-        if (interpretation != null) {
-            return from
-                    .where(Condition.column(InterpretationElement$Table
-                            .INTERPRETATION_INTERPRETATION).is(interpretation.getId()))
-                    .queryList();
-        }
-
-        return from.queryList();
-    }
-
-    private static List<InterpretationComment> queryInterpretationComments(Interpretation interpretation) {
-        Where<InterpretationComment> where = new Select()
-                .from(InterpretationComment.class)
-                .where(Condition.column(InterpretationComment$Table
-                        .STATE).isNot(State.TO_POST.toString()));
-
-        if (interpretation != null) {
-            where = where.and(Condition.column(InterpretationComment$Table
-                    .INTERPRETATION_INTERPRETATION).is(interpretation.getId()));
-        }
-
-        return where.queryList();
-    }
-    */
 }
