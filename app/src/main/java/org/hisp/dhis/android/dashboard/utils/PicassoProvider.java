@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, University of Oslo
- * All rights reserved.
  *
+ * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice, this
@@ -26,36 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dashboard.ui.activities;
+package org.hisp.dhis.android.dashboard.utils;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.content.Context;
 
-import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Picasso;
 
-public class LauncherActivity extends BaseActivity {
+import org.hisp.dhis.android.sdk.core.network.RepositoryManager;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launcher);
+public final class PicassoProvider {
+    private static Picasso mPicasso;
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        setTitle(R.string.app_name);
+    private PicassoProvider() {
+    }
 
-        Intent intent;
-        if (Dhis2.isUserLoggedIn()) {
-            intent = new Intent(this, MenuActivity.class);
-        } else if (Dhis2.isUserInvalidated()) {
-            intent = new Intent(this, ConfirmUserActivity.class);
-        } else {
-            intent = new Intent(this, LoginActivity.class);
+    public static Picasso getInstance(Context context) {
+        if (mPicasso == null) {
+            OkHttpDownloader okHttpDownloader = new OkHttpDownloader(
+                    RepositoryManager.provideOkHttpClient());
+            mPicasso = new Picasso.Builder(context)
+                    .downloader(okHttpDownloader)
+                    .build();
         }
 
-        startActivity(intent);
-        finish();
+        return mPicasso;
     }
 }

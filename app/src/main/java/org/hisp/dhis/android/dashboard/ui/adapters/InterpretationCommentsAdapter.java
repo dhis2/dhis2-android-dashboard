@@ -36,9 +36,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
-import org.hisp.dhis.android.dashboard.api.models.user.User;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter.CommentViewHolder;
+import org.hisp.dhis.android.sdk.models.interpretation.InterpretationComment;
+import org.hisp.dhis.android.sdk.models.user.User;
 import org.joda.time.DateTime;
 
 import static android.text.TextUtils.isEmpty;

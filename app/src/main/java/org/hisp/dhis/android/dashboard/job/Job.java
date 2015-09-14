@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, University of Oslo
- * All rights reserved.
  *
+ * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice, this
@@ -26,36 +26,57 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dashboard.ui.activities;
+package org.hisp.dhis.android.dashboard.job;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.os.AsyncTask;
 
-import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import static org.hisp.dhis.android.sdk.models.utils.Preconditions.isNull;
 
-public class LauncherActivity extends BaseActivity {
+public abstract class Job<T> extends AsyncTask<Void, Void, T> implements IJob<T> {
+    private final int mJobId;
+    private JobExecutor mJobExecutor;
+
+    public Job(int jobId) {
+        mJobId = isNull(jobId, "Job ID must not be null");
+    }
+
+    public final void onBind(JobExecutor executor) {
+        mJobExecutor = isNull(executor, "JobExecutor must not be null");
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launcher);
+    public final void onPreExecute() {
+        onStart();
+    }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        setTitle(R.string.app_name);
+    @Override
+    public void onStart() {
+        // overriding method here just for convenience
+    }
 
-        Intent intent;
-        if (Dhis2.isUserLoggedIn()) {
-            intent = new Intent(this, MenuActivity.class);
-        } else if (Dhis2.isUserInvalidated()) {
-            intent = new Intent(this, ConfirmUserActivity.class);
-        } else {
-            intent = new Intent(this, LoginActivity.class);
-        }
+    @Override
+    public final T doInBackground(Void... params) {
+        return inBackground();
+    }
 
-        startActivity(intent);
-        finish();
+    @Override
+    public final void onPostExecute(T result) {
+        onFinish(result);
+        // passing command to job executor
+        // that we have finished work
+        mJobExecutor.onFinishJob(this);
+    }
+
+    @Override
+    public void onFinish(T result) {
+        // overriding method here just for convenience
+    }
+
+    public final void onUnbind() {
+        mJobExecutor = null;
+    }
+
+    public final int getJobId() {
+        return mJobId;
     }
 }

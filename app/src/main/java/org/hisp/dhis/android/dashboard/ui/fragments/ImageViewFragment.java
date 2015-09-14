@@ -36,11 +36,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
+import org.hisp.dhis.android.dashboard.utils.PicassoProvider;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
-import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
+import static org.hisp.dhis.android.sdk.models.utils.Preconditions.isNull;
 
 public class ImageViewFragment extends BaseFragment {
     private static final String IMAGE_URL = "arg:imageUrl";

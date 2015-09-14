@@ -40,14 +40,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.api.Dhis2;
-import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.dashboard.ui.adapters.AccountFieldAdapter;
 import org.hisp.dhis.android.dashboard.ui.models.Field;
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.sdk.core.persistence.loaders.DbLoader;
+import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
+import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
+import org.hisp.dhis.android.sdk.models.user.UserAccount;
 
 import java.util.ArrayList;
 import java.util.Arrays;

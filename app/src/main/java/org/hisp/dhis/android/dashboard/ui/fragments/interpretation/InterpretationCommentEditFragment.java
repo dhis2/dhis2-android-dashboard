@@ -39,10 +39,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.api.Dhis2;
-import org.hisp.dhis.android.dashboard.api.api.Models;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationComment;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.sdk.core.api.Models;
+import org.hisp.dhis.android.sdk.models.interpretation.InterpretationComment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

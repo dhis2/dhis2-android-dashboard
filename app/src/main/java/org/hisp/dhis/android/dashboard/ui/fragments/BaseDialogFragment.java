@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.support.v4.app.DialogFragment;
 
 import org.hisp.dhis.android.dashboard.DhisService;
-import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.activities.BaseActivity;
 import org.hisp.dhis.android.dashboard.ui.activities.INavigationCallback;
+import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
 
 /**
  * Created by arazabishov on 7/28/15.

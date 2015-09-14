@@ -40,11 +40,11 @@ import android.widget.EditText;
 import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
-import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
-import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
-import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
+import org.hisp.dhis.android.sdk.core.persistence.models.common.meta.Credentials;
+import org.hisp.dhis.android.sdk.core.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.sdk.models.user.UserAccount;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

@@ -40,9 +40,9 @@ import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
-import org.hisp.dhis.android.dashboard.api.network.APIException;
-import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
+import org.hisp.dhis.android.dashboard.job.NetworkJob;
+import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
+import org.hisp.dhis.android.sdk.core.network.APIException;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;

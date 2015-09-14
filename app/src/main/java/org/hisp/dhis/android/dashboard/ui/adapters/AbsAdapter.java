@@ -34,7 +34,7 @@ import android.view.LayoutInflater;
 
 import java.util.List;
 
-import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
+import static org.hisp.dhis.android.sdk.models.utils.Preconditions.isNull;
 
 public abstract class AbsAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     private final Context mContext;

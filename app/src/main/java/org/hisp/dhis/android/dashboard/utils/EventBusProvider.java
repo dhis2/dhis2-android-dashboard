@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, University of Oslo
- * All rights reserved.
  *
+ * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice, this
@@ -26,36 +26,40 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dashboard.ui.activities;
+package org.hisp.dhis.android.dashboard.utils;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
 
-import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.sdk.core.api.Dhis2;
+public class EventBusProvider {
+    private static EventBusProvider mEventBus;
+    private Bus mBus;
 
-public class LauncherActivity extends BaseActivity {
+    private EventBusProvider() {
+        mBus = new Bus(ThreadEnforcer.MAIN);
+    }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launcher);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        setTitle(R.string.app_name);
-
-        Intent intent;
-        if (Dhis2.isUserLoggedIn()) {
-            intent = new Intent(this, MenuActivity.class);
-        } else if (Dhis2.isUserInvalidated()) {
-            intent = new Intent(this, ConfirmUserActivity.class);
-        } else {
-            intent = new Intent(this, LoginActivity.class);
+    private static EventBusProvider getInstance() {
+        if (mEventBus == null) {
+            mEventBus = new EventBusProvider();
         }
 
-        startActivity(intent);
-        finish();
+        return mEventBus;
+    }
+
+    public static <T> void post(T event) {
+        getInstance().getBus().post(event);
+    }
+
+    public static void register(Object object) {
+        getInstance().getBus().register(object);
+    }
+
+    public static void unregister(Object object) {
+        getInstance().getBus().unregister(object);
+    }
+
+    private Bus getBus() {
+        return mBus;
     }
 }

@@ -32,9 +32,9 @@ import android.app.Activity;
 import android.support.v4.app.Fragment;
 
 import org.hisp.dhis.android.dashboard.DhisService;
-import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.activities.BaseActivity;
 import org.hisp.dhis.android.dashboard.ui.activities.INavigationCallback;
+import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
 
 public class BaseFragment extends Fragment {
     INavigationCallback mNavCallback;

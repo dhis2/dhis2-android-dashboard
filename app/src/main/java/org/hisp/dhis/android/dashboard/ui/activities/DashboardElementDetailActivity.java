@@ -36,14 +36,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.api.Dhis2;
-import org.hisp.dhis.android.dashboard.api.api.Models;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
 import org.hisp.dhis.android.dashboard.ui.fragments.ImageViewFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.WebViewFragment;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.sdk.core.api.Models;
+import org.hisp.dhis.android.sdk.models.dashboard.DashboardElement;
+import org.hisp.dhis.android.sdk.models.dashboard.DashboardItemContent;
+import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
+import org.hisp.dhis.android.sdk.models.interpretation.InterpretationElement;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

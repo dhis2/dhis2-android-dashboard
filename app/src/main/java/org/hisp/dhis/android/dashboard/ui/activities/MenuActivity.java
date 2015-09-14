@@ -45,18 +45,18 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.ui.fragments.AccountFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.SettingsFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.dashboard.DashboardContainerFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.interpretation.InterpretationContainerFragment;
+import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
+import org.hisp.dhis.android.sdk.models.user.UserAccount;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
+import static org.hisp.dhis.android.sdk.models.utils.Preconditions.isNull;
 
 public class MenuActivity extends BaseActivity
         implements OnNavigationItemSelectedListener, DrawerListener,

@@ -33,16 +33,16 @@ import android.os.IBinder;
 
 import com.squareup.okhttp.HttpUrl;
 
-import org.hisp.dhis.android.dashboard.api.api.Dhis2;
-import org.hisp.dhis.android.dashboard.api.job.Job;
-import org.hisp.dhis.android.dashboard.api.job.JobExecutor;
-import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
-import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
-import org.hisp.dhis.android.dashboard.api.models.common.meta.Credentials;
-import org.hisp.dhis.android.dashboard.api.network.APIException;
-import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
-import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
+import org.hisp.dhis.android.dashboard.job.Job;
+import org.hisp.dhis.android.dashboard.job.JobExecutor;
+import org.hisp.dhis.android.dashboard.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
+import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.sdk.core.network.APIException;
+import org.hisp.dhis.android.sdk.core.persistence.models.common.meta.Credentials;
+import org.hisp.dhis.android.sdk.core.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.sdk.models.user.UserAccount;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.

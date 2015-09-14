@@ -12,10 +12,10 @@ import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
-import org.hisp.dhis.android.dashboard.api.network.SessionManager;
-import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
+import org.hisp.dhis.android.sdk.core.network.SessionManager;
+import org.hisp.dhis.android.sdk.core.persistence.preferences.ResourceType;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

@@ -40,11 +40,11 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.api.Dhis2;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
-import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationAdapter.InterpretationHolder;
+import org.hisp.dhis.android.dashboard.utils.PicassoProvider;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
+import org.hisp.dhis.android.sdk.models.interpretation.InterpretationElement;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.

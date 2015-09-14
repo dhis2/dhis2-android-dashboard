@@ -38,18 +38,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.api.Dhis2;
-import org.hisp.dhis.android.dashboard.api.api.Models;
-import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.Interpretation;
-import org.hisp.dhis.android.dashboard.api.models.interpretation.InterpretationElement;
-import org.hisp.dhis.android.dashboard.api.models.user.User;
-import org.hisp.dhis.android.dashboard.api.models.user.UserAccount;
-import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
+import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.sdk.core.api.Models;
+import org.hisp.dhis.android.sdk.models.common.meta.State;
+import org.hisp.dhis.android.sdk.models.dashboard.DashboardElement;
+import org.hisp.dhis.android.sdk.models.dashboard.DashboardItem;
+import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
+import org.hisp.dhis.android.sdk.models.interpretation.InterpretationElement;
+import org.hisp.dhis.android.sdk.models.user.User;
+import org.hisp.dhis.android.sdk.models.user.UserAccount;
 
 import java.util.List;
 

@@ -39,12 +39,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.api.Dhis2;
-import org.hisp.dhis.android.dashboard.api.api.Models;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
-import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
+import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.sdk.core.api.Models;
+import org.hisp.dhis.android.sdk.models.dashboard.Dashboard;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

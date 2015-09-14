@@ -35,11 +35,8 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.api.Dhis2;
-import org.hisp.dhis.android.dashboard.api.job.Job;
-import org.hisp.dhis.android.dashboard.api.job.JobExecutor;
-import org.hisp.dhis.android.dashboard.api.network.IDhisApi;
-import org.hisp.dhis.android.dashboard.api.network.RepositoryManager;
+import org.hisp.dhis.android.dashboard.job.Job;
+import org.hisp.dhis.android.dashboard.job.JobExecutor;
 
 import java.io.BufferedReader;
 import java.io.IOException;

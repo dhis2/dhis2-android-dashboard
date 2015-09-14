@@ -42,12 +42,12 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.api.Dhis2;
-import org.hisp.dhis.android.dashboard.api.models.common.Access;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItem;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.DashboardItemContent;
-import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
+import org.hisp.dhis.android.dashboard.utils.PicassoProvider;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.sdk.models.common.Access;
+import org.hisp.dhis.android.sdk.models.dashboard.DashboardElement;
+import org.hisp.dhis.android.sdk.models.dashboard.DashboardItem;
+import org.hisp.dhis.android.sdk.models.dashboard.DashboardItemContent;
 
 import java.util.List;
 

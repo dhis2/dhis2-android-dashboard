@@ -37,14 +37,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.api.Models;
-import org.hisp.dhis.android.dashboard.api.models.common.meta.DbAction;
-import org.hisp.dhis.android.dashboard.api.models.common.meta.State;
-import org.hisp.dhis.android.dashboard.api.models.dashboard.Dashboard;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
-import org.hisp.dhis.android.dashboard.api.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
+import org.hisp.dhis.android.sdk.core.api.Models;
+import org.hisp.dhis.android.sdk.core.persistence.loaders.DbLoader;
+import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
+import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
+import org.hisp.dhis.android.sdk.models.common.meta.DbAction;
+import org.hisp.dhis.android.sdk.models.common.meta.State;
+import org.hisp.dhis.android.sdk.models.dashboard.Dashboard;
 
 import java.util.Arrays;
 import java.util.List;
