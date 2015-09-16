@@ -45,7 +45,7 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <org.hisp.dhis.android.dashboard.ui.views.FontTextView
+            <org.hisp.dhis.android.sdk.ui.views.FontTextView
                 android:id="@+id/dashboard_item_last_updated"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                 android:singleLine="true"
                 android:textColor="@color/dark_grey"
                 android:textSize="12sp"
-                app:font="@string/light_font_name" />
+                app:font="@string/font_light" />
 
             <ImageView
                 android:id="@+id/dashboard_item_menu"
@@ -68,7 +68,7 @@
                 android:src="@mipmap/ic_overflow" />
         </LinearLayout>
 
-        <org.hisp.dhis.android.dashboard.ui.views.FontTextView
+        <org.hisp.dhis.android.sdk.ui.views.FontTextView
             android:id="@+id/dashboard_item_name"
             android:layout_width="match_parent"
             android:layout_height="42dp"
@@ -77,7 +77,7 @@
             android:lines="2"
             android:singleLine="false"
             android:textSize="16sp"
-            app:font="@string/condensed_font_name" />
+            app:font="@string/font_condensed" />
 
         <View
             android:layout_width="match_parent"

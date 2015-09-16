@@ -7,16 +7,15 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Base.Theme.App">
+        android:theme="@style/Base.AppTheme">
 
         <service
             android:name="org.hisp.dhis.android.dashboard.DhisService"
             android:exported="false" />
 
         <activity
-            android:name="org.hisp.dhis.android.dashboard.ui.activities.LogInActivity"
-            android:label="@string/title_activity_login"
-            android:theme="@style/Base.Theme.App.Dark" />
+            android:name=".ui.activities.LoginActivity"
+            android:label="@string/title_activity_login" />
 
         <activity android:name="org.hisp.dhis.android.dashboard.ui.activities.LauncherActivity">
             <intent-filter>
@@ -26,8 +25,7 @@
         </activity>
         <activity
             android:name="org.hisp.dhis.android.dashboard.ui.activities.MenuActivity"
-            android:label="@string/title_activity_menu"
-            android:theme="@style/LightTheme" />
+            android:label="@string/title_activity_menu" />
         <activity
             android:name="org.hisp.dhis.android.dashboard.ui.activities.ConfirmUserActivity"
             android:label="@string/title_activity_confirm_user" />

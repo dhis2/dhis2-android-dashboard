@@ -1,21 +1,5 @@
 <resources>
 
-    <style name="LightTheme" parent="Base.Theme.App" />
-
-    <!-- Base application theme. -->
-    <style name="Base.Theme.App" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/navy_blue</item>
-        <item name="colorPrimaryDark">@color/dark_navy_blue</item>
-        <item name="android:windowBackground">@color/light_grey</item>
-        <item name="android:textColor">@color/dark_grey_text</item>
-    </style>
-
-    <style name="Base.Theme.App.Dark" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/navy_blue</item>
-        <item name="colorPrimaryDark">@color/dark_navy_blue</item>
-        <item name="android:windowBackground">@color/dark_navy_blue</item>
-    </style>
-
     <style name="ListElementContainerStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">32dp</item>
@@ -36,7 +20,7 @@
         <item name="android:singleLine">true</item>
         <item name="android:textColor">@color/navy_blue</item>
         <item name="android:textSize">15sp</item>
-        <item name="font">@string/light_font_name</item>
+        <item name="font">@string/font_light</item>
     </style>
 
     <style name="ListElementButtonStyle">

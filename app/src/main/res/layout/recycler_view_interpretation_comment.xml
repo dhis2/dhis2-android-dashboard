@@ -78,7 +78,7 @@
                     android:singleLine="true"
                     android:textColor="@color/navy_blue"
                     android:textSize="16sp"
-                    app:font="@string/regular_font_name" />
+                    app:font="@string/font_regular" />
 
                 <org.hisp.dhis.android.dashboard.ui.views.FontTextView
                     android:id="@+id/comment_last_updated"
@@ -86,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:singleLine="true"
                     android:textSize="12sp"
-                    app:font="@string/light_font_name" />
+                    app:font="@string/font_light" />
             </LinearLayout>
 
             <ImageView
@@ -107,7 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            app:font="@string/regular_font_name" />
+            app:font="@string/font_regular" />
 
     </LinearLayout>
 

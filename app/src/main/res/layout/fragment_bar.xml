@@ -47,7 +47,7 @@
         android:textAllCaps="true"
         android:textColor="@color/white"
         android:textSize="19sp"
-        app:font="@string/condensed_font_name"/>
+        app:font="@string/font_condensed"/>
 
     <ImageView
         android:id="@+id/close_dialog_button"

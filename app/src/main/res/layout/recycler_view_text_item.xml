@@ -37,13 +37,13 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:textSize="16sp"
-        app:font="@string/light_font_name" />
+        app:font="@string/font_light" />
 
     <org.hisp.dhis.android.dashboard.ui.views.FontTextView
         android:id="@+id/recycler_view_text_item_value"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        app:font="@string/medium_font_name" />
+        app:font="@string/font_medium" />
 
 </LinearLayout>

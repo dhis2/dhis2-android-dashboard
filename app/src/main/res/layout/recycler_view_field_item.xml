@@ -13,13 +13,13 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:textSize="16sp"
-        app:font="@string/light_font_name"/>
+        app:font="@string/font_light"/>
 
     <org.hisp.dhis.android.dashboard.ui.views.FontTextView
         android:id="@+id/field_value_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="15sp"
-        app:font="@string/regular_font_name"/>
+        app:font="@string/font_regular"/>
 
 </LinearLayout>

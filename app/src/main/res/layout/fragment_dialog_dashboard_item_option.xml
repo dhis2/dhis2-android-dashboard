@@ -44,7 +44,7 @@
         android:layout_weight="1"
         android:singleLine="false"
         android:textSize="14sp"
-        app:font="@string/regular_font_name"/>
+        app:font="@string/font_regular"/>
 
     <View
         android:layout_width="1px"
@@ -60,6 +60,6 @@
         android:textAllCaps="true"
         android:textColor="@color/navy_blue"
         android:textSize="12sp"
-        app:font="@string/regular_font_name"/>
+        app:font="@string/font_regular"/>
 
 </LinearLayout>

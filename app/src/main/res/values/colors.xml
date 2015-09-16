@@ -27,12 +27,7 @@
   -->
 
 <resources>
-    <color name="transparent_white">#BBFFFFFF</color>
-    <color name="white">#FFFFFFFF</color>
-
     <color name="transparent">#00000000</color>
-    <color name="navy_blue">#FF1F70C3</color>
-    <color name="dark_navy_blue">#FF1D5288</color>
 
     <color name="grey">#8a000000</color>
     <color name="light_grey">#FFE5E5E5</color>
@@ -50,8 +45,4 @@
     <color name="button_log_out_state_enabled_false">#EF9A9A</color>
     <color name="button_log_out_state_unpressed">#F44336</color>
     <color name="button_log_out_state_pressed">#D32F2F</color>
-
-    <color name="button_login_state_enabled_false">#FF223F5C</color>
-    <color name="button_login_state_unpressed">#FF113151</color>
-    <color name="button_login_state_pressed">#FF0C243C</color>
 </resources>

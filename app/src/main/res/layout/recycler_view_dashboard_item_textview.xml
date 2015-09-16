@@ -38,4 +38,4 @@
     android:gravity="center"
     android:textColor="@color/navy_blue"
     android:textSize="17sp"
-    app:font="@string/light_font_name"/>
+    app:font="@string/font_light"/>

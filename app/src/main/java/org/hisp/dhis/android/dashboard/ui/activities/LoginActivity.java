@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, University of Oslo
- * All rights reserved.
  *
+ * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice, this
@@ -28,140 +28,81 @@
 
 package org.hisp.dhis.android.dashboard.ui.activities;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.EditText;
+import android.text.Editable;
+import android.widget.Toast;
 
 import com.squareup.okhttp.HttpUrl;
-import com.squareup.otto.Subscribe;
 
-import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.job.NetworkJob;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
 import org.hisp.dhis.android.sdk.core.persistence.models.common.meta.Credentials;
-import org.hisp.dhis.android.sdk.core.persistence.models.common.meta.ResponseHolder;
-import org.hisp.dhis.android.sdk.core.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.sdk.models.user.UserAccount;
+import org.hisp.dhis.android.sdk.ui.activities.AbsLoginActivity;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
-import fr.castorflex.android.circularprogressbar.CircularProgressBar;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
-import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
-
-public class LoginActivity extends BaseActivity {
-    private static final String IS_LOADING = "state:isLoading";
-
-    @Bind(R.id.log_in_views_container)
-    View mViewsContainer;
-
-    @Bind(R.id.progress_bar_circular_white)
-    CircularProgressBar mProgressBar;
-
-    @Bind(R.id.server_url)
-    EditText mServerUrl;
-
-    @Bind(R.id.username)
-    EditText mUsername;
-
-    @Bind(R.id.password)
-    EditText mPassword;
-
-    @Bind(R.id.log_in_button)
-    Button mLogInButton;
+public final class LoginActivity extends AbsLoginActivity {
+    private Subscription mSubscription;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        ButterKnife.bind(this);
+    protected void onLogInButtonClicked(Editable url, Editable username, Editable password) {
+        Toast.makeText(getApplicationContext(), "Message", Toast.LENGTH_SHORT).show();
+        onStartLoading();
 
-        hideProgress(false);
-        checkEditTextFields();
+        final HttpUrl serverUrl = HttpUrl.parse(url.toString());
+        final Credentials credentials = new Credentials(username.toString(), password.toString());
 
-        mServerUrl.setText("https://apps.dhis2.org/demo");
-        mUsername.setText("admin");
-        mPassword.setText("district");
-    }
+        Observable.OnSubscribe<UserAccount> observable = new Observable.OnSubscribe<UserAccount>() {
+            @Override
+            public void call(Subscriber<? super UserAccount> subscriber) {
+                try {
+                    UserAccount userAccount = Dhis2.logIn(serverUrl, credentials);
+                    subscriber.onNext(userAccount);
+                } catch (Throwable throwable) {
+                    subscriber.onError(throwable);
+                }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(IS_LOADING, mProgressBar.isShown());
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onRestoreInstanceState(@Nullable Bundle savedInstanceState) {
-        if (savedInstanceState != null &&
-                savedInstanceState.getBoolean(IS_LOADING, false)) {
-            showProgress(false);
-        } else {
-            hideProgress(false);
-        }
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @OnTextChanged(value = {R.id.server_url, R.id.username, R.id.password})
-    public void checkEditTextFields() {
-        mLogInButton.setEnabled(
-                !isEmpty(mServerUrl.getText()) &&
-                        !isEmpty(mUsername.getText()) &&
-                        !isEmpty(mPassword.getText())
-        );
-    }
-
-    @OnClick(R.id.log_in_button)
-    @SuppressWarnings("unused")
-    public void logIn() {
-        showProgress(true);
-
-        String serverUrl = mServerUrl.getText().toString();
-        String username = mUsername.getText().toString();
-        String password = mPassword.getText().toString();
-
-        HttpUrl serverUri = HttpUrl.parse(serverUrl);
-        getDhisService().logInUser(
-                serverUri, new Credentials(username, password)
-        );
-    }
-
-    @Subscribe
-    @SuppressWarnings("unused")
-    public void onResultReceived(NetworkJob.NetworkJobResult<UserAccount> jobResult) {
-        if (ResourceType.USERS.equals(jobResult.getResourceType())) {
-            ResponseHolder<UserAccount> responseHolder = jobResult.getResponseHolder();
-
-            if (responseHolder.getApiException() == null) {
-                startActivity(new Intent(this, MenuActivity.class));
-                finish();
-            } else {
-                hideProgress(true);
-                showApiExceptionMessage(responseHolder.getApiException());
+                subscriber.onCompleted();
             }
-        }
+        };
+
+        Subscriber<UserAccount> userAccountSubscriber = new Subscriber<UserAccount>() {
+
+            @Override
+            public void onCompleted() {
+                onFinishLoading();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Toast.makeText(getApplicationContext(),
+                        "Exception, SHiT!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNext(UserAccount userAccount) {
+                Toast.makeText(getApplicationContext(),
+                        "UserAccount: " + userAccount.getDisplayName(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        mSubscription = Observable.create(observable)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(userAccountSubscriber);
     }
 
-    private void showProgress(boolean withAnimation) {
-        if (withAnimation) {
-            Animation anim = AnimationUtils.loadAnimation(this, R.anim.out_up);
-            mViewsContainer.startAnimation(anim);
-        }
-        mViewsContainer.setVisibility(View.GONE);
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-    private void hideProgress(boolean withAnimation) {
-        if (withAnimation) {
-            Animation anim = AnimationUtils.loadAnimation(this, R.anim.in_down);
-            mViewsContainer.startAnimation(anim);
+        /* Unsubscribe in order not to leak activity */
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
         }
-        mViewsContainer.setVisibility(View.VISIBLE);
-        mProgressBar.setVisibility(View.GONE);
     }
 }

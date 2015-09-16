@@ -41,6 +41,6 @@
         android:text="@string/no_interpretations"
         android:textColor="@color/navy_blue"
         android:textSize="20sp"
-        app:font="@string/light_font_name" />
+        app:font="@string/font_light" />
 
 </LinearLayout>

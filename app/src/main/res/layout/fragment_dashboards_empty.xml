@@ -34,13 +34,13 @@
 
     <include layout="@layout/progress_bar_horizontal" />
 
-    <org.hisp.dhis.android.dashboard.ui.views.FontTextView
+    <org.hisp.dhis.android.sdk.ui.views.FontTextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="@string/no_dashboards"
         android:textColor="@color/navy_blue"
         android:textSize="20sp"
-        app:font="@string/light_font_name" />
+        app:font="@string/font_light" />
 
 </LinearLayout>
