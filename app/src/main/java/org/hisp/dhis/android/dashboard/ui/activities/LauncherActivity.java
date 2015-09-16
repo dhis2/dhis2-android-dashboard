@@ -52,7 +52,7 @@ public class LauncherActivity extends BaseActivity {
         } else if (Dhis2.isUserInvalidated()) {
             intent = new Intent(this, ConfirmUserActivity.class);
         } else {
-            intent = new Intent(this, LoginActivity.class);
+            intent = new Intent(this, LogInActivity.class);
         }
 
         startActivity(intent);

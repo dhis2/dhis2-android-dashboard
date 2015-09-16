@@ -14,7 +14,7 @@
             android:exported="false" />
 
         <activity
-            android:name="org.hisp.dhis.android.dashboard.ui.activities.LoginActivity"
+            android:name="org.hisp.dhis.android.dashboard.ui.activities.LogInActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/Base.Theme.App.Dark" />
 
