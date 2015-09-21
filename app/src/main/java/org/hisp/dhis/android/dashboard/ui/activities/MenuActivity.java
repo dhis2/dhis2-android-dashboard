@@ -50,8 +50,14 @@ import org.hisp.dhis.android.dashboard.ui.fragments.AccountFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.SettingsFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.dashboard.DashboardContainerFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.interpretation.InterpretationContainerFragment;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.sdk.core.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
+import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.sdk.models.user.UserAccount;
+
+import java.util.Arrays;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -121,12 +127,6 @@ public class MenuActivity extends AppCompatActivity
                 attachFragmentDelayed(new SettingsFragment());
                 break;
             }
-            /* case R.id.menu_about_item: {
-                getDhisController().invalidateSession();
-                startActivity(new Intent(this, LauncherActivity.class));
-                finish();
-                break;
-            } */
         }
         menuItem.setChecked(true);
         mDrawerLayout.closeDrawers();
@@ -194,11 +194,10 @@ public class MenuActivity extends AppCompatActivity
 
     @Override
     public Loader<UserAccount> onCreateLoader(int id, Bundle args) {
-        /* List<DbLoader.TrackedTable> trackedTables = Arrays.asList(
-                new DbLoader.TrackedTable(UserAccount.class));
+        List<TrackedTable> trackedTables = Arrays.asList(
+                new TrackedTable(UserAccount.class));
         return new DbLoader<>(getApplicationContext(),
-                trackedTables, new UserAccountQuery()); */
-        return null;
+                trackedTables, new UserAccountQuery());
     }
 
     @Override
@@ -218,8 +217,7 @@ public class MenuActivity extends AppCompatActivity
 
         @Override
         public UserAccount query(Context context) {
-            // return UserAccount.getCurrentUserAccountFromDb();
-            return new UserAccount();
+            return Dhis2.getCurrentUserAccount();
         }
     }
 }
