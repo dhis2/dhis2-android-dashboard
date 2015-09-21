@@ -34,7 +34,7 @@
 
     <include layout="@layout/progress_bar_horizontal" />
 
-    <org.hisp.dhis.android.dashboard.ui.views.FontTextView
+    <org.hisp.dhis.android.sdk.ui.views.FontTextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"

@@ -56,7 +56,7 @@ public class InterpretationCommentEditFragment extends BaseDialogFragment {
     private static final String TAG = InterpretationCommentEditFragment.class.getSimpleName();
     private static final String INTERPRETATION_COMMENT_ID = "arg:interpretationCommentId";
 
-    @Bind(R.id.interpretation_comment_edit_text)
+    @Bind(R.id.edittext_interpretation_comment)
     EditText mCommentEditText;
 
     @Bind(R.id.dialog_label)

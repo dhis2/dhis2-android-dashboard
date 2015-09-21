@@ -46,7 +46,7 @@
             android:layout_marginTop="32dp">
 
             <org.hisp.dhis.android.dashboard.ui.views.FontEditText
-                android:id="@+id/interpretation_comment_edit_text"
+                android:id="@+id/edittext_interpretation_comment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/interpretation_comment"

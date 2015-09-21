@@ -89,10 +89,10 @@ public class InterpretationCommentsFragment extends BaseFragment
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    @Bind(R.id.interpretation_comment_edit_text)
+    @Bind(R.id.edittext_interpretation_comment)
     EditText mNewCommentText;
 
-    @Bind(R.id.add_interpretation_comment_button)
+    @Bind(R.id.button_add_interpretation_comment)
     ImageView mAddNewComment;
 
     InterpretationCommentsAdapter mAdapter;
@@ -189,13 +189,13 @@ public class InterpretationCommentsFragment extends BaseFragment
     }
 
     @SuppressWarnings("unused")
-    @OnTextChanged(R.id.interpretation_comment_edit_text)
+    @OnTextChanged(R.id.edittext_interpretation_comment)
     public void onCommentChanged(Editable text) {
         handleAddNewCommentButton(text.toString());
     }
 
     @SuppressWarnings("unused")
-    @OnClick(R.id.add_interpretation_comment_button)
+    @OnClick(R.id.button_add_interpretation_comment)
     public void onAddComment() {
         String newCommentText = mNewCommentText.getText().toString();
 

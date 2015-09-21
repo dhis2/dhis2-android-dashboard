@@ -50,7 +50,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="2px"
+        android:layout_height="1px"
         android:background="@color/light_grey"/>
 
     <LinearLayout
@@ -63,8 +63,8 @@
         android:paddingLeft="16dp"
         android:weightSum="1">
 
-        <org.hisp.dhis.android.dashboard.ui.views.FontEditText
-            android:id="@+id/interpretation_comment_edit_text"
+        <org.hisp.dhis.android.sdk.ui.views.FontEditText
+            android:id="@+id/edittext_interpretation_comment"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -76,7 +76,7 @@
             android:textSize="16sp"/>
 
         <ImageView
-            android:id="@+id/add_interpretation_comment_button"
+            android:id="@+id/button_add_interpretation_comment"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:adjustViewBounds="true"
