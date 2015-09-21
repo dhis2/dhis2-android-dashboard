@@ -29,113 +29,32 @@
 package org.hisp.dhis.android.dashboard.ui.activities;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.EditText;
+import android.text.Editable;
 
 import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisApplication;
 import org.hisp.dhis.android.dashboard.DhisService;
-import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
+import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
 import org.hisp.dhis.android.sdk.core.persistence.models.common.meta.Credentials;
 import org.hisp.dhis.android.sdk.core.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.sdk.models.user.UserAccount;
+import org.hisp.dhis.android.sdk.ui.activities.AbsConfirmUserActivity;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
-import fr.castorflex.android.circularprogressbar.CircularProgressBar;
-
-import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
-
-public class ConfirmUserActivity extends AppCompatActivity {
-    private static final String IS_LOADING = "state:isLoading";
-
-    @Bind(R.id.toolbar)
-    Toolbar mToolbar;
-
-    @Bind(R.id.progress_bar_circular_navy)
-    CircularProgressBar mProgressBar;
-
-    @Bind(R.id.re_log_in_views_container)
-    View mViewsContainer;
-
-    @Bind(R.id.username)
-    EditText mUsername;
-
-    @Bind(R.id.password)
-    EditText mPassword;
-
-    @Bind(R.id.re_log_in_button)
-    Button mReLogIn;
-
-    @Bind(R.id.delete_and_log_out_button)
-    Button mLogOut;
+public class ConfirmUserActivity extends AbsConfirmUserActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_confirm_user);
-        ButterKnife.bind(this);
-
-        setSupportActionBar(mToolbar);
-        setTitle(R.string.app_name);
-
-        hideProgress(false);
-        checkEditTextFields();
+    protected void onResume() {
+        super.onResume();
+        EventBusProvider.register(this);
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(IS_LOADING, mProgressBar.isShown());
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState != null &&
-                savedInstanceState.getBoolean(IS_LOADING)) {
-            showProgress(false);
-        } else {
-            hideProgress(false);
-        }
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @OnTextChanged(value = {R.id.username, R.id.password})
-    public void checkEditTextFields() {
-        mReLogIn.setEnabled(
-                !isEmpty(mUsername.getText()) &&
-                        !isEmpty(mPassword.getText()));
-    }
-
-    @OnClick(R.id.re_log_in_button)
-    @SuppressWarnings("unused")
-    public void onReLogIn() {
-        showProgress(true);
-
-        String username = mUsername.getText().toString();
-        String password = mPassword.getText().toString();
-
-        DhisService.getInstance().confirmUser(
-                new Credentials(username, password)
-        );
-    }
-
-    @OnClick(R.id.delete_and_log_out_button)
-    @SuppressWarnings("unused")
-    public void deleteAndLogOut() {
-        showProgress(true);
-        DhisService.getInstance().logOutUser();
+    protected void onPause() {
+        super.onPause();
+        EventBusProvider.unregister(this);
     }
 
     @Subscribe
@@ -155,30 +74,27 @@ public class ConfirmUserActivity extends AppCompatActivity {
                 startActivity(new Intent(this, LauncherActivity.class));
                 finish();
             } else {
-                hideProgress(true);
+                onFinishLoading();
                 ((DhisApplication) getApplication()).showApiExceptionMessage(
                         result.getResponseHolder().getApiException());
             }
         }
     }
 
-    protected void showProgress(boolean withAnimation) {
-        if (withAnimation) {
-            Animation anim = AnimationUtils.loadAnimation(this, R.anim.out_up);
-            mViewsContainer.startAnimation(anim);
-        }
-        mViewsContainer.setVisibility(View.GONE);
-        mProgressBar.setVisibility(View.VISIBLE);
+    @Override
+    protected void onLogInButtonClicked(Editable username, Editable password) {
+        onStartLoading();
+
+        DhisService.getInstance().confirmUser(
+                new Credentials(username.toString(), password.toString())
+        );
     }
 
-    protected void hideProgress(boolean withAnimation) {
-        if (withAnimation) {
-            Animation anim = AnimationUtils.loadAnimation(this, R.anim.in_down);
-            mViewsContainer.startAnimation(anim);
-        }
+    @Override
+    protected void onClearButtonClicked() {
+        onStartLoading();
 
-        mViewsContainer.setVisibility(View.VISIBLE);
-        mProgressBar.setVisibility(View.GONE);
+        DhisService.getInstance().logOutUser();
     }
 }
 

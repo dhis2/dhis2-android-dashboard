@@ -64,7 +64,7 @@
                 android:id="@+id/delete_and_log_out_button"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:background="@drawable/button_red_selector"
+                android:background="@drawable/button_selector_red"
                 android:singleLine="true"
                 android:text="@string/clear_and_log_out"
                 android:textColor="@color/white"

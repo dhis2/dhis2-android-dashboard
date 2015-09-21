@@ -75,7 +75,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_margin="16dp"
-            android:background="@drawable/button_red_selector"
+            android:background="@drawable/button_selector_red"
             android:singleLine="true"
             android:text="@string/delete"
             android:textColor="@color/white"

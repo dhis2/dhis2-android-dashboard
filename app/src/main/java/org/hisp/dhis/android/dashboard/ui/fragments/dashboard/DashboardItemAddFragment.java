@@ -78,16 +78,16 @@ public class DashboardItemAddFragment extends BaseDialogFragment
     private static final String TAG = DashboardItemAddFragment.class.getSimpleName();
     private static final int LOADER_ID = 3451234;
 
-    @Bind(R.id.filter_options)
+    @Bind(R.id.edittext_filter_options)
     EditText mFilter;
 
     @Bind(R.id.dialog_label)
     TextView mDialogLabel;
 
-    @Bind(R.id.simple_listview)
+    @Bind(R.id.listview_simple)
     ListView mListView;
 
-    @Bind(R.id.filter_resources)
+    @Bind(R.id.edittext_filter_resources)
     ImageView mFilterResources;
 
     PopupMenu mResourcesMenu;
@@ -144,25 +144,25 @@ public class DashboardItemAddFragment extends BaseDialogFragment
         queryApiResources();
     }
 
-    @OnTextChanged(value = R.id.filter_options,
+    @OnTextChanged(value = R.id.edittext_filter_options,
             callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     @SuppressWarnings("unused")
     public void afterTextChanged(Editable s) {
         mAdapter.getFilter().filter(s.toString());
     }
 
-    @OnClick({R.id.close_dialog_button, R.id.filter_resources})
+    @OnClick({R.id.close_dialog_button, R.id.edittext_filter_resources})
     @SuppressWarnings("unused")
     public void onButtonClick(View v) {
         if (R.id.close_dialog_button == v.getId()) {
             dismiss();
-        } else if (R.id.filter_resources == v.getId()) {
+        } else if (R.id.edittext_filter_resources == v.getId()) {
             mResourcesMenu.show();
         }
     }
 
     @SuppressWarnings("unused")
-    @OnItemClick(R.id.simple_listview)
+    @OnItemClick(R.id.listview_simple)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         OptionAdapterValue adapterValue = mAdapter.getItem(position);
         DashboardItemContent resource = Models.dashboardItemContent().query(adapterValue.id);

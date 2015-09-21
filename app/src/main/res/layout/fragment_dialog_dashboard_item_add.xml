@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) 2015, University of Oslo
   ~
   ~ All rights reserved.
@@ -26,33 +27,32 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <include layout="@layout/fragment_bar"/>
+    <include layout="@layout/fragment_bar" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/navy_blue"/>
+        android:background="@color/navy_blue" />
 
     <RelativeLayout
         android:layout_width="310dp"
         android:layout_height="440dp">
 
         <LinearLayout
-            android:id="@+id/filters_container"
+            android:id="@+id/container_filters"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <org.hisp.dhis.android.dashboard.ui.views.FontEditText
-                android:id="@+id/filter_options"
+            <org.hisp.dhis.android.sdk.ui.views.FontEditText
+                android:id="@+id/edittext_filter_options"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_margin="16dp"
@@ -60,10 +60,10 @@
                 android:drawableLeft="@mipmap/ic_search_dark"
                 android:drawablePadding="4dp"
                 android:hint="@string/search"
-                app:font="@string/font_light"/>
+                app:font="@string/font_light" />
 
             <ImageView
-                android:id="@+id/filter_resources"
+                android:id="@+id/edittext_filter_resources"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:layout_marginBottom="12dp"
@@ -73,18 +73,18 @@
                 android:clickable="true"
                 android:contentDescription="@string/description"
                 android:padding="8dp"
-                android:src="@mipmap/ic_filter"/>
+                android:src="@mipmap/ic_filter" />
 
         </LinearLayout>
 
         <ListView
-            android:id="@+id/simple_listview"
+            android:id="@+id/listview_simple"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/filters_container"
+            android:layout_below="@id/container_filters"
             android:cacheColorHint="@color/transparent"
             android:divider="@color/light_grey"
-            android:dividerHeight="1px"/>
+            android:dividerHeight="1px" />
 
     </RelativeLayout>
 

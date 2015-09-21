@@ -46,8 +46,7 @@ public final class DhisService {
     public static final int CONFIRM_USER = 2;
     public static final int LOG_OUT = 3;
     public static final int SYNC_DASHBOARDS = 5;
-    public static final int SYNC_DASHBOARD_CONTENT = 6;
-    public static final int SYNC_INTERPRETATIONS = 7;
+    public static final int SYNC_INTERPRETATIONS = 6;
 
     private static DhisService mService;
 
@@ -100,25 +99,12 @@ public final class DhisService {
         });
     }
 
-    public void syncDashboardContents() {
-        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARD_CONTENT,
-                ResourceType.DASHBOARDS_CONTENT) {
-
-            @Override
-            public Object execute() throws APIException {
-                // Dhis2.dashboards().syncDashboardContent();
-                return new Object();
-            }
-        });
-    }
-
     public void syncDashboardsAndContent() {
         JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS,
                 ResourceType.DASHBOARDS) {
 
             @Override
             public Object execute() throws APIException {
-                // mDhis2.syncDashboardContent();
                 Dhis2.dashboards().sync();
                 return new Object();
             }
