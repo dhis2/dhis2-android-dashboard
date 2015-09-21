@@ -34,6 +34,7 @@ import android.text.Editable;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.otto.Subscribe;
 
+import org.hisp.dhis.android.dashboard.DhisApplication;
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
@@ -78,7 +79,8 @@ public final class LoginActivity extends AbsLoginActivity {
                 startActivity(new Intent(this, MenuActivity.class));
                 finish();
             } else {
-                // showApiExceptionMessage(responseHolder.getApiException());
+                ((DhisApplication) getApplication())
+                        .showApiExceptionMessage(responseHolder.getApiException());
             }
         }
     }
