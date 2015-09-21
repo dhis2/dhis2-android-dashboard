@@ -58,14 +58,13 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
             }
         });
 
-        if (isDhisServiceBound() &&
-                !getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS) &&
+        if (!DhisService.getInstance().isJobRunning(DhisService.SYNC_INTERPRETATIONS) &&
                 !SessionManager.getInstance().isResourceTypeSynced(ResourceType.INTERPRETATIONS)) {
             syncInterpretations();
         }
 
-        boolean isLoading = isDhisServiceBound() &&
-                getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
+        boolean isLoading = DhisService.getInstance()
+                .isJobRunning(DhisService.SYNC_INTERPRETATIONS);
         if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -97,10 +96,8 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     }
 
     private void syncInterpretations() {
-        if (isDhisServiceBound()) {
-            getDhisService().syncInterpretations();
-            mProgressBar.setVisibility(View.VISIBLE);
-        }
+        DhisService.getInstance().syncInterpretations();
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Subscribe

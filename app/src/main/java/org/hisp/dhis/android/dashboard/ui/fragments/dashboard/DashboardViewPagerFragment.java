@@ -43,6 +43,7 @@ import android.view.ViewGroup;
 
 import com.squareup.otto.Subscribe;
 
+import org.hisp.dhis.android.dashboard.BackgroundService;
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.job.NetworkJob;
@@ -113,14 +114,13 @@ public class DashboardViewPagerFragment extends BaseFragment
             }
         });
 
-        if (isDhisServiceBound() &&
-                !getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS) &&
+        if (!DhisService.getInstance().isJobRunning(DhisService.SYNC_DASHBOARDS) &&
                 !SessionManager.getInstance().isResourceTypeSynced(ResourceType.DASHBOARDS)) {
             syncDashboards();
         }
 
-        boolean isLoading = isDhisServiceBound() &&
-                getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS);
+        boolean isLoading = DhisService.getInstance()
+                .isJobRunning(DhisService.SYNC_DASHBOARDS);
         if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -199,8 +199,8 @@ public class DashboardViewPagerFragment extends BaseFragment
     @SuppressWarnings("unused")
     public void onUiEventReceived(UiEvent uiEvent) {
         if (uiEvent.getEventType() == UiEvent.UiEventType.SYNC_DASHBOARDS) {
-            boolean isLoading = isDhisServiceBound() &&
-                    getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS);
+            boolean isLoading = DhisService.getInstance()
+                    .isJobRunning(DhisService.SYNC_DASHBOARDS);
             if (isLoading) {
                 mProgressBar.setVisibility(View.VISIBLE);
             } else {
@@ -250,10 +250,8 @@ public class DashboardViewPagerFragment extends BaseFragment
     }
 
     private void syncDashboards() {
-        if (isDhisServiceBound()) {
-            getDhisService().syncDashboardsAndContent();
-            mProgressBar.setVisibility(View.VISIBLE);
-        }
+        DhisService.getInstance().syncDashboardsAndContent();
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Subscribe

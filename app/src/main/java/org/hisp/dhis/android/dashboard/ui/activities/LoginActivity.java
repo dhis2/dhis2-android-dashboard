@@ -28,81 +28,58 @@
 
 package org.hisp.dhis.android.dashboard.ui.activities;
 
+import android.content.Intent;
 import android.text.Editable;
-import android.widget.Toast;
 
 import com.squareup.okhttp.HttpUrl;
+import com.squareup.otto.Subscribe;
 
-import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.dashboard.DhisService;
+import org.hisp.dhis.android.dashboard.job.NetworkJob;
+import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
 import org.hisp.dhis.android.sdk.core.persistence.models.common.meta.Credentials;
+import org.hisp.dhis.android.sdk.core.persistence.models.common.meta.ResponseHolder;
+import org.hisp.dhis.android.sdk.core.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.sdk.models.user.UserAccount;
 import org.hisp.dhis.android.sdk.ui.activities.AbsLoginActivity;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
 public final class LoginActivity extends AbsLoginActivity {
-    private Subscription mSubscription;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBusProvider.register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBusProvider.unregister(this);
+    }
 
     @Override
     protected void onLogInButtonClicked(Editable url, Editable username, Editable password) {
-        Toast.makeText(getApplicationContext(), "Message", Toast.LENGTH_SHORT).show();
         onStartLoading();
 
         final HttpUrl serverUrl = HttpUrl.parse(url.toString());
         final Credentials credentials = new Credentials(username.toString(), password.toString());
 
-        Observable.OnSubscribe<UserAccount> observable = new Observable.OnSubscribe<UserAccount>() {
-            @Override
-            public void call(Subscriber<? super UserAccount> subscriber) {
-                try {
-                    UserAccount userAccount = Dhis2.logIn(serverUrl, credentials);
-                    subscriber.onNext(userAccount);
-                } catch (Throwable throwable) {
-                    subscriber.onError(throwable);
-                }
-
-                subscriber.onCompleted();
-            }
-        };
-
-        Subscriber<UserAccount> userAccountSubscriber = new Subscriber<UserAccount>() {
-
-            @Override
-            public void onCompleted() {
-                onFinishLoading();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Toast.makeText(getApplicationContext(),
-                        "Exception, SHiT!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNext(UserAccount userAccount) {
-                Toast.makeText(getApplicationContext(),
-                        "UserAccount: " + userAccount.getDisplayName(),
-                        Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        mSubscription = Observable.create(observable)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(userAccountSubscriber);
+        DhisService.getInstance().logInUser(serverUrl, credentials);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    @Subscribe
+    @SuppressWarnings("unused")
+    public void onResultReceived(NetworkJob.NetworkJobResult<UserAccount> jobResult) {
+        if (ResourceType.USERS.equals(jobResult.getResourceType())) {
+            ResponseHolder<UserAccount> responseHolder = jobResult.getResponseHolder();
 
-        /* Unsubscribe in order not to leak activity */
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
+            onFinishLoading();
+            if (responseHolder.getApiException() == null) {
+                startActivity(new Intent(this, MenuActivity.class));
+                finish();
+            } else {
+                // showApiExceptionMessage(responseHolder.getApiException());
+            }
         }
     }
 }

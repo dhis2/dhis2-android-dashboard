@@ -88,14 +88,12 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
         });
 
 
-        if (isDhisServiceBound() &&
-                !getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS) &&
+        if (!DhisService.getInstance().isJobRunning(DhisService.SYNC_DASHBOARDS) &&
                 !SessionManager.getInstance().isResourceTypeSynced(ResourceType.DASHBOARDS)) {
             syncDashboards();
         }
 
-        boolean isLoading = isDhisServiceBound() &&
-                getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS);
+        boolean isLoading = DhisService.getInstance().isJobRunning(DhisService.SYNC_DASHBOARDS);
         if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -132,10 +130,8 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     }
 
     private void syncDashboards() {
-        if (isDhisServiceBound()) {
-            getDhisService().syncDashboardsAndContent();
-            mProgressBar.setVisibility(View.VISIBLE);
-        }
+        DhisService.getInstance().syncDashboardsAndContent();
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Subscribe

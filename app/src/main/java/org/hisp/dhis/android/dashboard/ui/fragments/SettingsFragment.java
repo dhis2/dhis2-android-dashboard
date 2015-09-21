@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.squareup.otto.Subscribe;
 
+import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.activities.LauncherActivity;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
@@ -49,9 +50,7 @@ public final class SettingsFragment extends BaseFragment {
     @OnClick(R.id.delete_and_log_out_button)
     @SuppressWarnings("unused")
     public void onClick() {
-        if (isDhisServiceBound()) {
-            getDhisService().logOutUser();
-        }
+        DhisService.getInstance().logOutUser();
     }
 
     @Subscribe

@@ -36,6 +36,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -109,12 +110,9 @@ public final class InterpretationTextEditFragment extends BaseDialogFragment {
             case R.id.update_interpretation_text: {
                 Dhis2.interpretations().updateInterpretationText(mInterpretation,
                         mInterpretationText.getText().toString());
-
-                if (isDhisServiceBound()) {
-                    getDhisService().syncInterpretations();
-                    EventBusProvider.post(new UiEvent(UiEvent
-                            .UiEventType.SYNC_INTERPRETATIONS));
-                }
+                DhisService.getInstance().syncInterpretations();
+                EventBusProvider.post(new UiEvent(UiEvent
+                        .UiEventType.SYNC_INTERPRETATIONS));
                 break;
             }
         }

@@ -38,6 +38,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
@@ -110,9 +111,7 @@ public class InterpretationCommentEditFragment extends BaseDialogFragment {
                 Dhis2.interpretations().updateCommentText(
                         mInterpretationComment, mCommentEditText.getText().toString());
 
-                if (isDhisServiceBound()) {
-                    getDhisService().syncInterpretations();
-                }
+                DhisService.getInstance().syncInterpretations();
                 break;
             }
         }

@@ -45,6 +45,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter.OnCommentClickListener;
@@ -212,9 +213,7 @@ public class InterpretationCommentsFragment extends BaseFragment
         // we need to erase the previous comment from the field.
         mNewCommentText.setText(EMPTY_FIELD);
 
-        if (isDhisServiceBound()) {
-            getDhisService().syncInterpretations();
-        }
+        DhisService.getInstance().syncInterpretations();
     }
 
     @Override
@@ -232,9 +231,7 @@ public class InterpretationCommentsFragment extends BaseFragment
             mAdapter.notifyItemRemoved(position);
             Dhis2.interpretations().deleteComment(comment);
 
-            if (isDhisServiceBound()) {
-                getDhisService().syncInterpretations();
-            }
+            DhisService.getInstance().syncInterpretations();
         }
     }
 

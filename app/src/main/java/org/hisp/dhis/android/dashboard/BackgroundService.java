@@ -24,36 +24,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dashboard.ui.activities;
+package org.hisp.dhis.android.dashboard;
 
-import android.app.Activity;
+import android.app.Service;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-
-import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.ui.fragments.interpretation.InterpretationCommentsFragment;
+import android.os.IBinder;
 
 /**
- * This activity is just placeholder for Fragment.
+ * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
-public class InterpretationCommentsActivity extends AppCompatActivity {
-    private static final String INTERPRETATION_ID = "arg:interpretationId";
+public final class BackgroundService extends Service {
 
-    public static Intent newIntent(Activity activity, long interpetationId) {
-        Intent intent = new Intent(activity, InterpretationCommentsActivity.class);
-        intent.putExtra(INTERPRETATION_ID, interpetationId);
-        return intent;
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return Service.START_STICKY;
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_interpretation_comments);
-        long interpretationId = getIntent().getExtras().getLong(INTERPRETATION_ID);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, InterpretationCommentsFragment
-                        .newInstance(interpretationId))
-                .commit();
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 }

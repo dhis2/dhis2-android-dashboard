@@ -41,6 +41,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemAdapter;
@@ -202,10 +203,8 @@ public class DashboardFragment extends BaseFragment
             // element.deleteDashboardElement();
             Models.dashboardElements().delete(element);
 
-            if (isDhisServiceBound()) {
-                getDhisService().syncDashboards();
-                EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
-            }
+            DhisService.getInstance().syncDashboards();
+            EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
         }
     }
 
@@ -215,10 +214,8 @@ public class DashboardFragment extends BaseFragment
             // item.deleteDashboardItem();
             Models.dashboardItems().delete(item);
 
-            if (isDhisServiceBound()) {
-                getDhisService().syncDashboards();
-                EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
-            }
+            DhisService.getInstance().syncDashboards();
+            EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
         }
     }
 

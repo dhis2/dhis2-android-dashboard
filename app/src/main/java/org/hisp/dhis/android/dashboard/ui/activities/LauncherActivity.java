@@ -30,12 +30,13 @@ package org.hisp.dhis.android.dashboard.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
 
-public class LauncherActivity extends BaseActivity {
+public class LauncherActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -139,14 +139,12 @@ public final class InterpretationFragment extends BaseFragment
             }
         });
 
-        if (isDhisServiceBound() &&
-                !getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS) &&
+        if (!DhisService.getInstance().isJobRunning(DhisService.SYNC_INTERPRETATIONS) &&
                 !SessionManager.getInstance().isResourceTypeSynced(ResourceType.INTERPRETATIONS)) {
             syncInterpretations();
         }
 
-        boolean isLoading = isDhisServiceBound() &&
-                getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
+        boolean isLoading = DhisService.getInstance().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
         if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -237,17 +235,14 @@ public final class InterpretationFragment extends BaseFragment
             mAdapter.notifyItemRemoved(position);
 
             Dhis2.interpretations().deleteInterpretation(interpretation);
+            DhisService.getInstance().syncInterpretations();
 
-            if (isDhisServiceBound()) {
-                getDhisService().syncInterpretations();
-
-                boolean isLoading = isDhisServiceBound() &&
-                        getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
-                if (isLoading) {
-                    mProgressBar.setVisibility(View.VISIBLE);
-                } else {
-                    mProgressBar.setVisibility(View.INVISIBLE);
-                }
+            boolean isLoading = DhisService.getInstance()
+                    .isJobRunning(DhisService.SYNC_INTERPRETATIONS);
+            if (isLoading) {
+                mProgressBar.setVisibility(View.VISIBLE);
+            } else {
+                mProgressBar.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -278,8 +273,8 @@ public final class InterpretationFragment extends BaseFragment
     @SuppressWarnings("unused")
     public void onUiEventReceived(UiEvent uiEvent) {
         if (uiEvent.getEventType() == UiEvent.UiEventType.SYNC_INTERPRETATIONS) {
-            boolean isLoading = isDhisServiceBound() &&
-                    getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
+            boolean isLoading = DhisService.getInstance()
+                    .isJobRunning(DhisService.SYNC_INTERPRETATIONS);
             if (isLoading) {
                 mProgressBar.setVisibility(View.VISIBLE);
             } else {
@@ -289,10 +284,8 @@ public final class InterpretationFragment extends BaseFragment
     }
 
     private void syncInterpretations() {
-        if (isDhisServiceBound()) {
-            getDhisService().syncInterpretations();
-            mProgressBar.setVisibility(View.VISIBLE);
-        }
+        DhisService.getInstance().syncInterpretations();
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     private static class InterpretationsQuery implements Query<List<Interpretation>> {

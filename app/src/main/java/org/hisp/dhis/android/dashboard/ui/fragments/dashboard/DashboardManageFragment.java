@@ -39,6 +39,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -134,19 +135,15 @@ public final class DashboardManageFragment extends BaseDialogFragment {
                         mDashboardName.getText().toString());
                 mDashboardName.clearFocus();
 
-                if (isDhisServiceBound()) {
-                    getDhisService().syncDashboards();
-                    EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
-                }
+                DhisService.getInstance().syncDashboards();
+                EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
                 break;
             }
             case R.id.delete_dashboard_button: {
                 Dhis2.dashboards().deleteDashboard(mDashboard);
 
-                if (isDhisServiceBound()) {
-                    getDhisService().syncDashboards();
-                    EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
-                }
+                DhisService.getInstance().syncDashboards();
+                EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
             }
             case R.id.close_dialog_button: {
                 dismiss();

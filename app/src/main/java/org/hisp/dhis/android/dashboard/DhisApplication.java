@@ -27,9 +27,14 @@
 package org.hisp.dhis.android.dashboard;
 
 import android.app.Application;
-import android.content.Intent;
+import android.widget.Toast;
 
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.sdk.core.network.APIException;
+
+import static android.widget.Toast.LENGTH_SHORT;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -41,6 +46,45 @@ public final class DhisApplication extends Application {
         super.onCreate();
 
         Dhis2.init(getApplicationContext());
-        startService(new Intent(this, DhisService.class));
+    }
+
+    protected void showMessage(CharSequence message) {
+        Toast.makeText(
+                getBaseContext(), message, LENGTH_SHORT).show();
+    }
+
+    protected void showMessage(int id) {
+        showMessage(getString(id));
+    }
+
+    public void showApiExceptionMessage(APIException apiException) {
+        apiException.printStackTrace();
+
+        if (apiException.getKind() == APIException.Kind.UNEXPECTED) {
+            throw new IllegalArgumentException("Unexpected error");
+        }
+
+        if (apiException.getKind() == APIException.Kind.NETWORK) {
+            showMessage(R.string.no_network_connection);
+            return;
+        }
+
+        if (apiException.getKind() == APIException.Kind.CONVERSION) {
+            showMessage(R.string.bad_response);
+            return;
+        }
+
+        int code = apiException.getResponse().getStatus();
+        switch (code) {
+            case HTTP_UNAUTHORIZED: {
+                showMessage(R.string.wrong_credentials);
+                break;
+            }
+            case HTTP_NOT_FOUND: {
+                showMessage(getString(R.string.wrong_address));
+                break;
+            }
+
+        }
     }
 }

@@ -32,6 +32,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -48,7 +49,7 @@ import org.hisp.dhis.android.sdk.models.interpretation.InterpretationElement;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class DashboardElementDetailActivity extends BaseActivity {
+public class DashboardElementDetailActivity extends AppCompatActivity {
     private static final String DASHBOARD_ELEMENT_ID = "arg:dashboardElementId";
     private static final String INTERPRETATION_ELEMENT_ID = "arg:interpretationElementId";
 

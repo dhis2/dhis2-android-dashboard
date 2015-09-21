@@ -10,7 +10,7 @@
         android:theme="@style/Base.AppTheme">
 
         <service
-            android:name="org.hisp.dhis.android.dashboard.DhisService"
+            android:name=".BackgroundService"
             android:exported="false" />
 
         <activity

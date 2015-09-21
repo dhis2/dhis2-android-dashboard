@@ -121,6 +121,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     /* returns type of row depending on item content type. */
     @Override
     public int getItemViewType(int position) {
+        System.out.println("DASHBOARD_ITEM_TYPE: " + getItem(position).getType());
 
         switch (getItem(position).getType()) {
             case DashboardItemContent.TYPE_CHART:

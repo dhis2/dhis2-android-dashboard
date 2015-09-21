@@ -39,6 +39,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,7 +59,7 @@ import butterknife.OnClick;
 
 import static org.hisp.dhis.android.sdk.models.utils.Preconditions.isNull;
 
-public class MenuActivity extends BaseActivity
+public class MenuActivity extends AppCompatActivity
         implements OnNavigationItemSelectedListener, DrawerListener,
         INavigationCallback, LoaderManager.LoaderCallbacks<UserAccount> {
 

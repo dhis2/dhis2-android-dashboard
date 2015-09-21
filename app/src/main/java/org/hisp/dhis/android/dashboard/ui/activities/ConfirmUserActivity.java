@@ -30,6 +30,7 @@ package org.hisp.dhis.android.dashboard.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.animation.Animation;
@@ -39,6 +40,8 @@ import android.widget.EditText;
 
 import com.squareup.otto.Subscribe;
 
+import org.hisp.dhis.android.dashboard.DhisApplication;
+import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
@@ -54,7 +57,7 @@ import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 
 import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
 
-public class ConfirmUserActivity extends BaseActivity {
+public class ConfirmUserActivity extends AppCompatActivity {
     private static final String IS_LOADING = "state:isLoading";
 
     @Bind(R.id.toolbar)
@@ -123,7 +126,7 @@ public class ConfirmUserActivity extends BaseActivity {
         String username = mUsername.getText().toString();
         String password = mPassword.getText().toString();
 
-        getDhisService().confirmUser(
+        DhisService.getInstance().confirmUser(
                 new Credentials(username, password)
         );
     }
@@ -132,7 +135,7 @@ public class ConfirmUserActivity extends BaseActivity {
     @SuppressWarnings("unused")
     public void deleteAndLogOut() {
         showProgress(true);
-        getDhisService().logOutUser();
+        DhisService.getInstance().logOutUser();
     }
 
     @Subscribe
@@ -153,7 +156,8 @@ public class ConfirmUserActivity extends BaseActivity {
                 finish();
             } else {
                 hideProgress(true);
-                showApiExceptionMessage(result.getResponseHolder().getApiException());
+                ((DhisApplication) getApplication()).showApiExceptionMessage(
+                        result.getResponseHolder().getApiException());
             }
         }
     }

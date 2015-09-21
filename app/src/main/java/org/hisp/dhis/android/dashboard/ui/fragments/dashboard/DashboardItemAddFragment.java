@@ -47,6 +47,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter.OptionAdapterValue;
@@ -167,10 +168,8 @@ public class DashboardItemAddFragment extends BaseDialogFragment
         DashboardItemContent resource = Models.dashboardItemContent().query(adapterValue.id);
         Dhis2.dashboards().addDashboardContent(mDashboard, resource);
 
-        if (isDhisServiceBound()) {
-            getDhisService().syncDashboards();
-            EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
-        }
+        DhisService.getInstance().syncDashboards();
+        EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
 
         dismiss();
     }

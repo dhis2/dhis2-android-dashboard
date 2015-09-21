@@ -37,6 +37,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -134,10 +135,8 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
                 }
             }
 
-            if (isDhisServiceBound()) {
-                getDhisService().syncInterpretations();
-                EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_INTERPRETATIONS));
-            }
+            DhisService.getInstance().syncInterpretations();
+            EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_INTERPRETATIONS));
 
             Toast.makeText(getActivity(),
                     getString(R.string.successfully_created_interpretation), Toast.LENGTH_SHORT).show();
