@@ -34,16 +34,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
+import org.hisp.dhis.android.dashboard.DhisApplication;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.job.Job;
 import org.hisp.dhis.android.dashboard.job.JobExecutor;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
+import org.hisp.dhis.android.sdk.core.network.APIException;
+import org.hisp.dhis.android.sdk.core.persistence.models.common.meta.ResponseHolder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit.mime.TypedInput;
 
 import static android.text.TextUtils.isEmpty;
@@ -51,7 +56,11 @@ import static android.text.TextUtils.isEmpty;
 public class WebViewFragment extends BaseFragment {
     private static final String DASHBOARD_ELEMENT_ID = "arg:dashboardElementId";
 
+    @Bind(R.id.web_view_content)
     WebView mWebView;
+
+    @Bind(R.id.container_layout_progress_bar)
+    View mProgressBarContainer;
 
     public static WebViewFragment newInstance(String id) {
         Bundle args = new Bundle();
@@ -69,7 +78,8 @@ public class WebViewFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        mWebView = (WebView) view;
+        ButterKnife.bind(this, view);
+
         if (getArguments() != null && !isEmpty(getArguments()
                 .getString(DASHBOARD_ELEMENT_ID))) {
             JobExecutor.enqueueJob(new GetReportTableJob(this, getArguments()
@@ -77,11 +87,20 @@ public class WebViewFragment extends BaseFragment {
         }
     }
 
-    public void onDataDownloaded(String data) {
-        mWebView.loadData(data, "text/html", "UTF-8");
+    public void onDataDownloaded(ResponseHolder<String> data) {
+        mProgressBarContainer.setVisibility(View.GONE);
+
+        if (data.getApiException() == null) {
+            mWebView.loadData(data.getItem(), "text/html", "UTF-8");
+        } else {
+            if (isAdded()) {
+                ((DhisApplication) (getActivity().getApplication()))
+                        .showApiExceptionMessage(data.getApiException());
+            }
+        }
     }
 
-    static class GetReportTableJob extends Job<String> {
+    static class GetReportTableJob extends Job<ResponseHolder<String>> {
         static final int JOB_ID = 4573452;
 
         final WeakReference<WebViewFragment> mFragmentRef;
@@ -116,12 +135,21 @@ public class WebViewFragment extends BaseFragment {
         }
 
         @Override
-        public String inBackground() {
-            return readInputStream(Dhis2.getServiceApi().getReportTableData(mDashboardElementId).getBody());
+        public ResponseHolder<String> inBackground() {
+            ResponseHolder<String> responseHolder = new ResponseHolder<>();
+
+            try {
+                responseHolder.setItem(readInputStream(Dhis2.getServiceApi()
+                        .getReportTableData(mDashboardElementId).getBody()));
+            } catch (APIException exception) {
+                responseHolder.setApiException(exception);
+            }
+
+            return responseHolder;
         }
 
         @Override
-        public void onFinish(String result) {
+        public void onFinish(ResponseHolder<String> result) {
             if (mFragmentRef.get() != null) {
                 mFragmentRef.get().onDataDownloaded(result);
             }
