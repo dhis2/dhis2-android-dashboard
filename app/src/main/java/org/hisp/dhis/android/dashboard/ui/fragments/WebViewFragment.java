@@ -80,6 +80,7 @@ public class WebViewFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
+        mWebView.getSettings().setBuiltInZoomControls(true);
         if (getArguments() != null && !isEmpty(getArguments()
                 .getString(DASHBOARD_ELEMENT_ID))) {
             JobExecutor.enqueueJob(new GetReportTableJob(this, getArguments()

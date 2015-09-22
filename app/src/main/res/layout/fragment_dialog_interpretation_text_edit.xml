@@ -47,7 +47,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginTop="32dp">
 
-            <org.hisp.dhis.android.dashboard.ui.views.FontEditText
+            <org.hisp.dhis.android.sdk.ui.views.FontEditText
                 android:id="@+id/interpretation_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <org.hisp.dhis.android.dashboard.ui.views.FontButton
+            <org.hisp.dhis.android.sdk.ui.views.FontButton
                 android:id="@+id/cancel_interpretation_text_edit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -72,11 +72,11 @@
                 android:background="@drawable/transparent_selector"
                 android:gravity="center"
                 android:text="@string/cancel"
-                android:textColor="@color/navy_blue"
+                android:textColor="@color/color_primary"
                 android:textSize="12sp"
                 app:font="@string/font_medium" />
 
-            <org.hisp.dhis.android.dashboard.ui.views.FontButton
+            <org.hisp.dhis.android.sdk.ui.views.FontButton
                 android:id="@+id/update_interpretation_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
                 android:background="@drawable/transparent_selector"
                 android:gravity="center"
                 android:text="@string/update"
-                android:textColor="@color/navy_blue"
+                android:textColor="@color/color_primary"
                 android:textSize="12sp"
                 app:font="@string/font_medium" />
         </LinearLayout>

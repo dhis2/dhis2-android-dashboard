@@ -224,7 +224,7 @@ public class DashboardItemAddFragment extends BaseDialogFragment
             typesToInclude.add(DashboardItemContent.TYPE_MAP);
         }
         if (isItemChecked(R.id.type_report_tables)) {
-            typesToInclude.add(DashboardItemContent.TYPE_REPORT_TABLES);
+            typesToInclude.add(DashboardItemContent.TYPE_REPORT_TABLE);
         }
         if (isItemChecked(R.id.type_event_reports)) {
             typesToInclude.add(DashboardItemContent.TYPE_EVENT_REPORT);

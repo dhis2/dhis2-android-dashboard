@@ -118,7 +118,7 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
             UserAccount userAccount = Dhis2.getCurrentUserAccount();
             User user = Models.users().query(userAccount.getUId());
 
-            System.out.println("*** User: ***" + user);
+            System.out.println("User: " + user);
 
             // create interpretation
             Interpretation interpretation = Dhis2.interpretations()
