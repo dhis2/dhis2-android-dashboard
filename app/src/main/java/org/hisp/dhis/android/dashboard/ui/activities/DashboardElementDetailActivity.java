@@ -53,7 +53,6 @@ public class DashboardElementDetailActivity extends AppCompatActivity {
     private static final String DASHBOARD_ELEMENT_ID = "arg:dashboardElementId";
     private static final String INTERPRETATION_ELEMENT_ID = "arg:interpretationElementId";
 
-
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
