@@ -33,7 +33,7 @@
     android:layout_gravity="top"
     android:indeterminate="true"
     android:minHeight="4dp"
-    android:background="?attr/colorPrimaryDark"
+    android:background="?attr/colorPrimary"
     app:spb_color="@color/orange"
     app:spb_mirror_mode="false"
     app:spb_progressiveStart_activated="true"
