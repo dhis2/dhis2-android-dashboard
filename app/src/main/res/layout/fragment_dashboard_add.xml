@@ -73,7 +73,7 @@
                 android:background="@drawable/transparent_selector"
                 android:gravity="center"
                 android:text="@string/cancel"
-                android:textColor="@color/navy_blue"
+                android:textColor="@color/navy_blue_light"
                 android:textSize="12sp"
                 app:font="@string/font_medium"/>
 
@@ -85,7 +85,7 @@
                 android:background="@drawable/transparent_selector"
                 android:gravity="center"
                 android:text="@string/save"
-                android:textColor="@color/navy_blue"
+                android:textColor="@color/navy_blue_light"
                 android:textSize="12sp"
                 app:font="@string/font_medium"/>
         </LinearLayout>

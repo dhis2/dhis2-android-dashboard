@@ -38,7 +38,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/navy_blue" />
+        android:background="@color/navy_blue_light" />
 
     <RelativeLayout
         android:layout_width="310dp"

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) 2015, University of Oslo
   ~
   ~ All rights reserved.
@@ -26,12 +27,12 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 <LinearLayout
-    android:id="@+id/fragment_bar"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_bar"
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:background="@color/navy_blue"
+    android:background="@color/color_primary"
     android:orientation="horizontal"
     android:weightSum="1">
 
@@ -47,7 +48,7 @@
         android:textAllCaps="true"
         android:textColor="@color/white"
         android:textSize="19sp"
-        app:font="@string/font_condensed"/>
+        app:font="@string/font_condensed" />
 
     <ImageView
         android:id="@+id/close_dialog_button"
@@ -58,6 +59,6 @@
         android:clickable="true"
         android:contentDescription="@string/description"
         android:padding="8dp"
-        android:src="@mipmap/ic_close_dialog"/>
+        android:src="@mipmap/ic_close_dialog" />
 
 </LinearLayout>
