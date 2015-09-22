@@ -39,7 +39,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="@string/no_dashboards"
-        android:textColor="@color/navy_blue"
+        android:textColor="@color/color_primary"
         android:textSize="20sp"
         app:font="@string/font_light" />
 
