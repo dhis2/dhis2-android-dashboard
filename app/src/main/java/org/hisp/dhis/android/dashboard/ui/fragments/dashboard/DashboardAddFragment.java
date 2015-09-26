@@ -44,8 +44,9 @@ import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
-import org.hisp.dhis.android.sdk.core.api.Models;
+import org.hisp.dhis.android.sdk.models.common.Access;
 import org.hisp.dhis.android.sdk.models.dashboard.Dashboard;
+import org.joda.time.DateTime;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -86,11 +87,19 @@ public final class DashboardAddFragment extends BaseDialogFragment {
     @SuppressWarnings("unused")
     public void onButtonClicked(View view) {
         if (view.getId() == R.id.save_dashboard) {
-            Dashboard newDashboard = Dhis2.dashboards()
-                    .createDashboard(mDashboardName.getText().toString());
-            Models.dashboards().save(newDashboard);
+            String name = mDashboardName.getText().toString();
+            DateTime lastUpdated = new DateTime();
 
+            Dashboard dashboard = new Dashboard();
+            dashboard.setName(name);
+            dashboard.setDisplayName(name);
+            dashboard.setCreated(lastUpdated);
+            dashboard.setLastUpdated(lastUpdated);
+            dashboard.setAccess(Access.createDefaultAccess());
+
+            Dhis2.dashboards().add(dashboard);
             DhisService.getInstance().syncDashboards();
+
             EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
         }
         dismiss();

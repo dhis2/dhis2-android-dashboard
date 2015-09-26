@@ -50,12 +50,12 @@ import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.interpretation.InterpretationCreateFragment;
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
 import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
 import org.hisp.dhis.android.sdk.core.api.Models;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.sdk.models.common.Access;
-import org.hisp.dhis.android.sdk.models.common.meta.State;
 import org.hisp.dhis.android.sdk.models.dashboard.Dashboard;
 import org.hisp.dhis.android.sdk.models.dashboard.DashboardElement;
 import org.hisp.dhis.android.sdk.models.dashboard.DashboardItem;
@@ -239,12 +239,17 @@ public class DashboardFragment extends BaseFragment
             Dashboard dashboard = new Dashboard();
             dashboard.setId(mDashboardId);
 
-            List<DashboardItem> dashboardItems = Models.dashboardItems()
-                    .filter(dashboard, State.TO_DELETE, DashboardItemContent.TYPE_MESSAGES);
+            /* List<DashboardItem> dashboardItems = Models.dashboardItems()
+                    .filter(dashboard, State.TO_DELETE, DashboardItemContent.TYPE_MESSAGES); */
+            List<DashboardItem> dashboardItems = Dhis2.dashboardItems()
+                    .filterByType(dashboard, DashboardItemContent.TYPE_MESSAGES);
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {
-                    List<DashboardElement> dashboardElements = Models.dashboardElements()
-                            .filter(dashboardItem, State.TO_DELETE);
+                    /* List<DashboardElement> dashboardElements = Models.dashboardElements()
+                            .filter(dashboardItem, State.TO_DELETE); */
+                    // List<DashboardElement> dashboardElements = Dhis2.das
+                    List<DashboardElement> dashboardElements = Dhis2
+                            .dashboardElements().query(dashboardItem);
                     dashboardItem.setDashboardElements(dashboardElements);
                 }
             }

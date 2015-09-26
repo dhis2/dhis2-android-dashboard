@@ -57,7 +57,6 @@ import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.sdk.models.common.IdentifiableObject;
 import org.hisp.dhis.android.sdk.models.common.meta.DbAction;
-import org.hisp.dhis.android.sdk.models.common.meta.State;
 import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
 import org.hisp.dhis.android.sdk.models.interpretation.InterpretationComment;
 import org.hisp.dhis.android.sdk.models.user.User;
@@ -248,12 +247,13 @@ public class InterpretationCommentsFragment extends BaseFragment
 
         @Override
         public List<InterpretationComment> query(Context context) {
-            Interpretation interpretation = new Interpretation();
+            /* Interpretation interpretation = new Interpretation();
             interpretation.setId(mInterpretationId);
             List<InterpretationComment> comments = Models.interpretationComments()
                     .filter(interpretation, State.TO_DELETE);
-            Collections.sort(comments, IdentifiableObject.CREATED_COMPARATOR);
-            return comments;
+            Collections.sort(comments, IdentifiableObject.CREATED_COMPARATOR); */
+            // return comments;
+            return null;
         }
     }
 }

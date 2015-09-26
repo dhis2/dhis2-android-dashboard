@@ -120,7 +120,8 @@ public class DashboardItemAddFragment extends BaseDialogFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         long dashboardId = getArguments().getLong(DASHBOARD_ID);
-        mDashboard = Models.dashboards().query(dashboardId);
+        // mDashboard = Models.dashboards().query(dashboardId);
+        mDashboard = Dhis2.dashboards().query(dashboardId);
 
         ButterKnife.bind(this, view);
 

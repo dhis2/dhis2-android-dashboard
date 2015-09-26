@@ -104,7 +104,7 @@ public final class DashboardManageFragment extends BaseDialogFragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mDashboard = Models.dashboards()
+        mDashboard = Dhis2.dashboards()
                 .query(getArguments().getLong(DASHBOARD_ID));
 
         ButterKnife.bind(this, view);
@@ -131,16 +131,17 @@ public final class DashboardManageFragment extends BaseDialogFragment {
                 break;
             }
             case R.id.accept_action: {
-                Dhis2.dashboards().updateDashboardName(mDashboard,
-                        mDashboardName.getText().toString());
                 mDashboardName.clearFocus();
+
+                mDashboard.setName(mDashboardName.getText().toString());
+                Dhis2.dashboards().update(mDashboard);
 
                 DhisService.getInstance().syncDashboards();
                 EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
                 break;
             }
             case R.id.delete_dashboard_button: {
-                Dhis2.dashboards().deleteDashboard(mDashboard);
+                Dhis2.dashboards().remove(mDashboard);
 
                 DhisService.getInstance().syncDashboards();
                 EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));

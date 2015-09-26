@@ -43,21 +43,19 @@ import android.view.ViewGroup;
 
 import com.squareup.otto.Subscribe;
 
-import org.hisp.dhis.android.dashboard.BackgroundService;
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardAdapter;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
-import org.hisp.dhis.android.sdk.core.api.Models;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
 import org.hisp.dhis.android.sdk.core.network.SessionManager;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.sdk.core.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.sdk.models.common.Access;
-import org.hisp.dhis.android.sdk.models.common.meta.State;
 import org.hisp.dhis.android.sdk.models.dashboard.Dashboard;
 
 import java.util.Arrays;
@@ -266,7 +264,7 @@ public class DashboardViewPagerFragment extends BaseFragment
 
         @Override
         public List<Dashboard> query(Context context) {
-            List<Dashboard> dashboards = Models.dashboards().filter(State.TO_DELETE);
+            List<Dashboard> dashboards = Dhis2.dashboards().query();
             Collections.sort(dashboards, Dashboard.DISPLAY_NAME_COMPARATOR);
             return dashboards;
         }

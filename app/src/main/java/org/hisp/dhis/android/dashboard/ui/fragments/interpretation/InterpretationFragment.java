@@ -54,20 +54,17 @@ import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
-import org.hisp.dhis.android.sdk.core.api.Models;
 import org.hisp.dhis.android.sdk.core.network.SessionManager;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.sdk.core.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.sdk.models.common.meta.DbAction;
-import org.hisp.dhis.android.sdk.models.common.meta.State;
 import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
 import org.hisp.dhis.android.sdk.models.interpretation.InterpretationComment;
 import org.hisp.dhis.android.sdk.models.interpretation.InterpretationElement;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -292,7 +289,7 @@ public final class InterpretationFragment extends BaseFragment
 
         @Override
         public List<Interpretation> query(Context context) {
-            List<Interpretation> interpretations = Models.interpretations()
+            /* List<Interpretation> interpretations = Models.interpretations()
                     .filter(State.TO_DELETE);
             for (Interpretation interpretation : interpretations) {
                 List<InterpretationElement> elements =
@@ -306,7 +303,8 @@ public final class InterpretationFragment extends BaseFragment
             // sort interpretations by created field in reverse order.
             Collections.sort(interpretations,
                     Collections.reverseOrder(Interpretation.CREATED_COMPARATOR));
-            return interpretations;
+            return interpretations; */
+            return null;
         }
     }
 }

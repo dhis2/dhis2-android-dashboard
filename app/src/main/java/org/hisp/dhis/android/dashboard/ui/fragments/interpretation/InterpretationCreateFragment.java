@@ -44,7 +44,6 @@ import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
 import org.hisp.dhis.android.sdk.core.api.Models;
-import org.hisp.dhis.android.sdk.models.common.meta.State;
 import org.hisp.dhis.android.sdk.models.dashboard.DashboardElement;
 import org.hisp.dhis.android.sdk.models.dashboard.DashboardItem;
 import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
@@ -103,8 +102,9 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
         long dashboardItemId = getArguments().getLong(DASHBOARD_ITEM_ID);
         mDashboardItem = Models.dashboardItems().query(dashboardItemId);
 
-        List<DashboardElement> elements = Models.dashboardElements()
-                .filter(mDashboardItem, State.TO_DELETE);
+        /* List<DashboardElement> elements = Models.dashboardElements()
+                .filter(mDashboardItem, State.TO_DELETE); */
+        List<DashboardElement> elements = Dhis2.dashboardElements().query(mDashboardItem);
         mDashboardItem.setDashboardElements(elements);
 
         mDialogLabel.setText(getString(R.string.create_interpretation));

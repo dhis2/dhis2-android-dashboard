@@ -38,12 +38,11 @@ import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
-import org.hisp.dhis.android.sdk.core.api.Models;
+import org.hisp.dhis.android.sdk.core.api.Dhis2;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.sdk.models.common.meta.DbAction;
-import org.hisp.dhis.android.sdk.models.common.meta.State;
 import org.hisp.dhis.android.sdk.models.dashboard.Dashboard;
 
 import java.util.Arrays;
@@ -51,7 +50,7 @@ import java.util.List;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
- *         <p/>
+ *         <p>
  *         This fragment is used to make decision, whether to show fragment with
  *         dashboards or fragment with message.
  */
@@ -118,7 +117,7 @@ public class DashboardContainerFragment extends BaseFragment
 
         @Override
         public Boolean query(Context context) {
-            List<Dashboard> dashboards = Models.dashboards().filter(State.TO_DELETE);
+            List<Dashboard> dashboards = Dhis2.dashboards().query();
             return dashboards != null && dashboards.size() > 0;
         }
     }

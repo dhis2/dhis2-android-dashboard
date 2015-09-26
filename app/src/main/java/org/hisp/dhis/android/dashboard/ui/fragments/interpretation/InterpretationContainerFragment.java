@@ -17,7 +17,6 @@ import org.hisp.dhis.android.sdk.core.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
 import org.hisp.dhis.android.sdk.models.common.meta.DbAction;
-import org.hisp.dhis.android.sdk.models.common.meta.State;
 import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
 
 import java.util.Arrays;
@@ -89,9 +88,10 @@ public class InterpretationContainerFragment extends BaseFragment
 
         @Override
         public Boolean query(Context context) {
-            List<Interpretation> interpretations = Models.interpretations()
+            /* List<Interpretation> interpretations = Models.interpretations()
                     .filter(State.TO_DELETE);
-            return interpretations != null && interpretations.size() > 0;
+            return interpretations != null && interpretations.size() > 0; */
+            return null;
         }
     }
 }
