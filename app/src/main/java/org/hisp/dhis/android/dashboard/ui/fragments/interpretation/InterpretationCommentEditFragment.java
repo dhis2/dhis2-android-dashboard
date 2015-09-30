@@ -42,7 +42,6 @@ import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
-import org.hisp.dhis.android.sdk.core.api.Models;
 import org.hisp.dhis.android.sdk.models.interpretation.InterpretationComment;
 
 import butterknife.Bind;
@@ -92,8 +91,8 @@ public class InterpretationCommentEditFragment extends BaseDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        mInterpretationComment = Models.interpretationComments()
-                .query(getArguments().getLong(INTERPRETATION_COMMENT_ID));
+        /* mInterpretationComment = Models.interpretationComments()
+                .query(getArguments().getLong(INTERPRETATION_COMMENT_ID)); */
 
         mDialogLabel.setText(getString(R.string.edit_comment));
         mCommentEditText.setText(mInterpretationComment.getText());

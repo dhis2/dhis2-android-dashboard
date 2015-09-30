@@ -51,11 +51,9 @@ import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter.OnCommentClickListener;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
-import org.hisp.dhis.android.sdk.core.api.Models;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
-import org.hisp.dhis.android.sdk.models.common.IdentifiableObject;
 import org.hisp.dhis.android.sdk.models.common.meta.DbAction;
 import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
 import org.hisp.dhis.android.sdk.models.interpretation.InterpretationComment;
@@ -63,7 +61,6 @@ import org.hisp.dhis.android.sdk.models.user.User;
 import org.hisp.dhis.android.sdk.models.user.UserAccount;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -118,10 +115,10 @@ public class InterpretationCommentsFragment extends BaseFragment
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mInterpretation = Models.interpretations()
-                .query(getArguments().getLong(INTERPRETATION_ID));
+        /* mInterpretation = Models.interpretations()
+                .query(getArguments().getLong(INTERPRETATION_ID)); */
         UserAccount account = Dhis2.getCurrentUserAccount();
-        mUser = Models.users().query(account.getUId());
+        // mUser = Models.users().query(account.getUId());
 
         ButterKnife.bind(this, view);
 
@@ -201,7 +198,7 @@ public class InterpretationCommentsFragment extends BaseFragment
         // creating and saving new comment
         InterpretationComment comment = Dhis2.interpretations()
                 .addComment(mInterpretation, mUser, newCommentText);
-        Models.interpretationComments().save(comment);
+        // Models.interpretationComments().save(comment);
 
         // now we need to new item to list and play animation.
         mAdapter.getData().add(comment);

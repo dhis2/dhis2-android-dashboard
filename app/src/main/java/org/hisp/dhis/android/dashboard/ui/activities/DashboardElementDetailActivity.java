@@ -40,7 +40,6 @@ import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.fragments.ImageViewFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.WebViewFragment;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
-import org.hisp.dhis.android.sdk.core.api.Models;
 import org.hisp.dhis.android.sdk.models.dashboard.DashboardElement;
 import org.hisp.dhis.android.sdk.models.dashboard.DashboardItemContent;
 import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
@@ -105,15 +104,15 @@ public class DashboardElementDetailActivity extends AppCompatActivity {
         long interpretationElementId = getInterpretationElementId();
 
         if (dashboardElementId > 0) {
-            DashboardElement element = Models.dashboardElements()
+            /* DashboardElement element = Models.dashboardElements()
                     .query(getDashboardElementId());
-            handleDashboardElement(element);
+            handleDashboardElement(element); */
         }
 
         if (interpretationElementId > 0) {
-            InterpretationElement element = Models.interpretationElements()
+            /* InterpretationElement element = Models.interpretationElements()
                     .query(interpretationElementId);
-            handleInterpretationElement(element);
+            handleInterpretationElement(element); */
         }
     }
 

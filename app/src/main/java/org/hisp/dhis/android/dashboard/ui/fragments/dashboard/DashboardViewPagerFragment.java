@@ -171,8 +171,7 @@ public class DashboardViewPagerFragment extends BaseFragment
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset,
-                               int positionOffsetPixels) {
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         // stub implementation
     }
 

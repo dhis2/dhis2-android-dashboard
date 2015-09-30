@@ -43,7 +43,6 @@ import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
-import org.hisp.dhis.android.sdk.core.api.Models;
 import org.hisp.dhis.android.sdk.models.dashboard.DashboardElement;
 import org.hisp.dhis.android.sdk.models.dashboard.DashboardItem;
 import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
@@ -100,7 +99,7 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
         ButterKnife.bind(this, view);
 
         long dashboardItemId = getArguments().getLong(DASHBOARD_ITEM_ID);
-        mDashboardItem = Models.dashboardItems().query(dashboardItemId);
+        // mDashboardItem = Models.dashboardItems().query(dashboardItemId);
 
         /* List<DashboardElement> elements = Models.dashboardElements()
                 .filter(mDashboardItem, State.TO_DELETE); */
@@ -116,7 +115,8 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
         if (view.getId() == R.id.create_interpretation) {
             // read user
             UserAccount userAccount = Dhis2.getCurrentUserAccount();
-            User user = Models.users().query(userAccount.getUId());
+            // User user = Models.users().query(userAccount.getUId());
+            User user = null;
 
             System.out.println("User: " + user);
 
@@ -127,13 +127,13 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
                     .getInterpretationElements(interpretation);
 
             // save interpretation
-            Models.interpretations().save(interpretation);
+            /* Models.interpretations().save(interpretation);
             if (elements != null && !elements.isEmpty()) {
                 for (InterpretationElement element : elements) {
                     // save corresponding interpretation elements
                     Models.interpretationElements().save(element);
                 }
-            }
+            } */
 
             DhisService.getInstance().syncInterpretations();
             EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_INTERPRETATIONS));

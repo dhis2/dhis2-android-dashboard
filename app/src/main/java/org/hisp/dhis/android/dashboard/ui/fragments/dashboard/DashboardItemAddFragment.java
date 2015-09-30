@@ -55,7 +55,6 @@ import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
-import org.hisp.dhis.android.sdk.core.api.Models;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
@@ -120,7 +119,6 @@ public class DashboardItemAddFragment extends BaseDialogFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         long dashboardId = getArguments().getLong(DASHBOARD_ID);
-        // mDashboard = Models.dashboards().query(dashboardId);
         mDashboard = Dhis2.dashboards().query(dashboardId);
 
         ButterKnife.bind(this, view);
@@ -166,8 +164,8 @@ public class DashboardItemAddFragment extends BaseDialogFragment
     @OnItemClick(R.id.listview_simple)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         OptionAdapterValue adapterValue = mAdapter.getItem(position);
-        DashboardItemContent resource = Models.dashboardItemContent().query(adapterValue.id);
-        Dhis2.dashboards().addDashboardContent(mDashboard, resource);
+        // DashboardItemContent resource = Models.dashboardItemContent().query(adapterValue.id);
+        // Dhis2.dashboards().addDashboardContent(mDashboard, resource);
 
         DhisService.getInstance().syncDashboards();
         EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
@@ -260,14 +258,15 @@ public class DashboardItemAddFragment extends BaseDialogFragment
                 return new ArrayList<>();
             }
 
-            List<DashboardItemContent> resources = Models.dashboardItemContent().query(mTypes);
+            /* List<DashboardItemContent> resources = Models.dashboardItemContent().query(mTypes);
             List<OptionAdapterValue> adapterValues = new ArrayList<>();
             for (DashboardItemContent dashboardItemContent : resources) {
                 adapterValues.add(new OptionAdapterValue(dashboardItemContent.getUId(),
                         dashboardItemContent.getDisplayName()));
             }
 
-            return adapterValues;
+            return adapterValues; */
+            return null;
         }
     }
 }

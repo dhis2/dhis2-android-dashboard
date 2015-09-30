@@ -51,7 +51,6 @@ import org.hisp.dhis.android.dashboard.ui.fragments.interpretation.Interpretatio
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
 import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
-import org.hisp.dhis.android.sdk.core.api.Models;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.Query;
 import org.hisp.dhis.android.sdk.core.persistence.loaders.TrackedTable;
@@ -201,7 +200,7 @@ public class DashboardFragment extends BaseFragment
     public void onContentDeleteClick(DashboardElement element) {
         if (element != null) {
             // element.deleteDashboardElement();
-            Models.dashboardElements().delete(element);
+            // Models.dashboardElements().delete(element);
 
             DhisService.getInstance().syncDashboards();
             EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
@@ -212,7 +211,7 @@ public class DashboardFragment extends BaseFragment
     public void onItemDeleteClick(DashboardItem item) {
         if (item != null) {
             // item.deleteDashboardItem();
-            Models.dashboardItems().delete(item);
+            // Models.dashboardItems().delete(item);
 
             DhisService.getInstance().syncDashboards();
             EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
@@ -239,15 +238,10 @@ public class DashboardFragment extends BaseFragment
             Dashboard dashboard = new Dashboard();
             dashboard.setId(mDashboardId);
 
-            /* List<DashboardItem> dashboardItems = Models.dashboardItems()
-                    .filter(dashboard, State.TO_DELETE, DashboardItemContent.TYPE_MESSAGES); */
             List<DashboardItem> dashboardItems = Dhis2.dashboardItems()
                     .filterByType(dashboard, DashboardItemContent.TYPE_MESSAGES);
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {
-                    /* List<DashboardElement> dashboardElements = Models.dashboardElements()
-                            .filter(dashboardItem, State.TO_DELETE); */
-                    // List<DashboardElement> dashboardElements = Dhis2.das
                     List<DashboardElement> dashboardElements = Dhis2
                             .dashboardElements().query(dashboardItem);
                     dashboardItem.setDashboardElements(dashboardElements);
@@ -255,5 +249,34 @@ public class DashboardFragment extends BaseFragment
             }
             return dashboardItems;
         }
+
+        /* private List<DashboardItem> getDashboardElementMap() {
+            List<DashboardElement> dashboardElements = Dhis2.dashboardElements().query();
+            Map<DashboardItem, List<DashboardElement>> dashboardElementMap = new HashMap<>();
+
+            if (dashboardElements != null && !dashboardElements.isEmpty()) {
+                for (DashboardElement dashboardElement : dashboardElements) {
+                    DashboardItem dashboardItem = dashboardElement.getDashboardItem();
+
+                    if (!DashboardItemContent.TYPE_MESSAGES.equals(dashboardItem.getType())) {
+                        List<DashboardElement> elementsBag = dashboardElementMap.get(dashboardItem);
+
+                        if (elementsBag == null) {
+                            elementsBag = new ArrayList<>();
+                            dashboardElementMap.put(dashboardItem, elementsBag);
+                        }
+
+                        elementsBag.add(dashboardElement);
+                    }
+                }
+            }
+
+            List<DashboardItem> dashboardItems = new ArrayList<>();
+            for (DashboardItem dashboardItem : dashboardElementMap.keySet()) {
+                dashboardItem.setDashboardElements(dashboardElementMap.get(dashboardItem));
+            }
+
+            return dashboardItems;
+        } */
     }
 }

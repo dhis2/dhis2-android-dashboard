@@ -38,7 +38,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.sdk.core.api.Models;
 import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
 
 import butterknife.Bind;
@@ -87,8 +86,8 @@ public final class InterpretationTextFragment extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        mInterpretation = Models.interpretations().query(
-                getArguments().getLong(INTERPRETATION_ID));
+        /* mInterpretation = Models.interpretations().query(
+                getArguments().getLong(INTERPRETATION_ID)); */
 
         mDialogLabel.setText(getString(R.string.interpretation_text));
         mInterpretationText.setText(mInterpretation.getText());

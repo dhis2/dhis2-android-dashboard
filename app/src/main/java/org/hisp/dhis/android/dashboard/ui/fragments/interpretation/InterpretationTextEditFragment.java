@@ -42,7 +42,6 @@ import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 import org.hisp.dhis.android.dashboard.utils.EventBusProvider;
 import org.hisp.dhis.android.sdk.core.api.Dhis2;
-import org.hisp.dhis.android.sdk.core.api.Models;
 import org.hisp.dhis.android.sdk.models.interpretation.Interpretation;
 
 import butterknife.Bind;
@@ -91,8 +90,8 @@ public final class InterpretationTextEditFragment extends BaseDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        mInterpretation = Models.interpretations().query(
-                getArguments().getLong(INTERPRETATION_ID));
+        /* mInterpretation = Models.interpretations().query(
+                getArguments().getLong(INTERPRETATION_ID)); */
 
         mDialogLabel.setText(getString(R.string.interpretation_text));
         mInterpretationText.setText(mInterpretation.getText());
