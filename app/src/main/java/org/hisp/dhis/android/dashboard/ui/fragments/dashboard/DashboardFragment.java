@@ -199,9 +199,7 @@ public class DashboardFragment extends BaseFragment
     @Override
     public void onContentDeleteClick(DashboardElement element) {
         if (element != null) {
-            // element.deleteDashboardElement();
-            // Models.dashboardElements().delete(element);
-
+            Dhis2.dashboardElements().remove(element);
             DhisService.getInstance().syncDashboards();
             EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
         }
@@ -210,9 +208,7 @@ public class DashboardFragment extends BaseFragment
     @Override
     public void onItemDeleteClick(DashboardItem item) {
         if (item != null) {
-            // item.deleteDashboardItem();
-            // Models.dashboardItems().delete(item);
-
+            Dhis2.dashboardItems().remove(item);
             DhisService.getInstance().syncDashboards();
             EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
         }
@@ -249,34 +245,5 @@ public class DashboardFragment extends BaseFragment
             }
             return dashboardItems;
         }
-
-        /* private List<DashboardItem> getDashboardElementMap() {
-            List<DashboardElement> dashboardElements = Dhis2.dashboardElements().query();
-            Map<DashboardItem, List<DashboardElement>> dashboardElementMap = new HashMap<>();
-
-            if (dashboardElements != null && !dashboardElements.isEmpty()) {
-                for (DashboardElement dashboardElement : dashboardElements) {
-                    DashboardItem dashboardItem = dashboardElement.getDashboardItem();
-
-                    if (!DashboardItemContent.TYPE_MESSAGES.equals(dashboardItem.getType())) {
-                        List<DashboardElement> elementsBag = dashboardElementMap.get(dashboardItem);
-
-                        if (elementsBag == null) {
-                            elementsBag = new ArrayList<>();
-                            dashboardElementMap.put(dashboardItem, elementsBag);
-                        }
-
-                        elementsBag.add(dashboardElement);
-                    }
-                }
-            }
-
-            List<DashboardItem> dashboardItems = new ArrayList<>();
-            for (DashboardItem dashboardItem : dashboardElementMap.keySet()) {
-                dashboardItem.setDashboardElements(dashboardElementMap.get(dashboardItem));
-            }
-
-            return dashboardItems;
-        } */
     }
 }
