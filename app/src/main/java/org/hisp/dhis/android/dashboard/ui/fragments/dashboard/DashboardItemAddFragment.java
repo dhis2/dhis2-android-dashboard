@@ -164,8 +164,8 @@ public class DashboardItemAddFragment extends BaseDialogFragment
     @OnItemClick(R.id.listview_simple)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         OptionAdapterValue adapterValue = mAdapter.getItem(position);
-        // DashboardItemContent resource = Models.dashboardItemContent().query(adapterValue.id);
-        // Dhis2.dashboards().addDashboardContent(mDashboard, resource);
+        DashboardItemContent resource = Dhis2.dashboardItemContents().query(adapterValue.id);
+        Dhis2.dashboards().addDashboardContent(mDashboard, resource);
 
         DhisService.getInstance().syncDashboards();
         EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
@@ -205,6 +205,12 @@ public class DashboardItemAddFragment extends BaseDialogFragment
         if (loader != null && loader.getId() == LOADER_ID) {
             mAdapter.swapData(null);
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     private void queryApiResources() {
@@ -258,15 +264,14 @@ public class DashboardItemAddFragment extends BaseDialogFragment
                 return new ArrayList<>();
             }
 
-            /* List<DashboardItemContent> resources = Models.dashboardItemContent().query(mTypes);
+            List<DashboardItemContent> resources = Dhis2.dashboardItemContents().query(mTypes);
             List<OptionAdapterValue> adapterValues = new ArrayList<>();
             for (DashboardItemContent dashboardItemContent : resources) {
                 adapterValues.add(new OptionAdapterValue(dashboardItemContent.getUId(),
                         dashboardItemContent.getDisplayName()));
             }
 
-            return adapterValues; */
-            return null;
+            return adapterValues;
         }
     }
 }
