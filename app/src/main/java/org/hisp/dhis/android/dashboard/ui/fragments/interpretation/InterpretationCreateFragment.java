@@ -103,7 +103,7 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
 
         /* List<DashboardElement> elements = Models.dashboardElements()
                 .filter(mDashboardItem, State.TO_DELETE); */
-        List<DashboardElement> elements = Dhis2.dashboardElements().query(mDashboardItem);
+        List<DashboardElement> elements = Dhis2.dashboardElements().list(mDashboardItem);
         mDashboardItem.setDashboardElements(elements);
 
         mDialogLabel.setText(getString(R.string.create_interpretation));

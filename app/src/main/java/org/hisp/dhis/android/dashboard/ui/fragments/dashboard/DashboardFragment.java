@@ -234,12 +234,13 @@ public class DashboardFragment extends BaseFragment
             Dashboard dashboard = new Dashboard();
             dashboard.setId(mDashboardId);
 
-            List<DashboardItem> dashboardItems = Dhis2.dashboardItems()
-                    .filterByType(dashboard, DashboardItemContent.TYPE_MESSAGES);
+            /* List<DashboardItem> dashboardItems = Dhis2.dashboardItems()
+                    .filterByType(dashboard, DashboardItemContent.TYPE_MESSAGES); */
+            List<DashboardItem> dashboardItems = Dhis2.dashboardItems().list();
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {
                     List<DashboardElement> dashboardElements = Dhis2
-                            .dashboardElements().query(dashboardItem);
+                            .dashboardElements().list(dashboardItem);
                     dashboardItem.setDashboardElements(dashboardElements);
                 }
             }

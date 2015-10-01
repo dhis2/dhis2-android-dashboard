@@ -263,7 +263,7 @@ public class DashboardViewPagerFragment extends BaseFragment
 
         @Override
         public List<Dashboard> query(Context context) {
-            List<Dashboard> dashboards = Dhis2.dashboards().query();
+            List<Dashboard> dashboards = Dhis2.dashboards().list();
             Collections.sort(dashboards, Dashboard.DISPLAY_NAME_COMPARATOR);
             return dashboards;
         }

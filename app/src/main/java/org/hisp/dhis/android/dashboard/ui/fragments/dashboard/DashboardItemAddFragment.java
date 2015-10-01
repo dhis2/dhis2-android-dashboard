@@ -119,7 +119,7 @@ public class DashboardItemAddFragment extends BaseDialogFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         long dashboardId = getArguments().getLong(DASHBOARD_ID);
-        mDashboard = Dhis2.dashboards().query(dashboardId);
+        mDashboard = Dhis2.dashboards().get(dashboardId);
 
         ButterKnife.bind(this, view);
 
@@ -164,7 +164,7 @@ public class DashboardItemAddFragment extends BaseDialogFragment
     @OnItemClick(R.id.listview_simple)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         OptionAdapterValue adapterValue = mAdapter.getItem(position);
-        DashboardItemContent resource = Dhis2.dashboardItemContents().query(adapterValue.id);
+        DashboardItemContent resource = Dhis2.dashboardItemContents().get(adapterValue.id);
         Dhis2.dashboards().addDashboardContent(mDashboard, resource);
 
         DhisService.getInstance().syncDashboards();
@@ -264,7 +264,7 @@ public class DashboardItemAddFragment extends BaseDialogFragment
                 return new ArrayList<>();
             }
 
-            List<DashboardItemContent> resources = Dhis2.dashboardItemContents().query(mTypes);
+            List<DashboardItemContent> resources = Dhis2.dashboardItemContents().list(mTypes);
             List<OptionAdapterValue> adapterValues = new ArrayList<>();
             for (DashboardItemContent dashboardItemContent : resources) {
                 adapterValues.add(new OptionAdapterValue(dashboardItemContent.getUId(),

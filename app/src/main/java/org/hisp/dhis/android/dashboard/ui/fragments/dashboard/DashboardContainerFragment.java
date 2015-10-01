@@ -117,7 +117,7 @@ public class DashboardContainerFragment extends BaseFragment
 
         @Override
         public Boolean query(Context context) {
-            List<Dashboard> dashboards = Dhis2.dashboards().query();
+            List<Dashboard> dashboards = Dhis2.dashboards().list();
             return dashboards != null && dashboards.size() > 0;
         }
     }

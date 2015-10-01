@@ -104,7 +104,7 @@ public final class DashboardManageFragment extends BaseDialogFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mDashboard = Dhis2.dashboards()
-                .query(getArguments().getLong(DASHBOARD_ID));
+                .get(getArguments().getLong(DASHBOARD_ID));
 
         ButterKnife.bind(this, view);
 
