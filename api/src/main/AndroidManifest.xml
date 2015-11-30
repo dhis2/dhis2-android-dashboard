@@ -1,0 +1,9 @@
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.hisp.dhis.android.dashboard.api">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application android:allowBackup="true" />
+
+</manifest>
