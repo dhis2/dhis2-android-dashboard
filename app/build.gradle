@@ -8,8 +8,8 @@ android {
         applicationId "org.hisp.dhis.android.dashboard"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 3
-        versionName "0.6.1"
+        versionCode 4
+        versionName "0.6.2"
     }
     buildTypes {
         release {
