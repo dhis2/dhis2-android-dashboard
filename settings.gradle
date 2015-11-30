@@ -1,4 +1,0 @@
-include ':app', ':models', ':core', ':ui'
-project(':models').projectDir = new File(settingsDir, '../../SDK/dhis2-android-sdk/models')
-project(':core').projectDir = new File(settingsDir, '../../SDK/dhis2-android-sdk/core')
-project(':ui').projectDir = new File(settingsDir, '../../SDK/dhis2-android-sdk/ui')
