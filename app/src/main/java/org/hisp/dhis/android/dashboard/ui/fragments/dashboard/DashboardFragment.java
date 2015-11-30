@@ -60,6 +60,7 @@ import org.hisp.dhis.android.sdk.models.dashboard.DashboardElement;
 import org.hisp.dhis.android.sdk.models.dashboard.DashboardItem;
 import org.hisp.dhis.android.sdk.models.dashboard.DashboardItemContent;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -230,21 +231,23 @@ public class DashboardFragment extends BaseFragment
 
         @Override
         public List<DashboardItem> query(Context context) {
-            // temporary workaround
             Dashboard dashboard = new Dashboard();
             dashboard.setId(mDashboardId);
 
-            /* List<DashboardItem> dashboardItems = Dhis2.dashboardItems()
-                    .filterByType(dashboard, DashboardItemContent.TYPE_MESSAGES); */
-            List<DashboardItem> dashboardItems = Dhis2.dashboardItems().list();
+            List<DashboardItem> dashboardItems = Dhis2.dashboardItems().list(dashboard);
+            List<DashboardItem> filteredDashboardItems = new ArrayList<>();
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {
-                    List<DashboardElement> dashboardElements = Dhis2
-                            .dashboardElements().list(dashboardItem);
-                    dashboardItem.setDashboardElements(dashboardElements);
+                    if (!DashboardItemContent.TYPE_MESSAGES.equals(dashboardItem.getType()) &&
+                            !DashboardItemContent.TYPE_EVENT_REPORT.equals(dashboardItem.getType())) {
+                        List<DashboardElement> dashboardElements = Dhis2
+                                .dashboardElements().list(dashboardItem);
+                        dashboardItem.setDashboardElements(dashboardElements);
+                        filteredDashboardItems.add(dashboardItem);
+                    }
                 }
             }
-            return dashboardItems;
+            return filteredDashboardItems;
         }
     }
 }
