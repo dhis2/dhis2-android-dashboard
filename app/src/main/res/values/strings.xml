@@ -66,6 +66,7 @@
     <string name="share_interpretation">Share interpretation</string>
     <string name="edit_name">Edit name</string>
     <string name="no_dashboards">No dashboards</string>
+    <string name="click_the_search_button" >Click the search button to add a new dashboard item.</string>
 
     <string name="charts">Charts</string>
     <string name="event_charts">Event charts</string>
@@ -106,5 +107,6 @@
     <string name="languages">Languages</string>
     <string name="email">Email</string>
     <string name="phone_number">Phone number</string>
+
     <!-- END Account -->
 </resources>

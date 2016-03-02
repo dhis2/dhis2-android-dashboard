@@ -31,6 +31,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <org.hisp.dhis.android.dashboard.ui.views.FontTextView
+        android:id="@+id/empty_dashboard_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/click_the_search_button"
+        android:textColor="@color/navy_blue"
+        android:textSize="20sp"
+        app:font="@string/light_font_name" />
+
     <android.support.v4.view.ViewPager
         android:id="@+id/dashboard_view_pager"
         android:layout_width="match_parent"
@@ -64,5 +74,8 @@
         <include layout="@layout/progress_bar_horizontal" />
 
     </android.support.design.widget.AppBarLayout>
+
+
+
 
 </android.support.design.widget.CoordinatorLayout>
