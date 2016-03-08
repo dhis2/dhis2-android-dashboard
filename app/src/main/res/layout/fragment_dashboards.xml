@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) 2015, University of Oslo
   ~ All rights reserved.
   ~
@@ -25,8 +26,8 @@
   ~ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
-
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -39,13 +40,13 @@
         android:text="@string/click_the_search_button"
         android:textColor="@color/navy_blue"
         android:textSize="20sp"
-        app:font="@string/light_font_name" />
+        app:font="@string/light_font_name"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/dashboard_view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -59,7 +60,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/dashboard_tabs"
@@ -69,13 +70,10 @@
             app:tabIndicatorHeight="2dp"
             app:tabMode="scrollable"
             app:tabSelectedTextColor="@color/white"
-            app:tabTextColor="@color/transparent_white" />
+            app:tabTextColor="@color/transparent_white"/>
 
-        <include layout="@layout/progress_bar_horizontal" />
+        <include layout="@layout/progress_bar_horizontal"/>
 
     </android.support.design.widget.AppBarLayout>
-
-
-
 
 </android.support.design.widget.CoordinatorLayout>
