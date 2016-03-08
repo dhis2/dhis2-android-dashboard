@@ -134,17 +134,20 @@ final class InterpretationController {
             switch (interpretation.getType()) {
                 case Interpretation.TYPE_CHART: {
                     response = mDhisApi.postChartInterpretation(
-                            interpretation.getChart().getUId(), new TypedString(interpretation.getText()));
+                            interpretation.getChart().getUId(), new TypedString(interpretation
+                                    .getText()));
                     break;
                 }
                 case Interpretation.TYPE_MAP: {
                     response = mDhisApi.postMapInterpretation(
-                            interpretation.getMap().getUId(), new TypedString(interpretation.getText()));
+                            interpretation.getMap().getUId(), new TypedString(interpretation
+                                    .getText()));
                     break;
                 }
                 case Interpretation.TYPE_REPORT_TABLE: {
                     response = mDhisApi.postReportTableInterpretation(
-                            interpretation.getReportTable().getUId(), new TypedString(interpretation.getText()));
+                            interpretation.getReportTable().getUId(), new TypedString
+                                    (interpretation.getText()));
                     break;
                 }
                 default:
@@ -323,7 +326,8 @@ final class InterpretationController {
         }
     }
 
-    private void updateInterpretationCommentTimeStamp(InterpretationComment comment) throws APIException {
+    private void updateInterpretationCommentTimeStamp(InterpretationComment comment) throws
+            APIException {
         try {
             // after posting comment, timestamp both of interpretation and comment will change.
             // we have to reflect these changes here in order not to break data integrity during
@@ -391,7 +395,7 @@ final class InterpretationController {
                 "dataSet" + "[" + BASE + "]," +
                 "period" + "[" + BASE + "]," +
                 "organisationUnit" + "[" + BASE + "]," +
-                "comments" + "[" + BASE + ",user,text" + "]");
+                "comments" + "[" + BASE + ",user" + "[" + BASE + "]" + ",text" + "]");
 
         if (lastUpdated != null) {
             QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
@@ -460,7 +464,8 @@ final class InterpretationController {
         if (persistedInterpretations != null
                 && !persistedInterpretations.isEmpty()) {
             for (Interpretation interpretation : persistedInterpretations) {
-                interpretation.setInterpretationElements(queryInterpretationElements(interpretation));
+                interpretation.setInterpretationElements(queryInterpretationElements
+                        (interpretation));
                 interpretation.setComments(queryInterpretationComments(interpretation));
             }
         }
@@ -468,7 +473,8 @@ final class InterpretationController {
         return merge(actualInterpretations, updatedInterpretations, persistedInterpretations);
     }
 
-    private List<InterpretationComment> updateInterpretationComments(List<Interpretation> interpretations) {
+    private List<InterpretationComment> updateInterpretationComments(List<Interpretation>
+                                                                             interpretations) {
         List<InterpretationComment> interpretationComments = new ArrayList<>();
 
         if (interpretations != null && !interpretations.isEmpty()) {
@@ -575,7 +581,8 @@ final class InterpretationController {
         return new Select().from(User.class).queryList();
     }
 
-    private static List<InterpretationElement> queryInterpretationElements(Interpretation interpretation) {
+    private static List<InterpretationElement> queryInterpretationElements(Interpretation
+                                                                                   interpretation) {
         From<InterpretationElement> from = new Select().from(InterpretationElement.class);
 
         if (interpretation != null) {
@@ -588,7 +595,8 @@ final class InterpretationController {
         return from.queryList();
     }
 
-    private static List<InterpretationComment> queryInterpretationComments(Interpretation interpretation) {
+    private static List<InterpretationComment> queryInterpretationComments(Interpretation
+                                                                                   interpretation) {
         Where<InterpretationComment> where = new Select()
                 .from(InterpretationComment.class)
                 .where(Condition.column(InterpretationComment$Table
