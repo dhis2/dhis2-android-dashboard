@@ -26,8 +26,8 @@
   ~ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
-<translate
+<layoutAnimation
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:duration="@android:integer/config_longAnimTime"
-    android:fromXDelta="-100%p"
-    android:toXDelta="0%p"/>
+    android:animation="@anim/slide_in"
+    android:delay="50%"
+    android:interpolator="@android:anim/accelerate_interpolator"/>
