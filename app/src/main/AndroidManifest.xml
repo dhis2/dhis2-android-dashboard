@@ -17,7 +17,8 @@
         <activity
             android:name="org.hisp.dhis.android.dashboard.ui.activities.LoginActivity"
             android:label="@string/title_activity_login"
-            android:theme="@style/Base.Theme.App.Dark" />
+            android:theme="@style/Base.Theme.App.Dark"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
 
         <activity android:name="org.hisp.dhis.android.dashboard.ui.activities.LauncherActivity">
             <intent-filter>
