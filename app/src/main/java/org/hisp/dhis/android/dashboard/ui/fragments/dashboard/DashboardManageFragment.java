@@ -30,6 +30,7 @@ package org.hisp.dhis.android.dashboard.ui.fragments.dashboard;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
@@ -78,6 +79,8 @@ public final class DashboardManageFragment extends BaseDialogFragment {
     @Bind(R.id.delete_dashboard_button)
     Button mDeleteButton;
 
+    @Bind(R.id.input_name)
+    TextInputLayout input_name;
     Dashboard mDashboard;
 
     public static DashboardManageFragment newInstance(long dashboardId) {
@@ -131,16 +134,22 @@ public final class DashboardManageFragment extends BaseDialogFragment {
                 mDashboardName.setText(
                         mDashboard.getDisplayName());
                 mDashboardName.clearFocus();
-                break;
             }
             case R.id.accept_action: {
-                mDashboard.updateDashboard(
-                        mDashboardName.getText().toString());
-                mDashboardName.clearFocus();
 
-                if (isDhisServiceBound()) {
-                    getDhisService().syncDashboards();
-                    EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
+                if (mDashboardName.getText().toString().trim().length() == 0) {
+                    input_name.setError("Enter a valid name!");
+                } else {
+                    input_name.setError("");
+                    mDashboard.updateDashboard(
+                            mDashboardName.getText().toString());
+                    mDashboardName.clearFocus();
+
+                    if (isDhisServiceBound()) {
+                        getDhisService().syncDashboards();
+                        EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
+                    }
+                    dismiss();
                 }
                 break;
             }
@@ -155,6 +164,7 @@ public final class DashboardManageFragment extends BaseDialogFragment {
             case R.id.close_dialog_button: {
                 dismiss();
             }
+
         }
     }
 

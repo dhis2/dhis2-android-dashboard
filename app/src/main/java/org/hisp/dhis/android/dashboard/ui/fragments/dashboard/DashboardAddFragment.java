@@ -30,6 +30,7 @@ package org.hisp.dhis.android.dashboard.ui.fragments.dashboard;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
@@ -60,6 +61,9 @@ public final class DashboardAddFragment extends BaseDialogFragment {
     @Bind(R.id.dashboard_name)
     EditText mDashboardName;
 
+    @Bind(R.id.input_name)
+    TextInputLayout input_name;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,17 +87,22 @@ public final class DashboardAddFragment extends BaseDialogFragment {
     @SuppressWarnings("unused")
     public void onButtonClicked(View view) {
         if (view.getId() == R.id.save_dashboard) {
-            Dashboard newDashboard = Dashboard
-                    .createDashboard(mDashboardName.getText().toString());
-            newDashboard.save();
 
-            if (isDhisServiceBound()) {
-                getDhisService().syncDashboards();
+            if (mDashboardName.getText().toString().trim().length() == 0) {
+                input_name.setError("Enter a valid name!");
+            } else {
+                input_name.setError("");
+                Dashboard newDashboard = Dashboard
+                        .createDashboard(mDashboardName.getText().toString());
+                newDashboard.save();
+                if (isDhisServiceBound()) {
+                    getDhisService().syncDashboards();
+                }
+                EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
+                dismiss();
             }
-
-            EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
-        }
-        dismiss();
+        } else
+            dismiss();
     }
 
     public void show(FragmentManager manager) {
