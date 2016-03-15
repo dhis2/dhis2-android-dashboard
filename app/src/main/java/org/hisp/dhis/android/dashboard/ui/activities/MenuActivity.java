@@ -40,6 +40,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -58,26 +59,22 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
 public class MenuActivity extends BaseActivity
         implements OnNavigationItemSelectedListener, DrawerListener,
-        INavigationCallback, LoaderManager.LoaderCallbacks<UserAccount> {
+        INavigationCallback, View.OnClickListener, LoaderManager.LoaderCallbacks<UserAccount> {
 
     private static final int LOADER_ID = 589352;
-
-    @Bind(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
 
     @Bind(R.id.navigation_view)
     NavigationView mNavigationView;
 
-    @Bind(R.id.drawer_user_name)
-    TextView mUsername;
+    @Bind(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
 
-    @Bind(R.id.drawer_user_info)
+    TextView mUsername;
     TextView mUserInfo;
 
     Runnable mPendingRunnable;
@@ -88,9 +85,19 @@ public class MenuActivity extends BaseActivity
         setContentView(R.layout.activity_menu);
         ButterKnife.bind(this);
 
+        View headerView = LayoutInflater.from(this).inflate(
+                R.layout.navigation_header, mNavigationView, false);
+        mNavigationView.addHeaderView(headerView);
+        mNavigationView.setNavigationItemSelectedListener(this);
+
         mDrawerLayout.setDrawerListener(this);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        mNavigationView.setNavigationItemSelectedListener(this);
+
+        mUsername = (TextView) headerView.findViewById(R.id.drawer_user_name);
+        mUserInfo = (TextView) headerView.findViewById(R.id.drawer_user_info);
+
+        View userAvatar = headerView.findViewById(R.id.drawer_user_avatar);
+        userAvatar.setOnClickListener(this);
     }
 
     @Override
@@ -168,14 +175,12 @@ public class MenuActivity extends BaseActivity
         }
     }
 
-    @OnClick(R.id.drawer_user_avatar)
-    @SuppressWarnings("unused")
-    public void onClick() {
+    @Override
+    public void onClick(View v) {
         MenuItem item = mNavigationView.getMenu()
                 .findItem(R.id.menu_account_item);
         onNavigationItemSelected(item);
     }
-
 
     private void attachFragmentDelayed(final Fragment fragment) {
         isNull(fragment, "Fragment must not be null");
