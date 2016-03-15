@@ -49,6 +49,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
+
 /**
  * Fragment responsible for creation of new dashboards.
  */
@@ -61,8 +63,8 @@ public final class DashboardAddFragment extends BaseDialogFragment {
     @Bind(R.id.dashboard_name)
     EditText mDashboardName;
 
-    @Bind(R.id.input_name)
-    TextInputLayout input_name;
+    @Bind(R.id.text_input_dashboard_name)
+    TextInputLayout mTextInputLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,7 +75,8 @@ public final class DashboardAddFragment extends BaseDialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_dashboard_add, container, false);
     }
 
@@ -87,22 +90,23 @@ public final class DashboardAddFragment extends BaseDialogFragment {
     @SuppressWarnings("unused")
     public void onButtonClicked(View view) {
         if (view.getId() == R.id.save_dashboard) {
+            boolean isEmptyName = isEmpty(mDashboardName.getText().toString().trim());
+            String message = isEmptyName ? getString(R.string.enter_valid_name) : "";
+            mTextInputLayout.setError(message);
 
-            if (mDashboardName.getText().toString().trim().length() == 0) {
-                input_name.setError("Enter a valid name!");
-            } else {
-                input_name.setError("");
+            if (!isEmptyName) {
                 Dashboard newDashboard = Dashboard
                         .createDashboard(mDashboardName.getText().toString());
                 newDashboard.save();
                 if (isDhisServiceBound()) {
                     getDhisService().syncDashboards();
+                    EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
                 }
-                EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
                 dismiss();
             }
-        } else
+        } else {
             dismiss();
+        }
     }
 
     public void show(FragmentManager manager) {

@@ -66,6 +66,7 @@
     <string name="share_interpretation">Share interpretation</string>
     <string name="edit_name">Edit name</string>
     <string name="no_dashboards">No dashboards</string>
+    <string name="enter_valid_name">Please, enter valid name</string>
 
     <string name="click_the_search_button">
         Click the search button to add a new dashboard item.

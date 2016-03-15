@@ -55,6 +55,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 
+import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
+
 /**
  * Handles editing (changing name) and removal of given dashboard.
  */
@@ -79,8 +81,9 @@ public final class DashboardManageFragment extends BaseDialogFragment {
     @Bind(R.id.delete_dashboard_button)
     Button mDeleteButton;
 
-    @Bind(R.id.input_name)
-    TextInputLayout input_name;
+    @Bind(R.id.text_input_dashboard_name)
+    TextInputLayout mTextInputLayout;
+
     Dashboard mDashboard;
 
     public static DashboardManageFragment newInstance(long dashboardId) {
@@ -136,13 +139,12 @@ public final class DashboardManageFragment extends BaseDialogFragment {
                 mDashboardName.clearFocus();
             }
             case R.id.accept_action: {
+                boolean isEmptyName = isEmpty(mDashboardName.getText().toString().trim());
+                String message = isEmptyName ? getString(R.string.enter_valid_name) : "";
+                mTextInputLayout.setError(message);
 
-                if (mDashboardName.getText().toString().trim().length() == 0) {
-                    input_name.setError("Enter a valid name!");
-                } else {
-                    input_name.setError("");
-                    mDashboard.updateDashboard(
-                            mDashboardName.getText().toString());
+                if (!isEmptyName) {
+                    mDashboard.updateDashboard(mDashboardName.getText().toString());
                     mDashboardName.clearFocus();
 
                     if (isDhisServiceBound()) {
