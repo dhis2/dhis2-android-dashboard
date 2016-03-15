@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2015, University of Oslo
-  ~ All rights reserved.
+  ~ Copyright (c) 2016, University of Oslo
   ~
+  ~ All rights reserved.
   ~ Redistribution and use in source and binary forms, with or without
   ~ modification, are permitted provided that the following conditions are met:
   ~ Redistributions of source code must retain the above copyright notice, this
@@ -26,44 +26,23 @@
   ~ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/switcher_dashboard_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/dashboard_view_pager"
+    <include layout="@layout/recycler_view" />
+
+    <org.hisp.dhis.android.dashboard.ui.views.FontTextView
+        android:id="@+id/text_view_empty_dashboard_message"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/click_the_search_button"
+        android:textColor="@color/navy_blue"
+        android:textSize="20sp"
+        app:font="@string/light_font_name" />
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-        <android.support.design.widget.TabLayout
-            android:id="@+id/dashboard_tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabIndicatorColor="@color/white"
-            app:tabIndicatorHeight="2dp"
-            app:tabMode="scrollable"
-            app:tabSelectedTextColor="@color/white"
-            app:tabTextColor="@color/transparent_white"/>
-
-        <include layout="@layout/progress_bar_horizontal"/>
-
-    </android.support.design.widget.AppBarLayout>
-
-</android.support.design.widget.CoordinatorLayout>
+</ViewSwitcher>

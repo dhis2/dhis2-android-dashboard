@@ -40,6 +40,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -75,6 +76,8 @@ public class DashboardFragment extends BaseFragment
     private static final String WRITE = "arg:write";
     private static final String MANAGE = "arg:manage";
     private static final String EXTERNALIZE = "arg:externalize";
+
+    ViewSwitcher mViewSwitcher;
 
     RecyclerView mRecyclerView;
 
@@ -112,12 +115,13 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup group, Bundle bundle) {
-        return inflater.inflate(R.layout.recycler_view, group, false);
+        return inflater.inflate(R.layout.fragment_dashboard_list, group, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        mRecyclerView = (RecyclerView) view;
+        mViewSwitcher = (ViewSwitcher) view;
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
         final int spanCount = getResources().getInteger(R.integer.column_nums);
 
@@ -168,6 +172,16 @@ public class DashboardFragment extends BaseFragment
     public void onLoadFinished(Loader<List<DashboardItem>> loader,
                                List<DashboardItem> dashboardItems) {
         if (loader.getId() == LOADER_ID) {
+            boolean isDashboardItemListEmpty = dashboardItems == null || dashboardItems.isEmpty();
+            boolean isEmptyListMessageShown = mViewSwitcher.getCurrentView().getId() ==
+                    R.id.text_view_empty_dashboard_message;
+
+            if (isDashboardItemListEmpty && !isEmptyListMessageShown) {
+                mViewSwitcher.showNext();
+            } else if (!isDashboardItemListEmpty && isEmptyListMessageShown) {
+                mViewSwitcher.showNext();
+            }
+
             mAdapter.swapData(dashboardItems);
         }
     }
