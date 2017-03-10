@@ -137,7 +137,6 @@ public class InterpretationCommentsFragment extends BaseFragment
 
         ButterKnife.bind(this, view);
 
-        mToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,7 +145,7 @@ public class InterpretationCommentsFragment extends BaseFragment
         });
 
         mAdapter = new InterpretationCommentsAdapter(getActivity(),
-                getLayoutInflater(savedInstanceState), this, mUser);
+                LayoutInflater.from(getActivity()), this, mUser);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
