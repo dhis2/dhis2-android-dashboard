@@ -170,7 +170,7 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onLoadFinished(Loader<List<DashboardItem>> loader,
-                               List<DashboardItem> dashboardItems) {
+            List<DashboardItem> dashboardItems) {
         if (loader.getId() == LOADER_ID) {
             boolean isDashboardItemListEmpty = dashboardItems == null || dashboardItems.isEmpty();
             boolean isEmptyListMessageShown = mViewSwitcher.getCurrentView().getId() ==
@@ -259,7 +259,15 @@ public class DashboardFragment extends BaseFragment
                     .where(
                             Condition.column(DashboardItem$Table.DASHBOARD_DASHBOARD).is(mDashboardId),
                             Condition.column(DashboardItem$Table.STATE).isNot(State.TO_DELETE.toString()),
-                            Condition.column(DashboardItem$Table.TYPE).isNot(DashboardItemContent.TYPE_MESSAGES))
+                            Condition.column(DashboardItem$Table.TYPE).in(
+                                    DashboardItemContent.TYPE_CHART,
+                                    DashboardItemContent.TYPE_EVENT_CHART,
+                                    DashboardItemContent.TYPE_MAP,
+                                    DashboardItemContent.TYPE_REPORT_TABLE,
+                                    DashboardItemContent.TYPE_EVENT_REPORT,
+                                    DashboardItemContent.TYPE_USERS,
+                                    DashboardItemContent.TYPE_REPORTS,
+                                    DashboardItemContent.TYPE_RESOURCES))
                     .queryList();
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {
