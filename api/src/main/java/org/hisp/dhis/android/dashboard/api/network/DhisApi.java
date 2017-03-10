@@ -58,9 +58,11 @@ public interface DhisApi {
     /////////////////////////////////////////////////////////////////////////
 
     @GET("/system/info/")
+    @Headers("Accept: application/json")
     SystemInfo getSystemInfo();
 
     @GET("/me/")
+    @Headers("Accept: application/json")
     UserAccount getCurrentUserAccount(@QueryMap Map<String, String> queryParams);
 
 
@@ -69,37 +71,47 @@ public interface DhisApi {
     /////////////////////////////////////////////////////////////////////////
 
     @GET("/dashboards?paging=false")
+    @Headers("Accept: application/json")
     Map<String, List<Dashboard>> getDashboards(@QueryMap Map<String, String> queryMap);
 
     @GET("/dashboards/{uid}")
+    @Headers("Accept: application/json")
     Dashboard getDashboard(@Path("uid") String uId, @QueryMap Map<String, String> queryMap);
 
     @POST("/dashboards/")
+    @Headers("Content-Type: application/json")
     Response postDashboard(@Body Dashboard dashboard);
 
     @DELETE("/dashboards/{uid}")
+    @Headers("Content-Type: application/json")
     Response deleteDashboard(@Path("uid") String dashboardUId);
 
     @PUT("/dashboards/{uid}")
+    @Headers("Content-Type: application/json")
     Response putDashboard(@Path("uid") String uid, @Body Dashboard dashboard);
 
     @GET("/dashboardItems?paging=false")
+    @Headers("Accept: application/json")
     Map<String, List<DashboardItem>> getDashboardItems(@QueryMap Map<String, String> queryMap);
 
     @GET("/dashboardItems/{uid}")
+    @Headers("Accept: application/json")
     DashboardItem getDashboardItem(@Path("uid") String uId, @QueryMap Map<String, String> queryMap);
 
     @POST("/dashboards/{dashboardUId}/items/content")
+    @Headers("Content-Type: application/json")
     Response postDashboardItem(@Path("dashboardUId") String dashboardUId,
                                @Query("type") String type,
                                @Query("id") String uid,
                                @Body String stubBody);
 
     @DELETE("/dashboards/{dashboardUId}/items/{itemUId}")
+    @Headers("Content-Type: application/json")
     Response deleteDashboardItem(@Path("dashboardUId") String dashboardUId,
                                  @Path("itemUId") String itemUId);
 
     @DELETE("/dashboards/{dashboardUid}/items/{itemUid}/content/{contentUid}")
+    @Headers("Content-Type: application/json")
     Response deleteDashboardItemContent(@Path("dashboardUid") String dashboardUid,
                                         @Path("itemUid") String itemUid,
                                         @Path("contentUid") String contentUid);
@@ -110,15 +122,19 @@ public interface DhisApi {
     /////////////////////////////////////////////////////////////////////////
 
     @GET("/charts?paging=false")
+    @Headers("Accept: application/json")
     Map<String, List<DashboardItemContent>> getCharts(@QueryMap Map<String, String> queryParams);
 
     @GET("/eventCharts?paging=false")
+    @Headers("Accept: application/json")
     Map<String, List<DashboardItemContent>> getEventCharts(@QueryMap Map<String, String> queryParams);
 
     @GET("/maps?paging=false")
+    @Headers("Accept: application/json")
     Map<String, List<DashboardItemContent>> getMaps(@QueryMap Map<String, String> queryParams);
 
     @GET("/reportTables?paging=false")
+    @Headers("Accept: application/json")
     Map<String, List<DashboardItemContent>> getReportTables(@QueryMap Map<String, String> queryParams);
 
     @Headers("Accept: application/text")
@@ -126,15 +142,19 @@ public interface DhisApi {
     Response getReportTableData(@Path("id") String id);
 
     @GET("/eventReports?paging=false")
+    @Headers("Accept: application/json")
     Map<String, List<DashboardItemContent>> getEventReports(@QueryMap Map<String, String> queryParams);
 
     @GET("/users?paging=false")
+    @Headers("Accept: application/json")
     Map<String, List<DashboardItemContent>> getUsers(@QueryMap Map<String, String> queryParams);
 
     @GET("/reports?paging=false")
+    @Headers("Accept: application/json")
     Map<String, List<DashboardItemContent>> getReports(@QueryMap Map<String, String> queryMap);
 
     @GET("/documents?paging=false")
+    @Headers("Accept: application/json")
     Map<String, List<DashboardItemContent>> getResources(@QueryMap Map<String, String> queryMap);
 
 
@@ -143,9 +163,11 @@ public interface DhisApi {
     /////////////////////////////////////////////////////////////////////////
 
     @GET("/interpretations/?paging=false")
+    @Headers("Accept: application/json")
     Map<String, List<Interpretation>> getInterpretations(@QueryMap Map<String, String> queryMap);
 
     @GET("/interpretations/{uid}")
+    @Headers("Accept: application/json")
     Interpretation getInterpretation(@Path("uid") String uId, @QueryMap Map<String, String> queryMap);
 
     @Headers("Content-Type: text/plain")
