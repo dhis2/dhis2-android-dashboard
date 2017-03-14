@@ -28,7 +28,7 @@ public final class SystemInfo {
     String lastAnalyticsTableSuccess;
 
     @JsonProperty("revision")
-    int revision;
+    String revision;
 
     @JsonProperty("version")
     String version;
@@ -94,12 +94,12 @@ public final class SystemInfo {
     }
 
     @JsonIgnore
-    public int getRevision() {
+    public String getRevision() {
         return revision;
     }
 
     @JsonIgnore
-    public void setRevision(int revision) {
+    public void setRevision(String revision) {
         this.revision = revision;
     }
 
