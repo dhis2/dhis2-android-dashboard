@@ -1,0 +1,3 @@
+ - Patched retrofit service
+ - Aligned to the latest SDK version
+ - Updated UI
