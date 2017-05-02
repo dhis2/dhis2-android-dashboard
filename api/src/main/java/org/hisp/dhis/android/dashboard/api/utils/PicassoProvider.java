@@ -30,12 +30,17 @@ package org.hisp.dhis.android.dashboard.api.utils;
 
 import android.content.Context;
 
+import com.squareup.okhttp.Cache;
+import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Response;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
+
+import java.io.IOException;
 
 public final class PicassoProvider {
 
@@ -48,6 +53,16 @@ public final class PicassoProvider {
         if (mPicasso == null) {
             OkHttpClient client = RepoManager.provideOkHttpClient(
                     DhisController.getInstance().getUserCredentials());
+
+            client.networkInterceptors().add(new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Response originalResponse = chain.proceed(chain.request());
+                    return originalResponse.newBuilder().header("Cache-Control", "max-age=" + (60 * 60 * 24 * 365)).build();
+                }
+            });
+
+            client.setCache(new Cache(context.getCacheDir(), Integer.MAX_VALUE));
 
             mPicasso = new Picasso.Builder(context)
                     .downloader(new OkHttpDownloader(client))
