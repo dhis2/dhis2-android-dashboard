@@ -151,7 +151,7 @@ public final class UserAccount extends BaseModel implements IdentifiableObject {
         User user = new User();
         user.setUId(userAccount.getUId());
         user.setAccess(userAccount.getAccess());
-        user.setCreated(user.getCreated());
+        user.setCreated(userAccount.getCreated());
         user.setLastUpdated(userAccount.getLastUpdated());
         user.setName(userAccount.getName());
         user.setDisplayName(userAccount.getDisplayName());
