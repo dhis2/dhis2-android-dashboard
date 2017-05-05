@@ -3,6 +3,7 @@ package org.hisp.dhis.android.core.interpretation;
 import static org.junit.Assert.assertTrue;
 
 import org.hisp.dhis.android.core.commons.DateTestUtils;
+import org.hisp.dhis.android.core.commons.FileReader;
 import org.hisp.dhis.android.core.commons.JsonParser;
 import org.hisp.dhis.android.dashboard.api.models.Access;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
@@ -14,68 +15,6 @@ import org.junit.Test;
 import java.io.IOException;
 
 public class InterpretationTests {
-
-    private static final String INTERPRETATION_JSON = "{\n"
-            + "\n"
-            + "    \"created\": \"2017-10-21T10:10:43.451\",\n"
-            + "    \"lastUpdated\": \"2017-10-21T10:10:43.451\",\n"
-            + "    \"name\": \"BR11Oy1Q4yR\",\n"
-            + "    \"id\": \"BR11Oy1Q4yR\",\n"
-            + "    \"displayName\": \"BR11Oy1Q4yR\",\n"
-            + "    \"type\": \"CHART\",\n"
-            + "    \"text\": \"This chart shows that BCG doses is low for 2014, why is that?\",\n"
-            + "    \"access\": {\n"
-            + "        \"read\": true,\n"
-            + "        \"update\": true,\n"
-            + "        \"externalize\": false,\n"
-            + "        \"delete\": true,\n"
-            + "        \"write\": true,\n"
-            + "        \"manage\": true\n"
-            + "    },\n"
-            + "    \"chart\": {\n"
-            + "        \"lastUpdated\": \"2015-07-15T15:25:20.264\",\n"
-            + "        \"created\": \"2013-05-29T12:52:54.560\",\n"
-            + "        \"name\": \"Immunization: BCG, Measles, YF doses comparison\",\n"
-            + "        \"id\": \"R9A0rvAydpn\",\n"
-            + "        \"displayName\": \"Immunization: BCG, Measles, YF doses comparison\"\n"
-            + "    },\n"
-            + "    \"user\": {\n"
-            + "        \"lastUpdated\": \"2017-01-19T14:24:04.447\",\n"
-            + "        \"created\": \"2013-04-18T17:15:08.407\",\n"
-            + "        \"name\": \"John Traore\",\n"
-            + "        \"id\": \"xE7jOejl9FI\",\n"
-            + "        \"displayName\": \"John Traore\"\n"
-            + "    },\n"
-            + "    \"comments\": [\n"
-            + "        {\n"
-            + "            \"lastUpdated\": \"2014-10-21T10:11:19.537\",\n"
-            + "            \"created\": \"2014-10-21T10:11:19.537\",\n"
-            + "            \"id\": \"Eg7x5Kt2XgV\",\n"
-            + "            \"text\": \"It might be caused by a stock-out of vaccines.\",\n"
-            + "            \"user\": {\n"
-            + "                \"lastUpdated\": \"2017-01-19T14:24:04.447\",\n"
-            + "                \"created\": \"2013-04-18T17:15:08.407\",\n"
-            + "                \"name\": \"John Traore\",\n"
-            + "                \"id\": \"xE7jOejl9FI\",\n"
-            + "                \"displayName\": \"John Traore\"\n"
-            + "            }\n"
-            + "        },\n"
-            + "        {\n"
-            + "            \"lastUpdated\": \"2014-10-21T10:11:44.325\",\n"
-            + "            \"created\": \"2014-10-21T10:11:44.325\",\n"
-            + "            \"id\": \"oRmqfmnCLsQ\",\n"
-            + "            \"text\": \"Yes I believe so\",\n"
-            + "            \"user\": {\n"
-            + "                \"lastUpdated\": \"2017-01-19T14:24:04.447\",\n"
-            + "                \"created\": \"2013-04-18T17:15:08.407\",\n"
-            + "                \"name\": \"John Traore\",\n"
-            + "                \"id\": \"xE7jOejl9FI\",\n"
-            + "                \"displayName\": \"John Traore\"\n"
-            + "            }\n"
-            + "        }\n"
-            + "    ]\n"
-            + "\n"
-            + "}";
 
     @Test
     public void interpretation_shouldMapFromJsonString() throws IOException {
@@ -222,7 +161,7 @@ public class InterpretationTests {
 
     private Interpretation getInterpretationFromJson() throws IOException {
         return (Interpretation) JsonParser.getModelFromJson(Interpretation.class,
-                INTERPRETATION_JSON);
+                new FileReader().getStringFromFile("interpretation.json"));
     }
 
     private Access getAccessObject() {

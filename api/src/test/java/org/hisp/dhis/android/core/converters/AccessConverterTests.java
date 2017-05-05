@@ -2,17 +2,15 @@ package org.hisp.dhis.android.core.converters;
 
 import static junit.framework.Assert.assertTrue;
 
+import org.hisp.dhis.android.core.commons.FileReader;
 import org.hisp.dhis.android.dashboard.api.models.Access;
 import org.hisp.dhis.android.dashboard.api.persistence.converters.AccessConverter;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class AccessConverterTests {
-    public static final String ACCESS_ALL_TRUE_AS_DATABASE_STRING = "{\"manage\":true,"
-            + "\"externalize\":true,\"write\":true,\"read\":true,\"update\":true,\"delete\":true}";
-    public static final String ACCESS_ALL_FALSE_AS_DATABASE_STRING = "{\"manage\":false,"
-            + "\"externalize\":false,\"write\":false,\"read\":false,\"update\":false,"
-            + "\"delete\":false}";
     public static Access accessObject;
     AccessConverter accessConverter = new AccessConverter();
 
@@ -29,13 +27,14 @@ public class AccessConverterTests {
 
     @Test
     public void convert_access_object_to_database_string() throws Exception {
-        assertTrue(accessConverter.getDBValue(accessObject).equals(
-                ACCESS_ALL_TRUE_AS_DATABASE_STRING));
+        String access = new FileReader().getStringFromFile("access_all_true_string.txt");
+        assertTrue(accessConverter.getDBValue(accessObject).equals(access));
     }
 
     @Test
-    public void convert_access_all_true_database_string_to_model() {
-        Access access = accessConverter.getModelValue(ACCESS_ALL_TRUE_AS_DATABASE_STRING);
+    public void convert_access_all_true_database_string_to_model() throws IOException {
+        Access access = accessConverter.getModelValue( new FileReader().getStringFromFile(
+                "access_all_true_string.txt"));
         assertTrue(access.isDelete());
         assertTrue(access.isRead());
         assertTrue(access.isWrite());
@@ -44,8 +43,9 @@ public class AccessConverterTests {
     }
 
     @Test
-    public void convert_access_all_false_database_string_to_model() {
-        Access access = accessConverter.getModelValue(ACCESS_ALL_FALSE_AS_DATABASE_STRING);
+    public void convert_access_all_false_database_string_to_model() throws IOException {
+        Access access = accessConverter.getModelValue( new FileReader().getStringFromFile(
+                "access_all_false_string.txt"));
         assertTrue(!access.isDelete());
         assertTrue(!access.isRead());
         assertTrue(!access.isWrite());

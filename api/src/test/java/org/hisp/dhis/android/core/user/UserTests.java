@@ -3,6 +3,7 @@ package org.hisp.dhis.android.core.user;
 import static org.junit.Assert.assertTrue;
 
 import org.hisp.dhis.android.core.commons.DateTestUtils;
+import org.hisp.dhis.android.core.commons.FileReader;
 import org.hisp.dhis.android.core.commons.JsonParser;
 import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
@@ -14,24 +15,6 @@ import org.junit.rules.ExpectedException;
 import java.io.IOException;
 
 public class UserTests {
-
-    public static final String USER_ACCOUNT_JSON = "{\"created\":\"2013-04-18T17:15:08.407\","
-            + "\"lastUpdated\":\"2017-05-02T17:02:37.817\","
-            + "\"name\":\"John Traore\","
-            + "\"id\":\"xE7jOejl9FI\","
-            + "\"birthday\":\"1971-04-08T00:00:00.000\","
-            + "\"education\":\"Master of super using\","
-            + "\"gender\":\"gender_male\","
-            + "\"languages\":\"English\","
-            + "\"displayName\":\"John Traore\","
-            + "\"jobTitle\":\"Super user\","
-            + "\"firstName\":\"John\","
-            + "\"surname\":\"Traore\","
-            + "\"employer\":\"DHIS\","
-            + "\"interests\":\"Football, swimming, singing, dancing\","
-            + "\"introduction\":\"I am the super user of DHIS 2\","
-            + "\"email\":\"someone@dhis2.org\","
-            + "\"organisationUnits\":[{\"id\":\"ImspTQPwCqd\"}]}";
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -76,6 +59,6 @@ public class UserTests {
     }
 
     private UserAccount getUserAccountFromJson() throws IOException {
-        return (UserAccount) JsonParser.getModelFromJson(UserAccount.class, USER_ACCOUNT_JSON);
+        return (UserAccount) JsonParser.getModelFromJson(UserAccount.class, new FileReader().getStringFromFile("user.json"));
     }
 }

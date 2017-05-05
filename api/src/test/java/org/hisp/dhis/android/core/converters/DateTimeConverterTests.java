@@ -14,7 +14,6 @@ import java.util.TimeZone;
 public class DateTimeConverterTests {
 
     public static final String DATETIME_AS_STRING = "2016-04-21T15:37:07.740Z";
-    public static final String STATE_TO_POST = "TO_POST";
 
     DateTimeConverter dateTimeConverter = new DateTimeConverter();
 
