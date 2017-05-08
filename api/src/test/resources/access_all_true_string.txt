@@ -1,1 +1,0 @@
-{"manage":true,"externalize":true,"write":true,"read":true,"update":true,"delete":true}

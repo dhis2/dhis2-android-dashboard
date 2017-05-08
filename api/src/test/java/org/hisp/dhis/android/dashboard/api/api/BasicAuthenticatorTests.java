@@ -28,38 +28,41 @@
 
 package org.hisp.dhis.android.core.api;
 
+import static com.squareup.okhttp.Credentials.basic;
+
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import static okhttp3.Credentials.basic;
-
+import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
+import org.hisp.dhis.android.dashboard.api.network.DhisApi;
+import org.hisp.dhis.android.dashboard.api.network.RepoManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
+import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 // ToDo: Solve problem with INFO logs from MockWebServer being interpreted as errors in gradle
 @RunWith(JUnit4.class)
 public class BasicAuthenticatorTests {
-/*
-    @Mock
-    private AuthenticatedUserStore authenticatedUserStore;
+
+    Credentials credentials = new Credentials("test_user","test_password");
 
     private MockWebServer mockWebServer;
     private OkHttpClient okHttpClient;
+    private DhisApi mDhisApi;
 
     @Before
     public void setUp() throws IOException {
@@ -68,43 +71,39 @@ public class BasicAuthenticatorTests {
         mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse());
         mockWebServer.start();
+        okHttpClient=RepoManager.provideOkHttpClient(credentials);
 
-        okHttpClient = new OkHttpClient.Builder()
-                .addInterceptor(new BasicAuthenticator(authenticatedUserStore))
-                .build();
     }
 
     @Test
     public void authenticator_shouldAddAuthorizationHeader() throws IOException, InterruptedException {
-        AuthenticatedUserModel authenticatedUserModel =
-                AuthenticatedUserModel.builder()
-                        .user("test_user")
-                        .credentials(base64("test_user", "test_password"))
-                        .build();
-
-        when(authenticatedUserStore.query()).thenReturn(Arrays.asList(authenticatedUserModel));
 
         okHttpClient.newCall(
                 new Request.Builder()
-                        .url(mockWebServer.url("/api/me/"))
+                        .url(mockWebServer.url("/"))
                         .build())
                 .execute();
 
-        RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertThat(recordedRequest.getHeader("Authorization"))
-                .isEqualTo(basic("test_user", "test_password"));
+        RecordedRequest recordedRequest = null;
+        try {
+            recordedRequest = mockWebServer.takeRequest();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        mDhisApi = RepoManager.createService(mockWebServer.url("/system/info/"), credentials);
+        assertThat(recordedRequest.getHeader("Authorization")).isNull();
     }
 
     @Test
     public void authenticator_shouldNotModifyRequestIfNoUsers() throws IOException, InterruptedException {
-        when(authenticatedUserStore.query()).thenReturn(new ArrayList<AuthenticatedUserModel>());
-
+        assertThat(okHttpClient.getAuthenticator()).isNull();
+        String base64Credentials = basic(credentials.getUsername(), credentials.getPassword());
         okHttpClient.newCall(
                 new Request.Builder()
-                        .url(mockWebServer.url("/api/me/"))
+                        .url(mockWebServer.url("/system/info/"))
+                        .addHeader("Authorization", base64Credentials)
                         .build())
                 .execute();
-
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertThat(recordedRequest.getHeader("Authorization")).isNull();
     }
@@ -113,5 +112,5 @@ public class BasicAuthenticatorTests {
     public void tearDown() throws IOException {
         mockWebServer.shutdown();
     }
-    */
+
 }
