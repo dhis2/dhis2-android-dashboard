@@ -33,8 +33,6 @@ public class UserTests {
 
     private UserAccount getUserAccountFromJson() throws IOException {
         return (UserAccount) JsonParser.getModelFromJson(UserAccount.class, new FileReader().getStringFromFile(
-
-
                 "userAccount.json"));
     }
 }

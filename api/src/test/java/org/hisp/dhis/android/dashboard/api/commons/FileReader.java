@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 public class FileReader {
-    public File getFile(String filename) {
+    private File getFile(String filename) {
         ClassLoader classLoader = getClass().getClassLoader();
         URL resource = classLoader.getResource(filename);
         return new File(resource.getPath());

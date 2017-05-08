@@ -10,7 +10,7 @@ import java.util.TimeZone;
 public class DateTestUtils {
     public final static String DHIS2_GMT_NEW_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
-    public static Date parseDate(String date, String format) {
+    private static Date parseDate(String date, String format) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat(format);
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
