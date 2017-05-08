@@ -1,8 +1,7 @@
-package org.hisp.dhis.android.core.network;
+package org.hisp.dhis.android.dashboard.api.network;
 
 import static org.junit.Assert.assertTrue;
 
-import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -30,8 +29,7 @@ public class ApiExceptionTests {
 
     @Test
     public void retrofit_conversion_exception_map_to_api_exception() {
-        APIException apiException = APIException.fromRetrofitError(
-                getConversionExceptionFromRetrofit());
+        APIException apiException = getConversionExceptionFromRetrofit();
         assertTrue(apiException.getKind().equals(APIException.Kind.CONVERSION));
         assertTrue(apiException.getUrl().equals("test_message"));
     }
@@ -56,9 +54,10 @@ public class ApiExceptionTests {
                 RetrofitError.networkError("test_message", new IOException()));
     }
 
-    private RetrofitError getConversionExceptionFromRetrofit() {
-        return RetrofitError.conversionError("test_message", response, converter,
-                type, new ConversionException("test_message"));
+    private APIException getConversionExceptionFromRetrofit() {
+        return APIException.fromRetrofitError(
+                RetrofitError.conversionError("test_message", response, converter,
+                        type, new ConversionException("test_message")));
     }
 
     private APIException getUnexpectedExceptionFromRetrofit() {

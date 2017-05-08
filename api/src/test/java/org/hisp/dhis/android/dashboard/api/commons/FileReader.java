@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.core.commons;
+package org.hisp.dhis.android.dashboard.api.commons;
 
 import java.io.BufferedReader;
 import java.io.File;

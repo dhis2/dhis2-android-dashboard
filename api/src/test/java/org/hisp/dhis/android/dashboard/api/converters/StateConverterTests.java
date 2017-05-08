@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.core.converters;
+package org.hisp.dhis.android.dashboard.api.converters;
 
 import static junit.framework.Assert.assertTrue;
 

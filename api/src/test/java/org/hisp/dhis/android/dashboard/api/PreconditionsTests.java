@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.core;
+package org.hisp.dhis.android.dashboard.api;
 
 import org.hisp.dhis.android.dashboard.api.utils.Preconditions;
 import org.junit.Rule;

@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.core.meta;
+package org.hisp.dhis.android.dashboard.api.meta;
 
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.junit.Rule;

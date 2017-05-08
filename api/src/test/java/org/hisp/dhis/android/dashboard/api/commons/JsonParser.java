@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.core.commons;
+package org.hisp.dhis.android.dashboard.api.commons;
 
 import org.hisp.dhis.android.dashboard.api.utils.ObjectMapperProvider;
 
