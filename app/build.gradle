@@ -43,4 +43,7 @@ dependencies {
     // Other
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.github.chrisbanes.photoview:library:1.2.4'
+
+    // Java test dependencies
+    testCompile "junit:junit:4.10"
 }

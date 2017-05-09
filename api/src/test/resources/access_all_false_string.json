@@ -1,0 +1,8 @@
+{
+  "manage": false,
+  "externalize": false,
+  "write": false,
+  "read": false,
+  "update": false,
+  "delete": false
+}
