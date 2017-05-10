@@ -36,6 +36,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -271,7 +272,10 @@ public final class InterpretationFragment extends BaseFragment
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
+        Log.d(TAG, "Received " + result.getResourceType());
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
+            getDhisService().pullInterpretationImages(getContext());
+        } else if (result.getResourceType() == ResourceType.INTERPRETATION_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }
@@ -281,7 +285,8 @@ public final class InterpretationFragment extends BaseFragment
     public void onUiEventReceived(UiEvent uiEvent) {
         if (uiEvent.getEventType() == UiEvent.UiEventType.SYNC_INTERPRETATIONS) {
             boolean isLoading = isDhisServiceBound() &&
-                    getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
+                    getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS)
+                    || getDhisService().isJobRunning(DhisService.PULL_INTERPRETATION_IMAGES);
             if (isLoading) {
                 mProgressBar.setVisibility(View.VISIBLE);
             } else {
