@@ -155,4 +155,11 @@ public class DhisController {
     public void syncInterpretations() throws APIException {
         (new InterpretationController(mDhisApi)).syncInterpretations();
     }
+
+    public void pullDashboardImages(Context context) {
+        (new PullImageController(context)).pullDashboardImages();
+    }
+    public void pullInterpretationImages(Context context) {
+        (new PullImageController(context)).pullInterpretationImages();
+    }
 }
