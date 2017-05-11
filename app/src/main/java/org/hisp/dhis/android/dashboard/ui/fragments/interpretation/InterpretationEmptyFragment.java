@@ -3,6 +3,7 @@ package org.hisp.dhis.android.dashboard.ui.fragments.interpretation;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -106,7 +107,10 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
+        Log.d(TAG, "Received " + result.getResourceType());
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
+            getDhisService().pullInterpretationImages(getContext());
+        } else if (result.getResourceType() == ResourceType.INTERPRETATION_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }

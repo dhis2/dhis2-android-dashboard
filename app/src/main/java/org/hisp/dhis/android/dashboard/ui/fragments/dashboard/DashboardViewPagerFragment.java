@@ -35,6 +35,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -121,7 +122,11 @@ public class DashboardViewPagerFragment extends BaseFragment
         }
 
         boolean isLoading = isDhisServiceBound() &&
-                getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS);
+                getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS)
+                ||
+                getDhisService().isJobRunning(DhisService.SYNC_DASHBOARD_CONTENT)
+                ||
+                getDhisService().isJobRunning(DhisService.PULL_DASHBOARD_IMAGES);
         if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -260,8 +265,19 @@ public class DashboardViewPagerFragment extends BaseFragment
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
+        Log.d(TAG, "Received " + result.getResourceType());
         if (result.getResourceType() == ResourceType.DASHBOARDS) {
+            getDhisService().syncDashboardContents();
+        }
+        if (result.getResourceType() == ResourceType.DASHBOARDS_CONTENT) {
+            getDhisService().pullDashboardImages(getContext());
+        }
+        if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
+            getDhisService().pullInterpretationImages(getContext());
+        }
+        if (result.getResourceType() == ResourceType.DASHBOARD_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            getDhisService().syncInterpretations();
         }
     }
 

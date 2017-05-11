@@ -74,13 +74,6 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         mImageLoader = PicassoProvider.getInstance(context);
     }
 
-    private static String buildImageUrl(String resource, String id) {
-        return DhisController.getInstance().getServerUrl().newBuilder()
-                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
-                .toString();
-    }
-
     /* returns type of row depending on item content type. */
     @Override
     public int getItemViewType(int position) {
@@ -223,10 +216,10 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         String request = null;
         if (Interpretation.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
             InterpretationElement element = item.getChart();
-            request = buildImageUrl("charts", element.getUId());
+            request = DhisController.getInstance().buildImageUrl("charts", element.getUId());
         } else if (Interpretation.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
             InterpretationElement element = item.getMap();
-            request = buildImageUrl("maps", element.getUId());
+            request = DhisController.getInstance().buildImageUrl("maps", element.getUId());
         }
 
         holder.listener.setInterpretation(item);
