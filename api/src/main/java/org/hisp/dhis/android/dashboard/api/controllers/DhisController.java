@@ -73,6 +73,14 @@ public class DhisController {
         return mDhisController;
     }
 
+    public static String buildImageUrl(String resource, String id) {
+        return getInstance().getServerUrl().newBuilder()
+                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment(
+                        "data.png")
+                .addQueryParameter("width", "480").addQueryParameter("height", "320")
+                .toString();
+    }
+
     public UserAccount logInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
         return signInUser(serverUrl, credentials);
     }
@@ -146,5 +154,12 @@ public class DhisController {
 
     public void syncInterpretations() throws APIException {
         (new InterpretationController(mDhisApi)).syncInterpretations();
+    }
+
+    public void pullDashboardImages(Context context) {
+        (new PullImageController(context)).pullDashboardImages();
+    }
+    public void pullInterpretationImages(Context context) {
+        (new PullImageController(context)).pullInterpretationImages();
     }
 }

@@ -36,6 +36,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +45,10 @@ import android.widget.ViewSwitcher;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.models.Access;
 import org.hisp.dhis.android.dashboard.api.models.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.DashboardElement;
@@ -55,6 +58,7 @@ import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemAdapter;
@@ -76,6 +80,7 @@ public class DashboardFragment extends BaseFragment
     private static final String WRITE = "arg:write";
     private static final String MANAGE = "arg:manage";
     private static final String EXTERNALIZE = "arg:externalize";
+    public static final String TAG = DashboardFragment.class.getSimpleName();
 
     ViewSwitcher mViewSwitcher;
 
@@ -168,6 +173,11 @@ public class DashboardFragment extends BaseFragment
         return null;
     }
 
+    @Subscribe
+    @SuppressWarnings("unused")
+    public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
+        Log.d(TAG, "Received " + result.getResourceType());
+    }
     @Override
     public void onLoadFinished(Loader<List<DashboardItem>> loader,
             List<DashboardItem> dashboardItems) {

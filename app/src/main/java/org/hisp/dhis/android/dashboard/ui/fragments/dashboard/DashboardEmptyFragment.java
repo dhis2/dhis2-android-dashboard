@@ -29,6 +29,7 @@ package org.hisp.dhis.android.dashboard.ui.fragments.dashboard;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -133,7 +134,7 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
 
     private void syncDashboards() {
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboardsAndContent();
+            getDhisService().syncDashboards();
             mProgressBar.setVisibility(View.VISIBLE);
         }
     }
@@ -141,8 +142,19 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
+        Log.d(TAG, "Received" + result.getResourceType());
         if (result.getResourceType() == ResourceType.DASHBOARDS) {
+            getDhisService().syncDashboardContents();
+        }
+        if (result.getResourceType() == ResourceType.DASHBOARDS_CONTENT) {
+            getDhisService().pullDashboardImages(getContext());
+        }
+        if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
+            getDhisService().pullInterpretationImages(getContext());
+        }
+        if (result.getResourceType() == ResourceType.DASHBOARD_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            getDhisService().syncInterpretations();
         }
     }
 }

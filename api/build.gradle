@@ -47,4 +47,7 @@ dependencies {
 
     // Other
     compile 'joda-time:joda-time:2.9.2'
+
+    // Java test dependencies
+    testCompile "junit:junit:4.12"
 }

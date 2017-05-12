@@ -96,6 +96,11 @@ final class DashboardController {
                 .queryList();
     }
 
+    public static List<DashboardElement> queryAllDashboardElement() {
+        return new Select().from(DashboardElement.class)
+                .queryList();
+    }
+
     private static List<DashboardItem> queryDashboardItems(Dashboard dashboard) {
         Where<DashboardItem> where = new Select().from(DashboardItem.class)
                 .where(Condition.column(DashboardItem$Table

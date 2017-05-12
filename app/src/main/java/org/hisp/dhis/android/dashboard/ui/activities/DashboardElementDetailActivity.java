@@ -72,13 +72,6 @@ public class DashboardElementDetailActivity extends BaseActivity {
         return intent;
     }
 
-    private static String buildImageUrl(String resource, String id) {
-        return DhisController.getInstance().getServerUrl().newBuilder()
-                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
-                .toString();
-    }
-
     private long getDashboardElementId() {
         return getIntent().getLongExtra(DASHBOARD_ELEMENT_ID, -1);
     }
@@ -136,17 +129,17 @@ public class DashboardElementDetailActivity extends BaseActivity {
         mToolbar.setTitle(element.getDisplayName());
         switch (element.getDashboardItem().getType()) {
             case DashboardItemContent.TYPE_CHART: {
-                String request = buildImageUrl("charts", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("charts", element.getUId());
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
             case DashboardItemContent.TYPE_EVENT_CHART: {
-                String request = buildImageUrl("eventCharts", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("eventCharts", element.getUId());
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
             case DashboardItemContent.TYPE_MAP: {
-                String request = buildImageUrl("maps", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("maps", element.getUId());
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
@@ -166,12 +159,12 @@ public class DashboardElementDetailActivity extends BaseActivity {
         mToolbar.setTitle(element.getDisplayName());
         switch (element.getInterpretation().getType()) {
             case Interpretation.TYPE_CHART: {
-                String request = buildImageUrl("charts", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("charts", element.getUId());
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
             case Interpretation.TYPE_MAP: {
-                String request = buildImageUrl("maps", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("maps", element.getUId());
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }

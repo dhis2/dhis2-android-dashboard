@@ -1,0 +1,21 @@
+{
+  "created": "2013-04-18T17:15:08.407",
+  "lastUpdated": "2017-05-02T17:02:37.817",
+  "name": "John Traore",
+  "id": "xE7jOejl9FI",
+  "birthday": "1971-04-08T00:00:00.000",
+  "education": "Master of super using",
+  "gender": "gender_male",
+  "languages": "English",
+  "displayName": "John Traore",
+  "jobTitle": "Super user",
+  "firstName": "John",
+  "surname": "Traore",
+  "employer": "DHIS",
+  "interests": "Football, swimming, singing, dancing",
+  "introduction": "I am the super user of DHIS 2",
+  "email": "someone@dhis2.org",
+  "organisationUnits": [{
+    "id": "ImspTQPwCqd"
+  }]
+}

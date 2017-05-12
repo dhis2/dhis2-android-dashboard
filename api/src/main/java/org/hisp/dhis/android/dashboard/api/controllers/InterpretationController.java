@@ -573,6 +573,11 @@ final class InterpretationController {
                 .queryList();
     }
 
+    public static List<InterpretationElement> queryAllInterpretationElements() {
+        return new Select().from(InterpretationElement.class)
+                .queryList();
+    }
+
     private static List<User> queryInterpretationUsers() {
         return new Select().from(User.class).queryList();
     }
