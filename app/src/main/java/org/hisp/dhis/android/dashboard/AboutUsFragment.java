@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.Log;
@@ -74,7 +75,7 @@ public class AboutUsFragment extends BaseFragment {
         return stringBuilder;
     }
 
-    public static String getCommitMessage(Context context) {
+    public static Spanned getCommitMessage(Context context) {
         String stringCommit = getCommitHash(context);
 
         if (stringCommit.contains(context.getString(R.string.unavailable))) {
@@ -83,7 +84,8 @@ public class AboutUsFragment extends BaseFragment {
         } else {
             stringCommit = String.format(context.getString(R.string.last_commit), stringCommit);
         }
-        return  stringCommit;
+
+        return  Html.fromHtml(stringCommit);
     }
 
     public static String getVersionMessage(Context context) {
