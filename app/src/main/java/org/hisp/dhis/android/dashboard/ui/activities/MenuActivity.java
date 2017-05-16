@@ -45,6 +45,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import org.hisp.dhis.android.dashboard.AboutUsFragment;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
@@ -129,6 +130,10 @@ public class MenuActivity extends BaseActivity
             }
             case R.id.menu_settings_item: {
                 attachFragmentDelayed(new SettingsFragment());
+                break;
+            }
+            case R.id.menu_about_app: {
+                attachFragmentDelayed(new AboutUsFragment());
                 break;
             }
             /* case R.id.menu_about_item: {
