@@ -8,14 +8,12 @@ import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dashboard.BuildConfig;
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 import org.hisp.dhis.android.dashboard.ui.views.FontTextView;
 
 import java.io.BufferedReader;
