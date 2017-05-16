@@ -67,7 +67,6 @@ public class AboutUsFragment extends BaseFragment {
                 stringBuilder.append(line + "\n");
             }
         } catch (IOException e) {
-            Log.d("AUtils", String.format("Error reading inputStream [%s]", inputStream));
             e.printStackTrace();
         }
 
