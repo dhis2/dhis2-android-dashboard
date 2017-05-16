@@ -45,7 +45,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import org.hisp.dhis.android.dashboard.AboutUsFragment;
+import org.hisp.dhis.android.dashboard.ui.fragments.AboutUsFragment;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;

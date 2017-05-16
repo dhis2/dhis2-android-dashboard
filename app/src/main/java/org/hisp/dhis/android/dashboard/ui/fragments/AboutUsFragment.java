@@ -1,20 +1,20 @@
-package org.hisp.dhis.android.dashboard;
+package org.hisp.dhis.android.dashboard.ui.fragments;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import org.hisp.dhis.android.dashboard.BuildConfig;
+import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 import org.hisp.dhis.android.dashboard.ui.views.FontTextView;
 
@@ -25,7 +25,6 @@ import java.io.InputStreamReader;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import android.support.v7.widget.Toolbar;
 
 public class AboutUsFragment extends BaseFragment {
 
