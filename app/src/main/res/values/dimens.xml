@@ -4,6 +4,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="drawer_size">250dp</dimen>
     <dimen name="card_insets">3dp</dimen>
+    <dimen name="about_us_text_view_bottom_padding">6dp</dimen>
+    <dimen name="about_us_text_view_padding">13dp</dimen>
 
     <integer name="column_nums">1</integer>
 </resources>
