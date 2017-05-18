@@ -23,3 +23,6 @@ build
 
 #Windows
 *.db
+
+# Last commit file
+app/src/main/res/raw/lastcommit.txt
