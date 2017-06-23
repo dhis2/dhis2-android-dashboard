@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 
 @Table(databaseName = DbDhis.NAME)
-public class UIDObject {
+public class UIDObject extends BaseModel {
     @JsonIgnore
     @Column(name = "id")
     @PrimaryKey(autoincrement = true)
@@ -18,6 +19,9 @@ public class UIDObject {
     @JsonProperty("id")
     @Column(name = "uId")
     String uId;
+
+    public UIDObject() {
+    }
 
     public UIDObject(String uId) {
         this.uId = uId;

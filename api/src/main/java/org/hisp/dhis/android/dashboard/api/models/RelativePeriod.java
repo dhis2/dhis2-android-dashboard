@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 
 @Table(databaseName = DbDhis.NAME)
-public final class RelativePeriod {
+public final class RelativePeriod extends BaseModel {
 
     @JsonIgnore
     private static final String[] periodsStrings =
