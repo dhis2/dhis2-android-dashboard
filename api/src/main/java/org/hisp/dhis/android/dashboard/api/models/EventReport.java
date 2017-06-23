@@ -9,6 +9,7 @@ import java.util.List;
 @Table(databaseName = DbDhis.NAME)
 public final class EventReport extends BaseIdentifiableObject {
 
+    UIDObject program;
     UIDObject programStage;
     List<UIDObject> organisationUnits;
     RelativePeriod relativePeriods;
@@ -16,6 +17,14 @@ public final class EventReport extends BaseIdentifiableObject {
     UIDObject dataElementValueDimension;
     String aggregationType;
     String outputType;
+
+    public UIDObject getProgram() {
+        return program;
+    }
+
+    public void setProgram(UIDObject program) {
+        this.program = program;
+    }
 
     public UIDObject getProgramStage() {
         return programStage;
@@ -75,4 +84,6 @@ public final class EventReport extends BaseIdentifiableObject {
     public void setOutputType(String outputType) {
         this.outputType = outputType;
     }
+
+
 }

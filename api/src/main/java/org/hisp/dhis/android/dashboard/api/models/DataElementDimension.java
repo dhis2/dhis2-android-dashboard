@@ -15,6 +15,8 @@ public class DataElementDimension extends BaseModel {
     @PrimaryKey(autoincrement = true)
     long id;
 
+    String filter;
+
     UIDObject dataElement;
 
     public DataElementDimension() {
@@ -30,5 +32,13 @@ public class DataElementDimension extends BaseModel {
 
     public void setDataElement(UIDObject dataElement) {
         this.dataElement = dataElement;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 }

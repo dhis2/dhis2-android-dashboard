@@ -58,7 +58,6 @@ import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
-import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemAdapter;
@@ -209,7 +208,8 @@ public class DashboardFragment extends BaseFragment
             case DashboardItemContent.TYPE_CHART:
             case DashboardItemContent.TYPE_EVENT_CHART:
             case DashboardItemContent.TYPE_MAP:
-            case DashboardItemContent.TYPE_REPORT_TABLE: {
+            case DashboardItemContent.TYPE_REPORT_TABLE:
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
                 Intent intent = DashboardElementDetailActivity
                         .newIntentForDashboardElement(getActivity(), element.getId());
                 startActivity(intent);

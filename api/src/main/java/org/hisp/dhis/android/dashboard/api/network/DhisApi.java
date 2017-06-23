@@ -31,6 +31,7 @@ package org.hisp.dhis.android.dashboard.api.network;
 import org.hisp.dhis.android.dashboard.api.models.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
+import org.hisp.dhis.android.dashboard.api.models.EventReport;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.SystemInfo;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
@@ -141,6 +142,17 @@ public interface DhisApi {
     @GET("/reportTables/{id}/data.html")
     Response getReportTableData(@Path("id") String id);
 
+    @Headers("Accept: application/json")
+    @GET("/eventReports/{id}")
+    EventReport getEventReport(@Path("id") String id);
+
+    @Headers("Accept: application/text")
+    @GET("/25/analytics/events/query/{program}"
+            + ".html+css?displayProperty=NAME")
+    Response getEventReportTableData(@Path("program") String program,
+            @Query("stage") String programStage,
+            @Query("dimension") List<String> dimensions);
+
     @GET("/eventReports?paging=false")
     @Headers("Accept: application/json")
     Map<String, List<DashboardItemContent>> getEventReports(@QueryMap Map<String, String> queryParams);
@@ -207,4 +219,5 @@ public interface DhisApi {
     @DELETE("/interpretations/{interpretationUid}/comments/{commentUid}")
     Response deleteInterpretationComment(@Path("interpretationUid") String interpretationUid,
                                          @Path("commentUid") String commentUid);
+
 }

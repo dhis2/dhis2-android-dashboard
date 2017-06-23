@@ -47,6 +47,7 @@ import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement$Table;
 import org.hisp.dhis.android.dashboard.ui.fragments.ImageViewFragment;
+import org.hisp.dhis.android.dashboard.ui.fragments.WebViewEventReportFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.WebViewFragment;
 
 import butterknife.Bind;
@@ -146,6 +147,11 @@ public class DashboardElementDetailActivity extends BaseActivity {
             case DashboardItemContent.TYPE_REPORT_TABLE: {
                 String elementId = element.getUId();
                 attachFragment(WebViewFragment.newInstance(elementId));
+                break;
+            }
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
+                String elementId = element.getUId();
+                attachFragment(WebViewEventReportFragment.newInstance(elementId));
                 break;
             }
         }
