@@ -28,6 +28,8 @@
 
 package org.hisp.dhis.android.dashboard.api.controllers;
 
+import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
+
 import android.content.Context;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
@@ -41,8 +43,7 @@ import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
-
-import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
+import org.hisp.dhis.android.dashboard.api.persistence.preferences.SettingsManager;
 
 public class DhisController {
     private static DhisController mDhisController;
@@ -73,11 +74,26 @@ public class DhisController {
         return mDhisController;
     }
 
-    public static String buildImageUrl(String resource, String id) {
+    public static String buildImageUrl(String resource, String id, Context context) {
+        String height = "320";
+        String width = "480";
+
+        String widthUserPreference = SettingsManager.getInstance(context).getPreference(
+                (SettingsManager.CHART_WIDTH), "0");
+        String heightUserPreference = SettingsManager.getInstance(context).getPreference(
+                (SettingsManager.CHART_WIDTH), "0");
+        if (widthUserPreference != null && !widthUserPreference.equals("") && Integer.parseInt(
+                widthUserPreference) > 480) {
+            width = widthUserPreference;
+        }
+        if (heightUserPreference != null && !heightUserPreference.equals("") && Integer.parseInt(
+                heightUserPreference) > 320) {
+            height =  heightUserPreference;
+        }
         return getInstance().getServerUrl().newBuilder()
                 .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment(
                         "data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
+                .addQueryParameter("width", width).addQueryParameter("height", height)
                 .toString();
     }
 

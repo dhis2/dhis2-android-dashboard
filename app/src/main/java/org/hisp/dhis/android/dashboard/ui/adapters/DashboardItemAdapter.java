@@ -285,7 +285,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     private void onBindElementContentViewHolder(IElementContentViewHolder holder, int viewType, int position) {
         switch (viewType) {
             case ITEM_WITH_IMAGE_TYPE: {
-                handleItemsWithImages((ImageItemViewHolder) holder, getItem(position));
+                handleItemsWithImages((ImageItemViewHolder) holder, getItem(position), getContext());
                 break;
             }
             case ITEM_WITH_TABLE_TYPE: {
@@ -300,18 +300,18 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     }
 
     /* builds the URL to image data and loads it by means of Picasso. */
-    private void handleItemsWithImages(ImageItemViewHolder holder, DashboardItem item) {
+    private void handleItemsWithImages(ImageItemViewHolder holder, DashboardItem item, Context context) {
         DashboardElement element = null;
         String request = null;
         if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
             element = item.getChart();
-            request = DhisController.getInstance().buildImageUrl("charts", element.getUId());
+            request = DhisController.getInstance().buildImageUrl("charts", element.getUId(), context);
         } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
             element = item.getMap();
-            request = DhisController.getInstance().buildImageUrl("maps", element.getUId());
+            request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), context);
         } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
             element = item.getEventChart();
-            request = DhisController.getInstance().buildImageUrl("eventCharts", element.getUId());
+            request = DhisController.getInstance().buildImageUrl("eventCharts", element.getUId(), context);
         }
 
         holder.listener.setDashboardElement(element);

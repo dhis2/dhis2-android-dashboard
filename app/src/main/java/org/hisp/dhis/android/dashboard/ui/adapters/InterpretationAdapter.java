@@ -216,10 +216,10 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         String request = null;
         if (Interpretation.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
             InterpretationElement element = item.getChart();
-            request = DhisController.getInstance().buildImageUrl("charts", element.getUId());
+            request = DhisController.getInstance().buildImageUrl("charts", element.getUId(), getContext());
         } else if (Interpretation.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
             InterpretationElement element = item.getMap();
-            request = DhisController.getInstance().buildImageUrl("maps", element.getUId());
+            request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), getContext());
         }
 
         holder.listener.setInterpretation(item);
