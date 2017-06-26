@@ -109,7 +109,7 @@ public final class InterpretationFragment extends BaseFragment
         ButterKnife.bind(this, view);
 
         mAdapter = new InterpretationAdapter(getActivity(),
-                getLayoutInflater(savedInstanceState), this);
+                (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE), this);
 
         final int spanCount = getResources().getInteger(R.integer.column_nums);
 
