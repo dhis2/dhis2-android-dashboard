@@ -8,9 +8,10 @@ import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 
 @Migration(version = 4, databaseName = DbDhis.NAME)
 public class MigrationAddOrderPosToDashboardItem extends AlterTableMigration<DashboardItem> {
-    public MigrationAddOrderPosToDashboardItem(
-            Class<DashboardItem> table) {
-        super(table);
+
+
+    public MigrationAddOrderPosToDashboardItem() {
+        super(DashboardItem.class);
     }
 
     @Override
