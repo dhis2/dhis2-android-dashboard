@@ -28,7 +28,11 @@
 
 package org.hisp.dhis.android.dashboard.ui.fragments;
 
+import static android.text.TextUtils.isEmpty;
+
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,10 +57,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.mime.TypedInput;
 
-import static android.text.TextUtils.isEmpty;
-
 public class WebViewFragment extends BaseFragment {
     private static final String DASHBOARD_ELEMENT_ID = "arg:dashboardElementId";
+    private Context mContext;
 
     @Bind(R.id.web_view_content)
     WebView mWebView;
@@ -75,6 +78,7 @@ public class WebViewFragment extends BaseFragment {
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mContext = getContext();
         return inflater.inflate(R.layout.fragment_web_view, container, false);
     }
 
@@ -86,10 +90,9 @@ public class WebViewFragment extends BaseFragment {
         if (getArguments() != null && !isEmpty(getArguments()
                 .getString(DASHBOARD_ELEMENT_ID))) {
             JobExecutor.enqueueJob(new GetReportTableJob(this, getArguments()
-                    .getString(DASHBOARD_ELEMENT_ID)));
+                    .getString(DASHBOARD_ELEMENT_ID), mContext));
         }
     }
-
     public void onDataDownloaded(ResponseHolder<String> data) {
         mProgressBarContainer.setVisibility(View.GONE);
 
@@ -108,12 +111,15 @@ public class WebViewFragment extends BaseFragment {
 
         final WeakReference<WebViewFragment> mFragmentRef;
         final String mDashboardElementId;
+        Context mContext;
 
-        public GetReportTableJob(WebViewFragment fragment, String dashboardElementId) {
+        public GetReportTableJob(WebViewFragment fragment, String dashboardElementId,
+                Context context) {
             super(JOB_ID);
 
             mFragmentRef = new WeakReference<>(fragment);
             mDashboardElementId = dashboardElementId;
+            mContext = context;
         }
 
         static String readInputStream(TypedInput in) {
@@ -142,8 +148,10 @@ public class WebViewFragment extends BaseFragment {
             ResponseHolder<String> responseHolder = new ResponseHolder<>();
 
             try {
-                DhisApi dhisApi = RepoManager.createService(DhisController.getInstance().getServerUrl(),
-                        DhisController.getInstance().getUserCredentials());
+                DhisApi dhisApi = RepoManager.createService(DhisController.getInstance()
+                                .getServerUrl(),
+                        DhisController.getInstance().getUserCredentials(),
+                        mContext);
                 responseHolder.setItem(readInputStream(dhisApi.getReportTableData(mDashboardElementId).getBody()));
             } catch (APIException exception) {
                 responseHolder.setApiException(exception);

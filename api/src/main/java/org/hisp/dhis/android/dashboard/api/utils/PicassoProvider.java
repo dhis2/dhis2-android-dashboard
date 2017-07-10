@@ -52,7 +52,7 @@ public final class PicassoProvider {
     public static Picasso getInstance(Context context) {
         if (mPicasso == null) {
             OkHttpClient client = RepoManager.provideOkHttpClient(
-                    DhisController.getInstance().getUserCredentials());
+                    DhisController.getInstance().getUserCredentials(), context);
 
             client.networkInterceptors().add(new Interceptor() {
                 @Override
