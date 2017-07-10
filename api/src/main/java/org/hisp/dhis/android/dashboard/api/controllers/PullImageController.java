@@ -50,7 +50,7 @@ final class PullImageController {
 
     public static List<String> downloadDashboardImages(List<String> requestList) {
         for (DashboardElement element : DashboardController.queryAllDashboardElement()) {
-            if (element.getDashboardItem().getType() == null) {
+            if (element.getDashboardItem() == null || element.getDashboardItem().getType() == null) {
                 continue;
             }
 
