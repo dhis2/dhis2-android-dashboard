@@ -28,6 +28,13 @@
 
 package org.hisp.dhis.android.dashboard.api.controllers;
 
+import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.merge;
+import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toListIds;
+import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toMap;
+import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
+import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiException;
+import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
+
 import android.net.Uri;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
@@ -60,13 +67,6 @@ import java.util.Queue;
 
 import retrofit.client.Header;
 import retrofit.client.Response;
-
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.merge;
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toListIds;
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toMap;
-import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
-import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiException;
-import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
 final class DashboardController {
     final DhisApi mDhisApi;
@@ -169,7 +169,8 @@ final class DashboardController {
                 "]");
 
         if (lastUpdated != null) {
-            QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
+            QUERY_MAP_FULL.put("filter",
+                    "lastUpdated:gt:" + lastUpdated.toLocalDateTime().toString());
         }
 
         // List of dashboards with UUIDs (without content). This list is used
@@ -218,7 +219,7 @@ final class DashboardController {
         QUERY_MAP_BASIC.put("fields", "id,created,lastUpdated,shape");
 
         if (lastUpdated != null) {
-            QUERY_MAP_BASIC.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
+            QUERY_MAP_BASIC.put("filter", "lastUpdated:gt:" + lastUpdated.toLocalDateTime().toString());
         }
 
         // List of actual dashboard items.

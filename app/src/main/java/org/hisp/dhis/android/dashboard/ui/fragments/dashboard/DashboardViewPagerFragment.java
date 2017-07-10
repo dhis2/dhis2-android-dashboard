@@ -122,11 +122,11 @@ public class DashboardViewPagerFragment extends BaseFragment
         }
 
         boolean isLoading = isDhisServiceBound() &&
-                getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS)
+                (getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS)
                 ||
                 getDhisService().isJobRunning(DhisService.SYNC_DASHBOARD_CONTENT)
                 ||
-                getDhisService().isJobRunning(DhisService.PULL_DASHBOARD_IMAGES);
+                getDhisService().isJobRunning(DhisService.PULL_DASHBOARD_IMAGES));
         if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
