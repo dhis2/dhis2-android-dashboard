@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/chart_preferences_title"
-                android:textColor="@color/darker_grey"
+                android:textColor="@color/grey"
                 android:textSize="@dimen/medium_text_size"
                 app:font="@string/light_font_name" />
             <LinearLayout
@@ -77,7 +77,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.4"
                     android:text="@string/width_title"
-                    android:textColor="@color/darker_grey"
+                    android:textColor="@color/dark_grey_text"
                     android:textSize="@dimen/medium_text_size"
                     app:font="@string/light_font_name" />
 
@@ -87,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.6"
                     android:inputType="number"
-                    android:textColor="@color/darker_grey"
+                    android:textColor="@color/grey"
                     android:textSize="@dimen/medium_text_size"
                     app:font="@string/light_font_name" />
             </LinearLayout>
@@ -102,7 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.4"
                     android:text="@string/height_title"
-                    android:textColor="@color/darker_grey"
+                    android:textColor="@color/dark_grey_text"
                     android:textSize="@dimen/medium_text_size"
                     app:font="@string/light_font_name" />
 
@@ -111,7 +111,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.6"
-                    android:textColor="@color/darker_grey"
+                    android:textColor="@color/grey"
                     android:textSize="@dimen/medium_text_size"
                     android:inputType="number"
                     app:font="@string/light_font_name" />
