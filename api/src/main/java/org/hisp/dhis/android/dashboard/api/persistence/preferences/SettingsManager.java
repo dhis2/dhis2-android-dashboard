@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 public class SettingsManager {
     public static final String CHART_WIDTH = "key:chart_width";
     public static final String CHART_HEIGHT = "key:chart_height";
+    public static final String DEFAULT_WIDTH = "480";
+    public static final String DEFAULT_HEIGHT = "320";
     private static final String PREFERENCES = "preferences:settings";
     private static SettingsManager mSettingsManager = null;
     private SharedPreferences mPrefs;

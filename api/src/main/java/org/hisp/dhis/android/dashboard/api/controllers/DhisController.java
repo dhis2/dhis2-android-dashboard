@@ -75,25 +75,14 @@ public class DhisController {
     }
 
     public static String buildImageUrl(String resource, String id, Context context) {
-        String height = "320";
-        String width = "480";
-
         String widthUserPreference = SettingsManager.getInstance(context).getPreference(
-                (SettingsManager.CHART_WIDTH), "0");
+                (SettingsManager.CHART_WIDTH), SettingsManager.DEFAULT_WIDTH);
         String heightUserPreference = SettingsManager.getInstance(context).getPreference(
-                (SettingsManager.CHART_WIDTH), "0");
-        if (widthUserPreference != null && !widthUserPreference.equals("") && Integer.parseInt(
-                widthUserPreference) > 480) {
-            width = widthUserPreference;
-        }
-        if (heightUserPreference != null && !heightUserPreference.equals("") && Integer.parseInt(
-                heightUserPreference) > 320) {
-            height =  heightUserPreference;
-        }
+                (SettingsManager.CHART_HEIGHT), SettingsManager.DEFAULT_HEIGHT);
         return getInstance().getServerUrl().newBuilder()
                 .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment(
                         "data.png")
-                .addQueryParameter("width", width).addQueryParameter("height", height)
+                .addQueryParameter("width", widthUserPreference).addQueryParameter("height", heightUserPreference)
                 .toString();
     }
 

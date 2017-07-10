@@ -135,7 +135,8 @@
 
 
     <!-- Settings -->
-    <string name="chart_preferences_title">"Images size (Default=0)"</string>
+    <string name="chart_preferences_title">"Images size"</string>
     <string name="width_title">"Width:"</string>
     <string name="height_title">"Height:"</string>
+    <string name="invalid_value">The value is not valid, please enter a value greater than</string>
 </resources>
