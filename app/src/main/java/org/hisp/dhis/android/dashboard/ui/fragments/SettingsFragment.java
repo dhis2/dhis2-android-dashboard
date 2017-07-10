@@ -1,8 +1,6 @@
 package org.hisp.dhis.android.dashboard.ui.fragments;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -16,7 +14,6 @@ import android.widget.EditText;
 import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.R;
-import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.SettingsManager;
 import org.hisp.dhis.android.dashboard.ui.activities.LauncherActivity;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
