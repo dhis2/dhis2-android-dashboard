@@ -77,7 +77,6 @@ public class DhisController {
         return getInstance().getServerUrl().newBuilder()
                 .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment(
                         "data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
                 .toString();
     }
 
@@ -157,9 +156,9 @@ public class DhisController {
     }
 
     public void pullDashboardImages(Context context) {
-        (new PullImageController(context)).pullDashboardImages();
+        (new PullImageController(mDhisApi,context)).pullDashboardImages();
     }
     public void pullInterpretationImages(Context context) {
-        (new PullImageController(context)).pullInterpretationImages();
+        (new PullImageController(mDhisApi,context)).pullInterpretationImages();
     }
 }

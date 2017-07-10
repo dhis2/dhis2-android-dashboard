@@ -51,24 +51,36 @@ public final class PicassoProvider {
 
     public static Picasso getInstance(Context context) {
         if (mPicasso == null) {
-            OkHttpClient client = RepoManager.provideOkHttpClient(
-                    DhisController.getInstance().getUserCredentials());
+            mPicasso = createNewInstance(context, null);
+        }
 
-            client.networkInterceptors().add(new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Response originalResponse = chain.proceed(chain.request());
-                    return originalResponse.newBuilder().header("Cache-Control", "max-age=" + (60 * 60 * 24 * 365)).build();
-                }
-            });
+        return mPicasso;
+    }
 
-            client.setCache(new Cache(context.getCacheDir(), Integer.MAX_VALUE));
+    public static Picasso createNewInstance(Context context, Picasso.Listener listener) {
+        OkHttpClient client = RepoManager.provideOkHttpClient(
+                DhisController.getInstance().getUserCredentials());
 
-            mPicasso = new Picasso.Builder(context)
+        client.networkInterceptors().add(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Response originalResponse = chain.proceed(chain.request());
+                return originalResponse.newBuilder().header("Cache-Control",
+                        "max-age=" + (60 * 60 * 24 * 365)).build();
+            }
+        });
+
+        client.setCache(new Cache(context.getCacheDir(), Integer.MAX_VALUE));
+
+        if (listener == null) {
+            return new Picasso.Builder(context)
+                    .downloader(new OkHttpDownloader(client))
+                    .build();
+        } else {
+            return new Picasso.Builder(context).listener(listener)
                     .downloader(new OkHttpDownloader(client))
                     .build();
         }
 
-        return mPicasso;
     }
 }
