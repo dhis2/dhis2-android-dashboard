@@ -54,4 +54,6 @@
     <color name="button_login_state_enabled_false">#FF223F5C</color>
     <color name="button_login_state_unpressed">#FF113151</color>
     <color name="button_login_state_pressed">#FF0C243C</color>
+
+    <color name="darker_grey">#9f9f9f</color>
 </resources>

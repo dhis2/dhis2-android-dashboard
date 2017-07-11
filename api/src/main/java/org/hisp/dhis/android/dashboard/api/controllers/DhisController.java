@@ -44,6 +44,8 @@ import org.hisp.dhis.android.dashboard.api.network.RepoManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
 
+import org.hisp.dhis.android.dashboard.api.persistence.preferences.SettingsManager;
+
 public class DhisController {
     private static DhisController mDhisController;
     private Session mSession;
@@ -75,11 +77,15 @@ public class DhisController {
         return mDhisController;
     }
 
-    public static String buildImageUrl(String resource, String id) {
+    public static String buildImageUrl(String resource, String id, Context context) {
+        String widthUserPreference = SettingsManager.getInstance(context).getPreference(
+                (SettingsManager.CHART_WIDTH), SettingsManager.DEFAULT_WIDTH);
+        String heightUserPreference = SettingsManager.getInstance(context).getPreference(
+                (SettingsManager.CHART_HEIGHT), SettingsManager.DEFAULT_HEIGHT);
         return getInstance().getServerUrl().newBuilder()
                 .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment(
                         "data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
+                .addQueryParameter("width", widthUserPreference).addQueryParameter("height", heightUserPreference)
                 .toString();
     }
 

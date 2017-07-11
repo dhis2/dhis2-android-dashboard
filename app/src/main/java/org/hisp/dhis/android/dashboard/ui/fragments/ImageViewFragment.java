@@ -36,6 +36,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.persistence.preferences.SettingsManager;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -60,7 +61,8 @@ public class ImageViewFragment extends BaseFragment {
     }
 
     private String getImageUrl() {
-        return getArguments().getString(IMAGE_URL);
+        String imageSimplePath = getArguments().getString(IMAGE_URL);
+        return imageSimplePath;
     }
 
     @Nullable @Override

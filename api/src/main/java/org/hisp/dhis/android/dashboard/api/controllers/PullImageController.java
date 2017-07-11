@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 final class PullImageController {
-    Context mContext;
+    static Context mContext;
 
     public PullImageController(Context context) {
         mContext = context;
@@ -40,9 +40,9 @@ final class PullImageController {
                 continue;
             }
             if (Interpretation.TYPE_CHART.equals(interpretationElement.getType())) {
-                requestList.add(DhisController.buildImageUrl("charts", interpretationElement.getUId()));
+                requestList.add(DhisController.buildImageUrl("charts", interpretationElement.getUId(), mContext));
             } else if (Interpretation.TYPE_MAP.equals(interpretationElement.getType())) {
-                requestList.add(DhisController.buildImageUrl("maps", interpretationElement.getUId()));
+                requestList.add(DhisController.buildImageUrl("maps", interpretationElement.getUId(), mContext));
             }
         }
         return requestList;
@@ -56,15 +56,15 @@ final class PullImageController {
 
             switch (element.getDashboardItem().getType()) {
                 case DashboardItemContent.TYPE_CHART: {
-                    requestList.add(DhisController.buildImageUrl("charts", element.getUId()));
+                    requestList.add(DhisController.buildImageUrl("charts", element.getUId(), mContext));
                     break;
                 }
                 case DashboardItemContent.TYPE_EVENT_CHART: {
-                    requestList.add(DhisController.buildImageUrl("eventCharts", element.getUId()));
+                    requestList.add(DhisController.buildImageUrl("eventCharts", element.getUId(), mContext));
                     break;
                 }
                 case DashboardItemContent.TYPE_MAP: {
-                    requestList.add(DhisController.buildImageUrl("maps", element.getUId()));
+                    requestList.add(DhisController.buildImageUrl("maps", element.getUId(), mContext));
                     break;
                 }
             }
