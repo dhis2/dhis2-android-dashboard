@@ -108,6 +108,10 @@ public final class DashboardItem extends BaseIdentifiableObject {
     @JsonProperty("messages")
     boolean messages;
 
+    @JsonIgnore
+    @Column
+    int orderPosition;
+
     public DashboardItem() {
         state = State.SYNCED;
         shape = SHAPE_NORMAL;
@@ -424,5 +428,13 @@ public final class DashboardItem extends BaseIdentifiableObject {
     @JsonIgnore
     public void setState(State state) {
         this.state = state;
+    }
+
+    public int getOrderPosition() {
+        return orderPosition;
+    }
+
+    public void setOrderPosition(int orderPosition) {
+        this.orderPosition = orderPosition;
     }
 }

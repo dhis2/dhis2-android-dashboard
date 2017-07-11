@@ -29,6 +29,7 @@
 package org.hisp.dhis.android.dashboard.ui.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -107,7 +108,7 @@ public class DashboardElementDetailActivity extends BaseActivity {
                     .where(Condition.column(DashboardElement$Table.ID)
                             .is(getDashboardElementId()))
                     .querySingle();
-            handleDashboardElement(element);
+            handleDashboardElement(element, getApplicationContext());
         }
 
         if (interpretationElementId > 0) {
@@ -116,11 +117,11 @@ public class DashboardElementDetailActivity extends BaseActivity {
                     .where(Condition.column(InterpretationElement$Table
                             .ID).is(interpretationElementId))
                     .querySingle();
-            handleInterpretationElement(element);
+            handleInterpretationElement(element, getApplicationContext());
         }
     }
 
-    private void handleDashboardElement(DashboardElement element) {
+    private void handleDashboardElement(DashboardElement element, Context context) {
 
         if (element == null || element.getDashboardItem() == null) {
             return;
@@ -129,17 +130,17 @@ public class DashboardElementDetailActivity extends BaseActivity {
         mToolbar.setTitle(element.getDisplayName());
         switch (element.getDashboardItem().getType()) {
             case DashboardItemContent.TYPE_CHART: {
-                String request = DhisController.getInstance().buildImageUrl("charts", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("charts", element.getUId(), context);
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
             case DashboardItemContent.TYPE_EVENT_CHART: {
-                String request = DhisController.getInstance().buildImageUrl("eventCharts", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("eventCharts", element.getUId(), context);
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
             case DashboardItemContent.TYPE_MAP: {
-                String request = DhisController.getInstance().buildImageUrl("maps", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), context);
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
@@ -153,7 +154,7 @@ public class DashboardElementDetailActivity extends BaseActivity {
         }
     }
 
-    private void handleInterpretationElement(InterpretationElement element) {
+    private void handleInterpretationElement(InterpretationElement element, Context context) {
         if (element == null || element.getInterpretation() == null) {
             return;
         }
@@ -161,12 +162,12 @@ public class DashboardElementDetailActivity extends BaseActivity {
         mToolbar.setTitle(element.getDisplayName());
         switch (element.getInterpretation().getType()) {
             case Interpretation.TYPE_CHART: {
-                String request = DhisController.getInstance().buildImageUrl("charts", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("charts", element.getUId(), context);
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
             case Interpretation.TYPE_MAP: {
-                String request = DhisController.getInstance().buildImageUrl("maps", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), context);
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
