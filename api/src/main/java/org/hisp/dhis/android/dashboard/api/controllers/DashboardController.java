@@ -222,7 +222,7 @@ final class DashboardController {
         QUERY_MAP_BASIC.put("fields", "id,created,lastUpdated,shape");
 
         if (lastUpdated != null) {
-            QUERY_MAP_BASIC.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
+            QUERY_MAP_BASIC.put("filter", "lastUpdated:gt:" + lastUpdated.toLocalDateTime().toString());
         }
 
         // List of actual dashboard items.
