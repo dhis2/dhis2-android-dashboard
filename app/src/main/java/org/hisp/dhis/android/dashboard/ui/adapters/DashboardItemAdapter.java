@@ -122,7 +122,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
                 return ITEM_WITH_IMAGE_TYPE;
             case DashboardItemContent.TYPE_REPORT_TABLE:
             case DashboardItemContent.TYPE_EVENT_REPORT:
-                return ITEM_WITH_TABLE_TYPE;
+                return ITEM_WITH_IMAGE_TYPE;
             case DashboardItemContent.TYPE_USERS:
             case DashboardItemContent.TYPE_REPORTS:
             case DashboardItemContent.TYPE_RESOURCES:
@@ -312,12 +312,27 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
             element = item.getEventChart();
             request = DhisController.getInstance().buildImageUrl("eventCharts", element.getUId(), context);
+        } else if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType())
+                && item.getReportTable() != null) {
+            element = item.getReportTable();
+            holder.imageView.setImageDrawable(
+                    context.getResources().getDrawable(R.drawable.ic_pivot_table));
+            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType())
+                && item.getEventReport() != null) {
+            element = item.getEventReport();
+            holder.imageView.setImageDrawable(
+                    context.getResources().getDrawable(R.drawable.ic_event_report));
+            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         }
 
         holder.listener.setDashboardElement(element);
-        mImageLoader.load(request)
-                .placeholder(R.mipmap.ic_stub_dashboard_item)
-                .into(holder.imageView);
+        if (request != null) {
+            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            mImageLoader.load(request)
+                    .placeholder(R.mipmap.ic_stub_dashboard_item)
+                    .into(holder.imageView);
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////

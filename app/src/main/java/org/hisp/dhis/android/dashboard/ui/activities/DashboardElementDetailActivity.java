@@ -144,9 +144,11 @@ public class DashboardElementDetailActivity extends BaseActivity {
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
-            case DashboardItemContent.TYPE_REPORT_TABLE: {
+            case DashboardItemContent.TYPE_REPORT_TABLE:
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
                 String elementId = element.getUId();
-                attachFragment(WebViewFragment.newInstance(elementId));
+                attachFragment(WebViewFragment.newInstance(elementId,
+                        element.getDashboardItem().getType()));
                 break;
             }
         }
@@ -171,7 +173,7 @@ public class DashboardElementDetailActivity extends BaseActivity {
             }
             case Interpretation.TYPE_REPORT_TABLE: {
                 String elementId = element.getUId();
-                attachFragment(WebViewFragment.newInstance(elementId));
+                attachFragment(WebViewFragment.newInstance(elementId, element.getType()));
                 break;
             }
             case Interpretation.TYPE_DATA_SET_REPORT: {
