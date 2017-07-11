@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dashboard.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.raizlabs.android.dbflow.annotation.Table;
 
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
@@ -8,6 +9,11 @@ import java.util.List;
 
 @Table(databaseName = DbDhis.NAME)
 public final class EventReport extends BaseIdentifiableObject {
+    @JsonIgnore
+    static final String AGGREGATED_VALUES_TYPE = "AGGREGATED_VALUES";
+    @JsonIgnore
+    static final String EVENTS_TYPE = "EVENTS";
+
 
     UIDObject program;
     UIDObject programStage;
@@ -17,6 +23,7 @@ public final class EventReport extends BaseIdentifiableObject {
     UIDObject dataElementValueDimension;
     String aggregationType;
     String outputType;
+    String dataType;
 
     public UIDObject getProgram() {
         return program;
@@ -85,5 +92,19 @@ public final class EventReport extends BaseIdentifiableObject {
         this.outputType = outputType;
     }
 
+    public String getDataType() {
+        return dataType;
+    }
 
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
+    public String getDataTypeString() {
+        if (dataType.equals(AGGREGATED_VALUES_TYPE)) {
+            return "aggregate";
+        } else {
+            return "query";
+        }
+    }
 }

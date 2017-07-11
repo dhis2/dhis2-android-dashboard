@@ -193,7 +193,14 @@ public class WebViewFragment extends BaseFragment {
                 responseHolder.setItem(readInputStream(
                         dhisApi.getEventReportTableData(eventReport.getProgram().getuId(),
                                 eventReport.getProgramStage().getuId(),
-                                getDimensions(eventReport)).getBody()));
+                                getDimensions(eventReport),
+                                eventReport.getOutputType(),
+                                eventReport.getAggregationType(),
+                                eventReport.getDataElementValueDimension() != null
+                                        ? eventReport.getDataElementValueDimension().getuId()
+                                        : null,
+                                eventReport.getDataTypeString())
+                                .getBody()));
             } catch (APIException exception) {
                 responseHolder.setApiException(exception);
             }

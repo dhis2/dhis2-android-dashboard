@@ -147,11 +147,15 @@ public interface DhisApi {
     EventReport getEventReport(@Path("id") String id);
 
     @Headers("Accept: application/text")
-    @GET("/25/analytics/events/query/{program}"
+    @GET("/analytics/events/{dataType}/{program}"
             + ".html+css?displayProperty=NAME")
     Response getEventReportTableData(@Path("program") String program,
             @Query("stage") String programStage,
-            @Query("dimension") List<String> dimensions);
+            @Query("dimension") List<String> dimensions,
+            @Query("outputType") String outputType,
+            @Query("aggregationType") String aggregationType,
+            @Query("value") String value,
+            @Path("dataType") String dataType);
 
     @GET("/eventReports?paging=false")
     @Headers("Accept: application/json")

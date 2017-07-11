@@ -20,7 +20,8 @@ public final class RelativePeriod extends BaseModel {
                     "THIS_DAY", "THIS_MONTH", "LAST_5_YEARS", "LAST_6_BIMONTHS",
                     "LAST_FINANCIAL_YEAR", "LAST_6_MONTHS", "LAST_3_DAYS", "QUARTERS_THIS_YEAR",
                     "MONTHS_LAST_YEAR", "LAST_WEEK", "LAST_7_DAYS", "THIS_BIMONTH", "LAST_BIMONTH",
-                    "LAST_SIX_MONTH", "LAST_YEAR", "LAST_12_WEEKS", "LAST_4_QUARTERS"};
+                    "LAST_SIX_MONTH", "LAST_YEAR", "LAST_12_WEEKS", "LAST_4_QUARTERS",
+                    "BIMONTHS_THIS_YEAR", "WEEKS_THIS_YEAR"};
 
     @JsonIgnore
     @Column(name = "id")
@@ -61,6 +62,8 @@ public final class RelativePeriod extends BaseModel {
     boolean lastYear;
     boolean last12Weeks;
     boolean last4Quarters;
+    boolean biMonthsThisYear;
+    boolean weeksThisYear;
 
     @JsonIgnore
     private boolean[] periodsList;
@@ -86,16 +89,24 @@ public final class RelativePeriod extends BaseModel {
     }
 
     public String getRelativePeriodString() {
+        String result = "";
         periodsList = new boolean[]{thisYear, quartersLastYear, last52Weeks, thisWeek, lastMonth,
                 last14Days, monthsThisYear, last2SixMonths, yesterday, thisQuarter, last12Months,
                 last5FinancialYears, thisSixMonth, lastQuarter, thisFinancialYear, last4Weeks,
                 last3Months, thisDay, thisMonth, last5Years, last6BiMonths, lastFinancialYear,
                 last6Months, last3Days, quartersThisYear, monthsLastYear, lastWeek, last7Days,
-                thisBimonth, lastBimonth, lastSixMonth, lastYear, last12Weeks, last4Quarters};
+                thisBimonth, lastBimonth, lastSixMonth, lastYear, last12Weeks, last4Quarters,
+                biMonthsThisYear, weeksThisYear};
         for (int i = 0; i < periodsList.length; i++) {
-            if (periodsList[i]) return periodsStrings[i];
+            if (periodsList[i]) {
+                if (i == 0) {
+                    result += periodsStrings[i];
+                } else {
+                    result += ";" + periodsStrings[i];
+                }
+            }
         }
-        return "";
+        return result;
     }
 
     public boolean isThisYear() {
@@ -368,5 +379,21 @@ public final class RelativePeriod extends BaseModel {
 
     public void setLast4Quarters(boolean last4Quarters) {
         this.last4Quarters = last4Quarters;
+    }
+
+    public boolean isBiMonthsThisYear() {
+        return biMonthsThisYear;
+    }
+
+    public void setBiMonthsThisYear(boolean biMonthsThisYear) {
+        this.biMonthsThisYear = biMonthsThisYear;
+    }
+
+    public boolean isWeeksThisYear() {
+        return weeksThisYear;
+    }
+
+    public void setWeeksThisYear(boolean weeksThisYear) {
+        this.weeksThisYear = weeksThisYear;
     }
 }
