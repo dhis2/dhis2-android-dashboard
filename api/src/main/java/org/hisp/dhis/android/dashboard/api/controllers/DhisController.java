@@ -43,14 +43,17 @@ import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
+
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.SettingsManager;
 
 public class DhisController {
     private static DhisController mDhisController;
     private Session mSession;
     private DhisApi mDhisApi;
+    private Context mContext;
 
     private DhisController(Context context) {
+        mContext = context;
         FlowManager.init(context);
         LastUpdatedManager.init(context);
         DateTimeManager.init(context);
@@ -103,7 +106,7 @@ public class DhisController {
 
     private UserAccount signInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
         DhisApi dhisApi = RepoManager
-                .createService(serverUrl, credentials);
+                .createService(serverUrl, credentials, mContext);
         UserAccount user = (new UserController(dhisApi)
                 .logInUser(serverUrl, credentials));
 
@@ -137,7 +140,7 @@ public class DhisController {
             mDhisApi = RepoManager.createService(
                     mSession.getServerUrl(),
                     mSession.getCredentials()
-            );
+                    , mContext);
         }
     }
 

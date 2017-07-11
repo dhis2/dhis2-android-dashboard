@@ -28,6 +28,13 @@
 
 package org.hisp.dhis.android.dashboard.api.network;
 
+import static com.squareup.okhttp.Credentials.basic;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -38,18 +45,18 @@ import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.utils.ObjectMapperProvider;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.ErrorHandler;
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.converter.Converter;
 import retrofit.converter.JacksonConverter;
-
-import static com.squareup.okhttp.Credentials.basic;
 
 
 public final class RepoManager {
@@ -61,13 +68,15 @@ public final class RepoManager {
         // no instances
     }
 
-    public static DhisApi createService(HttpUrl serverUrl, Credentials credentials) {
+    public static DhisApi createService(HttpUrl serverUrl, Credentials credentials,
+            final Context context) {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(provideServerUrl(serverUrl))
                 .setConverter(provideJacksonConverter())
-                .setClient(provideOkClient(credentials))
+                .setClient(provideOkClient(credentials, context))
                 .setErrorHandler(new RetrofitErrorHandler())
                 .setLogLevel(RestAdapter.LogLevel.BASIC)
+                .setRequestInterceptor(new ConnectionInterceptor(context))
                 .build();
         return restAdapter.create(DhisApi.class);
     }
@@ -82,17 +91,26 @@ public final class RepoManager {
         return new JacksonConverter(ObjectMapperProvider.getInstance());
     }
 
-    private static OkClient provideOkClient(Credentials credentials) {
-        return new OkClient(provideOkHttpClient(credentials));
+    private static OkClient provideOkClient(Credentials credentials, Context context) {
+        return new OkClient(provideOkHttpClient(credentials, context));
     }
 
-    public static OkHttpClient provideOkHttpClient(Credentials credentials) {
+    public static OkHttpClient provideOkHttpClient(Credentials credentials, Context context) {
+
         OkHttpClient client = new OkHttpClient();
         client.interceptors().add(provideInterceptor(credentials));
         client.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         client.setReadTimeout(DEFAULT_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         client.setWriteTimeout(DEFAULT_WRITE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        client.setCache(provideCache(context));
         return client;
+    }
+
+    private static Cache provideCache(Context context) {
+        File httpCacheDirectory = new File(context.getCacheDir(), "responses");
+        Cache cache = null;
+        cache = new Cache(httpCacheDirectory, 10 * 1024 * 1024);
+        return cache;
     }
 
     private static Interceptor provideInterceptor(Credentials credentials) {
@@ -132,4 +150,33 @@ public final class RepoManager {
             return APIException.fromRetrofitError(cause);
         }
     }
+
+    private static boolean isOnline(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    private static class ConnectionInterceptor implements RequestInterceptor {
+        private Context mContext;
+
+        public ConnectionInterceptor(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        public void intercept(RequestFacade request) {
+            request.addHeader("Accept", "application/json;versions=1");
+            if (isOnline(mContext)) {
+                int maxAge = 0; // no read cache if there is internet
+                request.addHeader("Cache-Control", "public, max-age=" + maxAge);
+            } else {
+                int maxStale = 60 * 60 * 24 * 365; // tolerate 1 year state
+                request.addHeader("Cache-Control",
+                        "public, only-if-cached, max-stale=" + maxStale);
+            }
+        }
+    }
+
 }
