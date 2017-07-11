@@ -189,8 +189,11 @@ final class DashboardController {
                     continue;
                 }
 
+                int i=0;
                 for (DashboardItem item : dashboard.getDashboardItems()) {
                     item.setDashboard(dashboard);
+                    item.setOrderPosition(i);
+                    i++;
                 }
             }
         }
