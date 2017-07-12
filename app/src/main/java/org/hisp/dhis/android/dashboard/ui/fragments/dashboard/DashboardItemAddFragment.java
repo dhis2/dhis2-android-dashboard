@@ -36,6 +36,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -141,7 +142,7 @@ public class DashboardItemAddFragment extends BaseDialogFragment
         mListView.setAdapter(mAdapter);
         mDialogLabel.setText(getString(R.string.add_dashboard_item));
 
-        mResourcesMenu = new PopupMenu(getActivity(), mFilterResources);
+        mResourcesMenu = new PopupMenu(getActivity(),mFilter, Gravity.END);
         mResourcesMenu.inflate(R.menu.menu_filter_resources);
         mResourcesMenu.setOnMenuItemClickListener(this);
     }

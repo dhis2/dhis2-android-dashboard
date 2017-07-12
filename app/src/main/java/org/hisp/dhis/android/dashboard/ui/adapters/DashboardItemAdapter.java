@@ -90,6 +90,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     private final String mUsersName;
     private final String mReportsName;
     private final String mResourcesName;
+    private final String mMessaName;
 
     /**
      * Image loading utility.
@@ -107,6 +108,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         mUsersName = context.getString(R.string.users);
         mReportsName = context.getString(R.string.reports);
         mResourcesName = context.getString(R.string.resources);
+        mMessaName = context.getString(R.string.messages);
 
         mImageLoader = PicassoProvider.getInstance(context);
     }
@@ -119,13 +121,13 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             case DashboardItemContent.TYPE_CHART:
             case DashboardItemContent.TYPE_EVENT_CHART:
             case DashboardItemContent.TYPE_MAP:
-                return ITEM_WITH_IMAGE_TYPE;
             case DashboardItemContent.TYPE_REPORT_TABLE:
             case DashboardItemContent.TYPE_EVENT_REPORT:
                 return ITEM_WITH_IMAGE_TYPE;
             case DashboardItemContent.TYPE_USERS:
             case DashboardItemContent.TYPE_REPORTS:
             case DashboardItemContent.TYPE_RESOURCES:
+            case DashboardItemContent.TYPE_MESSAGES:
                 return ITEM_WITH_LIST_TYPE;
         }
 
@@ -244,6 +246,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             holder.itemName.setText(mReportsName);
         } else if (DashboardItemContent.TYPE_RESOURCES.equals(item.getType())) {
             holder.itemName.setText(mResourcesName);
+        } else if (DashboardItemContent.TYPE_MESSAGES.equals(item.getType())) {
+            holder.itemName.setText(mMessaName);
         }
 
         /* handling visibility of 3-dot menu button */
