@@ -34,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -122,6 +123,13 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     }
 
     public boolean onMenuItemClicked(MenuItem item) {
+        if (mProgressBar.getVisibility() == View.VISIBLE) {
+            Toast.makeText(getContext(),
+                    getString(R.string.action_not_allowed_during_sync),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         switch (item.getItemId()) {
             case R.id.refresh: {
                 mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
@@ -162,4 +170,6 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
             getDhisService().syncInterpretations();
         }
     }
+
+
 }

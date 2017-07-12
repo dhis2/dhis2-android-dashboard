@@ -132,6 +132,14 @@ public final class InterpretationFragment extends BaseFragment
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+
+                if (mProgressBar.getVisibility() == View.VISIBLE) {
+                    Toast.makeText(getContext(),
+                            getString(R.string.action_not_allowed_during_sync),
+                            Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+
                 if (item.getItemId() == R.id.refresh) {
                     mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
                     syncInterpretations();
@@ -240,6 +248,13 @@ public final class InterpretationFragment extends BaseFragment
 
     @Override
     public void onInterpretationDeleteClick(Interpretation interpretation) {
+        if (mProgressBar.getVisibility() == View.VISIBLE) {
+            Toast.makeText(getContext(),
+                    getString(R.string.action_not_allowed_during_sync),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         int position = mAdapter.getData().indexOf(interpretation);
         if (!(position < 0)) {
             mAdapter.getData().remove(position);
@@ -262,6 +277,13 @@ public final class InterpretationFragment extends BaseFragment
 
     @Override
     public void onInterpretationEditClick(Interpretation interpretation) {
+        if (mProgressBar.getVisibility() == View.VISIBLE) {
+            Toast.makeText(getContext(),
+                    getString(R.string.action_not_allowed_during_sync),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         InterpretationTextEditFragment
                 .newInstance(interpretation.getId())
                 .show(getChildFragmentManager());
