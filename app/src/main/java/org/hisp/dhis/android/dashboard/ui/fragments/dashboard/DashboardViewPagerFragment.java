@@ -222,7 +222,7 @@ public class DashboardViewPagerFragment extends BaseFragment
     }
 
     private void setDashboards(List<Dashboard> dashboards) {
-        mDashboardAdapter = new DashboardAdapter(getChildFragmentManager());
+        mDashboardAdapter = new DashboardAdapter(getChildFragmentManager(), this);
         mViewPager.setAdapter(mDashboardAdapter);
         mDashboardAdapter.swapData(dashboards);
         mTabs.removeAllTabs();
