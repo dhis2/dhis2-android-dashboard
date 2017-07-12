@@ -50,6 +50,7 @@ import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation$Table;
@@ -98,6 +99,9 @@ public final class InterpretationFragment extends BaseFragment
 
     InterpretationAdapter mAdapter;
 
+    private DhisController.ImageNetworkPolicy mImageNetworkPolicy =
+            DhisController.ImageNetworkPolicy.CACHE;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -129,6 +133,7 @@ public final class InterpretationFragment extends BaseFragment
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.refresh) {
+                    mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
                     syncInterpretations();
                     return true;
                 }
@@ -274,7 +279,7 @@ public final class InterpretationFragment extends BaseFragment
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         Log.d(TAG, "Received " + result.getResourceType());
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
-            getDhisService().pullInterpretationImages(getContext());
+            getDhisService().pullInterpretationImages(mImageNetworkPolicy,getContext());
         } else if (result.getResourceType() == ResourceType.INTERPRETATION_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
         }

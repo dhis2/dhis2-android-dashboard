@@ -39,6 +39,7 @@ import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
@@ -63,6 +64,9 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
 
     @Bind(R.id.progress_bar)
     SmoothProgressBar mProgressBar;
+
+    private DhisController.ImageNetworkPolicy mImageNetworkPolicy =
+            DhisController.ImageNetworkPolicy.CACHE;
 
     @Nullable
     @Override
@@ -120,6 +124,7 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     public boolean onMenuItemClicked(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh: {
+                mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
                 syncDashboards();
                 return true;
             }
@@ -147,10 +152,10 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
             getDhisService().syncDashboardContents();
         }
         if (result.getResourceType() == ResourceType.DASHBOARDS_CONTENT) {
-            getDhisService().pullDashboardImages(getContext());
+            getDhisService().pullDashboardImages(mImageNetworkPolicy,getContext());
         }
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
-            getDhisService().pullInterpretationImages(getContext());
+            getDhisService().pullInterpretationImages(mImageNetworkPolicy,getContext());
         }
         if (result.getResourceType() == ResourceType.DASHBOARD_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
