@@ -236,9 +236,6 @@ public final class DashboardItem extends BaseIdentifiableObject {
                 elements.addAll(getResources());
                 break;
             }
-            case DashboardItemContent.TYPE_MESSAGES: {
-                break;
-            }
         }
 
         return elements;

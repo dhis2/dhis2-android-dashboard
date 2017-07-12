@@ -66,7 +66,6 @@ public final class PicassoProvider {
 
             mPicasso = new Picasso.Builder(context)
                     .downloader(new OkHttpDownloader(client))
-                    .loggingEnabled(true)
                     .build();
         }
 
