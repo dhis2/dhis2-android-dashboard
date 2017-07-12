@@ -13,6 +13,7 @@ import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
@@ -34,6 +35,9 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
 
     @Bind(R.id.progress_bar)
     SmoothProgressBar mProgressBar;
+
+    private DhisController.ImageNetworkPolicy mImageNetworkPolicy =
+            DhisController.ImageNetworkPolicy.CACHE;
 
     @Nullable
     @Override
@@ -90,6 +94,7 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     public boolean onMenuItemClicked(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh: {
+                mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
                 syncInterpretations();
                 return true;
             }
@@ -109,7 +114,7 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         Log.d(TAG, "Received " + result.getResourceType());
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
-            getDhisService().pullInterpretationImages(getContext());
+            getDhisService().pullInterpretationImages(mImageNetworkPolicy,getContext());
         } else if (result.getResourceType() == ResourceType.INTERPRETATION_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
         }

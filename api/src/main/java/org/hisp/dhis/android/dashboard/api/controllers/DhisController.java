@@ -52,6 +52,8 @@ public class DhisController {
     private DhisApi mDhisApi;
     private Context mContext;
 
+    public enum ImageNetworkPolicy {NO_CACHE, CACHE}
+
     private DhisController(Context context) {
         mContext = context;
         FlowManager.init(context);
@@ -164,10 +166,10 @@ public class DhisController {
         (new InterpretationController(mDhisApi)).syncInterpretations();
     }
 
-    public void pullDashboardImages(Context context) {
-        (new PullImageController(context)).pullDashboardImages();
+    public void pullDashboardImages(ImageNetworkPolicy imageNetworkPolicy,Context context) {
+        (new PullImageController(context)).pullDashboardImages(imageNetworkPolicy);
     }
-    public void pullInterpretationImages(Context context) {
-        (new PullImageController(context)).pullInterpretationImages();
+    public void pullInterpretationImages(ImageNetworkPolicy imageNetworkPolicy,Context context) {
+        (new PullImageController(context)).pullInterpretationImages(imageNetworkPolicy);
     }
 }
