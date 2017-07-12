@@ -236,7 +236,7 @@ public class WebViewFragment extends BaseFragment {
                 dimensions.add(eventReport.getOUDimensionFilter());
             }
             for (DataElementDimension dimension : eventReport.getDataElementDimensions()) {
-                if (!eventReport.isDimensionInFilters(dimension.getDataElement().getuId())) {
+                if (!eventReport.isInFilters(dimension.getDataElement().getuId())) {
                     dimensions.add(eventReport.getDimensionFilter(dimension));
                 }
             }
@@ -262,7 +262,7 @@ public class WebViewFragment extends BaseFragment {
             }
 
             for (DataElementDimension dimension : eventReport.getDataElementDimensions()) {
-                if (eventReport.isDimensionInFilters(dimension.getDataElement().getuId())) {
+                if (eventReport.isInFilters(dimension.getDataElement().getuId())) {
                     filters.add(eventReport.getDimensionFilter(dimension));
                 }
             }

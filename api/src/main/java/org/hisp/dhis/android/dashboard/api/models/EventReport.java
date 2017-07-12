@@ -13,6 +13,14 @@ public final class EventReport extends BaseIdentifiableObject {
     static final String AGGREGATED_VALUES_TYPE = "AGGREGATED_VALUES";
     @JsonIgnore
     static final String EVENTS_TYPE = "EVENTS";
+    @JsonIgnore
+    static final String OU_KEY = "ou";
+    @JsonIgnore
+    static final String PE_KEY = "pe";
+    @JsonIgnore
+    static final String AGGREGATE_KEY = "aggregate";
+    @JsonIgnore
+    static final String QUERY_KEY = "query";
 
 
     UIDObject program;
@@ -152,26 +160,16 @@ public final class EventReport extends BaseIdentifiableObject {
     }
 
     public boolean isOUInFilters() {
-        for (UIDObject filter : filters) {
-            if (filter.getuId().equals("ou")) {
-                return true;
-            }
-        }
-        return false;
+        return isInFilters(OU_KEY);
     }
 
     public boolean isPEInFilters() {
-        for (UIDObject filter : filters) {
-            if (filter.getuId().equals("pe")) {
-                return true;
-            }
-        }
-        return false;
+        return isInFilters(PE_KEY);
     }
 
-    public boolean isDimensionInFilters(String dimension) {
+    public boolean isInFilters(String key){
         for (UIDObject filter : filters) {
-            if (filter.getuId().equals(dimension)) {
+            if (filter.getuId().equals(key)) {
                 return true;
             }
         }
@@ -179,15 +177,11 @@ public final class EventReport extends BaseIdentifiableObject {
     }
 
     public String getDataTypeString() {
-        if (dataType.equals(AGGREGATED_VALUES_TYPE)) {
-            return "aggregate";
-        } else {
-            return "query";
-        }
+        return (dataType.equals(AGGREGATED_VALUES_TYPE)) ? AGGREGATE_KEY : QUERY_KEY;
     }
 
     public boolean isValidColumn(UIDObject column) {
-        if (column.getuId().equals("pe") || column.getuId().equals("ou")) {
+        if (column.getuId().equals(PE_KEY) || column.getuId().equals(OU_KEY)) {
             return false;
         }
         for (DataElementDimension dimension : dataElementDimensions) {
