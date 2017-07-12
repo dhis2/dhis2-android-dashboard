@@ -51,13 +51,13 @@ public interface IdentifiableObject {
 
     void setDisplayName(String displayName);
 
-    DateTime getCreated();
+    String getCreated();
 
-    void setCreated(DateTime created);
+    void setCreated(String created);
 
-    DateTime getLastUpdated();
+    String getLastUpdated();
 
-    void setLastUpdated(DateTime lastUpdated);
+    void setLastUpdated(String lastUpdated);
 
     Access getAccess();
 
@@ -80,13 +80,21 @@ public interface IdentifiableObject {
 
         @Override
         public int compare(IdentifiableObject first, IdentifiableObject second) {
+            DateTime firstDate = null;
+            if(first!=null && first.getCreated()!=null) {
+                firstDate=DateTime.parse(first.getCreated());
+            }
+            DateTime secondDate = null;
+            if(second!=null && second.getCreated()!=null) {
+                secondDate=DateTime.parse(second.getCreated());
+            }
             if (first != null && first.getCreated() != null
-                    && second != null && second.getCreated() != null) {
-                if (first.getCreated().isAfter(second.getCreated())) {
+                    && second != null && secondDate != null) {
+                if (firstDate.isAfter(secondDate)) {
                     return 1;
                 }
 
-                if (second.getCreated().isAfter(first.getCreated())) {
+                if (secondDate.isAfter(firstDate)) {
                     return -1;
                 }
             }

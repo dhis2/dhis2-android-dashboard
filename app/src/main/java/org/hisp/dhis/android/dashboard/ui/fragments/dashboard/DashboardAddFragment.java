@@ -41,6 +41,7 @@ import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
@@ -97,6 +98,7 @@ public final class DashboardAddFragment extends BaseDialogFragment {
             if (!isEmptyName) {
                 Dashboard newDashboard = Dashboard
                         .createDashboard(mDashboardName.getText().toString());
+                newDashboard.setState(State.TO_POST);
                 newDashboard.save();
                 if (isDhisServiceBound()) {
                     getDhisService().syncDashboards();

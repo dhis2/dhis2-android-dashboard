@@ -227,7 +227,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         DashboardItem item = getItem(holder.getAdapterPosition());
 
         holder.menuButtonHandler.setDashboardItem(item);
-        holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
+        holder.lastUpdated.setText(item.getLastUpdated());
 
         /* setting name extracted from content to TextView at top of item layout. */
         if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
