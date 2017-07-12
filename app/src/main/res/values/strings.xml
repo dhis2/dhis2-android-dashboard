@@ -80,6 +80,7 @@
     <string name="users">Users</string>
     <string name="reports">Reports</string>
     <string name="resources">Resources</string>
+    <string name="messages">Messages. Unsupported Resource.</string>
     <string name="unsupported_dashboard_item_type">Unsupported dashboard item type.</string>
     <!-- END DashboardFragment -->
 
@@ -138,5 +139,5 @@
     <string name="chart_preferences_title">"Images size"</string>
     <string name="width_title">"Width:"</string>
     <string name="height_title">"Height:"</string>
-    <string name="invalid_value">The value is not valid, please enter a value greater than</string>
+    <string name="invalid_value">The value is not valid, please enter a value between %1$d and %2$d</string>
 </resources>

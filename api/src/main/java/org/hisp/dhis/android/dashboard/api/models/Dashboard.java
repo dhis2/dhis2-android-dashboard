@@ -231,7 +231,8 @@ public final class Dashboard extends BaseIdentifiableObject {
             }
             case DashboardItemContent.TYPE_USERS:
             case DashboardItemContent.TYPE_REPORTS:
-            case DashboardItemContent.TYPE_RESOURCES: {
+            case DashboardItemContent.TYPE_RESOURCES:
+            case DashboardItemContent.TYPE_MESSAGES: {
                 return false;
             }
         }
