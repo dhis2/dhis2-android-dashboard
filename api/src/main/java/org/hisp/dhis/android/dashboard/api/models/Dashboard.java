@@ -86,8 +86,8 @@ public final class Dashboard extends BaseIdentifiableObject {
         dashboard.setState(State.TO_POST);
         dashboard.setName(name);
         dashboard.setDisplayName(name);
-        dashboard.setCreated(lastUpdatedDateTime);
-        dashboard.setLastUpdated(lastUpdatedDateTime);
+        dashboard.setCreated(LONG_DATE_FORMAT.format(lastUpdatedDateTime.toDate()));
+        dashboard.setLastUpdated(LONG_DATE_FORMAT.format(lastUpdatedDateTime.toDate()));
         dashboard.setAccess(Access.provideDefaultAccess());
 
         return dashboard;
@@ -274,5 +274,15 @@ public final class Dashboard extends BaseIdentifiableObject {
         List<DashboardItem> items
                 = queryRelatedDashboardItems();
         return items == null ? 0 : items.size();
+    }
+
+    @Override
+    public void setCreated(String created) {
+        this.created=created;
+    }
+
+    @Override
+    public void setLastUpdated(String lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 }

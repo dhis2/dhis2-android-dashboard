@@ -131,8 +131,8 @@ public final class DashboardItem extends BaseIdentifiableObject {
                 .getLastUpdated(ResourceType.DASHBOARDS);
 
         DashboardItem item = new DashboardItem();
-        item.setCreated(lastUpdatedDateTime);
-        item.setLastUpdated(lastUpdatedDateTime);
+        item.setCreated(LONG_DATE_FORMAT.format(lastUpdatedDateTime.toDate()));
+        item.setLastUpdated(LONG_DATE_FORMAT.format(lastUpdatedDateTime.toDate()));
         item.setState(State.TO_POST);
         item.setDashboard(dashboard);
         item.setAccess(Access.provideDefaultAccess());

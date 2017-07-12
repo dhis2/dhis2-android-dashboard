@@ -43,6 +43,8 @@ import org.joda.time.DateTime;
 
 import static android.text.TextUtils.isEmpty;
 
+import java.util.Date;
+
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
@@ -77,7 +79,7 @@ public final class InterpretationCommentsAdapter extends AbsAdapter<Interpretati
     @Override
     public void onBindViewHolder(CommentViewHolder holder, int position) {
         InterpretationComment comment = getItem(position);
-        DateTime lastUpdated = comment.getLastUpdated();
+        DateTime lastUpdated = DateTime.parse(comment.getLastUpdated());
         User user = comment.getUser();
 
         String name = EMPTY_FIELD;
