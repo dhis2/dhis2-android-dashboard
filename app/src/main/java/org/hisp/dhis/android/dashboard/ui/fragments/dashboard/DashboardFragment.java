@@ -40,6 +40,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -58,17 +59,21 @@ import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
-import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemAdapter;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
+import org.hisp.dhis.android.dashboard.ui.fragments.SyncingController;
 import org.hisp.dhis.android.dashboard.ui.fragments.interpretation.InterpretationCreateFragment;
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
 
 import java.util.Arrays;
 import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class DashboardFragment extends BaseFragment
         implements LoaderManager.LoaderCallbacks<List<DashboardItem>>, DashboardItemAdapter.OnItemClickListener {
@@ -88,6 +93,8 @@ public class DashboardFragment extends BaseFragment
 
     DashboardItemAdapter mAdapter;
 
+    private SyncingController syncingController;
+
     public static DashboardFragment newInstance(Dashboard dashboard) {
         DashboardFragment fragment = new DashboardFragment();
         Access access = dashboard.getAccess();
@@ -103,6 +110,10 @@ public class DashboardFragment extends BaseFragment
 
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setSyncingController(SyncingController syncingController){
+        this.syncingController = syncingController;
     }
 
     private static Access getAccessFromBundle(Bundle args) {
@@ -125,6 +136,8 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+
+
         mViewSwitcher = (ViewSwitcher) view;
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
@@ -209,7 +222,8 @@ public class DashboardFragment extends BaseFragment
             case DashboardItemContent.TYPE_CHART:
             case DashboardItemContent.TYPE_EVENT_CHART:
             case DashboardItemContent.TYPE_MAP:
-            case DashboardItemContent.TYPE_REPORT_TABLE: {
+            case DashboardItemContent.TYPE_REPORT_TABLE:
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
                 Intent intent = DashboardElementDetailActivity
                         .newIntentForDashboardElement(getActivity(), element.getId());
                 startActivity(intent);
@@ -226,6 +240,7 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onContentDeleteClick(DashboardElement element) {
+
         if (element != null) {
             element.deleteDashboardElement();
 
@@ -238,7 +253,12 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onItemDeleteClick(DashboardItem item) {
-        if (item != null) {
+
+        if (syncingController != null && syncingController.isSyncing()){
+            Toast.makeText(getContext(),
+                    getString(R.string.action_not_allowed_during_sync),
+                    Toast.LENGTH_SHORT).show();
+        }else if (item != null) {
             item.deleteDashboardItem();
 
             if (isDhisServiceBound()) {
@@ -277,7 +297,9 @@ public class DashboardFragment extends BaseFragment
                                     DashboardItemContent.TYPE_EVENT_REPORT,
                                     DashboardItemContent.TYPE_USERS,
                                     DashboardItemContent.TYPE_REPORTS,
-                                    DashboardItemContent.TYPE_RESOURCES))
+                                    DashboardItemContent.TYPE_RESOURCES,
+                                    DashboardItemContent.TYPE_MESSAGES)
+                    ).orderBy(DashboardItem$Table.ORDERPOSITION)
                     .queryList();
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {

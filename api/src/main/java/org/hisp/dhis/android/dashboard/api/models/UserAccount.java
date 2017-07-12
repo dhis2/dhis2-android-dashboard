@@ -68,11 +68,11 @@ public final class UserAccount extends BaseModel implements IdentifiableObject {
 
     @JsonProperty("created")
     @Column(name = "created")
-    DateTime created;
+    String created;
 
     @JsonProperty("lastUpdated")
     @Column(name = "lastUpdated")
-    DateTime lastUpdated;
+    String lastUpdated;
 
     @JsonProperty("access")
     @Column(name = "access")
@@ -208,25 +208,25 @@ public final class UserAccount extends BaseModel implements IdentifiableObject {
 
     @JsonIgnore
     @Override
-    public DateTime getCreated() {
+    public String getCreated() {
         return created;
     }
 
     @JsonIgnore
     @Override
-    public void setCreated(DateTime created) {
+    public void setCreated(String created) {
         this.created = created;
     }
 
     @JsonIgnore
     @Override
-    public DateTime getLastUpdated() {
+    public String getLastUpdated() {
         return lastUpdated;
     }
 
     @JsonIgnore
     @Override
-    public void setLastUpdated(DateTime lastUpdated) {
+    public void setLastUpdated(String lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 

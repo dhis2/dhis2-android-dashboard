@@ -41,6 +41,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -48,6 +49,7 @@ import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.models.Access;
 import org.hisp.dhis.android.dashboard.api.models.Dashboard;
@@ -60,6 +62,7 @@ import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardAdapter;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
+import org.hisp.dhis.android.dashboard.ui.fragments.SyncingController;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -71,7 +74,7 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class DashboardViewPagerFragment extends BaseFragment
         implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener,
-        ViewPager.OnPageChangeListener {
+        ViewPager.OnPageChangeListener, SyncingController {
 
     static final String TAG = DashboardViewPagerFragment.class.getSimpleName();
     static final String IS_LOADING = "state:isLoading";
@@ -91,6 +94,9 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     DashboardAdapter mDashboardAdapter;
 
+    private DhisController.ImageNetworkPolicy mImageNetworkPolicy =
+            DhisController.ImageNetworkPolicy.CACHE;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_dashboards, parent, false);
@@ -100,7 +106,7 @@ public class DashboardViewPagerFragment extends BaseFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        mDashboardAdapter = new DashboardAdapter(getChildFragmentManager());
+        mDashboardAdapter = new DashboardAdapter(getChildFragmentManager(),this);
         mViewPager.setAdapter(mDashboardAdapter);
         mViewPager.addOnPageChangeListener(this);
 
@@ -122,11 +128,11 @@ public class DashboardViewPagerFragment extends BaseFragment
         }
 
         boolean isLoading = isDhisServiceBound() &&
-                getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS)
+                (getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS)
                 ||
                 getDhisService().isJobRunning(DhisService.SYNC_DASHBOARD_CONTENT)
                 ||
-                getDhisService().isJobRunning(DhisService.PULL_DASHBOARD_IMAGES);
+                getDhisService().isJobRunning(DhisService.PULL_DASHBOARD_IMAGES));
         if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -216,6 +222,10 @@ public class DashboardViewPagerFragment extends BaseFragment
     }
 
     private void setDashboards(List<Dashboard> dashboards) {
+        if (dashboards != null) {
+            mDashboardAdapter = new DashboardAdapter(getChildFragmentManager(), this);
+            mViewPager.setAdapter(mDashboardAdapter);
+        }
         mDashboardAdapter.swapData(dashboards);
         mTabs.removeAllTabs();
 
@@ -225,6 +235,13 @@ public class DashboardViewPagerFragment extends BaseFragment
     }
 
     public boolean onMenuItemClicked(MenuItem item) {
+        if (isSyncing()) {
+            Toast.makeText(getContext(),
+                    getString(R.string.action_not_allowed_during_sync),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         switch (item.getItemId()) {
             case R.id.add_dashboard_item: {
                 long dashboardId = mDashboardAdapter
@@ -235,6 +252,7 @@ public class DashboardViewPagerFragment extends BaseFragment
                 return true;
             }
             case R.id.refresh: {
+                mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
                 syncDashboards();
                 return true;
             }
@@ -270,15 +288,20 @@ public class DashboardViewPagerFragment extends BaseFragment
             getDhisService().syncDashboardContents();
         }
         if (result.getResourceType() == ResourceType.DASHBOARDS_CONTENT) {
-            getDhisService().pullDashboardImages(getContext());
+            getDhisService().pullDashboardImages(mImageNetworkPolicy,getContext());
         }
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
-            getDhisService().pullInterpretationImages(getContext());
+            getDhisService().pullInterpretationImages(mImageNetworkPolicy,getContext());
         }
         if (result.getResourceType() == ResourceType.DASHBOARD_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
             getDhisService().syncInterpretations();
         }
+    }
+
+    @Override
+    public boolean isSyncing() {
+        return mProgressBar.getVisibility() == View.VISIBLE;
     }
 
     private static class DashboardQuery implements Query<List<Dashboard>> {

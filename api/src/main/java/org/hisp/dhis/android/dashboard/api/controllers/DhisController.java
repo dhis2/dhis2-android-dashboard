@@ -28,6 +28,8 @@
 
 package org.hisp.dhis.android.dashboard.api.controllers;
 
+import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
+
 import android.content.Context;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
@@ -42,14 +44,18 @@ import org.hisp.dhis.android.dashboard.api.network.RepoManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
 
-import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
+import org.hisp.dhis.android.dashboard.api.persistence.preferences.SettingsManager;
 
 public class DhisController {
     private static DhisController mDhisController;
     private Session mSession;
     private DhisApi mDhisApi;
+    private Context mContext;
+
+    public enum ImageNetworkPolicy {NO_CACHE, CACHE}
 
     private DhisController(Context context) {
+        mContext = context;
         FlowManager.init(context);
         LastUpdatedManager.init(context);
         DateTimeManager.init(context);
@@ -73,11 +79,15 @@ public class DhisController {
         return mDhisController;
     }
 
-    public static String buildImageUrl(String resource, String id) {
+    public static String buildImageUrl(String resource, String id, Context context) {
+        String widthUserPreference = SettingsManager.getInstance(context).getPreference(
+                (SettingsManager.CHART_WIDTH), SettingsManager.MINIMUM_WIDTH);
+        String heightUserPreference = SettingsManager.getInstance(context).getPreference(
+                (SettingsManager.CHART_HEIGHT), SettingsManager.MINIMUM_HEIGHT);
         return getInstance().getServerUrl().newBuilder()
                 .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment(
                         "data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
+                .addQueryParameter("width", widthUserPreference).addQueryParameter("height", heightUserPreference)
                 .toString();
     }
 
@@ -98,7 +108,7 @@ public class DhisController {
 
     private UserAccount signInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
         DhisApi dhisApi = RepoManager
-                .createService(serverUrl, credentials);
+                .createService(serverUrl, credentials, mContext);
         UserAccount user = (new UserController(dhisApi)
                 .logInUser(serverUrl, credentials));
 
@@ -132,7 +142,7 @@ public class DhisController {
             mDhisApi = RepoManager.createService(
                     mSession.getServerUrl(),
                     mSession.getCredentials()
-            );
+                    , mContext);
         }
     }
 
@@ -156,10 +166,10 @@ public class DhisController {
         (new InterpretationController(mDhisApi)).syncInterpretations();
     }
 
-    public void pullDashboardImages(Context context) {
-        (new PullImageController(context)).pullDashboardImages();
+    public void pullDashboardImages(ImageNetworkPolicy imageNetworkPolicy,Context context) {
+        (new PullImageController(context)).pullDashboardImages(imageNetworkPolicy);
     }
-    public void pullInterpretationImages(Context context) {
-        (new PullImageController(context)).pullInterpretationImages();
+    public void pullInterpretationImages(ImageNetworkPolicy imageNetworkPolicy,Context context) {
+        (new PullImageController(context)).pullInterpretationImages(imageNetworkPolicy);
     }
 }

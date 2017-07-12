@@ -28,11 +28,14 @@
 
 package org.hisp.dhis.android.dashboard.ui.adapters;
 
+import static org.hisp.dhis.android.dashboard.ui.fragments.dashboard.DashboardFragment.newInstance;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import org.hisp.dhis.android.dashboard.api.models.Dashboard;
+import org.hisp.dhis.android.dashboard.ui.fragments.SyncingController;
 import org.hisp.dhis.android.dashboard.ui.fragments.dashboard.DashboardFragment;
 
 import java.util.List;
@@ -40,16 +43,22 @@ import java.util.List;
 public class DashboardAdapter extends FragmentPagerAdapter {
     private static final String EMPTY_TITLE = "";
     private List<Dashboard> mDashboards;
+    private SyncingController syncingController;
 
-    public DashboardAdapter(FragmentManager fm) {
+    public DashboardAdapter(FragmentManager fm,SyncingController syncingController) {
         super(fm);
+        this.syncingController = syncingController;
     }
 
     @Override
     public Fragment getItem(int position) {
         if (mDashboards != null && mDashboards.size() > 0) {
-            return DashboardFragment
+            DashboardFragment dashboardFragment = DashboardFragment
                     .newInstance(getDashboard(position));
+
+            dashboardFragment.setSyncingController(syncingController);
+
+            return dashboardFragment;
         } else {
             return null;
         }

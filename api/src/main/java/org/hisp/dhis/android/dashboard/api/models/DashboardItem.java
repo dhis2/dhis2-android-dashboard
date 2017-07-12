@@ -108,6 +108,10 @@ public final class DashboardItem extends BaseIdentifiableObject {
     @JsonProperty("messages")
     boolean messages;
 
+    @JsonIgnore
+    @Column
+    int orderPosition;
+
     public DashboardItem() {
         state = State.SYNCED;
         shape = SHAPE_NORMAL;
@@ -127,8 +131,8 @@ public final class DashboardItem extends BaseIdentifiableObject {
                 .getLastUpdated(ResourceType.DASHBOARDS);
 
         DashboardItem item = new DashboardItem();
-        item.setCreated(lastUpdatedDateTime);
-        item.setLastUpdated(lastUpdatedDateTime);
+        item.setCreated(LONG_DATE_FORMAT.format(lastUpdatedDateTime.toDate()));
+        item.setLastUpdated(LONG_DATE_FORMAT.format(lastUpdatedDateTime.toDate()));
         item.setState(State.TO_POST);
         item.setDashboard(dashboard);
         item.setAccess(Access.provideDefaultAccess());
@@ -424,5 +428,13 @@ public final class DashboardItem extends BaseIdentifiableObject {
     @JsonIgnore
     public void setState(State state) {
         this.state = state;
+    }
+
+    public int getOrderPosition() {
+        return orderPosition;
+    }
+
+    public void setOrderPosition(int orderPosition) {
+        this.orderPosition = orderPosition;
     }
 }
