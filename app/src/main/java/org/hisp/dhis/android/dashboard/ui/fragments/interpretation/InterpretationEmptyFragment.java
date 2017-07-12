@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -41,7 +42,8 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_interpretations_empty, container, false);
     }
 
@@ -92,6 +94,13 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     }
 
     public boolean onMenuItemClicked(MenuItem item) {
+        if (mProgressBar.getVisibility() == View.VISIBLE) {
+            Toast.makeText(getContext(),
+                    getString(R.string.action_not_allowed_during_sync),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         switch (item.getItemId()) {
             case R.id.refresh: {
                 mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
@@ -114,9 +123,10 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         Log.d(TAG, "Received " + result.getResourceType());
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
-            getDhisService().pullInterpretationImages(mImageNetworkPolicy,getContext());
+            getDhisService().pullInterpretationImages(mImageNetworkPolicy, getContext());
         } else if (result.getResourceType() == ResourceType.INTERPRETATION_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }
+
 }

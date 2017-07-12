@@ -140,4 +140,5 @@
     <string name="width_title">"Width:"</string>
     <string name="height_title">"Height:"</string>
     <string name="invalid_value">The value is not valid, please enter a value between %1$d and %2$d</string>
+    <string name="action_not_allowed_during_sync">"The App is synchronizing with the server, please try again after it's finished"</string>
 </resources>
