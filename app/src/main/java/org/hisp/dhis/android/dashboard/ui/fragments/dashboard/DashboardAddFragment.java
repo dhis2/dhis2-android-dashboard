@@ -98,7 +98,6 @@ public final class DashboardAddFragment extends BaseDialogFragment {
             if (!isEmptyName) {
                 Dashboard newDashboard = Dashboard
                         .createDashboard(mDashboardName.getText().toString());
-                newDashboard.setState(State.TO_POST);
                 newDashboard.save();
                 if (isDhisServiceBound()) {
                     getDhisService().syncDashboards();

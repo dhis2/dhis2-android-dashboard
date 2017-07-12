@@ -41,7 +41,6 @@ import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
-import org.hisp.dhis.android.dashboard.api.utils.CodeGenerator;
 import org.joda.time.DateTime;
 
 import java.util.List;
@@ -84,7 +83,6 @@ public final class Dashboard extends BaseIdentifiableObject {
                 .getLastUpdated(ResourceType.DASHBOARDS);
 
         Dashboard dashboard = new Dashboard();
-        dashboard.setUId(CodeGenerator.generateCode());
         dashboard.setState(State.TO_POST);
         dashboard.setName(name);
         dashboard.setDisplayName(name);
