@@ -541,7 +541,7 @@ final class InterpretationController {
                 continue;
             }
 
-            if (newModel.getLastUpdated().isAfter(oldModel.getLastUpdated())) {
+            if (DateTime.parse(newModel.getLastUpdated()).isAfter(DateTime.parse(oldModel.getLastUpdated()))) {
                 newModel.setId(oldModel.getId());
                 ops.add(DbOperation.update(newModel));
             }

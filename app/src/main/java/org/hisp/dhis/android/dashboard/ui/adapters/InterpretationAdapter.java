@@ -158,7 +158,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         holder.userTextView.setText(interpretation.getUser() == null
                 ? EMPTY_FIELD : interpretation.getUser().getDisplayName());
         holder.createdTextView.setText(interpretation.getCreated() == null
-                ? EMPTY_FIELD : interpretation.getCreated().toString(DATE_FORMAT));
+                ? EMPTY_FIELD : interpretation.getCreated());
         holder.interpretationTextView.setText(interpretation.getText() == null
                 ? EMPTY_FIELD : interpretation.getText());
 

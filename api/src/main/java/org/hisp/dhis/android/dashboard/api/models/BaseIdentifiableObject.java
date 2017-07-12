@@ -36,6 +36,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import org.hisp.dhis.android.dashboard.api.utils.StringUtils;
 import org.joda.time.DateTime;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,6 +45,10 @@ import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseIdentifiableObject extends BaseModel implements IdentifiableObject {
+
+    public static final String TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
+
+    public static final SimpleDateFormat LONG_DATE_FORMAT = new SimpleDateFormat(TIMESTAMP_PATTERN);
 
     @JsonIgnore
     @Column(name = "id")
@@ -64,11 +69,11 @@ public class BaseIdentifiableObject extends BaseModel implements IdentifiableObj
 
     @JsonProperty("created")
     @Column(name = "created")
-    DateTime created;
+    String created;
 
     @JsonProperty("lastUpdated")
     @Column(name = "lastUpdated")
-    DateTime lastUpdated;
+    String  lastUpdated;
 
     @JsonProperty("access")
     @Column(name = "access")
@@ -115,22 +120,22 @@ public class BaseIdentifiableObject extends BaseModel implements IdentifiableObj
     }
 
     @Override
-    public DateTime getCreated() {
+    public String getCreated() {
         return created;
     }
 
     @Override
-    public void setCreated(DateTime created) {
+    public void setCreated(String created) {
         this.created = created;
     }
 
     @Override
-    public DateTime getLastUpdated() {
+    public String getLastUpdated() {
         return lastUpdated;
     }
 
     @Override
-    public void setLastUpdated(DateTime lastUpdated) {
+    public void setLastUpdated(String lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 

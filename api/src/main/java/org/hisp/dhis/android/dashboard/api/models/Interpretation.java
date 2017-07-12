@@ -119,8 +119,8 @@ public final class Interpretation extends BaseIdentifiableObject {
                 .getLastUpdated(ResourceType.INTERPRETATIONS);
 
         InterpretationComment comment = new InterpretationComment();
-        comment.setCreated(lastUpdated);
-        comment.setLastUpdated(lastUpdated);
+        comment.setCreated(LONG_DATE_FORMAT.format(lastUpdated.toDate()));
+        comment.setLastUpdated(LONG_DATE_FORMAT.format(lastUpdated.toDate()));
         comment.setAccess(Access.provideDefaultAccess());
         comment.setText(text);
         comment.setState(State.TO_POST);
@@ -146,8 +146,8 @@ public final class Interpretation extends BaseIdentifiableObject {
                 .getLastUpdated(ResourceType.INTERPRETATIONS);
 
         Interpretation interpretation = new Interpretation();
-        interpretation.setCreated(lastUpdated);
-        interpretation.setLastUpdated(lastUpdated);
+        interpretation.setCreated(LONG_DATE_FORMAT.format(lastUpdated.toDate()));
+        interpretation.setLastUpdated(LONG_DATE_FORMAT.format(lastUpdated.toDate()));
         interpretation.setAccess(Access.provideDefaultAccess());
         interpretation.setText(text);
         interpretation.setState(State.TO_POST);
