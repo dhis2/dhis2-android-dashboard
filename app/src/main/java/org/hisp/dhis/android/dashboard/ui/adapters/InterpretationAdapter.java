@@ -41,6 +41,7 @@ import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
+import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
@@ -81,8 +82,10 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         switch (getItem(position).getType()) {
             case Interpretation.TYPE_CHART:
             case Interpretation.TYPE_MAP:
-                return ITEM_WITH_IMAGE_TYPE;
+            case DashboardItemContent.TYPE_EVENT_REPORT:
+            case DashboardItemContent.TYPE_EVENT_CHART:
             case Interpretation.TYPE_REPORT_TABLE:
+                return ITEM_WITH_IMAGE_TYPE;
             case Interpretation.TYPE_DATA_SET_REPORT:
                 return ITEM_WITH_TABLE_TYPE;
         }
@@ -220,12 +223,24 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         } else if (Interpretation.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
             InterpretationElement element = item.getMap();
             request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), getContext());
+        } else if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType())) {
+            holder.imageView.setImageDrawable(
+                    super.getContext().getResources().getDrawable(R.drawable.ic_pivot_table));
+            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType())) {
+
+            holder.imageView.setImageDrawable(
+                    super.getContext().getResources().getDrawable(R.drawable.ic_event_report));
+            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         }
 
         holder.listener.setInterpretation(item);
-        mImageLoader.load(request)
-                .placeholder(R.mipmap.ic_stub_dashboard_item)
-                .into(holder.imageView);
+
+        if (request != null) {
+            mImageLoader.load(request)
+                    .placeholder(R.mipmap.ic_stub_dashboard_item)
+                    .into(holder.imageView);
+        }
     }
 
     private void handleItemsWithTables(TextItemViewHolder holder, Interpretation item) {
