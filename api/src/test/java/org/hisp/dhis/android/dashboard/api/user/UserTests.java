@@ -7,6 +7,7 @@ import org.hisp.dhis.android.dashboard.api.commons.FileReader;
 import org.hisp.dhis.android.dashboard.api.commons.JsonParser;
 import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
+import org.joda.time.DateTime;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -24,9 +25,9 @@ public class UserTests {
         assertTrue(user.getUId().equals("xE7jOejl9FI"));
         assertTrue(user.getName().equals("John Traore"));
         assertTrue(user.getDisplayName().equals("John Traore"));
-        assertTrue(DateTestUtils.compareParsedDateWithStringDate(user.getCreated(),
+        assertTrue(DateTestUtils.compareParsedDateWithStringDate(DateTime.parse(user.getCreated()),
                 "2013-04-18T17:15:08.407"));
-        assertTrue(DateTestUtils.compareParsedDateWithStringDate(user.getLastUpdated(),
+        assertTrue(DateTestUtils.compareParsedDateWithStringDate(DateTime.parse(user.getLastUpdated()),
                 "2017-05-02T17:02:37.817"));
         assertTrue(user.getAccess() == null);
     }
