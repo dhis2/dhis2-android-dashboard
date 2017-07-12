@@ -89,7 +89,7 @@ public final class RelativePeriod extends BaseModel {
     }
 
     public String getRelativePeriodString() {
-        String result = "";
+        String result = "pe:";
         periodsList = new boolean[]{thisYear, quartersLastYear, last52Weeks, thisWeek, lastMonth,
                 last14Days, monthsThisYear, last2SixMonths, yesterday, thisQuarter, last12Months,
                 last5FinancialYears, thisSixMonth, lastQuarter, thisFinancialYear, last4Weeks,

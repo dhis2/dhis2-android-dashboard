@@ -155,7 +155,8 @@ public interface DhisApi {
             @Query("outputType") String outputType,
             @Query("aggregationType") String aggregationType,
             @Query("value") String value,
-            @Path("dataType") String dataType);
+            @Path("dataType") String dataType,
+            @Query("filter") List<String> filter);
 
     @GET("/eventReports?paging=false")
     @Headers("Accept: application/json")
