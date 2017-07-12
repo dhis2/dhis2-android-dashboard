@@ -13,6 +13,14 @@ public final class EventReport extends BaseIdentifiableObject {
     static final String AGGREGATED_VALUES_TYPE = "AGGREGATED_VALUES";
     @JsonIgnore
     static final String EVENTS_TYPE = "EVENTS";
+    @JsonIgnore
+    static final String OU_KEY = "ou";
+    @JsonIgnore
+    static final String PE_KEY = "pe";
+    @JsonIgnore
+    static final String AGGREGATE_KEY = "aggregate";
+    @JsonIgnore
+    static final String QUERY_KEY = "query";
 
 
     UIDObject program;
@@ -24,6 +32,9 @@ public final class EventReport extends BaseIdentifiableObject {
     String aggregationType;
     String outputType;
     String dataType;
+    List<AttributeDimension> attributeDimensions;
+    List<UIDObject> filters;
+    List<UIDObject> columns;
 
     public UIDObject getProgram() {
         return program;
@@ -100,11 +111,84 @@ public final class EventReport extends BaseIdentifiableObject {
         this.dataType = dataType;
     }
 
-    public String getDataTypeString() {
-        if (dataType.equals(AGGREGATED_VALUES_TYPE)) {
-            return "aggregate";
-        } else {
-            return "query";
+    public List<AttributeDimension> getAttributeDimensions() {
+        return attributeDimensions;
+    }
+
+    public void setAttributeDimensions(
+            List<AttributeDimension> attributeDimensions) {
+        this.attributeDimensions = attributeDimensions;
+    }
+
+    public List<UIDObject> getFilters() {
+        return filters;
+    }
+
+    public void setFilters(List<UIDObject> filters) {
+        this.filters = filters;
+    }
+
+    public List<UIDObject> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<UIDObject> columns) {
+        this.columns = columns;
+    }
+
+    public String getOUDimensionFilter() {
+        String ouDimensions = "ou:";
+        boolean firstOu = true;
+        for (UIDObject organizationUnit : organisationUnits) {
+            ouDimensions +=
+                    firstOu ? organizationUnit.getuId() : ";" + organizationUnit.getuId();
+            firstOu = false;
         }
+        return ouDimensions;
+    }
+
+    public String getDimensionFilter(DataElementDimension dimension) {
+        String dimensionUID = "";
+        dimensionUID += dimension.getDataElement().getuId();
+        if (dimension.getLegendSet() != null) {
+            dimensionUID += "-" + dimension.getLegendSet().getuId();
+        }
+        if (dimension.getFilter() != null && !dimension.getFilter().isEmpty()) {
+            dimensionUID += ":" + dimension.getFilter();
+        }
+        return dimensionUID;
+    }
+
+    public boolean isOUInFilters() {
+        return isInFilters(OU_KEY);
+    }
+
+    public boolean isPEInFilters() {
+        return isInFilters(PE_KEY);
+    }
+
+    public boolean isInFilters(String key){
+        for (UIDObject filter : filters) {
+            if (filter.getuId().equals(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getDataTypeString() {
+        return (dataType.equals(AGGREGATED_VALUES_TYPE)) ? AGGREGATE_KEY : QUERY_KEY;
+    }
+
+    public boolean isValidColumn(UIDObject column) {
+        if (column.getuId().equals(PE_KEY) || column.getuId().equals(OU_KEY)) {
+            return false;
+        }
+        for (DataElementDimension dimension : dataElementDimensions) {
+            if (dimension.getDataElement().getuId().equals(column.getuId())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

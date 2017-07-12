@@ -168,23 +168,23 @@ public final class DhisService extends Service {
         });
     }
 
-    public void pullInterpretationImages(final Context context) {
+    public void pullInterpretationImages(final DhisController.ImageNetworkPolicy imageNetworkPolicy, final Context context) {
         JobExecutor.enqueueJob(new NetworkJob<Object>(PULL_INTERPRETATION_IMAGES,
                 ResourceType.INTERPRETATION_IMAGES) {
             @Override
             public Object execute() throws APIException {
-                mDhisController.pullInterpretationImages(context);
+                mDhisController.pullInterpretationImages(imageNetworkPolicy,context);
                 return new Object();
             }
         });
     }
 
-    public void pullDashboardImages(final Context context) {
+    public void pullDashboardImages(final DhisController.ImageNetworkPolicy imageNetworkPolicy, final Context context) {
         JobExecutor.enqueueJob(new NetworkJob<Object>(PULL_DASHBOARD_IMAGES,
                 ResourceType.DASHBOARD_IMAGES) {
             @Override
             public Object execute() throws APIException {
-                mDhisController.pullDashboardImages(context);
+                mDhisController.pullDashboardImages(imageNetworkPolicy,context);
                 return new Object();
             }
         });
