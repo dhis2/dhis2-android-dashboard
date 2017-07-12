@@ -80,6 +80,7 @@
     <string name="users">Users</string>
     <string name="reports">Reports</string>
     <string name="resources">Resources</string>
+    <string name="messages">Messages. Unsupported Resource.</string>
     <string name="unsupported_dashboard_item_type">Unsupported dashboard item type.</string>
     <!-- END DashboardFragment -->
 

@@ -637,6 +637,8 @@ final class DashboardController {
                 DashboardItemContent.TYPE_REPORTS, lastUpdated));
         dashboardItemContent.addAll(updateApiResourceByType(
                 DashboardItemContent.TYPE_RESOURCES, lastUpdated));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_MESSAGES, lastUpdated));
         return dashboardItemContent;
     }
 
@@ -690,6 +692,8 @@ final class DashboardController {
             case DashboardItemContent.TYPE_REPORTS:
                 return unwrapResponse(mDhisApi.getReports(queryParams), "reports");
             case DashboardItemContent.TYPE_RESOURCES:
+                return unwrapResponse(mDhisApi.getResources(queryParams), "documents");
+            case DashboardItemContent.TYPE_MESSAGES:
                 return unwrapResponse(mDhisApi.getResources(queryParams), "documents");
             default:
                 throw new IllegalArgumentException("Unsupported DashboardItemContent type");
