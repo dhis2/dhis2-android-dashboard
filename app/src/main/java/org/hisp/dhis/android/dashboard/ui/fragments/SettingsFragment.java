@@ -40,8 +40,8 @@ public final class SettingsFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         widthEditText = (FontEditText) view.findViewById(R.id.update_width_edit);
         heightEditText =(FontEditText) view.findViewById(R.id.update_height_edit);
-        widthEditText.addTextChangedListener(new CustomTextWatcher(SettingsManager.CHART_WIDTH, SettingsManager.DEFAULT_WIDTH, widthEditText));
-        heightEditText.addTextChangedListener(new CustomTextWatcher(SettingsManager.CHART_HEIGHT, SettingsManager.DEFAULT_HEIGHT, heightEditText));
+        widthEditText.addTextChangedListener(new CustomTextWatcher(SettingsManager.CHART_WIDTH, SettingsManager.MINIMUM_WIDTH, SettingsManager.MAXIMUM_WIDTH, widthEditText));
+        heightEditText.addTextChangedListener(new CustomTextWatcher(SettingsManager.CHART_HEIGHT, SettingsManager.MINIMUM_HEIGHT, SettingsManager.MAXIMUM_HEIGHT, heightEditText));
         return view;
     }
 
@@ -57,8 +57,8 @@ public final class SettingsFragment extends BaseFragment {
                 toggleNavigationDrawer();
             }
         });
-        String width = SettingsManager.getInstance(getContext()).getPreference((SettingsManager.CHART_WIDTH), SettingsManager.DEFAULT_WIDTH);
-        String height = SettingsManager.getInstance(getContext()).getPreference((SettingsManager.CHART_HEIGHT), SettingsManager.DEFAULT_HEIGHT);
+        String width = SettingsManager.getInstance(getContext()).getPreference((SettingsManager.CHART_WIDTH), SettingsManager.MINIMUM_WIDTH);
+        String height = SettingsManager.getInstance(getContext()).getPreference((SettingsManager.CHART_HEIGHT), SettingsManager.MINIMUM_HEIGHT);
         widthEditText.setText(width);
         heightEditText.setText(height);
 
@@ -85,10 +85,12 @@ public final class SettingsFragment extends BaseFragment {
 
         final String preference;
         final int minimumValue;
+        final int maximumValue;
         final EditText mEditText;
-        public CustomTextWatcher(String preference, String minimumValue, EditText editText){
+        public CustomTextWatcher(String preference, String minimumValue, String maximumValue, EditText editText){
             this.preference = preference;
             this.minimumValue = Integer.parseInt(minimumValue);
+            this.maximumValue = Integer.parseInt(maximumValue);
             this.mEditText = editText;
         }
         @Override
@@ -103,12 +105,12 @@ public final class SettingsFragment extends BaseFragment {
         public void onTextChanged(CharSequence s, int start,
         int before, int count) {
             if(s.toString().length()>0) {
-                if (Integer.parseInt(s.toString())>= minimumValue) {
+                if (Integer.parseInt(s.toString())>= minimumValue && Integer.parseInt(s.toString()) <= maximumValue) {
                     mEditText.setError(null);
                     SettingsManager.getInstance(getContext()).setPreference(preference,
                             s.toString());
                 }else{
-                    mEditText.setError(getContext().getString(R.string.invalid_value)+" "+minimumValue);
+                    mEditText.setError(String.format(getContext().getString(R.string.invalid_value), minimumValue, maximumValue));
                 }
             }
         }
