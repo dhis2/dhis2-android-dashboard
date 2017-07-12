@@ -87,7 +87,8 @@ public class WebViewFragment extends BaseFragment {
         return fragment;
     }
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
         mContext = getContext();
         return inflater.inflate(R.layout.fragment_web_view, container, false);
     }
@@ -103,13 +104,14 @@ public class WebViewFragment extends BaseFragment {
             if (getArguments()
                     .getString(DASHBOARD_TYPE).equals(TYPE_REPORT_TABLE)) {
                 JobExecutor.enqueueJob(new GetReportTableJob(this, getArguments()
-                        .getString(DASHBOARD_ELEMENT_ID)));
+                        .getString(DASHBOARD_ELEMENT_ID), mContext));
             } else {
                 JobExecutor.enqueueJob(new GetEventReportTableJob(this, getArguments()
-                        .getString(DASHBOARD_ELEMENT_ID)));
+                        .getString(DASHBOARD_ELEMENT_ID), mContext));
             }
         }
     }
+
     public void onDataDownloaded(ResponseHolder<String> data) {
         mProgressBarContainer.setVisibility(View.GONE);
 
@@ -169,7 +171,8 @@ public class WebViewFragment extends BaseFragment {
                                 .getServerUrl(),
                         DhisController.getInstance().getUserCredentials(),
                         mContext);
-                responseHolder.setItem(readInputStream(dhisApi.getReportTableData(mDashboardElementId).getBody()));
+                responseHolder.setItem(
+                        readInputStream(dhisApi.getReportTableData(mDashboardElementId).getBody()));
             } catch (APIException exception) {
                 responseHolder.setApiException(exception);
             }
@@ -186,8 +189,14 @@ public class WebViewFragment extends BaseFragment {
     }
 
     static class GetEventReportTableJob extends GetReportTableJob {
-        public GetEventReportTableJob(WebViewFragment fragment, String dashboardElementId) {
-            super(fragment, dashboardElementId);
+
+        Context mContext;
+
+        public GetEventReportTableJob(WebViewFragment fragment, String dashboardElementId,
+                Context context) {
+            super(fragment, dashboardElementId, context);
+
+            mContext = context;
         }
 
         @Override
@@ -198,7 +207,7 @@ public class WebViewFragment extends BaseFragment {
             try {
                 DhisApi dhisApi = RepoManager.createService(
                         DhisController.getInstance().getServerUrl(),
-                        DhisController.getInstance().getUserCredentials());
+                        DhisController.getInstance().getUserCredentials(), mContext);
                 eventReport = dhisApi.getEventReport(mDashboardElementId);
                 responseHolder.setItem(readInputStream(
                         dhisApi.getEventReportTableData(eventReport.getProgram().getuId(),
