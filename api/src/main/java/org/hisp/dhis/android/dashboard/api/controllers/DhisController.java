@@ -79,9 +79,9 @@ public class DhisController {
 
     public static String buildImageUrl(String resource, String id, Context context) {
         String widthUserPreference = SettingsManager.getInstance(context).getPreference(
-                (SettingsManager.CHART_WIDTH), SettingsManager.DEFAULT_WIDTH);
+                (SettingsManager.CHART_WIDTH), SettingsManager.MINIMUM_WIDTH);
         String heightUserPreference = SettingsManager.getInstance(context).getPreference(
-                (SettingsManager.CHART_HEIGHT), SettingsManager.DEFAULT_HEIGHT);
+                (SettingsManager.CHART_HEIGHT), SettingsManager.MINIMUM_HEIGHT);
         return getInstance().getServerUrl().newBuilder()
                 .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment(
                         "data.png")
