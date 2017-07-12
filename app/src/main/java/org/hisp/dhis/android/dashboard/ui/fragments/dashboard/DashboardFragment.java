@@ -277,7 +277,8 @@ public class DashboardFragment extends BaseFragment
                                     DashboardItemContent.TYPE_EVENT_REPORT,
                                     DashboardItemContent.TYPE_USERS,
                                     DashboardItemContent.TYPE_REPORTS,
-                                    DashboardItemContent.TYPE_RESOURCES)
+                                    DashboardItemContent.TYPE_RESOURCES,
+                                    DashboardItemContent.TYPE_MESSAGES)
                     ).orderBy(DashboardItem$Table.ORDERPOSITION)
                     .queryList();
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
