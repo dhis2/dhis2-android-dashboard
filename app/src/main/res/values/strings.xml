@@ -75,10 +75,10 @@
     <string name="charts">Charts</string>
     <string name="event_charts">Event charts</string>
     <string name="maps">Maps</string>
-    <string name="report_tables">Report tables</string>
+    <string name="report_tables">Pivot Tables</string>
     <string name="event_reports">Event reports</string>
     <string name="users">Users</string>
-    <string name="reports">Reports</string>
+    <string name="reports">Standard Reports</string>
     <string name="resources">Resources</string>
     <string name="messages">Messages. Unsupported Resource.</string>
     <string name="unsupported_dashboard_item_type">Unsupported dashboard item type.</string>
