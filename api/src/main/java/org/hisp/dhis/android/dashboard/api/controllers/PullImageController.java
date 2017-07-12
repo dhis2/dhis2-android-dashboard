@@ -14,23 +14,25 @@ import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 import java.util.ArrayList;
 import java.util.List;
 
+
 final class PullImageController {
+
     static Context mContext;
 
     public PullImageController(Context context) {
         mContext = context;
     }
 
-    public void pullDashboardImages() throws APIException {
+    public void pullDashboardImages(DhisController.ImageNetworkPolicy imageNetworkPolicy) throws APIException {
         List<String> requestList = new ArrayList<>();
         requestList = downloadDashboardImages(requestList);
-        downloadImages(requestList, mContext);
+        downloadImages(imageNetworkPolicy, requestList, mContext);
     }
 
-    public void pullInterpretationImages() throws APIException {
+    public void pullInterpretationImages(DhisController.ImageNetworkPolicy imageNetworkPolicy) throws APIException {
         List<String> requestList = new ArrayList<>();
         requestList = downloadInterpretationImages(requestList);
-        downloadImages(requestList, mContext);
+        downloadImages(imageNetworkPolicy, requestList, mContext);
     }
 
     public static List<String> downloadInterpretationImages(List<String> requestList) {
@@ -40,9 +42,12 @@ final class PullImageController {
                 continue;
             }
             if (Interpretation.TYPE_CHART.equals(interpretationElement.getType())) {
-                requestList.add(DhisController.buildImageUrl("charts", interpretationElement.getUId(), mContext));
+                requestList.add(
+                        DhisController.buildImageUrl("charts", interpretationElement.getUId(),
+                                mContext));
             } else if (Interpretation.TYPE_MAP.equals(interpretationElement.getType())) {
-                requestList.add(DhisController.buildImageUrl("maps", interpretationElement.getUId(), mContext));
+                requestList.add(DhisController.buildImageUrl("maps", interpretationElement.getUId(),
+                        mContext));
             }
         }
         return requestList;
@@ -50,21 +55,25 @@ final class PullImageController {
 
     public static List<String> downloadDashboardImages(List<String> requestList) {
         for (DashboardElement element : DashboardController.queryAllDashboardElement()) {
-            if (element.getDashboardItem() == null || element.getDashboardItem().getType() == null) {
+            if (element.getDashboardItem() == null
+                    || element.getDashboardItem().getType() == null) {
                 continue;
             }
 
             switch (element.getDashboardItem().getType()) {
                 case DashboardItemContent.TYPE_CHART: {
-                    requestList.add(DhisController.buildImageUrl("charts", element.getUId(), mContext));
+                    requestList.add(
+                            DhisController.buildImageUrl("charts", element.getUId(), mContext));
                     break;
                 }
                 case DashboardItemContent.TYPE_EVENT_CHART: {
-                    requestList.add(DhisController.buildImageUrl("eventCharts", element.getUId(), mContext));
+                    requestList.add(DhisController.buildImageUrl("eventCharts", element.getUId(),
+                            mContext));
                     break;
                 }
                 case DashboardItemContent.TYPE_MAP: {
-                    requestList.add(DhisController.buildImageUrl("maps", element.getUId(), mContext));
+                    requestList.add(
+                            DhisController.buildImageUrl("maps", element.getUId(), mContext));
                     break;
                 }
             }
@@ -72,11 +81,18 @@ final class PullImageController {
         return requestList;
     }
 
-    private static void downloadImages(final List<String> requestUrlList, final Context context) {
+    private static void downloadImages(DhisController.ImageNetworkPolicy imageNetworkPolicy,
+            final List<String> requestUrlList, final Context context) {
         for (int i = 0; i < requestUrlList.size(); i++) {
             final String request = requestUrlList.get(i);
-            PicassoProvider.getInstance(context)
-                    .load(request).networkPolicy(NetworkPolicy.NO_CACHE).fetch();
+
+            if (imageNetworkPolicy == DhisController.ImageNetworkPolicy.NO_CACHE) {
+                PicassoProvider.getInstance(context)
+                        .load(request).networkPolicy(NetworkPolicy.NO_CACHE).fetch();
+            } else {
+                PicassoProvider.getInstance(context)
+                        .load(request).fetch();
+            }
         }
     }
 }

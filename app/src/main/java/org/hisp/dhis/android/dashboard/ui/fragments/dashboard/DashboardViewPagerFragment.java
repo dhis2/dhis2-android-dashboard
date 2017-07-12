@@ -48,6 +48,7 @@ import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.models.Access;
 import org.hisp.dhis.android.dashboard.api.models.Dashboard;
@@ -90,6 +91,9 @@ public class DashboardViewPagerFragment extends BaseFragment
     SmoothProgressBar mProgressBar;
 
     DashboardAdapter mDashboardAdapter;
+
+    private DhisController.ImageNetworkPolicy mImageNetworkPolicy =
+            DhisController.ImageNetworkPolicy.CACHE;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -216,6 +220,8 @@ public class DashboardViewPagerFragment extends BaseFragment
     }
 
     private void setDashboards(List<Dashboard> dashboards) {
+        mDashboardAdapter = new DashboardAdapter(getChildFragmentManager());
+        mViewPager.setAdapter(mDashboardAdapter);
         mDashboardAdapter.swapData(dashboards);
         mTabs.removeAllTabs();
 
@@ -235,6 +241,7 @@ public class DashboardViewPagerFragment extends BaseFragment
                 return true;
             }
             case R.id.refresh: {
+                mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
                 syncDashboards();
                 return true;
             }
@@ -270,10 +277,10 @@ public class DashboardViewPagerFragment extends BaseFragment
             getDhisService().syncDashboardContents();
         }
         if (result.getResourceType() == ResourceType.DASHBOARDS_CONTENT) {
-            getDhisService().pullDashboardImages(getContext());
+            getDhisService().pullDashboardImages(mImageNetworkPolicy,getContext());
         }
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
-            getDhisService().pullInterpretationImages(getContext());
+            getDhisService().pullInterpretationImages(mImageNetworkPolicy,getContext());
         }
         if (result.getResourceType() == ResourceType.DASHBOARD_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
