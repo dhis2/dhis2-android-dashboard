@@ -32,11 +32,8 @@ import static android.text.TextUtils.isEmpty;
 
 import static org.hisp.dhis.android.dashboard.api.models.DashboardItemContent.TYPE_REPORT_TABLE;
 
-import static android.text.TextUtils.isEmpty;
-
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +44,7 @@ import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.Job;
 import org.hisp.dhis.android.dashboard.api.job.JobExecutor;
+import org.hisp.dhis.android.dashboard.api.models.AttributeDimension;
 import org.hisp.dhis.android.dashboard.api.models.DataElementDimension;
 import org.hisp.dhis.android.dashboard.api.models.EventReport;
 import org.hisp.dhis.android.dashboard.api.models.meta.ResponseHolder;
@@ -218,7 +216,8 @@ public class WebViewFragment extends BaseFragment {
                                 eventReport.getDataElementValueDimension() != null
                                         ? eventReport.getDataElementValueDimension().getuId()
                                         : null,
-                                eventReport.getDataTypeString())
+                                eventReport.getDataTypeString(),
+                                getFilters(eventReport))
                                 .getBody()));
             } catch (APIException exception) {
                 responseHolder.setApiException(exception);
@@ -229,17 +228,39 @@ public class WebViewFragment extends BaseFragment {
 
         private List<String> getDimensions(EventReport eventReport) {
             List<String> dimensions = new ArrayList<>();
-            dimensions.add("pe:" + eventReport.getRelativePeriods().getRelativePeriodString());
-            dimensions.add("ou:" + eventReport.getOrganisationUnits().get(0).getuId());
+            if (!eventReport.isPEInFilters()) {
+                dimensions.add(eventReport.getRelativePeriods().getRelativePeriodString());
+            }
+            if (!eventReport.isOUInFilters()) {
+                dimensions.add(eventReport.getOUDimensionFilter());
+            }
             for (DataElementDimension dimension : eventReport.getDataElementDimensions()) {
-                String dimensionUID = "";
-                dimensionUID += dimension.getDataElement().getuId();
-                if (dimension.getFilter() != null && !dimension.getFilter().isEmpty()) {
-                    dimensionUID += ":" + dimension.getFilter();
+                if (!eventReport.isDimensionInFilters(dimension.getDataElement().getuId())) {
+                    dimensions.add(eventReport.getDimensionFilter(dimension));
                 }
-                dimensions.add(dimensionUID);
+            }
+            for (AttributeDimension attributeDimension : eventReport.getAttributeDimensions()) {
+                dimensions.add(attributeDimension.getAttribute().getuId());
             }
             return dimensions;
+        }
+
+        private List<String> getFilters(EventReport eventReport) {
+            List<String> filters = new ArrayList<>();
+            if (eventReport.isOUInFilters()) {
+                filters.add(eventReport.getOUDimensionFilter());
+            }
+            if (eventReport.isPEInFilters()) {
+                filters.add(eventReport.getRelativePeriods().getRelativePeriodString());
+            }
+
+            for (DataElementDimension dimension : eventReport.getDataElementDimensions()) {
+                if (eventReport.isDimensionInFilters(dimension.getDataElement().getuId())) {
+                    filters.add(eventReport.getDimensionFilter(dimension));
+                }
+            }
+
+            return filters;
         }
     }
 }
