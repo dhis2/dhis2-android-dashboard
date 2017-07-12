@@ -19,6 +19,8 @@ public class DataElementDimension extends BaseModel {
 
     UIDObject dataElement;
 
+    UIDObject legendSet;
+
     public DataElementDimension() {
     }
 
@@ -40,5 +42,13 @@ public class DataElementDimension extends BaseModel {
 
     public void setFilter(String filter) {
         this.filter = filter;
+    }
+
+    public UIDObject getLegendSet() {
+        return legendSet;
+    }
+
+    public void setLegendSet(UIDObject legendSet) {
+        this.legendSet = legendSet;
     }
 }

@@ -26,6 +26,7 @@ public final class EventReport extends BaseIdentifiableObject {
     String dataType;
     List<AttributeDimension> attributeDimensions;
     List<UIDObject> filters;
+    List<UIDObject> columns;
 
     public UIDObject getProgram() {
         return program;
@@ -119,6 +120,14 @@ public final class EventReport extends BaseIdentifiableObject {
         this.filters = filters;
     }
 
+    public List<UIDObject> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<UIDObject> columns) {
+        this.columns = columns;
+    }
+
     public String getOUDimensionFilter() {
         String ouDimensions = "ou:";
         boolean firstOu = true;
@@ -133,6 +142,9 @@ public final class EventReport extends BaseIdentifiableObject {
     public String getDimensionFilter(DataElementDimension dimension) {
         String dimensionUID = "";
         dimensionUID += dimension.getDataElement().getuId();
+        if (dimension.getLegendSet() != null) {
+            dimensionUID += "-" + dimension.getLegendSet().getuId();
+        }
         if (dimension.getFilter() != null && !dimension.getFilter().isEmpty()) {
             dimensionUID += ":" + dimension.getFilter();
         }
@@ -172,5 +184,17 @@ public final class EventReport extends BaseIdentifiableObject {
         } else {
             return "query";
         }
+    }
+
+    public boolean isValidColumn(UIDObject column) {
+        if (column.getuId().equals("pe") || column.getuId().equals("ou")) {
+            return false;
+        }
+        for (DataElementDimension dimension : dataElementDimensions) {
+            if (dimension.getDataElement().getuId().equals(column.getuId())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

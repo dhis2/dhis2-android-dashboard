@@ -47,6 +47,7 @@ import org.hisp.dhis.android.dashboard.api.job.JobExecutor;
 import org.hisp.dhis.android.dashboard.api.models.AttributeDimension;
 import org.hisp.dhis.android.dashboard.api.models.DataElementDimension;
 import org.hisp.dhis.android.dashboard.api.models.EventReport;
+import org.hisp.dhis.android.dashboard.api.models.UIDObject;
 import org.hisp.dhis.android.dashboard.api.models.meta.ResponseHolder;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
@@ -239,6 +240,12 @@ public class WebViewFragment extends BaseFragment {
                     dimensions.add(eventReport.getDimensionFilter(dimension));
                 }
             }
+            for (UIDObject column : eventReport.getColumns()) {
+                if (eventReport.isValidColumn(column)) {
+                    dimensions.add(column.getuId());
+                }
+            }
+
             for (AttributeDimension attributeDimension : eventReport.getAttributeDimensions()) {
                 dimensions.add(attributeDimension.getAttribute().getuId());
             }
