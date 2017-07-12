@@ -88,7 +88,7 @@ public interface IdentifiableObject {
             if(second!=null && second.getCreated()!=null) {
                 secondDate=DateTime.parse(second.getCreated());
             }
-            if (first != null && first.getCreated() != null
+            if (first != null && firstDate != null
                     && second != null && secondDate != null) {
                 if (firstDate.isAfter(secondDate)) {
                     return 1;
