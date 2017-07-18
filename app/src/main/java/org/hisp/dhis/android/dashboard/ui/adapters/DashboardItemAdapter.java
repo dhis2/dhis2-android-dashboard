@@ -337,7 +337,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             mImageLoader.load(request)
                     .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
-                    .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE)
+                    .memoryPolicy(MemoryPolicy.NO_STORE)
                     .placeholder(R.mipmap.ic_stub_dashboard_item)
                     .into(holder.imageView);
         }
