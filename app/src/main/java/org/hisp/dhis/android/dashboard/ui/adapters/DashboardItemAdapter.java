@@ -39,6 +39,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.R;
@@ -110,7 +112,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         mResourcesName = context.getString(R.string.resources);
         mMessaName = context.getString(R.string.messages);
 
-        mImageLoader = PicassoProvider.getInstance(context);
+        mImageLoader = PicassoProvider.getInstance(context, false);
     }
 
     /* returns type of row depending on item content type. */
@@ -334,6 +336,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         if (request != null) {
             holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             mImageLoader.load(request)
+                    .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
+                    .memoryPolicy(MemoryPolicy.NO_STORE)
                     .placeholder(R.mipmap.ic_stub_dashboard_item)
                     .into(holder.imageView);
         }
@@ -693,6 +697,10 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         public View getView() {
             return itemElementsContainer;
         }
+    }
+
+    public void updateImages() {
+        notifyDataSetChanged();
     }
 
     private static class MenuButtonHandler implements View.OnClickListener {

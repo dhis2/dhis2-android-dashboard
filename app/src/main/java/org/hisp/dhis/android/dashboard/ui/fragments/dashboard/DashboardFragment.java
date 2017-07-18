@@ -40,7 +40,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -59,6 +58,7 @@ import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemAdapter;
@@ -70,10 +70,6 @@ import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
 
 import java.util.Arrays;
 import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class DashboardFragment extends BaseFragment
         implements LoaderManager.LoaderCallbacks<List<DashboardItem>>, DashboardItemAdapter.OnItemClickListener {
@@ -190,6 +186,9 @@ public class DashboardFragment extends BaseFragment
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         Log.d(TAG, "Received " + result.getResourceType());
+        if (result.getResourceType().equals(ResourceType.DASHBOARD_IMAGES)) {
+            mAdapter.updateImages();
+        }
     }
     @Override
     public void onLoadFinished(Loader<List<DashboardItem>> loader,

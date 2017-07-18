@@ -37,6 +37,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.R;
@@ -72,7 +74,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         super(context, inflater);
 
         mClickListener = clickListener;
-        mImageLoader = PicassoProvider.getInstance(context);
+        mImageLoader = PicassoProvider.getInstance(context, false);
     }
 
     /* returns type of row depending on item content type. */
@@ -238,6 +240,8 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
 
         if (request != null) {
             mImageLoader.load(request)
+                    .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
+                    .memoryPolicy(MemoryPolicy.NO_STORE)
                     .placeholder(R.mipmap.ic_stub_dashboard_item)
                     .into(holder.imageView);
         }
@@ -396,6 +400,10 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         void onInterpretationEditClick(Interpretation interpretation);
 
         void onInterpretationCommentsClick(Interpretation interpretation);
+    }
+
+    public void updateImages() {
+        notifyDataSetChanged();
     }
 
     private static class MenuButtonHandler implements View.OnClickListener {
