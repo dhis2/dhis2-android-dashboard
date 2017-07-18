@@ -28,6 +28,8 @@
 
 package org.hisp.dhis.android.dashboard.ui.activities;
 
+import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -46,14 +48,13 @@ import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.meta.ResponseHolder;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
-
-import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
 
 public class LoginActivity extends BaseActivity {
     private static final String IS_LOADING = "state:isLoading";
@@ -136,6 +137,7 @@ public class LoginActivity extends BaseActivity {
             ResponseHolder<UserAccount> responseHolder = jobResult.getResponseHolder();
 
             if (responseHolder.getApiException() == null) {
+                PicassoProvider.getInstance(this, true);
                 startActivity(new Intent(this, MenuActivity.class));
                 finish();
             } else {

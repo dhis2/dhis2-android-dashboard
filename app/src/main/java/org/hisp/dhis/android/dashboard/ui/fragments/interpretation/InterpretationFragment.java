@@ -304,6 +304,7 @@ public final class InterpretationFragment extends BaseFragment
             getDhisService().pullInterpretationImages(mImageNetworkPolicy,getContext());
         } else if (result.getResourceType() == ResourceType.INTERPRETATION_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            mAdapter.updateImages();
         }
     }
 
