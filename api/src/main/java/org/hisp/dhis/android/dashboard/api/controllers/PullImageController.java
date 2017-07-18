@@ -2,6 +2,7 @@ package org.hisp.dhis.android.dashboard.api.controllers;
 
 import android.content.Context;
 
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
 
 import org.hisp.dhis.android.dashboard.api.models.DashboardElement;
@@ -83,12 +84,14 @@ final class PullImageController {
 
     private static void downloadImages(DhisController.ImageNetworkPolicy imageNetworkPolicy,
             final List<String> requestUrlList, final Context context) {
+
         for (int i = 0; i < requestUrlList.size(); i++) {
             final String request = requestUrlList.get(i);
 
             if (imageNetworkPolicy == DhisController.ImageNetworkPolicy.NO_CACHE) {
                 PicassoProvider.getInstance(context, false)
-                        .load(request).networkPolicy(NetworkPolicy.NO_CACHE).fetch();
+                        .load(request).networkPolicy(NetworkPolicy.NO_CACHE)
+                        .memoryPolicy(MemoryPolicy.NO_CACHE).fetch();
             } else {
                 PicassoProvider.getInstance(context, false)
                         .load(request).fetch();

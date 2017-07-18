@@ -37,6 +37,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
+
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 
@@ -78,6 +81,8 @@ public class ImageViewFragment extends BaseFragment {
 
         PicassoProvider.getInstance(getActivity().getApplicationContext(), false)
                 .load(getImageUrl())
+                .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
+                .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE)
                 .placeholder(R.mipmap.ic_stub_dashboard_item)
                 .into(mImageView);
     }
