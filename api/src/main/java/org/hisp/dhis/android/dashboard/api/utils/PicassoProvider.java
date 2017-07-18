@@ -44,8 +44,8 @@ public final class PicassoProvider {
     private PicassoProvider() {
     }
 
-    public static Picasso getInstance(Context context) {
-        if (mPicasso == null) {
+    public static Picasso getInstance(Context context, boolean changeCredentials) {
+        if (mPicasso == null || changeCredentials) {
             OkHttpClient client = RepoManager.provideOkHttpClient(
                     DhisController.getInstance().getUserCredentials(), context);
             mPicasso = new Picasso.Builder(context)

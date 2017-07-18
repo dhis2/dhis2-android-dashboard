@@ -110,7 +110,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         mResourcesName = context.getString(R.string.resources);
         mMessaName = context.getString(R.string.messages);
 
-        mImageLoader = PicassoProvider.getInstance(context);
+        mImageLoader = PicassoProvider.getInstance(context, false);
     }
 
     /* returns type of row depending on item content type. */

@@ -87,10 +87,10 @@ final class PullImageController {
             final String request = requestUrlList.get(i);
 
             if (imageNetworkPolicy == DhisController.ImageNetworkPolicy.NO_CACHE) {
-                PicassoProvider.getInstance(context)
+                PicassoProvider.getInstance(context, false)
                         .load(request).networkPolicy(NetworkPolicy.NO_CACHE).fetch();
             } else {
-                PicassoProvider.getInstance(context)
+                PicassoProvider.getInstance(context, false)
                         .load(request).fetch();
             }
         }

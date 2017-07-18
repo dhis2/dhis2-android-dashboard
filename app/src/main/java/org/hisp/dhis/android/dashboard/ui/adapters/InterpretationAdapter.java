@@ -72,7 +72,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         super(context, inflater);
 
         mClickListener = clickListener;
-        mImageLoader = PicassoProvider.getInstance(context);
+        mImageLoader = PicassoProvider.getInstance(context, false);
     }
 
     /* returns type of row depending on item content type. */
