@@ -29,15 +29,18 @@ package org.hisp.dhis.android.dashboard.ui.fragments.dashboard;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.DhisService;
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
@@ -62,6 +65,9 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
 
     @Bind(R.id.progress_bar)
     SmoothProgressBar mProgressBar;
+
+    private DhisController.ImageNetworkPolicy mImageNetworkPolicy =
+            DhisController.ImageNetworkPolicy.CACHE;
 
     @Nullable
     @Override
@@ -117,8 +123,16 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     }
 
     public boolean onMenuItemClicked(MenuItem item) {
+        if (mProgressBar.getVisibility() == View.VISIBLE) {
+            Toast.makeText(getContext(),
+                    getString(R.string.action_not_allowed_during_sync),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         switch (item.getItemId()) {
             case R.id.refresh: {
+                mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
                 syncDashboards();
                 return true;
             }
@@ -133,7 +147,7 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
 
     private void syncDashboards() {
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboardsAndContent();
+            getDhisService().syncDashboards();
             mProgressBar.setVisibility(View.VISIBLE);
         }
     }
@@ -141,8 +155,21 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
+        Log.d(TAG, "Received" + result.getResourceType());
         if (result.getResourceType() == ResourceType.DASHBOARDS) {
+            getDhisService().syncDashboardContents();
+        }
+        if (result.getResourceType() == ResourceType.DASHBOARDS_CONTENT) {
+            getDhisService().pullDashboardImages(mImageNetworkPolicy,getContext());
+        }
+        if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
+            getDhisService().pullInterpretationImages(mImageNetworkPolicy,getContext());
+        }
+        if (result.getResourceType() == ResourceType.DASHBOARD_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            getDhisService().syncInterpretations();
         }
     }
+
+
 }

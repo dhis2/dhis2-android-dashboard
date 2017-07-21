@@ -28,10 +28,17 @@
 
 package org.hisp.dhis.android.dashboard.ui.fragments;
 
+import static android.R.attr.editable;
+
 import android.app.Activity;
+import android.content.Context;
 import android.support.v4.app.Fragment;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.hisp.dhis.android.dashboard.DhisService;
+import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.activities.BaseActivity;
 import org.hisp.dhis.android.dashboard.ui.activities.INavigationCallback;

@@ -44,14 +44,15 @@ public final class PicassoProvider {
     private PicassoProvider() {
     }
 
-    public static Picasso getInstance(Context context) {
-        if (mPicasso == null) {
+    public static Picasso getInstance(Context context, boolean changeCredentials) {
+        if (mPicasso == null || changeCredentials) {
             OkHttpClient client = RepoManager.provideOkHttpClient(
-                    DhisController.getInstance().getUserCredentials());
-
+                    DhisController.getInstance().getUserCredentials(), context);
             mPicasso = new Picasso.Builder(context)
                     .downloader(new OkHttpDownloader(client))
                     .build();
+            mPicasso.setIndicatorsEnabled(false);
+            mPicasso.setLoggingEnabled(false);
         }
 
         return mPicasso;

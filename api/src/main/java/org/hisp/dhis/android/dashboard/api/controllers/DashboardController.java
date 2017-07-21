@@ -28,6 +28,13 @@
 
 package org.hisp.dhis.android.dashboard.api.controllers;
 
+import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.merge;
+import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toListIds;
+import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toMap;
+import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
+import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiException;
+import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
+
 import android.net.Uri;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
@@ -61,13 +68,6 @@ import java.util.Queue;
 import retrofit.client.Header;
 import retrofit.client.Response;
 
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.merge;
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toListIds;
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toMap;
-import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
-import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiException;
-import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
-
 final class DashboardController {
     final DhisApi mDhisApi;
 
@@ -93,6 +93,11 @@ final class DashboardController {
         return new Select().from(Dashboard.class)
                 .where(Condition.column(Dashboard$Table
                         .STATE).isNot(State.TO_POST.toString()))
+                .queryList();
+    }
+
+    public static List<DashboardElement> queryAllDashboardElement() {
+        return new Select().from(DashboardElement.class)
                 .queryList();
     }
 
@@ -164,7 +169,8 @@ final class DashboardController {
                 "]");
 
         if (lastUpdated != null) {
-            QUERY_MAP_FULL.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
+            QUERY_MAP_FULL.put("filter",
+                    "lastUpdated:gt:" + lastUpdated.toLocalDateTime().toString());
         }
 
         // List of dashboards with UUIDs (without content). This list is used
@@ -183,8 +189,11 @@ final class DashboardController {
                     continue;
                 }
 
+                int i=0;
                 for (DashboardItem item : dashboard.getDashboardItems()) {
                     item.setDashboard(dashboard);
+                    item.setOrderPosition(i);
+                    i++;
                 }
             }
         }
@@ -213,7 +222,7 @@ final class DashboardController {
         QUERY_MAP_BASIC.put("fields", "id,created,lastUpdated,shape");
 
         if (lastUpdated != null) {
-            QUERY_MAP_BASIC.put("filter", "lastUpdated:gt:" + lastUpdated.toString());
+            QUERY_MAP_BASIC.put("filter", "lastUpdated:gt:" + lastUpdated.toLocalDateTime().toString());
         }
 
         // List of actual dashboard items.
@@ -628,6 +637,8 @@ final class DashboardController {
                 DashboardItemContent.TYPE_REPORTS, lastUpdated));
         dashboardItemContent.addAll(updateApiResourceByType(
                 DashboardItemContent.TYPE_RESOURCES, lastUpdated));
+        dashboardItemContent.addAll(updateApiResourceByType(
+                DashboardItemContent.TYPE_MESSAGES, lastUpdated));
         return dashboardItemContent;
     }
 
@@ -681,6 +692,8 @@ final class DashboardController {
             case DashboardItemContent.TYPE_REPORTS:
                 return unwrapResponse(mDhisApi.getReports(queryParams), "reports");
             case DashboardItemContent.TYPE_RESOURCES:
+                return unwrapResponse(mDhisApi.getResources(queryParams), "documents");
+            case DashboardItemContent.TYPE_MESSAGES:
                 return unwrapResponse(mDhisApi.getResources(queryParams), "documents");
             default:
                 throw new IllegalArgumentException("Unsupported DashboardItemContent type");

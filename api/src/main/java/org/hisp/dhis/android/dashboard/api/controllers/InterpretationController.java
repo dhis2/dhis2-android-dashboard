@@ -541,7 +541,7 @@ final class InterpretationController {
                 continue;
             }
 
-            if (newModel.getLastUpdated().isAfter(oldModel.getLastUpdated())) {
+            if (DateTime.parse(newModel.getLastUpdated()).isAfter(DateTime.parse(oldModel.getLastUpdated()))) {
                 newModel.setId(oldModel.getId());
                 ops.add(DbOperation.update(newModel));
             }
@@ -570,6 +570,11 @@ final class InterpretationController {
                 .from(Interpretation.class)
                 .where(Condition.column(Interpretation$Table
                         .STATE).isNot(State.TO_POST.toString()))
+                .queryList();
+    }
+
+    public static List<InterpretationElement> queryAllInterpretationElements() {
+        return new Select().from(InterpretationElement.class)
                 .queryList();
     }
 

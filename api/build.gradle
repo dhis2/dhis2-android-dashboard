@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'jacoco-android'
 
 android {
     compileSdkVersion 25
@@ -17,8 +18,20 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
+
     lintOptions {
-        disable 'RtlSymmetry', 'RtlHardcoded'
+        disable 'RtlSymmetry', 'RtlHardcoded', 'RestrictedApi'
+        abortOnError false
+    }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
     }
 }
 
@@ -47,4 +60,7 @@ dependencies {
 
     // Other
     compile 'joda-time:joda-time:2.9.2'
+
+    // Java test dependencies
+    testCompile "junit:junit:4.12"
 }

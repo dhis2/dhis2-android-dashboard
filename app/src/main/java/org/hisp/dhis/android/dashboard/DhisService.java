@@ -27,6 +27,7 @@
 package org.hisp.dhis.android.dashboard;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
@@ -54,6 +55,8 @@ public final class DhisService extends Service {
     public static final int SYNC_DASHBOARDS = 5;
     public static final int SYNC_DASHBOARD_CONTENT = 6;
     public static final int SYNC_INTERPRETATIONS = 7;
+    public static final int PULL_INTERPRETATION_IMAGES = 8;
+    public static final int PULL_DASHBOARD_IMAGES = 9;
 
     private final IBinder mBinder = new ServiceBinder();
     private DhisController mDhisController;
@@ -160,6 +163,28 @@ public final class DhisService extends Service {
             @Override
             public Object execute() throws APIException {
                 mDhisController.syncInterpretations();
+                return new Object();
+            }
+        });
+    }
+
+    public void pullInterpretationImages(final DhisController.ImageNetworkPolicy imageNetworkPolicy, final Context context) {
+        JobExecutor.enqueueJob(new NetworkJob<Object>(PULL_INTERPRETATION_IMAGES,
+                ResourceType.INTERPRETATION_IMAGES) {
+            @Override
+            public Object execute() throws APIException {
+                mDhisController.pullInterpretationImages(imageNetworkPolicy,context);
+                return new Object();
+            }
+        });
+    }
+
+    public void pullDashboardImages(final DhisController.ImageNetworkPolicy imageNetworkPolicy, final Context context) {
+        JobExecutor.enqueueJob(new NetworkJob<Object>(PULL_DASHBOARD_IMAGES,
+                ResourceType.DASHBOARD_IMAGES) {
+            @Override
+            public Object execute() throws APIException {
+                mDhisController.pullDashboardImages(imageNetworkPolicy,context);
                 return new Object();
             }
         });

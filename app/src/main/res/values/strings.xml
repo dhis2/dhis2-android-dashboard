@@ -75,11 +75,12 @@
     <string name="charts">Charts</string>
     <string name="event_charts">Event charts</string>
     <string name="maps">Maps</string>
-    <string name="report_tables">Report tables</string>
+    <string name="report_tables">Pivot Tables</string>
     <string name="event_reports">Event reports</string>
     <string name="users">Users</string>
-    <string name="reports">Reports</string>
+    <string name="reports">Standard Reports</string>
     <string name="resources">Resources</string>
+    <string name="messages">Messages. Unsupported Resource.</string>
     <string name="unsupported_dashboard_item_type">Unsupported dashboard item type.</string>
     <!-- END DashboardFragment -->
 
@@ -113,4 +114,31 @@
     <string name="phone_number">Phone number</string>
 
     <!-- END Account -->
+
+    <!-- last commit -->
+    <string name="about_this_app">"About this app"</string>
+    <string name="app_version">App version: %s</string>
+    <string name="last_commit">"Commit hash: %s"</string>
+    <string name="unavailable">"Unavailable"</string>
+    <string name="lastcommit_unavailable"><![CDATA[
+    <p>This option requires some changes in the git repository.</p>
+    <p>Steps:</p>
+    <p>1. Please open or create the .git/hooks/post-commit and .git/hooks/post-checkout files.</p>
+    <p>2. If the file does not exist, add the following lines: </p>
+    <p>#!/bin/sh </p>
+    <p>gitPath=$(git rev-parse --show-toplevel)</p>
+    <p>sh ${gitPath}/generate_last_commit.sh </p>
+    <p>2. If the file already exists, you only need add the following lines at the end:</p>
+    <p>gitPath=$(git rev-parse --show-toplevel)</p>
+    <p>sh ${gitPath}/generate_last_commit.sh </p>
+    <p>3. Run "git checkout". </p>]]>
+    </string>
+
+
+    <!-- Settings -->
+    <string name="chart_preferences_title">"Images size"</string>
+    <string name="width_title">"Width:"</string>
+    <string name="height_title">"Height:"</string>
+    <string name="invalid_value">The value is not valid, please enter a value between %1$d and %2$d</string>
+    <string name="action_not_allowed_during_sync">"The App is synchronizing with the server, please try again after it's finished"</string>
 </resources>

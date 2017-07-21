@@ -29,6 +29,7 @@
 package org.hisp.dhis.android.dashboard.ui.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -72,13 +73,6 @@ public class DashboardElementDetailActivity extends BaseActivity {
         return intent;
     }
 
-    private static String buildImageUrl(String resource, String id) {
-        return DhisController.getInstance().getServerUrl().newBuilder()
-                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
-                .toString();
-    }
-
     private long getDashboardElementId() {
         return getIntent().getLongExtra(DASHBOARD_ELEMENT_ID, -1);
     }
@@ -114,7 +108,7 @@ public class DashboardElementDetailActivity extends BaseActivity {
                     .where(Condition.column(DashboardElement$Table.ID)
                             .is(getDashboardElementId()))
                     .querySingle();
-            handleDashboardElement(element);
+            handleDashboardElement(element, getApplicationContext());
         }
 
         if (interpretationElementId > 0) {
@@ -123,11 +117,11 @@ public class DashboardElementDetailActivity extends BaseActivity {
                     .where(Condition.column(InterpretationElement$Table
                             .ID).is(interpretationElementId))
                     .querySingle();
-            handleInterpretationElement(element);
+            handleInterpretationElement(element, getApplicationContext());
         }
     }
 
-    private void handleDashboardElement(DashboardElement element) {
+    private void handleDashboardElement(DashboardElement element, Context context) {
 
         if (element == null || element.getDashboardItem() == null) {
             return;
@@ -136,29 +130,31 @@ public class DashboardElementDetailActivity extends BaseActivity {
         mToolbar.setTitle(element.getDisplayName());
         switch (element.getDashboardItem().getType()) {
             case DashboardItemContent.TYPE_CHART: {
-                String request = buildImageUrl("charts", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("charts", element.getUId(), context);
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
             case DashboardItemContent.TYPE_EVENT_CHART: {
-                String request = buildImageUrl("eventCharts", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("eventCharts", element.getUId(), context);
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
             case DashboardItemContent.TYPE_MAP: {
-                String request = buildImageUrl("maps", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), context);
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
-            case DashboardItemContent.TYPE_REPORT_TABLE: {
+            case DashboardItemContent.TYPE_REPORT_TABLE:
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
                 String elementId = element.getUId();
-                attachFragment(WebViewFragment.newInstance(elementId));
+                attachFragment(WebViewFragment.newInstance(elementId,
+                        element.getDashboardItem().getType()));
                 break;
             }
         }
     }
 
-    private void handleInterpretationElement(InterpretationElement element) {
+    private void handleInterpretationElement(InterpretationElement element, Context context) {
         if (element == null || element.getInterpretation() == null) {
             return;
         }
@@ -166,18 +162,18 @@ public class DashboardElementDetailActivity extends BaseActivity {
         mToolbar.setTitle(element.getDisplayName());
         switch (element.getInterpretation().getType()) {
             case Interpretation.TYPE_CHART: {
-                String request = buildImageUrl("charts", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("charts", element.getUId(), context);
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
             case Interpretation.TYPE_MAP: {
-                String request = buildImageUrl("maps", element.getUId());
+                String request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), context);
                 attachFragment(ImageViewFragment.newInstance(request));
                 break;
             }
             case Interpretation.TYPE_REPORT_TABLE: {
                 String elementId = element.getUId();
-                attachFragment(WebViewFragment.newInstance(elementId));
+                attachFragment(WebViewFragment.newInstance(elementId, element.getType()));
                 break;
             }
             case Interpretation.TYPE_DATA_SET_REPORT: {

@@ -28,6 +28,11 @@
 
 package org.hisp.dhis.android.dashboard.ui.fragments;
 
+import static android.text.TextUtils.isEmpty;
+
+import static org.hisp.dhis.android.dashboard.api.models.DashboardItemContent.TYPE_REPORT_TABLE;
+
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +44,10 @@ import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.Job;
 import org.hisp.dhis.android.dashboard.api.job.JobExecutor;
+import org.hisp.dhis.android.dashboard.api.models.AttributeDimension;
+import org.hisp.dhis.android.dashboard.api.models.DataElementDimension;
+import org.hisp.dhis.android.dashboard.api.models.EventReport;
+import org.hisp.dhis.android.dashboard.api.models.UIDObject;
 import org.hisp.dhis.android.dashboard.api.models.meta.ResponseHolder;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
@@ -48,15 +57,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.mime.TypedInput;
 
-import static android.text.TextUtils.isEmpty;
-
 public class WebViewFragment extends BaseFragment {
     private static final String DASHBOARD_ELEMENT_ID = "arg:dashboardElementId";
+    private Context mContext;
+    private static final String DASHBOARD_TYPE = "dashboardType";
 
     @Bind(R.id.web_view_content)
     WebView mWebView;
@@ -64,9 +75,10 @@ public class WebViewFragment extends BaseFragment {
     @Bind(R.id.container_layout_progress_bar)
     View mProgressBarContainer;
 
-    public static WebViewFragment newInstance(String id) {
+    public static WebViewFragment newInstance(String id, String dashboardType) {
         Bundle args = new Bundle();
         args.putString(DASHBOARD_ELEMENT_ID, id);
+        args.putString(DASHBOARD_TYPE, dashboardType);
 
         WebViewFragment fragment = new WebViewFragment();
         fragment.setArguments(args);
@@ -74,7 +86,9 @@ public class WebViewFragment extends BaseFragment {
         return fragment;
     }
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        mContext = getContext();
         return inflater.inflate(R.layout.fragment_web_view, container, false);
     }
 
@@ -84,9 +98,16 @@ public class WebViewFragment extends BaseFragment {
 
         mWebView.getSettings().setBuiltInZoomControls(true);
         if (getArguments() != null && !isEmpty(getArguments()
-                .getString(DASHBOARD_ELEMENT_ID))) {
-            JobExecutor.enqueueJob(new GetReportTableJob(this, getArguments()
-                    .getString(DASHBOARD_ELEMENT_ID)));
+                .getString(DASHBOARD_ELEMENT_ID)) && !isEmpty(getArguments()
+                .getString(DASHBOARD_TYPE))) {
+            if (getArguments()
+                    .getString(DASHBOARD_TYPE).equals(TYPE_REPORT_TABLE)) {
+                JobExecutor.enqueueJob(new GetReportTableJob(this, getArguments()
+                        .getString(DASHBOARD_ELEMENT_ID), mContext));
+            } else {
+                JobExecutor.enqueueJob(new GetEventReportTableJob(this, getArguments()
+                        .getString(DASHBOARD_ELEMENT_ID), mContext));
+            }
         }
     }
 
@@ -108,12 +129,15 @@ public class WebViewFragment extends BaseFragment {
 
         final WeakReference<WebViewFragment> mFragmentRef;
         final String mDashboardElementId;
+        Context mContext;
 
-        public GetReportTableJob(WebViewFragment fragment, String dashboardElementId) {
+        public GetReportTableJob(WebViewFragment fragment, String dashboardElementId,
+                Context context) {
             super(JOB_ID);
 
             mFragmentRef = new WeakReference<>(fragment);
             mDashboardElementId = dashboardElementId;
+            mContext = context;
         }
 
         static String readInputStream(TypedInput in) {
@@ -142,9 +166,12 @@ public class WebViewFragment extends BaseFragment {
             ResponseHolder<String> responseHolder = new ResponseHolder<>();
 
             try {
-                DhisApi dhisApi = RepoManager.createService(DhisController.getInstance().getServerUrl(),
-                        DhisController.getInstance().getUserCredentials());
-                responseHolder.setItem(readInputStream(dhisApi.getReportTableData(mDashboardElementId).getBody()));
+                DhisApi dhisApi = RepoManager.createService(DhisController.getInstance()
+                                .getServerUrl(),
+                        DhisController.getInstance().getUserCredentials(),
+                        mContext);
+                responseHolder.setItem(
+                        readInputStream(dhisApi.getReportTableData(mDashboardElementId).getBody()));
             } catch (APIException exception) {
                 responseHolder.setApiException(exception);
             }
@@ -157,6 +184,90 @@ public class WebViewFragment extends BaseFragment {
             if (mFragmentRef.get() != null) {
                 mFragmentRef.get().onDataDownloaded(result);
             }
+        }
+    }
+
+    static class GetEventReportTableJob extends GetReportTableJob {
+
+        Context mContext;
+
+        public GetEventReportTableJob(WebViewFragment fragment, String dashboardElementId,
+                Context context) {
+            super(fragment, dashboardElementId, context);
+
+            mContext = context;
+        }
+
+        @Override
+        public ResponseHolder<String> inBackground() {
+            ResponseHolder<String> responseHolder = new ResponseHolder<>();
+            EventReport eventReport;
+
+            try {
+                DhisApi dhisApi = RepoManager.createService(
+                        DhisController.getInstance().getServerUrl(),
+                        DhisController.getInstance().getUserCredentials(), mContext);
+                eventReport = dhisApi.getEventReport(mDashboardElementId);
+                responseHolder.setItem(readInputStream(
+                        dhisApi.getEventReportTableData(eventReport.getProgram().getuId(),
+                                eventReport.getProgramStage().getuId(),
+                                getDimensions(eventReport),
+                                eventReport.getOutputType(),
+                                eventReport.getAggregationType(),
+                                eventReport.getDataElementValueDimension() != null
+                                        ? eventReport.getDataElementValueDimension().getuId()
+                                        : null,
+                                eventReport.getDataTypeString(),
+                                getFilters(eventReport))
+                                .getBody()));
+            } catch (APIException exception) {
+                responseHolder.setApiException(exception);
+            }
+
+            return responseHolder;
+        }
+
+        private List<String> getDimensions(EventReport eventReport) {
+            List<String> dimensions = new ArrayList<>();
+            if (!eventReport.isPEInFilters()) {
+                dimensions.add(eventReport.getRelativePeriods().getRelativePeriodString());
+            }
+            if (!eventReport.isOUInFilters()) {
+                dimensions.add(eventReport.getOUDimensionFilter());
+            }
+            for (DataElementDimension dimension : eventReport.getDataElementDimensions()) {
+                if (!eventReport.isInFilters(dimension.getDataElement().getuId())) {
+                    dimensions.add(eventReport.getDimensionFilter(dimension));
+                }
+            }
+            for (UIDObject column : eventReport.getColumns()) {
+                if (eventReport.isValidColumn(column)) {
+                    dimensions.add(column.getuId());
+                }
+            }
+
+            for (AttributeDimension attributeDimension : eventReport.getAttributeDimensions()) {
+                dimensions.add(attributeDimension.getAttribute().getuId());
+            }
+            return dimensions;
+        }
+
+        private List<String> getFilters(EventReport eventReport) {
+            List<String> filters = new ArrayList<>();
+            if (eventReport.isOUInFilters()) {
+                filters.add(eventReport.getOUDimensionFilter());
+            }
+            if (eventReport.isPEInFilters()) {
+                filters.add(eventReport.getRelativePeriods().getRelativePeriodString());
+            }
+
+            for (DataElementDimension dimension : eventReport.getDataElementDimensions()) {
+                if (eventReport.isInFilters(dimension.getDataElement().getuId())) {
+                    filters.add(eventReport.getDimensionFilter(dimension));
+                }
+            }
+
+            return filters;
         }
     }
 }

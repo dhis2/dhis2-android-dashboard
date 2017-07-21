@@ -36,6 +36,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +45,10 @@ import android.widget.ViewSwitcher;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.models.Access;
 import org.hisp.dhis.android.dashboard.api.models.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.DashboardElement;
@@ -55,11 +58,13 @@ import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemAdapter;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
+import org.hisp.dhis.android.dashboard.ui.fragments.SyncingController;
 import org.hisp.dhis.android.dashboard.ui.fragments.interpretation.InterpretationCreateFragment;
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
 
@@ -76,12 +81,15 @@ public class DashboardFragment extends BaseFragment
     private static final String WRITE = "arg:write";
     private static final String MANAGE = "arg:manage";
     private static final String EXTERNALIZE = "arg:externalize";
+    public static final String TAG = DashboardFragment.class.getSimpleName();
 
     ViewSwitcher mViewSwitcher;
 
     RecyclerView mRecyclerView;
 
     DashboardItemAdapter mAdapter;
+
+    private SyncingController syncingController;
 
     public static DashboardFragment newInstance(Dashboard dashboard) {
         DashboardFragment fragment = new DashboardFragment();
@@ -98,6 +106,10 @@ public class DashboardFragment extends BaseFragment
 
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setSyncingController(SyncingController syncingController){
+        this.syncingController = syncingController;
     }
 
     private static Access getAccessFromBundle(Bundle args) {
@@ -120,6 +132,8 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+
+
         mViewSwitcher = (ViewSwitcher) view;
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
@@ -168,6 +182,14 @@ public class DashboardFragment extends BaseFragment
         return null;
     }
 
+    @Subscribe
+    @SuppressWarnings("unused")
+    public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
+        Log.d(TAG, "Received " + result.getResourceType());
+        if (result.getResourceType().equals(ResourceType.DASHBOARD_IMAGES)) {
+            mAdapter.updateImages();
+        }
+    }
     @Override
     public void onLoadFinished(Loader<List<DashboardItem>> loader,
             List<DashboardItem> dashboardItems) {
@@ -199,7 +221,8 @@ public class DashboardFragment extends BaseFragment
             case DashboardItemContent.TYPE_CHART:
             case DashboardItemContent.TYPE_EVENT_CHART:
             case DashboardItemContent.TYPE_MAP:
-            case DashboardItemContent.TYPE_REPORT_TABLE: {
+            case DashboardItemContent.TYPE_REPORT_TABLE:
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
                 Intent intent = DashboardElementDetailActivity
                         .newIntentForDashboardElement(getActivity(), element.getId());
                 startActivity(intent);
@@ -216,6 +239,7 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onContentDeleteClick(DashboardElement element) {
+
         if (element != null) {
             element.deleteDashboardElement();
 
@@ -228,7 +252,12 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onItemDeleteClick(DashboardItem item) {
-        if (item != null) {
+
+        if (syncingController != null && syncingController.isSyncing()){
+            Toast.makeText(getContext(),
+                    getString(R.string.action_not_allowed_during_sync),
+                    Toast.LENGTH_SHORT).show();
+        }else if (item != null) {
             item.deleteDashboardItem();
 
             if (isDhisServiceBound()) {
@@ -267,7 +296,9 @@ public class DashboardFragment extends BaseFragment
                                     DashboardItemContent.TYPE_EVENT_REPORT,
                                     DashboardItemContent.TYPE_USERS,
                                     DashboardItemContent.TYPE_REPORTS,
-                                    DashboardItemContent.TYPE_RESOURCES))
+                                    DashboardItemContent.TYPE_RESOURCES,
+                                    DashboardItemContent.TYPE_MESSAGES)
+                    ).orderBy(DashboardItem$Table.ORDERPOSITION)
                     .queryList();
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {

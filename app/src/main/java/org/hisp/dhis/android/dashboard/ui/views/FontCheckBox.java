@@ -33,12 +33,11 @@ import android.content.res.TypedArray;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.widget.CheckBox;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.utils.TypefaceManager;
 
-public class FontCheckBox extends CheckBox {
+public class FontCheckBox extends android.support.v7.widget.AppCompatCheckBox {
     public FontCheckBox(Context context) {
         super(context);
     }

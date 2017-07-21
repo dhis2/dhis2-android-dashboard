@@ -39,6 +39,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.R;
@@ -90,6 +92,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     private final String mUsersName;
     private final String mReportsName;
     private final String mResourcesName;
+    private final String mMessaName;
 
     /**
      * Image loading utility.
@@ -107,15 +110,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         mUsersName = context.getString(R.string.users);
         mReportsName = context.getString(R.string.reports);
         mResourcesName = context.getString(R.string.resources);
+        mMessaName = context.getString(R.string.messages);
 
-        mImageLoader = PicassoProvider.getInstance(context);
-    }
-
-    private static String buildImageUrl(String resource, String id) {
-        return DhisController.getInstance().getServerUrl().newBuilder()
-                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment("data.png")
-                .addQueryParameter("width", "480").addQueryParameter("height", "320")
-                .toString();
+        mImageLoader = PicassoProvider.getInstance(context, false);
     }
 
     /* returns type of row depending on item content type. */
@@ -126,13 +123,13 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             case DashboardItemContent.TYPE_CHART:
             case DashboardItemContent.TYPE_EVENT_CHART:
             case DashboardItemContent.TYPE_MAP:
-                return ITEM_WITH_IMAGE_TYPE;
             case DashboardItemContent.TYPE_REPORT_TABLE:
             case DashboardItemContent.TYPE_EVENT_REPORT:
-                return ITEM_WITH_TABLE_TYPE;
+                return ITEM_WITH_IMAGE_TYPE;
             case DashboardItemContent.TYPE_USERS:
             case DashboardItemContent.TYPE_REPORTS:
             case DashboardItemContent.TYPE_RESOURCES:
+            case DashboardItemContent.TYPE_MESSAGES:
                 return ITEM_WITH_LIST_TYPE;
         }
 
@@ -232,7 +229,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         DashboardItem item = getItem(holder.getAdapterPosition());
 
         holder.menuButtonHandler.setDashboardItem(item);
-        holder.lastUpdated.setText(item.getLastUpdated().toString(DATE_FORMAT));
+        holder.lastUpdated.setText(item.getLastUpdated());
 
         /* setting name extracted from content to TextView at top of item layout. */
         if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
@@ -251,6 +248,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             holder.itemName.setText(mReportsName);
         } else if (DashboardItemContent.TYPE_RESOURCES.equals(item.getType())) {
             holder.itemName.setText(mResourcesName);
+        } else if (DashboardItemContent.TYPE_MESSAGES.equals(item.getType())) {
+            holder.itemName.setText(mMessaName);
         }
 
         /* handling visibility of 3-dot menu button */
@@ -292,7 +291,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     private void onBindElementContentViewHolder(IElementContentViewHolder holder, int viewType, int position) {
         switch (viewType) {
             case ITEM_WITH_IMAGE_TYPE: {
-                handleItemsWithImages((ImageItemViewHolder) holder, getItem(position));
+                handleItemsWithImages((ImageItemViewHolder) holder, getItem(position), getContext());
                 break;
             }
             case ITEM_WITH_TABLE_TYPE: {
@@ -307,24 +306,41 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     }
 
     /* builds the URL to image data and loads it by means of Picasso. */
-    private void handleItemsWithImages(ImageItemViewHolder holder, DashboardItem item) {
+    private void handleItemsWithImages(ImageItemViewHolder holder, DashboardItem item, Context context) {
         DashboardElement element = null;
         String request = null;
         if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
             element = item.getChart();
-            request = buildImageUrl("charts", element.getUId());
+            request = DhisController.getInstance().buildImageUrl("charts", element.getUId(), context);
         } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
             element = item.getMap();
-            request = buildImageUrl("maps", element.getUId());
+            request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), context);
         } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
             element = item.getEventChart();
-            request = buildImageUrl("eventCharts", element.getUId());
+            request = DhisController.getInstance().buildImageUrl("eventCharts", element.getUId(), context);
+        } else if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType())
+                && item.getReportTable() != null) {
+            element = item.getReportTable();
+            holder.imageView.setImageDrawable(
+                    context.getResources().getDrawable(R.drawable.ic_pivot_table));
+            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType())
+                && item.getEventReport() != null) {
+            element = item.getEventReport();
+            holder.imageView.setImageDrawable(
+                    context.getResources().getDrawable(R.drawable.ic_event_report));
+            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         }
 
         holder.listener.setDashboardElement(element);
-        mImageLoader.load(request)
-                .placeholder(R.mipmap.ic_stub_dashboard_item)
-                .into(holder.imageView);
+        if (request != null) {
+            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            mImageLoader.load(request)
+                    .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
+                    .memoryPolicy(MemoryPolicy.NO_STORE)
+                    .placeholder(R.mipmap.ic_stub_dashboard_item)
+                    .into(holder.imageView);
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -681,6 +697,10 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         public View getView() {
             return itemElementsContainer;
         }
+    }
+
+    public void updateImages() {
+        notifyDataSetChanged();
     }
 
     private static class MenuButtonHandler implements View.OnClickListener {
