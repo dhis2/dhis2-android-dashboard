@@ -28,6 +28,8 @@
 
 package org.hisp.dhis.android.dashboard.ui.fragments;
 
+import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -35,12 +37,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
+
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
-
-import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
 public class ImageViewFragment extends BaseFragment {
     private static final String IMAGE_URL = "arg:imageUrl";
@@ -60,7 +63,8 @@ public class ImageViewFragment extends BaseFragment {
     }
 
     private String getImageUrl() {
-        return getArguments().getString(IMAGE_URL);
+        String imageSimplePath = getArguments().getString(IMAGE_URL);
+        return imageSimplePath;
     }
 
     @Nullable @Override
@@ -75,8 +79,10 @@ public class ImageViewFragment extends BaseFragment {
         mAttacher = new PhotoViewAttacher(mImageView);
         mAttacher.update();
 
-        PicassoProvider.getInstance(getActivity().getApplicationContext())
+        PicassoProvider.getInstance(getActivity().getApplicationContext(), false)
                 .load(getImageUrl())
+                .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
+                .memoryPolicy(MemoryPolicy.NO_STORE)
                 .placeholder(R.mipmap.ic_stub_dashboard_item)
                 .into(mImageView);
     }

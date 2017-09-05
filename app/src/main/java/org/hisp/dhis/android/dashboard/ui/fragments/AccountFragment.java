@@ -88,7 +88,7 @@ public final class AccountFragment extends BaseFragment implements LoaderCallbac
         });
 
         mAdapter = new AccountFieldAdapter(getActivity().getApplicationContext(),
-                getLayoutInflater(savedInstanceState));
+                (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE));
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
 

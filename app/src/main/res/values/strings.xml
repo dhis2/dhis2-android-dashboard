@@ -75,11 +75,12 @@
     <string name="charts">Charts</string>
     <string name="event_charts">Event charts</string>
     <string name="maps">Maps</string>
-    <string name="report_tables">Report tables</string>
+    <string name="report_tables">Pivot Tables</string>
     <string name="event_reports">Event reports</string>
     <string name="users">Users</string>
-    <string name="reports">Reports</string>
+    <string name="reports">Standard Reports</string>
     <string name="resources">Resources</string>
+    <string name="messages">Messages. Unsupported Resource.</string>
     <string name="unsupported_dashboard_item_type">Unsupported dashboard item type.</string>
     <!-- END DashboardFragment -->
 
@@ -132,4 +133,12 @@
     <p>sh ${gitPath}/generate_last_commit.sh </p>
     <p>3. Run "git checkout". </p>]]>
     </string>
+
+
+    <!-- Settings -->
+    <string name="chart_preferences_title">"Images size"</string>
+    <string name="width_title">"Width:"</string>
+    <string name="height_title">"Height:"</string>
+    <string name="invalid_value">The value is not valid, please enter a value between %1$d and %2$d</string>
+    <string name="action_not_allowed_during_sync">"The App is synchronizing with the server, please try again after it's finished"</string>
 </resources>

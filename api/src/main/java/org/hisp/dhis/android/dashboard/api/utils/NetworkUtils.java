@@ -67,6 +67,7 @@ public class NetworkUtils {
     }
 
     public static void handleApiException(APIException apiException) throws APIException {
+        apiException.printStackTrace();
         handleApiException(apiException, null);
     }
 

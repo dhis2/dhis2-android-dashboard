@@ -38,7 +38,7 @@ import android.widget.TextView;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.utils.TypefaceManager;
 
-public class FontTextView extends TextView {
+public class FontTextView extends android.support.v7.widget.AppCompatTextView {
 
     public FontTextView(Context context) {
         super(context);

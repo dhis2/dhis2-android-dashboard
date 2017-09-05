@@ -64,6 +64,7 @@ import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActiv
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemAdapter;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
+import org.hisp.dhis.android.dashboard.ui.fragments.SyncingController;
 import org.hisp.dhis.android.dashboard.ui.fragments.interpretation.InterpretationCreateFragment;
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
 
@@ -88,6 +89,8 @@ public class DashboardFragment extends BaseFragment
 
     DashboardItemAdapter mAdapter;
 
+    private SyncingController syncingController;
+
     public static DashboardFragment newInstance(Dashboard dashboard) {
         DashboardFragment fragment = new DashboardFragment();
         Access access = dashboard.getAccess();
@@ -103,6 +106,10 @@ public class DashboardFragment extends BaseFragment
 
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setSyncingController(SyncingController syncingController){
+        this.syncingController = syncingController;
     }
 
     private static Access getAccessFromBundle(Bundle args) {
@@ -125,6 +132,8 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+
+
         mViewSwitcher = (ViewSwitcher) view;
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
@@ -177,6 +186,9 @@ public class DashboardFragment extends BaseFragment
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         Log.d(TAG, "Received " + result.getResourceType());
+        if (result.getResourceType().equals(ResourceType.DASHBOARD_IMAGES)) {
+            mAdapter.updateImages();
+        }
     }
     @Override
     public void onLoadFinished(Loader<List<DashboardItem>> loader,
@@ -209,7 +221,8 @@ public class DashboardFragment extends BaseFragment
             case DashboardItemContent.TYPE_CHART:
             case DashboardItemContent.TYPE_EVENT_CHART:
             case DashboardItemContent.TYPE_MAP:
-            case DashboardItemContent.TYPE_REPORT_TABLE: {
+            case DashboardItemContent.TYPE_REPORT_TABLE:
+            case DashboardItemContent.TYPE_EVENT_REPORT: {
                 Intent intent = DashboardElementDetailActivity
                         .newIntentForDashboardElement(getActivity(), element.getId());
                 startActivity(intent);
@@ -226,6 +239,7 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onContentDeleteClick(DashboardElement element) {
+
         if (element != null) {
             element.deleteDashboardElement();
 
@@ -238,7 +252,12 @@ public class DashboardFragment extends BaseFragment
 
     @Override
     public void onItemDeleteClick(DashboardItem item) {
-        if (item != null) {
+
+        if (syncingController != null && syncingController.isSyncing()){
+            Toast.makeText(getContext(),
+                    getString(R.string.action_not_allowed_during_sync),
+                    Toast.LENGTH_SHORT).show();
+        }else if (item != null) {
             item.deleteDashboardItem();
 
             if (isDhisServiceBound()) {
@@ -277,7 +296,9 @@ public class DashboardFragment extends BaseFragment
                                     DashboardItemContent.TYPE_EVENT_REPORT,
                                     DashboardItemContent.TYPE_USERS,
                                     DashboardItemContent.TYPE_REPORTS,
-                                    DashboardItemContent.TYPE_RESOURCES))
+                                    DashboardItemContent.TYPE_RESOURCES,
+                                    DashboardItemContent.TYPE_MESSAGES)
+                    ).orderBy(DashboardItem$Table.ORDERPOSITION)
                     .queryList();
             if (dashboardItems != null && !dashboardItems.isEmpty()) {
                 for (DashboardItem dashboardItem : dashboardItems) {

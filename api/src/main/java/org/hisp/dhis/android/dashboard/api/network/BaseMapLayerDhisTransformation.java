@@ -50,7 +50,7 @@ public class BaseMapLayerDhisTransformation implements Transformation {
                 "http://staticmap.openstreetmap.de/staticmap.php?center=%s,%s&zoom=7&size=430x320",
                 mDataMap.getLatitude(), mDataMap.getLongitude());
 
-        return PicassoProvider.getInstance(mContext).load(url).get();
+        return PicassoProvider.getInstance(mContext,false).load(url).get();
     }
 
 
