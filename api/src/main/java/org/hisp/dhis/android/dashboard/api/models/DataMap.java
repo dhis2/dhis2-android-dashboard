@@ -28,26 +28,51 @@
 
 package org.hisp.dhis.android.dashboard.api.models;
 
-public final class DataMap extends BaseIdentifiableObject {
-    private String basemap;
-    private String latitude;
-    private String longitude;
-    private String zoom;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.Table;
 
+import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
+
+@Table(databaseName = DbDhis.NAME)
+public final class DataMap extends BaseIdentifiableObject {
+    @Column(name = "basemap")
+    private String basemap;
+    @Column(name = "latitude")
+    private String latitude;
+    @Column(name = "longitude")
+    private String longitude;
+    @Column(name = "zoom")
+    private String zoom;
 
     public String getBasemap() {
         return basemap;
+    }
+
+    public void setBasemap(String basemap) {
+        this.basemap = basemap;
     }
 
     public String getLatitude() {
         return latitude;
     }
 
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
     public String getLongitude() {
         return longitude;
     }
 
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
     public String getZoom() {
         return zoom;
+    }
+
+    public void setZoom(String zoom) {
+        this.zoom = zoom;
     }
 }

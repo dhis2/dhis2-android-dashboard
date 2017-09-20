@@ -101,10 +101,6 @@ public class DhisController {
         }
     }
 
-    public MapController buildMapController(Context context) {
-        return new MapController(mDhisApi,context);
-    }
-
     public UserAccount logInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
         return signInUser(serverUrl, credentials);
     }
@@ -178,6 +174,10 @@ public class DhisController {
 
     public void syncInterpretations() throws APIException {
         (new InterpretationController(mDhisApi)).syncInterpretations();
+    }
+
+    public void syncDataMaps() {
+        (new MapController(mDhisApi)).syncDataMaps();
     }
 
     public void pullDashboardImages(ImageNetworkPolicy imageNetworkPolicy, Context context) {

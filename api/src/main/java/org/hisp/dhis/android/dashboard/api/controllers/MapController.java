@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dashboard.api.controllers;
 
+import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.merge;
 import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toMap;
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
@@ -7,73 +8,89 @@ import android.content.Context;
 import android.net.Uri;
 import android.widget.ImageView;
 
+import com.raizlabs.android.dbflow.sql.language.Select;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import org.hisp.dhis.android.dashboard.api.models.Dashboard;
+import org.hisp.dhis.android.dashboard.api.models.DashboardElement;
+import org.hisp.dhis.android.dashboard.api.models.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.DataMap;
+import org.hisp.dhis.android.dashboard.api.models.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.BaseMapLayerDhisTransformation;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
+import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
+import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
+import org.joda.time.DateTime;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 public class MapController {
-    private Context mContext;
     private DhisApi mDhisApi;
 
-    final Map<String, DataMap> mDataMaps;
-
-    public MapController(DhisApi dhisApi, Context context) {
+    public MapController(DhisApi dhisApi) {
         mDhisApi = dhisApi;
-        mContext = context;
-        mDataMaps = getDataMaps();
-
     }
 
-    public void downloadImageMap(String request) {
-        Picasso picasso = PicassoProvider.getInstance(mContext,false);
-
-/*        Picasso picasso = PicassoProvider.createNewInstance(mContext, new Picasso.Listener() {
-            @Override
-            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                DataMap dataMap = dataMaps.get(getMapUIDs(uri.toString()));
-
-                *//*picasso.load(uri.toString())
-                        .transform(new BaseMapLayerDhisTransformation(mContext, dataMap))
-                        .networkPolicy(NetworkPolicy.NO_CACHE).fetch();*//*
-            }
-        });
-
-        picasso.load(request)
-                .fetch();*/
-
-        DataMap dataMap = mDataMaps.get(getMapUIDs(request));
-        picasso.load(request)
-                .transform(new BaseMapLayerDhisTransformation(mContext, dataMap))
-                .fetch();
+    public static List<DataMap> queryDataMaps() {
+        return new Select().from(DataMap.class)
+                .queryList();
     }
 
-    private Map<String, DataMap> getDataMaps() throws APIException {
-        return getDataMaps(null);
+    public void syncDataMaps() throws APIException {
+        getDataMapsFromServer();
     }
 
-    private Map<String, DataMap> getDataMaps(List<String> uids) throws APIException {
-        final Map<String, String> QUERY_PARAMS = new HashMap<>();
-        QUERY_PARAMS.put("fields", "id,basemap,latitude,longitude,zoom");
+    private void getDataMapsFromServer() throws APIException {
+        DateTime lastUpdated = DateTimeManager.getInstance()
+                .getLastUpdated(ResourceType.DASHBOARDS);
+        DateTime serverDateTime = mDhisApi.getSystemInfo()
+                .getServerDate();
 
-        if (uids != null) {
-            QUERY_PARAMS.put("filter", "id:in:[" + android.text.TextUtils.join(",", uids) + "]");
-        }
+        List<DataMap> dataMaps = updateDataMaps(lastUpdated);
 
-        List<DataMap> mapList = unwrapResponse(mDhisApi.getDataMaps(QUERY_PARAMS), "maps");
+        Queue<DbOperation> operations = new LinkedList<>();
+        operations.addAll(DbUtils.createOperations(queryDataMaps(), dataMaps));
 
-        Map<String, DataMap> maps = toMap(mapList);
+        DbUtils.applyBatch(operations);
+        DateTimeManager.getInstance()
+                .setLastUpdated(ResourceType.DASHBOARDS, serverDateTime);
+    }
 
-        return maps;
+    private List<DataMap> updateDataMaps(DateTime lastUpdated) throws APIException {
+        final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
+        final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
+        final String BASE = "id,created,lastUpdated,name,displayName,access";
+
+        QUERY_MAP_BASIC.put("fields", "id");
+        QUERY_MAP_FULL.put("fields", BASE + "basemap,latitude,longitude,zoom");
+
+/*        if (lastUpdated != null) {
+            QUERY_MAP_FULL.put("filter",
+                    "lastUpdated:gt:" + lastUpdated.toLocalDateTime().toString());
+        }*/
+
+        // List of dashboards with UUIDs (without content). This list is used
+        // only to determine what was removed on server.
+        List<DataMap> actualDataMaps = unwrapResponse(mDhisApi
+                .getDataMaps(QUERY_MAP_BASIC), "maps");
+
+        // List of updated dashboards with content.
+        List<DataMap> updatedDataMaps = unwrapResponse(mDhisApi
+                .getDataMaps(QUERY_MAP_FULL), "maps");
+
+        // List of persisted dashboards.
+        List<DataMap> persistedDataMaps = queryDataMaps();
+
+        return merge(actualDataMaps, updatedDataMaps, persistedDataMaps);
     }
 
     private String getMapUIDs(String request) {
