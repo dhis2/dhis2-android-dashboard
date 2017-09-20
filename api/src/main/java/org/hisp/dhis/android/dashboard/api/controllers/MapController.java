@@ -5,6 +5,7 @@ import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapRespo
 
 import android.content.Context;
 import android.net.Uri;
+import android.widget.ImageView;
 
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.picasso.NetworkPolicy;
@@ -24,27 +25,35 @@ public class MapController {
     private Context mContext;
     private DhisApi mDhisApi;
 
+    final Map<String, DataMap> mDataMaps;
+
     public MapController(DhisApi dhisApi, Context context) {
         mDhisApi = dhisApi;
         mContext = context;
+        mDataMaps = getDataMaps();
+
     }
 
     public void downloadImageMap(String request) {
-        final Map<String, DataMap> dataMaps = getDataMaps();
+        Picasso picasso = PicassoProvider.getInstance(mContext,false);
 
-        Picasso picasso = PicassoProvider.createNewInstance(mContext, new Picasso.Listener() {
+/*        Picasso picasso = PicassoProvider.createNewInstance(mContext, new Picasso.Listener() {
             @Override
             public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
                 DataMap dataMap = dataMaps.get(getMapUIDs(uri.toString()));
 
-                picasso.load(uri.toString())
+                *//*picasso.load(uri.toString())
                         .transform(new BaseMapLayerDhisTransformation(mContext, dataMap))
-                        .networkPolicy(NetworkPolicy.NO_CACHE).fetch();
+                        .networkPolicy(NetworkPolicy.NO_CACHE).fetch();*//*
             }
         });
 
         picasso.load(request)
-                .networkPolicy(NetworkPolicy.OFFLINE)
+                .fetch();*/
+
+        DataMap dataMap = mDataMaps.get(getMapUIDs(request));
+        picasso.load(request)
+                .transform(new BaseMapLayerDhisTransformation(mContext, dataMap))
                 .fetch();
     }
 

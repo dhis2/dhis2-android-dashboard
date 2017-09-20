@@ -159,6 +159,9 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
         if (result.getResourceType() == ResourceType.DASHBOARDS) {
             getDhisService().syncDashboardContents();
         }
+
+
+
         if (result.getResourceType() == ResourceType.DASHBOARDS_CONTENT) {
             getDhisService().pullDashboardImages(mImageNetworkPolicy,getContext());
         }

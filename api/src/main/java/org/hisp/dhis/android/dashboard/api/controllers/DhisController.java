@@ -84,6 +84,7 @@ public class DhisController {
                     .addPathSegment("api").addPathSegment(resource).addPathSegment(
                             id).addPathSegment(
                             "data.png")
+                    .addQueryParameter("width", "500").addQueryParameter("height", "391")
                     .toString();
         } else {
             String widthUserPreference = SettingsManager.getInstance(context).getPreference(
@@ -98,6 +99,10 @@ public class DhisController {
                             heightUserPreference)
                     .toString();
         }
+    }
+
+    public MapController buildMapController(Context context) {
+        return new MapController(mDhisApi,context);
     }
 
     public UserAccount logInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {

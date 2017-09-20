@@ -31,6 +31,7 @@ package org.hisp.dhis.android.dashboard.ui.adapters;
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,7 +40,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -49,6 +49,7 @@ import org.hisp.dhis.android.dashboard.api.models.Access;
 import org.hisp.dhis.android.dashboard.api.models.DashboardElement;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
+import org.hisp.dhis.android.dashboard.api.network.BaseMapLayerDhisTransformation;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 
 import java.util.List;
@@ -56,7 +57,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardItemAdapter.ItemViewHolder> {
+public class DashboardItemAdapter extends
+        AbsAdapter<DashboardItem, DashboardItemAdapter.ItemViewHolder> {
     private static final String DATE_FORMAT = "MMMM dd, YYYY";
     private static final String EMPTY_FIELD = "";
 
@@ -100,7 +102,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     private final Picasso mImageLoader;
 
     public DashboardItemAdapter(Context context, Access dashboardAccess,
-                                int maxSpanCount, OnItemClickListener clickListener) {
+            int maxSpanCount, OnItemClickListener clickListener) {
         super(context, LayoutInflater.from(context));
 
         mDashboardAccess = dashboardAccess;
@@ -113,6 +115,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         mMessaName = context.getString(R.string.messages);
 
         mImageLoader = PicassoProvider.getInstance(context, false);
+
     }
 
     /* returns type of row depending on item content type. */
@@ -236,11 +239,14 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             holder.itemName.setText(item.getChart().getDisplayName());
         } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
             holder.itemName.setText(item.getMap().getDisplayName());
-        } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
+        } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType())
+                && item.getEventChart() != null) {
             holder.itemName.setText(item.getEventChart().getDisplayName());
-        } else if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
+        } else if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType())
+                && item.getReportTable() != null) {
             holder.itemName.setText(item.getReportTable().getDisplayName());
-        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
+        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType())
+                && item.getEventReport() != null) {
             holder.itemName.setText(item.getEventReport().getDisplayName());
         } else if (DashboardItemContent.TYPE_USERS.equals(item.getType())) {
             holder.itemName.setText(mUsersName);
@@ -266,7 +272,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
      * @param viewType Type of view we want to get IElementContentViewHolder for.
      * @return view holder.
      */
-    private IElementContentViewHolder onCreateElementContentViewHolder(ViewGroup parent, int viewType) {
+    private IElementContentViewHolder onCreateElementContentViewHolder(ViewGroup parent,
+            int viewType) {
         switch (viewType) {
             case ITEM_WITH_IMAGE_TYPE: {
                 ImageView imageView = (ImageView) getLayoutInflater()
@@ -288,10 +295,12 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     }
 
     /* handling data */
-    private void onBindElementContentViewHolder(IElementContentViewHolder holder, int viewType, int position) {
+    private void onBindElementContentViewHolder(IElementContentViewHolder holder, int viewType,
+            int position) {
         switch (viewType) {
             case ITEM_WITH_IMAGE_TYPE: {
-                handleItemsWithImages((ImageItemViewHolder) holder, getItem(position), getContext());
+                handleItemsWithImages((ImageItemViewHolder) holder, getItem(position),
+                        getContext());
                 break;
             }
             case ITEM_WITH_TABLE_TYPE: {
@@ -306,18 +315,22 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     }
 
     /* builds the URL to image data and loads it by means of Picasso. */
-    private void handleItemsWithImages(ImageItemViewHolder holder, DashboardItem item, Context context) {
+    private void handleItemsWithImages(ImageItemViewHolder holder, DashboardItem item,
+            Context context) {
         DashboardElement element = null;
         String request = null;
         if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
             element = item.getChart();
-            request = DhisController.getInstance().buildImageUrl("charts", element.getUId(), context);
+            request = DhisController.getInstance().buildImageUrl("charts", element.getUId(),
+                    context);
         } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
             element = item.getMap();
             request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), context);
-        } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType()) && item.getEventChart() != null) {
+        } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType())
+                && item.getEventChart() != null) {
             element = item.getEventChart();
-            request = DhisController.getInstance().buildImageUrl("eventCharts", element.getUId(), context);
+            request = DhisController.getInstance().buildImageUrl("eventCharts", element.getUId(),
+                    context);
         } else if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType())
                 && item.getReportTable() != null) {
             element = item.getReportTable();
@@ -335,11 +348,20 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         holder.listener.setDashboardElement(element);
         if (request != null) {
             holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            mImageLoader.load(request)
-                    .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
-                    .memoryPolicy(MemoryPolicy.NO_STORE)
-                    .placeholder(R.mipmap.ic_stub_dashboard_item)
-                    .into(holder.imageView);
+
+            if (request.contains("maps")){
+                Log.d(this.getClass().getSimpleName(), "Loading transform map: " + request);
+                mImageLoader.load(request)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .placeholder(R.mipmap.ic_stub_dashboard_item)
+                        .transform(new BaseMapLayerDhisTransformation(context, null))
+                        .into(holder.imageView);
+            }else{
+                mImageLoader.load(request)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .placeholder(R.mipmap.ic_stub_dashboard_item)
+                        .into(holder.imageView);
+            }
         }
     }
 
@@ -349,9 +371,11 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
 
     private void handleItemsWithTables(TextItemViewHolder holder, DashboardItem item) {
         DashboardElement element = null;
-        if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType()) && item.getReportTable() != null) {
+        if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType())
+                && item.getReportTable() != null) {
             element = item.getReportTable();
-        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType()) && item.getEventReport() != null) {
+        } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType())
+                && item.getEventReport() != null) {
             element = item.getEventReport();
         }
 
@@ -373,7 +397,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
 
         /*
         * each time RecyclerView binds data to a row, we need to handle recycling properly.
-        * This also applies to view listeners, which will contain reference to data from previous row
+        * This also applies to view listeners, which will contain reference to data from previous
+         * row
         * (if not handled properly).That's why we need to set element list each time
         * handleItemsWithLists() is called.
         */
@@ -430,9 +455,9 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         final IElementContentViewHolder contentViewHolder;
 
         public ItemViewHolder(View itemView, View itemBody,
-                              TextView itemName, TextView lastUpdated,
-                              ImageView itemMenuButton, MenuButtonHandler menuButtonHandler,
-                              IElementContentViewHolder elementContentViewHolder) {
+                TextView itemName, TextView lastUpdated,
+                ImageView itemMenuButton, MenuButtonHandler menuButtonHandler,
+                IElementContentViewHolder elementContentViewHolder) {
             super(itemView);
             this.itemBody = itemBody;
             this.itemName = itemName;
@@ -604,7 +629,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
     static class ListItemViewHolder implements IElementContentViewHolder {
 
         /* action which will be applied to list of content in item */
-        static final class ElementItemsSetter implements ButterKnife.Setter<TextView, List<DashboardElement>> {
+        static final class ElementItemsSetter implements
+                ButterKnife.Setter<TextView, List<DashboardElement>> {
 
             @Override
             public void set(TextView textView, List<DashboardElement> elements, int index) {
@@ -614,7 +640,8 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
             }
         }
 
-        static final class ElementItemButtonsSetter implements ButterKnife.Setter<View, List<DashboardElement>> {
+        static final class ElementItemButtonsSetter implements
+                ButterKnife.Setter<View, List<DashboardElement>> {
             private final Access mDashboardAccess;
 
             public ElementItemButtonsSetter(Access dashboardAccess) {
@@ -722,7 +749,7 @@ public class DashboardItemAdapter extends AbsAdapter<DashboardItem, DashboardIte
         DashboardItem mDashboardItem;
 
         public MenuButtonHandler(Context context, Access dashboardAccess,
-                                 OnItemClickListener listener) {
+                OnItemClickListener listener) {
             mContext = context;
             mDashboardAccess = dashboardAccess;
             mListener = listener;

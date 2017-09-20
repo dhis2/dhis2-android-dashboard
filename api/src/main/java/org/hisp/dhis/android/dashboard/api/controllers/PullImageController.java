@@ -31,13 +31,15 @@ final class PullImageController {
         mContext = context;
     }
 
-    public void pullDashboardImages(DhisController.ImageNetworkPolicy imageNetworkPolicy) throws APIException {
+    public void pullDashboardImages(DhisController.ImageNetworkPolicy imageNetworkPolicy)
+            throws APIException {
         List<String> requestList = new ArrayList<>();
         requestList = downloadDashboardImages(requestList);
         downloadImages(imageNetworkPolicy, requestList, mContext);
     }
 
-    public void pullInterpretationImages(DhisController.ImageNetworkPolicy imageNetworkPolicy) throws APIException {
+    public void pullInterpretationImages(DhisController.ImageNetworkPolicy imageNetworkPolicy)
+            throws APIException {
         List<String> requestList = new ArrayList<>();
         requestList = downloadInterpretationImages(requestList);
         downloadImages(imageNetworkPolicy, requestList, mContext);
@@ -55,13 +57,13 @@ final class PullImageController {
                                 mContext));
                 requestList.add(
                         DhisController.buildImageUrl(CHARTS_ENDPOINT,
-                                interpretationElement.getUId(),mContext));
+                                interpretationElement.getUId(), mContext));
             } else if (Interpretation.TYPE_MAP.equals(interpretationElement.getType())) {
                 requestList.add(DhisController.buildImageUrl("maps", interpretationElement.getUId(),
                         mContext));
                 requestList.add(
                         DhisController.buildImageUrl(MAPS_ENDPOINT,
-                                interpretationElement.getUId(),mContext));
+                                interpretationElement.getUId(), mContext));
             }
         }
         return requestList;
@@ -77,16 +79,19 @@ final class PullImageController {
             switch (element.getDashboardItem().getType()) {
                 case DashboardItemContent.TYPE_CHART: {
                     requestList.add(
-                            DhisController.buildImageUrl(CHARTS_ENDPOINT, element.getUId(),mContext));
+                            DhisController.buildImageUrl(CHARTS_ENDPOINT, element.getUId(),
+                                    mContext));
                     break;
                 }
                 case DashboardItemContent.TYPE_EVENT_CHART: {
                     requestList.add(
-                            DhisController.buildImageUrl(EVENT_CHARTS_ENDPOINT, element.getUId(),mContext));
+                            DhisController.buildImageUrl(EVENT_CHARTS_ENDPOINT, element.getUId(),
+                                    mContext));
                     break;
                 }
                 case DashboardItemContent.TYPE_MAP: {
-                    requestList.add(DhisController.buildImageUrl(MAPS_ENDPOINT, element.getUId(),mContext));
+                    requestList.add(DhisController.buildImageUrl(MAPS_ENDPOINT, element.getUId(),
+                            mContext));
                     break;
                 }
             }
@@ -97,23 +102,17 @@ final class PullImageController {
     private void downloadImages(DhisController.ImageNetworkPolicy imageNetworkPolicy,
             final List<String> requestUrlList, final Context context) {
 
-        MapController mapController = new MapController(mDhisApi, mContext);
-
         for (int i = 0; i < requestUrlList.size(); i++) {
             final String request = requestUrlList.get(i);
-
-            if (request.contains(MAPS_ENDPOINT)) {
-                mapController.downloadImageMap(request);
+            if (imageNetworkPolicy == DhisController.ImageNetworkPolicy.NO_CACHE) {
+                PicassoProvider.getInstance(context, false)
+                        .load(request).networkPolicy(NetworkPolicy.NO_CACHE)
+                        .memoryPolicy(MemoryPolicy.NO_CACHE).fetch();
             } else {
-                if (imageNetworkPolicy == DhisController.ImageNetworkPolicy.NO_CACHE) {
-                    PicassoProvider.getInstance(context, false)
-                            .load(request).networkPolicy(NetworkPolicy.NO_CACHE)
-                            .memoryPolicy(MemoryPolicy.NO_CACHE).fetch();
-                } else {
-                    PicassoProvider.getInstance(context, false)
-                            .load(request).fetch();
-                }
+                PicassoProvider.getInstance(context, false)
+                        .load(request).fetch();
             }
+
         }
     }
 

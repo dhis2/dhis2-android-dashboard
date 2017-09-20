@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.util.Log;
 import android.view.Gravity;
 
 import com.squareup.picasso.Transformation;
@@ -26,31 +27,63 @@ public class BaseMapLayerDhisTransformation implements Transformation {
         this.mDataMap = dataMap;
     }
 
+/*    @Override public Bitmap transform(Bitmap source) {
+
+        int width = source.getWidth();
+        int height = source.getHeight();
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        ColorMatrix saturation = new ColorMatrix();
+        saturation.setSaturation(0f);
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(saturation));
+        canvas.drawBitmap(source, 0, 0, paint);
+        source.recycle();
+
+        return bitmap;
+    }*/
+
     @Override
     public Bitmap transform(Bitmap source) {
-        //Bitmap mapOriginal = BitmapFactory.decodeResource(getResources(), R.drawable.maporiginal5);
-
-        Bitmap resizedBitmap = ResizeDhisImageToZoom7(source);
-        Bitmap cropOriginal = cropLegendAndTitle(resizedBitmap);
-        Bitmap staticMap;
 
         try {
-            staticMap = getStaticMap();
+            Log.d(this.getClass().getSimpleName(), "Begin Transform image map");
+
+            Log.d(this.getClass().getSimpleName(), "Resizing Dhis Image To Zoom7 ...");
+            Bitmap resizedBitmap = ResizeDhisImageToZoom7(source);
+
+            Log.d(this.getClass().getSimpleName(), "Cropping legend and title ...");
+            Bitmap cropOriginal = cropLegendAndTitle(resizedBitmap);
+
+            Bitmap staticMap = getStaticMap();
+
+            Log.d(this.getClass().getSimpleName(), "Creating base map image");
+            Bitmap transformedBitmap = createTransformedBitmap(cropOriginal, staticMap);
+
+            Log.d(this.getClass().getSimpleName(), "End Transform image map");
+            source.recycle();
+
+            return transformedBitmap;
         } catch (IOException e) {
+            Log.e(this.getClass().getSimpleName(), "An error occurred transform image map: " + e
+                    .getMessage());
+            e.printStackTrace();
             return source;
         }
-
-        Bitmap transformedBitmap = createTransformedBitmap(cropOriginal, staticMap);
-
-        return transformedBitmap;
     }
 
     private Bitmap getStaticMap() throws IOException {
-        String url = String.format(
+/*        String url = String.format(
                 "http://staticmap.openstreetmap.de/staticmap.php?center=%s,%s&zoom=7&size=430x320",
-                mDataMap.getLatitude(), mDataMap.getLongitude());
+                mDataMap.getLatitude(), mDataMap.getLongitude());*/
 
-        return PicassoProvider.getInstance(mContext,false).load(url).get();
+        String url = "http://staticmap.openstreetmap.de/staticmap.php?center=8.462084457245883,-11.784650000000008&zoom=7&size=430x320";
+
+        Log.d(this.getClass().getSimpleName(), "Getting static map: " + url);
+
+        return PicassoProvider.getInstance(mContext, false).load(url).get();
     }
 
 
@@ -60,7 +93,7 @@ public class BaseMapLayerDhisTransformation implements Transformation {
 
         return Bitmap.createScaledBitmap(
                 mapOriginal,
-                (int) (mapOriginal.getWidth() *  percentageToResize),
+                (int) (mapOriginal.getWidth() * percentageToResize),
                 (int) (mapOriginal.getHeight() * percentageToResize), true);
     }
 
@@ -73,7 +106,8 @@ public class BaseMapLayerDhisTransformation implements Transformation {
                 (int) (resizedBitmap.getWidth() * percentageToCropWidth),
                 (int) (resizedBitmap.getHeight() * percentageToCropHeight),
                 resizedBitmap.getWidth() - (int) (resizedBitmap.getWidth() * percentageToCropWidth),
-                resizedBitmap.getHeight() - (int) (resizedBitmap.getHeight() * percentageToCropHeight));
+                resizedBitmap.getHeight() - (int) (resizedBitmap.getHeight()
+                        * percentageToCropHeight));
     }
 
     private Bitmap createTransformedBitmap(Bitmap cropOriginal, Bitmap staticMap) {
@@ -89,9 +123,10 @@ public class BaseMapLayerDhisTransformation implements Transformation {
         layers[1] = mapDrawable;
         LayerDrawable layerDrawable = new LayerDrawable(layers);
 
+
         Bitmap transformedBitmap = Bitmap.createBitmap(
-                cropOriginal.getWidth(), cropOriginal.getHeight(), Bitmap.Config.ARGB_8888);
-        layerDrawable.setBounds(0, 0, cropOriginal.getWidth(), cropOriginal.getHeight());
+                staticMap.getWidth(), staticMap.getHeight(), Bitmap.Config.ARGB_8888);
+        layerDrawable.setBounds(0, 0, staticMap.getWidth(), staticMap.getHeight());
         layerDrawable.draw(new Canvas(transformedBitmap));
 
         return transformedBitmap;
@@ -99,6 +134,6 @@ public class BaseMapLayerDhisTransformation implements Transformation {
 
     @Override
     public String key() {
-        return "BaseMapLayerDhisTransformation(UID=" + mDataMap.getUId() +")";
+        return "BaseMapLayerDhisTransformation";
     }
 }
