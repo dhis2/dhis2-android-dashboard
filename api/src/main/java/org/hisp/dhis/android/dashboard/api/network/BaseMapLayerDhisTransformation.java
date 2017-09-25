@@ -27,45 +27,33 @@ public class BaseMapLayerDhisTransformation implements Transformation {
         this.mDataMap = dataMap;
     }
 
-/*    @Override public Bitmap transform(Bitmap source) {
-
-        int width = source.getWidth();
-        int height = source.getHeight();
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-        ColorMatrix saturation = new ColorMatrix();
-        saturation.setSaturation(0f);
-        Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(saturation));
-        canvas.drawBitmap(source, 0, 0, paint);
-        source.recycle();
-
-        return bitmap;
-    }*/
-
     @Override
     public Bitmap transform(Bitmap source) {
 
         try {
-            Log.d(this.getClass().getSimpleName(), "Begin Transform image map");
-
-            Log.d(this.getClass().getSimpleName(), "Resizing Dhis Image To Zoom7 ...");
-            Bitmap resizedBitmap = ResizeDhisImageToZoom7(source);
-
-            Log.d(this.getClass().getSimpleName(), "Cropping legend and title ...");
-            Bitmap cropOriginal = cropLegendAndTitle(resizedBitmap);
-
             Bitmap staticMap = getStaticMap();
 
-            Log.d(this.getClass().getSimpleName(), "Creating base map image");
-            Bitmap transformedBitmap = createTransformedBitmap(cropOriginal, staticMap);
+            if (staticMap != null) {
+                Log.d(this.getClass().getSimpleName(), "Begin Transform image map");
 
-            Log.d(this.getClass().getSimpleName(), "End Transform image map");
-            source.recycle();
+                Log.d(this.getClass().getSimpleName(), "Resizing Dhis Image To Zoom7 ...");
+                Bitmap resizedBitmap = ResizeDhisImageToZoom7(source);
 
-            return transformedBitmap;
+                Log.d(this.getClass().getSimpleName(), "Cropping legend and title ...");
+                Bitmap cropOriginal = cropLegendAndTitle(resizedBitmap);
+
+
+                Log.d(this.getClass().getSimpleName(), "Creating base map image");
+                Bitmap transformedBitmap = createTransformedBitmap(cropOriginal, staticMap);
+
+                Log.d(this.getClass().getSimpleName(), "End Transform image map");
+                source.recycle();
+
+                return transformedBitmap;
+            }else{
+                return source;
+            }
+
         } catch (IOException e) {
             Log.e(this.getClass().getSimpleName(), "An error occurred transform image map: " + e
                     .getMessage());
@@ -75,15 +63,28 @@ public class BaseMapLayerDhisTransformation implements Transformation {
     }
 
     private Bitmap getStaticMap() throws IOException {
-/*        String url = String.format(
-                "http://staticmap.openstreetmap.de/staticmap.php?center=%s,%s&zoom=7&size=430x320",
-                mDataMap.getLatitude(), mDataMap.getLongitude());*/
+        String url = "";
+        try{
+            if (!isValidCoordinates()) {
+                Log.e(this.getClass().getSimpleName(),
+                        "Invalid coordinates for retrieving static map: " + url);
+                return null;
+            }
 
-        String url = "http://staticmap.openstreetmap.de/staticmap.php?center=8.462084457245883,-11.784650000000008&zoom=7&size=430x320";
+            //String url = "http://staticmap.openstreetmap.de/staticmap.php?center=8.462084457245883,-11.784650000000008&zoom=7&size=430x320";
 
-        Log.d(this.getClass().getSimpleName(), "Getting static map: " + url);
+            url = String.format(
+                    "http://staticmap.openstreetmap.de/staticmap.php?center=%s,%s&zoom=7&size=430x320",
+                    mDataMap.getLatitude(), mDataMap.getLongitude());
 
-        return PicassoProvider.getInstance(mContext, false).load(url).get();
+            Log.d(this.getClass().getSimpleName(), "Getting static map: " + url);
+
+            return PicassoProvider.getInstance(mContext, false).load(url).get();
+        }catch (Exception e){
+            Log.e(this.getClass().getSimpleName(), "An error has occurred retrieving static map: " + url);
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
@@ -132,8 +133,18 @@ public class BaseMapLayerDhisTransformation implements Transformation {
         return transformedBitmap;
     }
 
+    public boolean isValidCoordinates() {
+        double latitude = Double.parseDouble(mDataMap.getLatitude());
+        double longitude = Double.parseDouble(mDataMap.getLatitude());
+
+        return (latitude >= -90 && latitude <= 90) &&
+                (longitude >= -180 && longitude <= 180);
+    }
+
     @Override
     public String key() {
         return "BaseMapLayerDhisTransformation";
     }
+
+
 }

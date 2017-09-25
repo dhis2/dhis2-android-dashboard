@@ -354,7 +354,7 @@ public class DashboardItemAdapter extends
                 mImageLoader.load(request)
                         .networkPolicy(NetworkPolicy.OFFLINE)
                         .placeholder(R.mipmap.ic_stub_dashboard_item)
-                        .transform(new BaseMapLayerDhisTransformation(context, null))
+                        .transform(new BaseMapLayerDhisTransformation(context, item.getDataMap()))
                         .into(holder.imageView);
             }else{
                 mImageLoader.load(request)

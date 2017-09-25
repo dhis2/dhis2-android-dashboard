@@ -36,6 +36,8 @@ import java.util.Queue;
 public class MapController {
     private DhisApi mDhisApi;
 
+    private static List<DataMap> mDataMaps;
+
     public MapController(DhisApi dhisApi) {
         mDhisApi = dhisApi;
     }
@@ -43,6 +45,20 @@ public class MapController {
     public static List<DataMap> queryDataMaps() {
         return new Select().from(DataMap.class)
                 .queryList();
+    }
+
+    public static DataMap getDataMap(String uid) {
+        DataMap dataMapToReturn = null;
+
+        if (mDataMaps == null)
+            mDataMaps = queryDataMaps();
+
+        for (DataMap dataMap:mDataMaps) {
+            if (dataMap.getUId().equals(uid))
+                dataMapToReturn = dataMap;
+        }
+
+        return dataMapToReturn;
     }
 
     public void syncDataMaps() throws APIException {
