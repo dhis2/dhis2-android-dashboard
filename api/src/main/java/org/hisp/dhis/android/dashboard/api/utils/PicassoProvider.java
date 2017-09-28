@@ -62,33 +62,4 @@ public final class PicassoProvider {
 
         return mPicasso;
     }
-
-
-    public static Picasso createNewInstance(Context context, Picasso.Listener listener) {
-        OkHttpClient client = RepoManager.provideOkHttpClient(
-                DhisController.getInstance().getUserCredentials(),context);
-
-        client.networkInterceptors().add(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Response originalResponse = chain.proceed(chain.request());
-                return originalResponse.newBuilder().header("Cache-Control",
-                        "max-age=" + (60 * 60 * 24 * 365)).build();
-            }
-        });
-
-        client.setCache(new Cache(context.getCacheDir(), Integer.MAX_VALUE));
-
-        if (listener == null) {
-            return new Picasso.Builder(context)
-                    .downloader(new OkHttpDownloader(client))
-                    .build();
-        } else {
-            return new Picasso.Builder(context).listener(listener)
-                    .downloader(new OkHttpDownloader(client))
-                    .build();
-        }
-
-    }
-
 }
