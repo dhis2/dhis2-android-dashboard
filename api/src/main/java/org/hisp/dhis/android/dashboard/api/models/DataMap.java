@@ -30,6 +30,8 @@ package org.hisp.dhis.android.dashboard.api.models;
 
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 
@@ -74,5 +76,13 @@ public final class DataMap extends BaseIdentifiableObject {
 
     public void setZoom(String zoom) {
         this.zoom = zoom;
+    }
+
+    public static DataMap getById(String uid) {
+        return new Select()
+                .from(DataMap.class)
+                .where(Condition.column(DataMap$Table
+                        .UID).is(uid))
+                .querySingle();
     }
 }

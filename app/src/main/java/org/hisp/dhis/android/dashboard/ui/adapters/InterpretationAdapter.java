@@ -29,6 +29,7 @@ package org.hisp.dhis.android.dashboard.ui.adapters;
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +47,7 @@ import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
+import org.hisp.dhis.android.dashboard.api.network.BaseMapLayerDhisTransformation;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationAdapter.InterpretationHolder;
 
@@ -64,6 +66,8 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
      */
     private final OnItemClickListener mClickListener;
 
+    Context mContext;
+
     /**
      * Image loading utility.
      */
@@ -73,6 +77,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
                                  OnItemClickListener clickListener) {
         super(context, inflater);
 
+        mContext = context;
         mClickListener = clickListener;
         mImageLoader = PicassoProvider.getInstance(context, false);
     }
@@ -239,11 +244,19 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         holder.listener.setInterpretation(item);
 
         if (request != null) {
-            mImageLoader.load(request)
-                    .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
-                    .memoryPolicy(MemoryPolicy.NO_STORE)
-                    .placeholder(R.mipmap.ic_stub_dashboard_item)
-                    .into(holder.imageView);
+            if (request.contains("maps")){
+                Log.d(this.getClass().getSimpleName(), "Loading transform map: " + request);
+                mImageLoader.load(request)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .placeholder(R.mipmap.ic_stub_dashboard_item)
+                        .transform(new BaseMapLayerDhisTransformation(mContext, item.getDataMap()))
+                        .into(holder.imageView);
+            }else{
+                mImageLoader.load(request)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .placeholder(R.mipmap.ic_stub_dashboard_item)
+                        .into(holder.imageView);
+            }
         }
     }
 
