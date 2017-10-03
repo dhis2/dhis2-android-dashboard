@@ -244,6 +244,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         holder.listener.setInterpretation(item);
 
         if (request != null) {
+            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             if (request.contains("maps")){
                 Log.d(this.getClass().getSimpleName(), "Loading transform map: " + request);
                 mImageLoader.load(request)
