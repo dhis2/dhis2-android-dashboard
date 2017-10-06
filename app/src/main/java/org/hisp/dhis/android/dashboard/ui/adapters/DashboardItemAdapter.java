@@ -29,6 +29,7 @@
 package org.hisp.dhis.android.dashboard.ui.adapters;
 
 import android.content.Context;
+import android.support.design.widget.CheckableImageButton;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -99,7 +100,7 @@ public class DashboardItemAdapter extends
     /**
      * Image loading utility.
      */
-    private final Picasso mImageLoader;
+
 
     public DashboardItemAdapter(Context context, Access dashboardAccess,
             int maxSpanCount, OnItemClickListener clickListener) {
@@ -113,9 +114,6 @@ public class DashboardItemAdapter extends
         mReportsName = context.getString(R.string.reports);
         mResourcesName = context.getString(R.string.resources);
         mMessaName = context.getString(R.string.messages);
-
-        mImageLoader = PicassoProvider.getInstance(context, false);
-
     }
 
     /* returns type of row depending on item content type. */
@@ -213,6 +211,7 @@ public class DashboardItemAdapter extends
         /* Here we are creating view holder depending on view type*/
         IElementContentViewHolder elementContentViewHolder
                 = onCreateElementContentViewHolder(itemBody, viewType);
+
         /* attaching child view */
         itemBody.addView(elementContentViewHolder.getView());
 
@@ -234,7 +233,7 @@ public class DashboardItemAdapter extends
         holder.menuButtonHandler.setDashboardItem(item);
         holder.lastUpdated.setText(item.getLastUpdated());
 
-        /* setting name extracted from content to TextView at top of item layout. */
+        /* setting name extracted from content to TextView at top of item image_map_selector. */
         if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
             holder.itemName.setText(item.getChart().getDisplayName());
         } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
@@ -268,17 +267,27 @@ public class DashboardItemAdapter extends
     /**
      * Depending on viewType, this method will return correct IElementContentViewHolder.
      *
+     *
+     * @param rootView
      * @param parent   Parent ViewGroup.
      * @param viewType Type of view we want to get IElementContentViewHolder for.
      * @return view holder.
      */
-    private IElementContentViewHolder onCreateElementContentViewHolder(ViewGroup parent,
+    private IElementContentViewHolder onCreateElementContentViewHolder(
+            ViewGroup parent,
             int viewType) {
         switch (viewType) {
             case ITEM_WITH_IMAGE_TYPE: {
-                ImageView imageView = (ImageView) getLayoutInflater()
-                        .inflate(R.layout.recycler_view_dashboard_item_imageview, parent, false);
-                return new ImageItemViewHolder(imageView, mClickListener);
+                View rootView = getLayoutInflater().inflate(
+                        R.layout.recycler_view_dashboard_item_imageview, parent, false);
+
+                ImageView imageView = (ImageView) rootView.findViewById(R.id.dashboard_item_image);
+
+
+                CheckableImageButton modeButton = (CheckableImageButton)
+                        rootView.findViewById(R.id.view_mode_button);
+
+                return new ImageItemViewHolder(rootView,modeButton, imageView, mClickListener);
             }
             case ITEM_WITH_TABLE_TYPE: {
                 TextView textView = (TextView) getLayoutInflater()
@@ -323,46 +332,32 @@ public class DashboardItemAdapter extends
             element = item.getChart();
             request = DhisController.getInstance().buildImageUrl("charts", element.getUId(),
                     context);
+            holder.bind(request,item);
         } else if (DashboardItemContent.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
+            holder.modeButton.setVisibility(View.VISIBLE);
+
             element = item.getMap();
             request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), context);
+            holder.bind(request,item);
         } else if (DashboardItemContent.TYPE_EVENT_CHART.equals(item.getType())
                 && item.getEventChart() != null) {
             element = item.getEventChart();
             request = DhisController.getInstance().buildImageUrl("eventCharts", element.getUId(),
                     context);
+            holder.bind(request,item);
         } else if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType())
                 && item.getReportTable() != null) {
             element = item.getReportTable();
-            holder.imageView.setImageDrawable(
-                    context.getResources().getDrawable(R.drawable.ic_pivot_table));
-            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            holder.bind(R.drawable.ic_pivot_table);
+
         } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType())
                 && item.getEventReport() != null) {
             element = item.getEventReport();
-            holder.imageView.setImageDrawable(
-                    context.getResources().getDrawable(R.drawable.ic_event_report));
-            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            holder.bind(R.drawable.ic_event_report);
+
         }
 
         holder.listener.setDashboardElement(element);
-        if (request != null) {
-            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-            if (request.contains("maps")){
-                Log.d(this.getClass().getSimpleName(), "Loading transform map: " + request);
-                mImageLoader.load(request)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .placeholder(R.mipmap.ic_stub_dashboard_item)
-                        .transform(new BaseMapLayerDhisTransformation(context, item.getDataMap()))
-                        .into(holder.imageView);
-            }else{
-                mImageLoader.load(request)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .placeholder(R.mipmap.ic_stub_dashboard_item)
-                        .into(holder.imageView);
-            }
-        }
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -497,19 +492,91 @@ public class DashboardItemAdapter extends
 
     /* View holder for ImageView */
     static class ImageItemViewHolder implements IElementContentViewHolder {
-        final OnElementInternalClickListener listener;
-        final ImageView imageView;
+        View rootView;
+        OnElementInternalClickListener listener;
+        ImageView imageView;
+        CheckableImageButton modeButton;
+        Picasso mImageLoader;
+        String request;
+        private boolean modeWithBaseMap = true;
+        DashboardItem item;
 
-        public ImageItemViewHolder(ImageView view, OnItemClickListener outerListener) {
-            imageView = view;
+
+        public ImageItemViewHolder(View rootView, CheckableImageButton modeButton, ImageView view,
+                OnItemClickListener outerListener) {
+            this.rootView = rootView;
+            this.imageView = view;
+            this.modeButton = modeButton;
+
+            mImageLoader = PicassoProvider.getInstance(rootView.getContext(), false);
 
             listener = new OnElementInternalClickListener(outerListener);
             imageView.setOnClickListener(listener);
+
+            modeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    modeWithBaseMap = !modeWithBaseMap;
+
+                    showMapImage(modeWithBaseMap);
+                }
+            });
         }
 
         @Override
         public View getView() {
-            return imageView;
+            return rootView;
+        }
+
+        public void bind(int resId){
+            modeButton.setVisibility(View.GONE);
+
+            imageView.setImageDrawable(
+                    rootView.getContext().getResources().getDrawable(resId));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        }
+
+        public void bind(String request, DashboardItem item){
+            if (request != null) {
+                this.request = request;
+                this.item = item;
+
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+                if (request.contains("maps")){
+                    showMapImage(modeWithBaseMap);
+                }else{
+                    modeButton.setVisibility(View.GONE);
+                    mImageLoader.load(request)
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .placeholder(R.mipmap.ic_stub_dashboard_item)
+                            .into(imageView);
+                }
+            }
+        }
+
+        private void showMapImage(boolean modeWithBaseMap) {
+            modeButton.setVisibility(View.VISIBLE);
+            modeButton.setSelected(modeWithBaseMap);
+
+            if (modeWithBaseMap){
+                Log.d(this.getClass().getSimpleName(), "Loading transform map: " + request);
+                mImageLoader.load(request)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .placeholder(R.mipmap.ic_stub_dashboard_item)
+                        .transform(
+                                new BaseMapLayerDhisTransformation(rootView.getContext(),
+                                        item.getDataMap()))
+                        .into(imageView);
+            }else{
+                Log.d(this.getClass().getSimpleName(), "Loading transform map: " + request);
+                mImageLoader.load(request)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .placeholder(R.mipmap.ic_stub_dashboard_item)
+                        .into(imageView);
+            }
+
+
         }
     }
 

@@ -28,11 +28,13 @@
 
 package org.hisp.dhis.android.dashboard.ui.fragments;
 
+import static org.hisp.dhis.android.dashboard.R.id.view;
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CheckableImageButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,8 +54,11 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 public class MapImageViewFragment extends BaseFragment {
     private static final String IMAGE_URL = "arg:imageUrl";
 
-    ImageView mImageView;
-    PhotoViewAttacher mAttacher;
+    private ImageView mImageView;
+    private PhotoViewAttacher mAttacher;
+    private CheckableImageButton viewBaseMapButton;
+    private boolean modeWithBaseMap = true;
+    private View rootView;
 
     public static MapImageViewFragment newInstance(String imageUrl) {
         isNull(imageUrl, "Image URL must not be null");
@@ -71,32 +76,73 @@ public class MapImageViewFragment extends BaseFragment {
         return imageSimplePath;
     }
 
-    @Nullable @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_image_view, container, false);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.fragment_map_image_view, container, false);
+        return rootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mImageView = (ImageView) view;
+        viewBaseMapButton =
+                (CheckableImageButton) view.findViewById(R.id.view_base_map_button);
 
-        mAttacher = new PhotoViewAttacher(mImageView);
-        mAttacher.update();
+
+        viewBaseMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                modeWithBaseMap = !modeWithBaseMap;
+
+                showMapImage(modeWithBaseMap);
+            }
+        });
+
+
+        showMapImage(modeWithBaseMap);
+    }
+
+    private void showMapImage(boolean withBaseMap) {
+        viewBaseMapButton.setSelected(withBaseMap);
+        mImageView = (ImageView) rootView.findViewById(R.id.image_view_content);
 
         Context context = getActivity().getApplicationContext();
 
         String imageUrl = getImageUrl();
 
-        DataMap dataMap = DataMap.getById(extractUid(imageUrl));
+        if (withBaseMap) {
 
-        PicassoProvider.getInstance(context, false)
-                .load(imageUrl)
-                .transform(new BaseMapLayerDhisTransformation(context, dataMap))
-                .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
-                .memoryPolicy(MemoryPolicy.NO_STORE)
-                .placeholder(R.mipmap.ic_stub_dashboard_item)
-                .into(mImageView);
+
+            DataMap dataMap = DataMap.getById(extractUid(imageUrl));
+
+            PicassoProvider.getInstance(context, false)
+                    .load(imageUrl)
+                    .transform(new BaseMapLayerDhisTransformation(context, dataMap))
+                    .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
+                    .memoryPolicy(MemoryPolicy.NO_STORE)
+                    .placeholder(R.mipmap.ic_stub_dashboard_item)
+                    .into(mImageView);
+
+            mAttacher = new PhotoViewAttacher(mImageView);
+            mAttacher.setScale(7);
+            mAttacher.update();
+        } else {
+
+
+            PicassoProvider.getInstance(context, false)
+                    .load(imageUrl)
+                    .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
+                    .memoryPolicy(MemoryPolicy.NO_STORE)
+                    .placeholder(R.mipmap.ic_stub_dashboard_item)
+                    .into(mImageView);
+
+            mAttacher = new PhotoViewAttacher(mImageView);
+            mAttacher.setScale(8);
+            mAttacher.update();
+        }
     }
+
 
     private String extractUid(String imageUrl) {
         HttpUrl url = HttpUrl.parse(imageUrl);
