@@ -48,6 +48,7 @@ import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement$Table;
 import org.hisp.dhis.android.dashboard.ui.fragments.ImageViewFragment;
+import org.hisp.dhis.android.dashboard.ui.fragments.MapImageViewFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.WebViewFragment;
 
 import butterknife.Bind;
@@ -141,7 +142,7 @@ public class DashboardElementDetailActivity extends BaseActivity {
             }
             case DashboardItemContent.TYPE_MAP: {
                 String request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), context);
-                attachFragment(ImageViewFragment.newInstance(request));
+                attachFragment(MapImageViewFragment.newInstance(request));
                 break;
             }
             case DashboardItemContent.TYPE_REPORT_TABLE:
@@ -168,7 +169,7 @@ public class DashboardElementDetailActivity extends BaseActivity {
             }
             case Interpretation.TYPE_MAP: {
                 String request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), context);
-                attachFragment(ImageViewFragment.newInstance(request));
+                attachFragment(MapImageViewFragment.newInstance(request));
                 break;
             }
             case Interpretation.TYPE_REPORT_TABLE: {

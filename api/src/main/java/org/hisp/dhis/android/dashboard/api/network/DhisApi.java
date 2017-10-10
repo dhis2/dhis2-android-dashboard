@@ -31,6 +31,7 @@ package org.hisp.dhis.android.dashboard.api.network;
 import org.hisp.dhis.android.dashboard.api.models.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
+import org.hisp.dhis.android.dashboard.api.models.DataMap;
 import org.hisp.dhis.android.dashboard.api.models.EventReport;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.SystemInfo;
@@ -133,6 +134,10 @@ public interface DhisApi {
     @GET("/maps?paging=false")
     @Headers("Accept: application/json")
     Map<String, List<DashboardItemContent>> getMaps(@QueryMap Map<String, String> queryParams);
+
+    @GET("/maps?paging=false")
+    @Headers("Accept: application/json")
+    Map<String, List<DataMap>> getDataMaps(@QueryMap Map<String, String> queryParams);
 
     @GET("/reportTables?paging=false")
     @Headers("Accept: application/json")

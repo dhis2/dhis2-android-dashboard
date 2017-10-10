@@ -57,6 +57,7 @@ public final class DhisService extends Service {
     public static final int SYNC_INTERPRETATIONS = 7;
     public static final int PULL_INTERPRETATION_IMAGES = 8;
     public static final int PULL_DASHBOARD_IMAGES = 9;
+    private static final int SYNC_DATAMAPS = 10;
 
     private final IBinder mBinder = new ServiceBinder();
     private DhisController mDhisController;
@@ -163,6 +164,18 @@ public final class DhisService extends Service {
             @Override
             public Object execute() throws APIException {
                 mDhisController.syncInterpretations();
+                return new Object();
+            }
+        });
+    }
+
+    public void syncDataMaps() {
+        JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DATAMAPS,
+                ResourceType.DATAMAPS) {
+
+            @Override
+            public Object execute() throws APIException {
+                mDhisController.syncDataMaps();
                 return new Object();
             }
         });

@@ -39,6 +39,7 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
+import org.hisp.dhis.android.dashboard.api.controllers.MapController;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
@@ -49,6 +50,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
+
+import static org.hisp.dhis.android.dashboard.api.controllers.MapController.queryDataMaps;
 
 @Table(databaseName = DbDhis.NAME)
 public final class DashboardItem extends BaseIdentifiableObject {
@@ -89,6 +92,9 @@ public final class DashboardItem extends BaseIdentifiableObject {
 
     @JsonProperty("map")
     DashboardElement map;
+
+    @JsonIgnore
+    DataMap mDataMap;
 
     @JsonProperty("reportTable")
     DashboardElement reportTable;
@@ -393,6 +399,15 @@ public final class DashboardItem extends BaseIdentifiableObject {
     @JsonIgnore
     public DashboardElement getMap() {
         return map;
+    }
+
+    @JsonIgnore
+    public DataMap getDataMap() {
+        if (mDataMap == null){
+            mDataMap = MapController.getDataMap(map.uId);
+        }
+
+        return mDataMap;
     }
 
     @JsonIgnore

@@ -27,8 +27,10 @@
 package org.hisp.dhis.android.dashboard.ui.adapters;
 
 import android.content.Context;
+import android.support.design.widget.CheckableImageButton;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,8 +46,10 @@ import com.squareup.picasso.Picasso;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
+import org.hisp.dhis.android.dashboard.api.models.DataMap;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
+import org.hisp.dhis.android.dashboard.api.network.BaseMapLayerDhisTransformation;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationAdapter.InterpretationHolder;
 
@@ -64,17 +68,18 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
      */
     private final OnItemClickListener mClickListener;
 
+    Context mContext;
+
     /**
      * Image loading utility.
      */
-    private final Picasso mImageLoader;
 
     public InterpretationAdapter(Context context, LayoutInflater inflater,
                                  OnItemClickListener clickListener) {
         super(context, inflater);
 
+        mContext = context;
         mClickListener = clickListener;
-        mImageLoader = PicassoProvider.getInstance(context, false);
     }
 
     /* returns type of row depending on item content type. */
@@ -190,9 +195,16 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
     private IInterpretationViewHolder onCreateContentViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case ITEM_WITH_IMAGE_TYPE: {
-                ImageView imageView = (ImageView) getLayoutInflater()
-                        .inflate(R.layout.recycler_view_dashboard_item_imageview, parent, false);
-                return new ImageItemViewHolder(imageView, mClickListener);
+                View rootView = getLayoutInflater().inflate(
+                        R.layout.recycler_view_dashboard_item_imageview, parent, false);
+
+                ImageView imageView = (ImageView) rootView.findViewById(R.id.dashboard_item_image);
+
+
+                CheckableImageButton modeButton = (CheckableImageButton)
+                        rootView.findViewById(R.id.view_mode_button);
+
+                return new ImageItemViewHolder(rootView,modeButton, imageView, mClickListener);
             }
             case ITEM_WITH_TABLE_TYPE: {
                 TextView textView = (TextView) getLayoutInflater()
@@ -222,31 +234,18 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         if (Interpretation.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
             InterpretationElement element = item.getChart();
             request = DhisController.getInstance().buildImageUrl("charts", element.getUId(), getContext());
+            holder.bind(request,item);
         } else if (Interpretation.TYPE_MAP.equals(item.getType()) && item.getMap() != null) {
             InterpretationElement element = item.getMap();
             request = DhisController.getInstance().buildImageUrl("maps", element.getUId(), getContext());
+            holder.bind(request,item);
         } else if (DashboardItemContent.TYPE_REPORT_TABLE.equals(item.getType())) {
-            holder.imageView.setImageDrawable(
-                    super.getContext().getResources().getDrawable(R.drawable.ic_pivot_table));
-            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            holder.bind(R.drawable.ic_pivot_table);
         } else if (DashboardItemContent.TYPE_EVENT_REPORT.equals(item.getType())) {
-
-            holder.imageView.setImageDrawable(
-                    super.getContext().getResources().getDrawable(R.drawable.ic_event_report));
-            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            holder.bind(R.drawable.ic_event_report);
         }
 
         holder.listener.setInterpretation(item);
-
-        if (request != null) {
-            holder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-            mImageLoader.load(request)
-                    .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.OFFLINE)
-                    .memoryPolicy(MemoryPolicy.NO_STORE)
-                    .placeholder(R.mipmap.ic_stub_dashboard_item)
-                    .into(holder.imageView);
-        }
     }
 
     private void handleItemsWithTables(TextItemViewHolder holder, Interpretation item) {
@@ -324,19 +323,91 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
 
     /* View holder for ImageView */
     static class ImageItemViewHolder implements IInterpretationViewHolder {
-        final OnInterpretationInternalClickListener listener;
-        final ImageView imageView;
+        View rootView;
+        OnInterpretationInternalClickListener listener;
+        ImageView imageView;
+        CheckableImageButton modeButton;
+        Picasso mImageLoader;
+        String request;
+        boolean modeWithBaseMap = true;
+        Interpretation item;
 
-        public ImageItemViewHolder(ImageView view, OnItemClickListener outerListener) {
-            imageView = view;
+
+        public ImageItemViewHolder(View rootView, CheckableImageButton modeButton, ImageView view,
+                OnItemClickListener outerListener) {
+            this.rootView = rootView;
+            this.imageView = view;
+            this.modeButton = modeButton;
+
+            mImageLoader = PicassoProvider.getInstance(rootView.getContext(), false);
 
             listener = new OnInterpretationInternalClickListener(outerListener);
             imageView.setOnClickListener(listener);
+
+            modeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    modeWithBaseMap = !modeWithBaseMap;
+
+                    showMapImage(modeWithBaseMap);
+                }
+            });
         }
 
         @Override
         public View getView() {
-            return imageView;
+            return rootView;
+        }
+
+        public void bind(int resId){
+            modeButton.setVisibility(View.GONE);
+
+            imageView.setImageDrawable(
+                    rootView.getContext().getResources().getDrawable(resId));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        }
+
+        public void bind(String request, Interpretation item){
+            if (request != null) {
+                this.request = request;
+                this.item = item;
+
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+                if (request.contains("maps")){
+                    showMapImage(modeWithBaseMap);
+                }else{
+                    modeButton.setVisibility(View.GONE);
+                    mImageLoader.load(request)
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .placeholder(R.mipmap.ic_stub_dashboard_item)
+                            .into(imageView);
+                }
+            }
+        }
+
+        private void showMapImage(boolean modeWithBaseMap) {
+            modeButton.setVisibility(View.VISIBLE);
+            modeButton.setSelected(modeWithBaseMap);
+
+            if (modeWithBaseMap){
+                Log.d(this.getClass().getSimpleName(), "Loading transform map: " + request);
+                mImageLoader.load(request)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .placeholder(R.mipmap.ic_stub_dashboard_item)
+                        .transform(
+                                new BaseMapLayerDhisTransformation(rootView.getContext(),
+                                        item.getDataMap()))
+                        .into(imageView);
+            }else{
+                Log.d(this.getClass().getSimpleName(), "Loading transform map: " + request);
+                mImageLoader.load(request)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .placeholder(R.mipmap.ic_stub_dashboard_item)
+                        .into(imageView);
+            }
+
+
         }
     }
 

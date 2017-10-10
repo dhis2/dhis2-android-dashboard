@@ -615,6 +615,9 @@ final class DashboardController {
         operations.addAll(DbUtils.createOperations(new Select()
                 .from(DashboardItemContent.class).queryList(), dashboardItemContent));
         DbUtils.applyBatch(operations);
+
+
+
         DateTimeManager.getInstance()
                 .setLastUpdated(ResourceType.DASHBOARDS_CONTENT, serverDateTime);
     }

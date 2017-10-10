@@ -276,6 +276,7 @@ public class DashboardViewPagerFragment extends BaseFragment
     private void syncDashboards() {
         if (isDhisServiceBound()) {
             getDhisService().syncDashboardsAndContent();
+            getDhisService().syncDataMaps();
             mProgressBar.setVisibility(View.VISIBLE);
         }
     }
