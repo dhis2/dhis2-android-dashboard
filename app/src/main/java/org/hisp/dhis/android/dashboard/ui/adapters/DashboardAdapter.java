@@ -28,12 +28,14 @@
 
 package org.hisp.dhis.android.dashboard.ui.adapters;
 
-import static org.hisp.dhis.android.dashboard.ui.fragments.dashboard.DashboardFragment.newInstance;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+import android.view.ViewGroup;
 
+import org.hisp.dhis.android.dashboard.api.models.Access;
 import org.hisp.dhis.android.dashboard.api.models.Dashboard;
 import org.hisp.dhis.android.dashboard.ui.fragments.SyncingController;
 import org.hisp.dhis.android.dashboard.ui.fragments.dashboard.DashboardFragment;
@@ -42,32 +44,38 @@ import java.util.List;
 
 public class DashboardAdapter extends FragmentPagerAdapter {
     private static final String EMPTY_TITLE = "";
+    private List<DashboardFragment> mDashboardFragments;
     private List<Dashboard> mDashboards;
     private SyncingController syncingController;
+    private FragmentManager fragmentManager;
 
-    public DashboardAdapter(FragmentManager fm,SyncingController syncingController) {
+    public DashboardAdapter(FragmentManager fm, SyncingController syncingController,
+            List<DashboardFragment> dashboardFragments,
+            List<Dashboard> dashboards) {
         super(fm);
+        fragmentManager = fm;
         this.syncingController = syncingController;
+        mDashboards = dashboards;
+        mDashboardFragments = dashboardFragments;
     }
 
     @Override
     public Fragment getItem(int position) {
-        if (mDashboards != null && mDashboards.size() > 0) {
-            DashboardFragment dashboardFragment = DashboardFragment
-                    .newInstance(getDashboard(position));
+        if (mDashboardFragments != null && mDashboardFragments.size() > 0) {
 
-            dashboardFragment.setSyncingController(syncingController);
-
-            return dashboardFragment;
+            return mDashboardFragments.get(position);
         } else {
-            return null;
+            DashboardFragment dashboardFragment = DashboardFragment
+                    .newInstance(mDashboards.get(position));
+            dashboardFragment.setSyncingController(syncingController);
+            return dashboardFragment;
         }
     }
 
     @Override
     public int getCount() {
-        if (mDashboards != null) {
-            return mDashboards.size();
+        if (mDashboardFragments != null) {
+            return mDashboardFragments.size();
         } else {
             return 0;
         }
@@ -82,20 +90,44 @@ public class DashboardAdapter extends FragmentPagerAdapter {
         }
     }
 
-    public Dashboard getDashboard(int position) {
+    public long getDashboardID(int position) {
         if (mDashboards != null && mDashboards.size() > 0) {
-            return mDashboards.get(position);
+            return mDashboards.get(position).getId();
+        } else {
+            return 0;
+        }
+    }
+
+    public Access getDashboardAccess(int position) {
+        if (mDashboards != null && mDashboards.size() > 0) {
+            return mDashboards.get(position).getAccess();
         } else {
             return null;
         }
     }
 
-    public void swapData(List<Dashboard> dashboards) {
-        boolean hasToNotifyAdapter = mDashboards != dashboards;
-        mDashboards = dashboards;
 
-        if (hasToNotifyAdapter) {
-            notifyDataSetChanged();
-        }
+    @Override
+    public boolean isViewFromObject(View view, Object fragment) {
+        return ((Fragment) fragment).getView() == view;
     }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        assert (0 <= position && position < mDashboardFragments.size());
+        FragmentTransaction trans = fragmentManager.beginTransaction();
+        trans.remove(mDashboardFragments.get(position));
+        trans.commit();
+        mDashboardFragments.set(position, null);
+    }
+
+    @Override
+    public Fragment instantiateItem(ViewGroup container, int position) {
+        Fragment fragment = getItem(position);
+        FragmentTransaction trans = fragmentManager.beginTransaction();
+        trans.add(container.getId(), fragment, "fragment:" + position);
+        trans.commit();
+        return fragment;
+    }
+
 }

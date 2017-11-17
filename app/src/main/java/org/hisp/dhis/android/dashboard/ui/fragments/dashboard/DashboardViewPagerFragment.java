@@ -64,6 +64,7 @@ import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.SyncingController;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -106,7 +107,8 @@ public class DashboardViewPagerFragment extends BaseFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        mDashboardAdapter = new DashboardAdapter(getChildFragmentManager(),this);
+        mDashboardAdapter = new DashboardAdapter(getChildFragmentManager(), this, new ArrayList
+                <DashboardFragment>(), new ArrayList<Dashboard>());
         mViewPager.setAdapter(mDashboardAdapter);
         mViewPager.addOnPageChangeListener(this);
 
@@ -192,8 +194,7 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     @Override
     public void onPageSelected(int position) {
-        Dashboard dashboard = mDashboardAdapter.getDashboard(position);
-        Access dashboardAccess = dashboard.getAccess();
+        Access dashboardAccess = mDashboardAdapter.getDashboardAccess(position);
 
         Menu menu = mToolbar.getMenu();
         menu.findItem(R.id.add_dashboard_item)
@@ -223,10 +224,17 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     private void setDashboards(List<Dashboard> dashboards) {
         if (dashboards != null) {
-            mDashboardAdapter = new DashboardAdapter(getChildFragmentManager(), this);
+            List<DashboardFragment> dashboardFragments=new ArrayList<>();
+            for (Dashboard dashboard : dashboards) {
+                DashboardFragment dashboardFragment = DashboardFragment
+                        .newInstance(dashboard);
+                dashboardFragment.setSyncingController(this);
+                dashboardFragments.add(dashboardFragment);
+            }
+
+            mDashboardAdapter = new DashboardAdapter(getChildFragmentManager(), this, dashboardFragments,dashboards);
             mViewPager.setAdapter(mDashboardAdapter);
         }
-        mDashboardAdapter.swapData(dashboards);
         mTabs.removeAllTabs();
 
         if (dashboards != null && !dashboards.isEmpty()) {
@@ -245,7 +253,7 @@ public class DashboardViewPagerFragment extends BaseFragment
         switch (item.getItemId()) {
             case R.id.add_dashboard_item: {
                 long dashboardId = mDashboardAdapter
-                        .getDashboard(mViewPager.getCurrentItem()).getId();
+                        .getDashboardID(mViewPager.getCurrentItem());
                 DashboardItemAddFragment
                         .newInstance(dashboardId)
                         .show(getChildFragmentManager());
@@ -262,10 +270,10 @@ public class DashboardViewPagerFragment extends BaseFragment
                 return true;
             }
             case R.id.manage_dashboard: {
-                Dashboard dashboard = mDashboardAdapter
-                        .getDashboard(mViewPager.getCurrentItem());
+                Long idDashboard = mDashboardAdapter
+                        .getDashboardID(mViewPager.getCurrentItem());
                 DashboardManageFragment
-                        .newInstance(dashboard.getId())
+                        .newInstance(idDashboard)
                         .show(getChildFragmentManager());
                 return true;
             }
