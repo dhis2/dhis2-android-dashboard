@@ -90,6 +90,19 @@ public class DashboardAdapter extends FragmentPagerAdapter {
         }
     }
 
+    public Integer getDashboardPosition(Dashboard dashboard) {
+        int position=-1;
+        if (mDashboards != null && mDashboards.size() > 0) {
+            for(Dashboard dashboardOnList:mDashboards){
+                position++;
+                if(dashboardOnList.equals(dashboard)) {
+                    return position;
+                }
+            }
+        }
+        return null;
+    }
+
     public void swapData(List<Dashboard> dashboards) {
         boolean hasToNotifyAdapter = mDashboards != dashboards;
         mDashboards = dashboards;
