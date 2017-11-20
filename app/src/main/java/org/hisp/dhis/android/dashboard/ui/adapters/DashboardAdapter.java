@@ -65,10 +65,7 @@ public class DashboardAdapter extends FragmentPagerAdapter {
 
             return mDashboardFragments.get(position);
         } else {
-            DashboardFragment dashboardFragment = DashboardFragment
-                    .newInstance(mDashboards.get(position));
-            dashboardFragment.setSyncingController(syncingController);
-            return dashboardFragment;
+            return null;
         }
     }
 
@@ -112,11 +109,21 @@ public class DashboardAdapter extends FragmentPagerAdapter {
         return ((Fragment) fragment).getView() == view;
     }
 
+
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         assert (0 <= position && position < mDashboardFragments.size());
+        Fragment fragment = getItem(position);
         FragmentTransaction trans = fragmentManager.beginTransaction();
-        trans.remove(mDashboardFragments.get(position));
+        if (fragment == null) {
+            fragment = fragmentManager.findFragmentByTag("fragment:" + position);
+            if (fragment == null) {
+                fragment = DashboardFragment
+                        .newInstance(mDashboards.get(position));
+                ((DashboardFragment) fragment).setSyncingController(syncingController);
+            }
+        }
+        trans.remove(fragment);
         trans.commit();
         mDashboardFragments.set(position, null);
     }
@@ -125,8 +132,18 @@ public class DashboardAdapter extends FragmentPagerAdapter {
     public Fragment instantiateItem(ViewGroup container, int position) {
         Fragment fragment = getItem(position);
         FragmentTransaction trans = fragmentManager.beginTransaction();
-        trans.add(container.getId(), fragment, "fragment:" + position);
-        trans.commit();
+        if (fragment == null) {
+            fragment = fragmentManager.findFragmentByTag("fragment:" + position);
+            if (fragment == null) {
+                fragment = DashboardFragment
+                        .newInstance(mDashboards.get(position));
+                ((DashboardFragment) fragment).setSyncingController(syncingController);
+            }
+        }
+        if (!fragment.isAdded()) {
+            trans.add(container.getId(), fragment, "fragment:" + position);
+            trans.commit();
+        }
         return fragment;
     }
 

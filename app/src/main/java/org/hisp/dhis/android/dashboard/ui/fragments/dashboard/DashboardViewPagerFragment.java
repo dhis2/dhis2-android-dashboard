@@ -111,6 +111,7 @@ public class DashboardViewPagerFragment extends BaseFragment
                 <DashboardFragment>(), new ArrayList<Dashboard>());
         mViewPager.setAdapter(mDashboardAdapter);
         mViewPager.addOnPageChangeListener(this);
+        mViewPager.setOffscreenPageLimit(2);
 
         mToolbar.setNavigationIcon(R.mipmap.ic_menu);
         mToolbar.setNavigationOnClickListener(this);
