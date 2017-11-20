@@ -28,6 +28,11 @@
 
 package org.hisp.dhis.android.dashboard.ui.activities;
 
+import static android.widget.Toast.LENGTH_SHORT;
+
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -44,10 +49,6 @@ import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
-
-import static android.widget.Toast.LENGTH_SHORT;
-import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -159,7 +160,8 @@ public class BaseActivity extends AppCompatActivity {
             return;
         }
 
-        int code = apiException.getResponse().getStatus();
+        int code = apiException.getResponse() == null ? HTTP_NOT_FOUND
+                : apiException.getResponse().getStatus();
         switch (code) {
             case HTTP_UNAUTHORIZED: {
                 showMessage(R.string.wrong_credentials);
