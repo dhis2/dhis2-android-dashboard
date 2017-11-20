@@ -231,7 +231,7 @@ public class DashboardItemAdapter extends
         DashboardItem item = getItem(holder.getAdapterPosition());
 
         holder.menuButtonHandler.setDashboardItem(item);
-        holder.lastUpdated.setText(item.getLastUpdated());
+        holder.lastUpdated.setText(item.getLastUpdatedToPrint());
 
         /* setting name extracted from content to TextView at top of item image_map_selector. */
         if (DashboardItemContent.TYPE_CHART.equals(item.getType()) && item.getChart() != null) {
