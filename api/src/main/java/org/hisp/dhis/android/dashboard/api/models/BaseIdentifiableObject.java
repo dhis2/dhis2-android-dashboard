@@ -35,7 +35,6 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.hisp.dhis.android.dashboard.api.utils.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,8 +47,7 @@ import java.util.Map;
 public class BaseIdentifiableObject extends BaseModel implements IdentifiableObject {
 
     public static final String TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
-    public static final String TIMESTAMP_PATTERN_MILLIS = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-    public static final String TIMESATAM_PATTERN_TO_PRINT = "yyyy-MM-dd HH:mm";
+    public static final String TIMESTAMP_PATTERN_TO_PRINT = "yyyy-MM-dd HH:mm";
 
     public static final SimpleDateFormat LONG_DATE_FORMAT = new SimpleDateFormat(TIMESTAMP_PATTERN);
 
@@ -128,9 +126,8 @@ public class BaseIdentifiableObject extends BaseModel implements IdentifiableObj
     }
 
     public String getCreatededToPrint() {
-        DateTime dateTime = DateTimeFormat.forPattern(TIMESTAMP_PATTERN_MILLIS).parseDateTime(
-                created);
-        return dateTime.toString(TIMESATAM_PATTERN_TO_PRINT);
+        DateTime dateTime = new DateTime(lastUpdated);
+        return dateTime.toString(TIMESTAMP_PATTERN_TO_PRINT);
     }
 
     @Override
@@ -159,9 +156,8 @@ public class BaseIdentifiableObject extends BaseModel implements IdentifiableObj
     }
 
     public String getLastUpdatedToPrint() {
-        DateTime dateTime = DateTimeFormat.forPattern(TIMESTAMP_PATTERN_MILLIS).parseDateTime(
-                lastUpdated);
-        return dateTime.toString(TIMESATAM_PATTERN_TO_PRINT);
+        DateTime dateTime = new DateTime(lastUpdated);
+        return dateTime.toString(TIMESTAMP_PATTERN_TO_PRINT);
     }
 
     @Override
