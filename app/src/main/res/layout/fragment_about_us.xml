@@ -89,6 +89,24 @@
                 android:paddingTop="@dimen/about_us_text_view_bottom_padding"
                 app:font="@string/medium_font_name" />
 
+            <TextView
+                android:id="@+id/logged_user"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/about_us_text_view_bottom_padding"
+                android:text="@string/logged_in"
+                android:textColor="@color/dark_grey_text"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/logged_server"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/about_us_text_view_bottom_padding"
+                android:text="@string/at_server"
+                android:textColor="@color/dark_grey_text"
+                android:textSize="15sp" />
+
             <org.hisp.dhis.android.dashboard.ui.views.FontTextView
                 android:id="@+id/commit_hash"
                 android:layout_width="match_parent"
