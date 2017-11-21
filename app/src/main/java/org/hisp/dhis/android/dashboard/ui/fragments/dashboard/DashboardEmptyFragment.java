@@ -44,6 +44,7 @@ import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 
 import butterknife.Bind;
@@ -97,7 +98,7 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
         if (isDhisServiceBound() &&
                 !getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS) &&
                 !SessionManager.getInstance().isResourceTypeSynced(ResourceType.DASHBOARDS)) {
-            syncDashboards();
+            syncDashboards(SyncStrategy.DOWNLOAD_ONLY_NEW);
         }
 
         boolean isLoading = isDhisServiceBound() &&
@@ -133,7 +134,7 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
         switch (item.getItemId()) {
             case R.id.refresh: {
                 mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
-                syncDashboards();
+                syncDashboards(SyncStrategy.DOWNLOAD_ALL);
                 return true;
             }
             case R.id.add_dashboard: {
@@ -145,9 +146,9 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
         return false;
     }
 
-    private void syncDashboards() {
+    private void syncDashboards(SyncStrategy syncStrategy) {
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboards();
+            getDhisService().syncDashboards(syncStrategy);
             getDhisService().syncDataMaps();
             mProgressBar.setVisibility(View.VISIBLE);
         }
@@ -169,7 +170,7 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
         }
         if (result.getResourceType() == ResourceType.DASHBOARD_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            getDhisService().syncInterpretations();
+            getDhisService().syncInterpretations(SyncStrategy.DOWNLOAD_ALL);
         }
     }
 

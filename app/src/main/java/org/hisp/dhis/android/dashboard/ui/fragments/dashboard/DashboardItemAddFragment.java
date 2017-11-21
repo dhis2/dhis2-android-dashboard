@@ -28,6 +28,8 @@
 
 package org.hisp.dhis.android.dashboard.ui.fragments.dashboard;
 
+import static com.raizlabs.android.dbflow.sql.builder.Condition.column;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -60,8 +62,10 @@ import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent$Table;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter;
-import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter.OptionAdapterValue;
+import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter
+        .OptionAdapterValue;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
@@ -75,8 +79,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import butterknife.OnTextChanged;
-
-import static com.raizlabs.android.dbflow.sql.builder.Condition.column;
 
 public class DashboardItemAddFragment extends BaseDialogFragment
         implements PopupMenu.OnMenuItemClickListener, LoaderCallbacks<List<OptionAdapterValue>> {
@@ -182,7 +184,7 @@ public class DashboardItemAddFragment extends BaseDialogFragment
         mDashboard.addItemContent(resource);
 
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboards();
+            getDhisService().syncDashboards(SyncStrategy.DOWNLOAD_ONLY_NEW);
             EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
         }
 
