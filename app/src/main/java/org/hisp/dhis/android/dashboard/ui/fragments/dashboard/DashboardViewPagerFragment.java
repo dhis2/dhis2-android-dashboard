@@ -304,8 +304,10 @@ public class DashboardViewPagerFragment extends BaseFragment
             getDhisService().pullInterpretationImages(mImageNetworkPolicy,getContext());
         }
         if (result.getResourceType() == ResourceType.DASHBOARD_IMAGES) {
-            mProgressBar.setVisibility(View.INVISIBLE);
             getDhisService().syncInterpretations();
+        }
+        if (result.getResourceType() == ResourceType.INTERPRETATION_IMAGES) {
+            mProgressBar.setVisibility(View.INVISIBLE);
         }
     }
 
