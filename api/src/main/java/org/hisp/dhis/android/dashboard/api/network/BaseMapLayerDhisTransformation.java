@@ -90,7 +90,7 @@ public class BaseMapLayerDhisTransformation implements Transformation {
 
     private Bitmap ResizeDhisImageToZoom7(Bitmap mapOriginal) {
 
-        double percentageToResize = 0.76;
+        double percentageToResize = 0.767777;
 
         return Bitmap.createScaledBitmap(
                 mapOriginal,
@@ -100,9 +100,8 @@ public class BaseMapLayerDhisTransformation implements Transformation {
 
     private Bitmap cropLegendAndTitle(Bitmap resizedBitmap) {
 
-        double percentageToCropWidth = 0.26;
-        double percentageToCropHeight = 0.05;
-
+        double percentageToCropWidth = 0.2688888;
+        double percentageToCropHeight = 0.047777;
         return Bitmap.createBitmap(resizedBitmap,
                 (int) (resizedBitmap.getWidth() * percentageToCropWidth),
                 (int) (resizedBitmap.getHeight() * percentageToCropHeight),
