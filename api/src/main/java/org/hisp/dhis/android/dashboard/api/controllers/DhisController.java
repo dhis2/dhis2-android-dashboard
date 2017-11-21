@@ -45,6 +45,9 @@ import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManag
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.SettingsManager;
 import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
+import org.hisp.dhis.android.dashboard.api.utils.NetworkUtils;
+
+import java.io.IOException;
 
 public class DhisController {
     private static DhisController mDhisController;
@@ -103,7 +106,12 @@ public class DhisController {
     }
 
     public UserAccount logInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
-        return signInUser(serverUrl, credentials);
+        if (NetworkUtils.isNetworkAvailable(mContext)) {
+            return signInUser(serverUrl, credentials);
+        } else {
+            throw APIException.networkError(serverUrl.toString(),
+                    new IOException("Network exception"));
+        }
     }
 
     public UserAccount confirmUser(Credentials credentials) throws APIException {
