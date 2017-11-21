@@ -143,4 +143,5 @@
     <string name="action_not_allowed_during_sync">"The App is synchronizing with the server, please try again after it's finished"</string>
     <string name="logged_in">"Logged in as: "</string>
     <string name="at_server">"At server: "</string>
+    <string name="go_online_report_tables">"Please go online to see report tables"</string>
 </resources>
