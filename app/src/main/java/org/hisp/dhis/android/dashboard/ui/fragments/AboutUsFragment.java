@@ -11,15 +11,19 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.hisp.dhis.android.dashboard.BuildConfig;
 import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.models.meta.Session;
+import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
 import org.hisp.dhis.android.dashboard.ui.views.FontTextView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -111,5 +115,15 @@ public class AboutUsFragment extends BaseFragment {
                 toggleNavigationDrawer();
             }
         });
+
+        Session session = LastUpdatedManager.getInstance().get();
+        ((TextView) view.findViewById(R.id.logged_user)).append(
+                session.getCredentials().getUsername());
+        ((TextView) view.findViewById(R.id.logged_server)).append(
+                Html.fromHtml(
+                        String.format(Locale.getDefault(), "<a href=\"%s\">%s</a>",
+                                session.getServerUrl()
+                                ,
+                                session.getServerUrl())));
     }
 }
