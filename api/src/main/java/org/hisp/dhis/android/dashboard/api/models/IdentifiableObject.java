@@ -69,7 +69,7 @@ public interface IdentifiableObject {
         public int compare(IdentifiableObject first, IdentifiableObject second) {
             if (first != null && first.getDisplayName() != null
                     && second != null && second.getDisplayName() != null) {
-                return first.getDisplayName().compareTo(second.getDisplayName());
+                return first.getDisplayName().toUpperCase().compareTo(second.getDisplayName().toUpperCase());
             }
 
             return 0;
