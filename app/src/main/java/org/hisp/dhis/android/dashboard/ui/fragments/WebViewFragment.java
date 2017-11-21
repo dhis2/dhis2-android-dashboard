@@ -38,6 +38,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import org.hisp.dhis.android.dashboard.DhisApplication;
 import org.hisp.dhis.android.dashboard.R;
@@ -52,6 +53,7 @@ import org.hisp.dhis.android.dashboard.api.models.meta.ResponseHolder;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
+import org.hisp.dhis.android.dashboard.api.utils.NetworkUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -118,9 +120,15 @@ public class WebViewFragment extends BaseFragment {
             mWebView.loadData(data.getItem(), "text/html", "UTF-8");
         } else {
             if (isAdded()) {
-                ((DhisApplication) (getActivity().getApplication()))
-                        .showApiExceptionMessage(data.getApiException());
+                if (data.getApiException().getKind().equals(APIException.Kind.NETWORK)) {
+                    Toast.makeText(mContext, R.string.go_online_report_tables,
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    ((DhisApplication) (getActivity().getApplication()))
+                            .showApiExceptionMessage(data.getApiException());
+                }
             }
+
         }
     }
 
@@ -170,8 +178,16 @@ public class WebViewFragment extends BaseFragment {
                                 .getServerUrl(),
                         DhisController.getInstance().getUserCredentials(),
                         mContext);
-                responseHolder.setItem(
-                        readInputStream(dhisApi.getReportTableData(mDashboardElementId).getBody()));
+                if (NetworkUtils.isNetworkAvailable(mContext)) {
+                    responseHolder.setItem(
+                            readInputStream(
+                                    dhisApi.getReportTableData(mDashboardElementId).getBody()));
+                } else {
+                    throw APIException.networkError(DhisController.getInstance()
+                                    .getServerUrl().toString(),
+                            new IOException("Network exception"));
+                }
+                
             } catch (APIException exception) {
                 responseHolder.setApiException(exception);
             }
@@ -207,19 +223,25 @@ public class WebViewFragment extends BaseFragment {
                 DhisApi dhisApi = RepoManager.createService(
                         DhisController.getInstance().getServerUrl(),
                         DhisController.getInstance().getUserCredentials(), mContext);
-                eventReport = dhisApi.getEventReport(mDashboardElementId);
-                responseHolder.setItem(readInputStream(
-                        dhisApi.getEventReportTableData(eventReport.getProgram().getuId(),
-                                eventReport.getProgramStage().getuId(),
-                                getDimensions(eventReport),
-                                eventReport.getOutputType(),
-                                eventReport.getAggregationType(),
-                                eventReport.getDataElementValueDimension() != null
-                                        ? eventReport.getDataElementValueDimension().getuId()
-                                        : null,
-                                eventReport.getDataTypeString(),
-                                getFilters(eventReport))
-                                .getBody()));
+                if (NetworkUtils.isNetworkAvailable(mContext)) {
+                    eventReport = dhisApi.getEventReport(mDashboardElementId);
+                    responseHolder.setItem(readInputStream(
+                            dhisApi.getEventReportTableData(eventReport.getProgram().getuId(),
+                                    eventReport.getProgramStage().getuId(),
+                                    getDimensions(eventReport),
+                                    eventReport.getOutputType(),
+                                    eventReport.getAggregationType(),
+                                    eventReport.getDataElementValueDimension() != null
+                                            ? eventReport.getDataElementValueDimension().getuId()
+                                            : null,
+                                    eventReport.getDataTypeString(),
+                                    getFilters(eventReport))
+                                    .getBody()));
+                } else {
+                    throw APIException.networkError(DhisController.getInstance()
+                                    .getServerUrl().toString(),
+                            new IOException("Network exception"));
+                }
             } catch (APIException exception) {
                 responseHolder.setApiException(exception);
             }
