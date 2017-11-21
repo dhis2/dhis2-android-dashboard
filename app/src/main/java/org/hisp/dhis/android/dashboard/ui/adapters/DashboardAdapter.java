@@ -103,6 +103,19 @@ public class DashboardAdapter extends FragmentPagerAdapter {
         }
     }
 
+    public Integer getDashboardPosition(long dashboardId) {
+        int position=-1;
+        if (mDashboards != null && mDashboards.size() > 0) {
+            for(Dashboard dashboardOnList:mDashboards){
+                position++;
+                if(dashboardOnList.getId() == dashboardId) {
+                    return position;
+                }
+            }
+        }
+        return null;
+    }
+
 
     @Override
     public boolean isViewFromObject(View view, Object fragment) {

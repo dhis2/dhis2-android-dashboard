@@ -95,6 +95,8 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     DashboardAdapter mDashboardAdapter;
 
+    long lastDashboardId;
+
     private DhisController.ImageNetworkPolicy mImageNetworkPolicy =
             DhisController.ImageNetworkPolicy.CACHE;
 
@@ -202,6 +204,7 @@ public class DashboardViewPagerFragment extends BaseFragment
                 .setVisible(dashboardAccess.isUpdate());
         menu.findItem(R.id.manage_dashboard)
                 .setVisible(dashboardAccess.isUpdate());
+        lastDashboardId = mDashboardAdapter.getDashboardID(position);
     }
 
     @Override
@@ -240,6 +243,12 @@ public class DashboardViewPagerFragment extends BaseFragment
 
         if (dashboards != null && !dashboards.isEmpty()) {
             mTabs.setupWithViewPager(mViewPager);
+        }
+        if(lastDashboardId > 0){
+            Integer position = mDashboardAdapter.getDashboardPosition(lastDashboardId);
+            if(position!=null && position!=-1){
+                onPageSelected(position);mViewPager.setCurrentItem(position);
+            }
         }
     }
 
