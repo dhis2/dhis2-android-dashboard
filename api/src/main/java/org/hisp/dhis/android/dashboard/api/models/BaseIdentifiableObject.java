@@ -47,6 +47,7 @@ import java.util.Map;
 public class BaseIdentifiableObject extends BaseModel implements IdentifiableObject {
 
     public static final String TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String TIMESTAMP_PATTERN_TO_PRINT = "yyyy-MM-dd HH:mm";
 
     public static final SimpleDateFormat LONG_DATE_FORMAT = new SimpleDateFormat(TIMESTAMP_PATTERN);
 
@@ -124,6 +125,11 @@ public class BaseIdentifiableObject extends BaseModel implements IdentifiableObj
         return created;
     }
 
+    public String getCreatededToPrint() {
+        DateTime dateTime = new DateTime(lastUpdated);
+        return dateTime.toString(TIMESTAMP_PATTERN_TO_PRINT);
+    }
+
     @Override
     public void setCreated(String created) {
         this.created = created;
@@ -147,6 +153,11 @@ public class BaseIdentifiableObject extends BaseModel implements IdentifiableObj
     @Override
     public void setAccess(Access access) {
         this.access = access;
+    }
+
+    public String getLastUpdatedToPrint() {
+        DateTime dateTime = new DateTime(lastUpdated);
+        return dateTime.toString(TIMESTAMP_PATTERN_TO_PRINT);
     }
 
     @Override

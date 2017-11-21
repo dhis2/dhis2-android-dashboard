@@ -148,11 +148,22 @@ public class DashboardElementDetailActivity extends BaseActivity {
             case DashboardItemContent.TYPE_REPORT_TABLE:
             case DashboardItemContent.TYPE_EVENT_REPORT: {
                 String elementId = element.getUId();
-                attachFragment(WebViewFragment.newInstance(elementId,
-                        element.getDashboardItem().getType()));
+                if(!isAttached(element.getDashboardItem().getType())){
+                    attachFragment(WebViewFragment.newInstance(elementId,
+                            element.getDashboardItem().getType()), element.getDashboardItem().getType());
+                }
                 break;
             }
         }
+    }
+
+    private boolean isAttached(String type) {
+        if(getSupportFragmentManager()!=null && getSupportFragmentManager().getFragments()!=null) {
+            if(getSupportFragmentManager().findFragmentByTag(type)!=null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void handleInterpretationElement(InterpretationElement element, Context context) {
@@ -174,13 +185,22 @@ public class DashboardElementDetailActivity extends BaseActivity {
             }
             case Interpretation.TYPE_REPORT_TABLE: {
                 String elementId = element.getUId();
-                attachFragment(WebViewFragment.newInstance(elementId, element.getType()));
+                if(!isAttached(element.getType())) {
+                    attachFragment(WebViewFragment.newInstance(elementId, element.getType()),
+                            element.getType());
+                }
                 break;
             }
             case Interpretation.TYPE_DATA_SET_REPORT: {
                 break;
             }
         }
+    }
+
+    private void attachFragment(Fragment fragment, String tag) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, fragment, tag)
+                .commit();
     }
 
     private void attachFragment(Fragment fragment) {
