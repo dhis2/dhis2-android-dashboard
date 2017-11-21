@@ -47,6 +47,8 @@ import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
+import org.hisp.dhis.android.dashboard.api.models.User;
+import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.network.BaseMapLayerDhisTransformation;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationAdapter.InterpretationHolder;
@@ -510,11 +512,13 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
 
         /* helper method which returns true if we can show edit menu item */
         private boolean isInterpretationEditable() {
-            return mInterpretation.getAccess().isUpdate();
+            return mInterpretation.getAccess().isUpdate() && mInterpretation.getUser().getUId().equals(
+                    UserAccount.getCurrentUserAccountFromDb().getUId());
         }
 
         private boolean isInterpretationDeletable() {
-            return mInterpretation.getAccess().isDelete();
+            return mInterpretation.getAccess().isDelete() && mInterpretation.getUser().getUId().equals(
+                    UserAccount.getCurrentUserAccountFromDb().getUId());
         }
 
         /* here we will build popup menu and show it. */
