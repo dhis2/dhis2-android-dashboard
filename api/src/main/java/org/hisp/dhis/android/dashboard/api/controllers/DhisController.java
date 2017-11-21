@@ -44,6 +44,7 @@ import org.hisp.dhis.android.dashboard.api.network.RepoManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.SettingsManager;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 
 public class DhisController {
     private static DhisController mDhisController;
@@ -168,12 +169,12 @@ public class DhisController {
         (new DashboardController(mDhisApi)).syncDashboardContent();
     }
 
-    public void syncDashboards(boolean filterLastUpdate) throws APIException {
-        (new DashboardController(mDhisApi)).syncDashboards(filterLastUpdate);
+    public void syncDashboards(SyncStrategy syncStrategy) throws APIException {
+        (new DashboardController(mDhisApi)).syncDashboards(syncStrategy);
     }
 
-    public void syncInterpretations() throws APIException {
-        (new InterpretationController(mDhisApi)).syncInterpretations();
+    public void syncInterpretations(SyncStrategy syncStrategy) throws APIException {
+        (new InterpretationController(mDhisApi)).syncInterpretations(syncStrategy);
     }
 
     public void syncDataMaps() {

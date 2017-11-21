@@ -56,6 +56,7 @@ import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -122,23 +123,23 @@ final class DashboardController {
                 .queryList();
     }
 
-    public void syncDashboards(boolean filterLastUpdate) throws APIException {
+    public void syncDashboards(SyncStrategy syncStrategy) throws APIException {
         /* first we need to fetch all changes from server
         and apply them to local database */
-        getDashboardDataFromServer(filterLastUpdate);
+        getDashboardDataFromServer(syncStrategy);
 
         /* now we can try to send changes made locally to server */
         sendLocalChanges();
     }
 
-    private void getDashboardDataFromServer(boolean filterLastUpdate) throws APIException {
+    private void getDashboardDataFromServer(SyncStrategy syncStrategy) throws APIException {
         DateTime lastUpdated = DateTimeManager.getInstance()
                 .getLastUpdated(ResourceType.DASHBOARDS);
         DateTime serverDateTime = mDhisApi.getSystemInfo()
                 .getServerDate();
 
         List<Dashboard> dashboards;
-        if (filterLastUpdate) {
+        if (syncStrategy == SyncStrategy.DOWNLOAD_ONLY_NEW) {
             dashboards = updateDashboards(lastUpdated);
         } else {
             dashboards = updateDashboards(null);

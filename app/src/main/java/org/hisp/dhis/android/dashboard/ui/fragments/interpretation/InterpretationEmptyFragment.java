@@ -18,6 +18,7 @@ import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 
 import butterknife.Bind;
@@ -113,7 +114,7 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
 
     private void syncInterpretations() {
         if (isDhisServiceBound()) {
-            getDhisService().syncInterpretations();
+            getDhisService().syncInterpretations(SyncStrategy.DOWNLOAD_ALL);
             mProgressBar.setVisibility(View.VISIBLE);
         }
     }

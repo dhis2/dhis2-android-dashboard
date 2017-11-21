@@ -26,6 +26,8 @@
 
 package org.hisp.dhis.android.dashboard.ui.fragments.interpretation;
 
+import static org.hisp.dhis.android.dashboard.api.models.Interpretation.createInterpretation;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -52,6 +54,7 @@ import org.hisp.dhis.android.dashboard.api.models.User$Table;
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
@@ -60,8 +63,6 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.hisp.dhis.android.dashboard.api.models.Interpretation.createInterpretation;
 
 /**
  * Fragment responsible for creation of new dashboards.
@@ -152,7 +153,7 @@ public final class InterpretationCreateFragment extends BaseDialogFragment {
             }
 
             if (isDhisServiceBound()) {
-                getDhisService().syncInterpretations();
+                getDhisService().syncInterpretations(SyncStrategy.DOWNLOAD_ONLY_NEW);
                 EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_INTERPRETATIONS));
             }
 

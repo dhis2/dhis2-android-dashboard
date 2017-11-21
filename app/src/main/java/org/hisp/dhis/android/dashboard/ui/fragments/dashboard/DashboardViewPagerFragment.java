@@ -59,6 +59,7 @@ import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardAdapter;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
@@ -129,7 +130,7 @@ public class DashboardViewPagerFragment extends BaseFragment
         if (isDhisServiceBound() &&
                 !getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS) &&
                 !SessionManager.getInstance().isResourceTypeSynced(ResourceType.DASHBOARDS)) {
-            syncDashboards(true);
+            syncDashboards(SyncStrategy.DOWNLOAD_ONLY_NEW);
         }
 
         boolean isLoading = isDhisServiceBound() &&
@@ -271,7 +272,7 @@ public class DashboardViewPagerFragment extends BaseFragment
             }
             case R.id.refresh: {
                 mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
-                syncDashboards(false);
+                syncDashboards(SyncStrategy.DOWNLOAD_ALL);
                 return true;
             }
             case R.id.add_dashboard: {
@@ -291,9 +292,9 @@ public class DashboardViewPagerFragment extends BaseFragment
         return false;
     }
 
-    private void syncDashboards(boolean filterLastUpdate) {
+    private void syncDashboards(SyncStrategy syncStrategy) {
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboardsAndContent(filterLastUpdate);
+            getDhisService().syncDashboardsAndContent(syncStrategy);
             getDhisService().syncDataMaps();
             mProgressBar.setVisibility(View.VISIBLE);
         }
@@ -313,7 +314,7 @@ public class DashboardViewPagerFragment extends BaseFragment
             getDhisService().pullInterpretationImages(mImageNetworkPolicy,getContext());
         }
         if (result.getResourceType() == ResourceType.DASHBOARD_IMAGES) {
-            getDhisService().syncInterpretations();
+            getDhisService().syncInterpretations(SyncStrategy.DOWNLOAD_ALL);
         }
         if (result.getResourceType() == ResourceType.INTERPRETATION_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);

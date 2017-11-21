@@ -62,6 +62,7 @@ import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent$Table;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardItemSearchDialogAdapter
         .OptionAdapterValue;
@@ -183,7 +184,7 @@ public class DashboardItemAddFragment extends BaseDialogFragment
         mDashboard.addItemContent(resource);
 
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboards(false);
+            getDhisService().syncDashboards(SyncStrategy.DOWNLOAD_ONLY_NEW);
             EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
         }
 

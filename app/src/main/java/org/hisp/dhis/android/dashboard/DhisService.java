@@ -43,6 +43,7 @@ import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 
 /**
@@ -133,37 +134,37 @@ public final class DhisService extends Service {
         });
     }
 
-    public void syncDashboardsAndContent(final boolean filterLastUpdate) {
+    public void syncDashboardsAndContent(final SyncStrategy syncStrategy) {
         JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS,
                 ResourceType.DASHBOARDS) {
 
             @Override
             public Object execute() throws APIException {
                 mDhisController.syncDashboardContent();
-                mDhisController.syncDashboards(filterLastUpdate);
+                mDhisController.syncDashboards(syncStrategy);
                 return new Object();
             }
         });
     }
 
-    public void syncDashboards(final boolean filterLastUpdate) {
+    public void syncDashboards(final SyncStrategy syncStrategy) {
         JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS,
                 ResourceType.DASHBOARDS) {
 
             @Override
             public Object execute() throws APIException {
-                mDhisController.syncDashboards(filterLastUpdate);
+                mDhisController.syncDashboards(syncStrategy);
                 return new Object();
             }
         });
     }
 
-    public void syncInterpretations() {
+    public void syncInterpretations(final SyncStrategy syncStrategy) {
         JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_INTERPRETATIONS,
                 ResourceType.INTERPRETATIONS) {
             @Override
             public Object execute() throws APIException {
-                mDhisController.syncInterpretations();
+                mDhisController.syncInterpretations(syncStrategy);
                 return new Object();
             }
         });
