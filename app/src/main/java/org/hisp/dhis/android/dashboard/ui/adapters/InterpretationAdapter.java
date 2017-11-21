@@ -39,16 +39,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
-import org.hisp.dhis.android.dashboard.api.models.DataMap;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationElement;
+import org.hisp.dhis.android.dashboard.api.models.User;
+import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.network.BaseMapLayerDhisTransformation;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationAdapter.InterpretationHolder;
@@ -165,7 +165,7 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
         holder.userTextView.setText(interpretation.getUser() == null
                 ? EMPTY_FIELD : interpretation.getUser().getDisplayName());
         holder.createdTextView.setText(interpretation.getCreated() == null
-                ? EMPTY_FIELD : interpretation.getCreated());
+                ? EMPTY_FIELD : interpretation.getCreatededToPrint());
         holder.interpretationTextView.setText(interpretation.getText() == null
                 ? EMPTY_FIELD : interpretation.getText());
 
@@ -512,11 +512,13 @@ public final class InterpretationAdapter extends AbsAdapter<Interpretation, Inte
 
         /* helper method which returns true if we can show edit menu item */
         private boolean isInterpretationEditable() {
-            return mInterpretation.getAccess().isUpdate();
+            return mInterpretation.getAccess().isUpdate() && mInterpretation.getUser().getUId().equals(
+                    UserAccount.getCurrentUserAccountFromDb().getUId());
         }
 
         private boolean isInterpretationDeletable() {
-            return mInterpretation.getAccess().isDelete();
+            return mInterpretation.getAccess().isDelete() && mInterpretation.getUser().getUId().equals(
+                    UserAccount.getCurrentUserAccountFromDb().getUId());
         }
 
         /* here we will build popup menu and show it. */
