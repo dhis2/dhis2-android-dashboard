@@ -133,26 +133,26 @@ public final class DhisService extends Service {
         });
     }
 
-    public void syncDashboardsAndContent() {
+    public void syncDashboardsAndContent(final boolean filterLastUpdate) {
         JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS,
                 ResourceType.DASHBOARDS) {
 
             @Override
             public Object execute() throws APIException {
                 mDhisController.syncDashboardContent();
-                mDhisController.syncDashboards();
+                mDhisController.syncDashboards(filterLastUpdate);
                 return new Object();
             }
         });
     }
 
-    public void syncDashboards() {
+    public void syncDashboards(final boolean filterLastUpdate) {
         JobExecutor.enqueueJob(new NetworkJob<Object>(SYNC_DASHBOARDS,
                 ResourceType.DASHBOARDS) {
 
             @Override
             public Object execute() throws APIException {
-                mDhisController.syncDashboards();
+                mDhisController.syncDashboards(filterLastUpdate);
                 return new Object();
             }
         });

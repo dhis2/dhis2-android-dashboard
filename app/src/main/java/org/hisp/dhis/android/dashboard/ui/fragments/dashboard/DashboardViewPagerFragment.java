@@ -129,7 +129,7 @@ public class DashboardViewPagerFragment extends BaseFragment
         if (isDhisServiceBound() &&
                 !getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS) &&
                 !SessionManager.getInstance().isResourceTypeSynced(ResourceType.DASHBOARDS)) {
-            syncDashboards();
+            syncDashboards(true);
         }
 
         boolean isLoading = isDhisServiceBound() &&
@@ -271,7 +271,7 @@ public class DashboardViewPagerFragment extends BaseFragment
             }
             case R.id.refresh: {
                 mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
-                syncDashboards();
+                syncDashboards(false);
                 return true;
             }
             case R.id.add_dashboard: {
@@ -291,9 +291,9 @@ public class DashboardViewPagerFragment extends BaseFragment
         return false;
     }
 
-    private void syncDashboards() {
+    private void syncDashboards(boolean filterLastUpdate) {
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboardsAndContent();
+            getDhisService().syncDashboardsAndContent(filterLastUpdate);
             getDhisService().syncDataMaps();
             mProgressBar.setVisibility(View.VISIBLE);
         }

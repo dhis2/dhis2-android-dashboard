@@ -28,6 +28,8 @@
 
 package org.hisp.dhis.android.dashboard.ui.fragments.dashboard;
 
+import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
@@ -48,8 +50,6 @@ import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
 
 /**
  * Fragment responsible for creation of new dashboards.
@@ -99,7 +99,7 @@ public final class DashboardAddFragment extends BaseDialogFragment {
                         .createDashboard(mDashboardName.getText().toString());
                 newDashboard.save();
                 if (isDhisServiceBound()) {
-                    getDhisService().syncDashboards();
+                    getDhisService().syncDashboards(false);
                     EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
                 }
                 dismiss();

@@ -122,22 +122,27 @@ final class DashboardController {
                 .queryList();
     }
 
-    public void syncDashboards() throws APIException {
+    public void syncDashboards(boolean filterLastUpdate) throws APIException {
         /* first we need to fetch all changes from server
         and apply them to local database */
-        getDashboardDataFromServer();
+        getDashboardDataFromServer(filterLastUpdate);
 
         /* now we can try to send changes made locally to server */
         sendLocalChanges();
     }
 
-    private void getDashboardDataFromServer() throws APIException {
+    private void getDashboardDataFromServer(boolean filterLastUpdate) throws APIException {
         DateTime lastUpdated = DateTimeManager.getInstance()
                 .getLastUpdated(ResourceType.DASHBOARDS);
         DateTime serverDateTime = mDhisApi.getSystemInfo()
                 .getServerDate();
 
-        List<Dashboard> dashboards = updateDashboards(lastUpdated);
+        List<Dashboard> dashboards;
+        if (filterLastUpdate) {
+            dashboards = updateDashboards(lastUpdated);
+        } else {
+            dashboards = updateDashboards(null);
+        }
         List<DashboardItem> dashboardItems = updateDashboardItems(dashboards, lastUpdated);
 
         Queue<DbOperation> operations = new LinkedList<>();

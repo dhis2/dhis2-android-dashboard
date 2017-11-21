@@ -168,8 +168,8 @@ public class DhisController {
         (new DashboardController(mDhisApi)).syncDashboardContent();
     }
 
-    public void syncDashboards() throws APIException {
-        (new DashboardController(mDhisApi)).syncDashboards();
+    public void syncDashboards(boolean filterLastUpdate) throws APIException {
+        (new DashboardController(mDhisApi)).syncDashboards(filterLastUpdate);
     }
 
     public void syncInterpretations() throws APIException {

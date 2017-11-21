@@ -147,7 +147,7 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
 
     private void syncDashboards() {
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboards();
+            getDhisService().syncDashboards(false);
             getDhisService().syncDataMaps();
             mProgressBar.setVisibility(View.VISIBLE);
         }

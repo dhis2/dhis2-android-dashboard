@@ -244,7 +244,7 @@ public class DashboardFragment extends BaseFragment
             element.deleteDashboardElement();
 
             if (isDhisServiceBound()) {
-                getDhisService().syncDashboards();
+                getDhisService().syncDashboards(false);
                 EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
             }
         }
@@ -261,7 +261,7 @@ public class DashboardFragment extends BaseFragment
             item.deleteDashboardItem();
 
             if (isDhisServiceBound()) {
-                getDhisService().syncDashboards();
+                getDhisService().syncDashboards(false);
                 EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
             }
         }

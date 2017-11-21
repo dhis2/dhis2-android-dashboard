@@ -28,6 +28,8 @@
 
 package org.hisp.dhis.android.dashboard.ui.fragments.dashboard;
 
+import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
@@ -54,8 +56,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
-
-import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
 
 /**
  * Handles editing (changing name) and removal of given dashboard.
@@ -148,7 +148,7 @@ public final class DashboardManageFragment extends BaseDialogFragment {
                     mDashboardName.clearFocus();
 
                     if (isDhisServiceBound()) {
-                        getDhisService().syncDashboards();
+                        getDhisService().syncDashboards(false);
                         EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
                     }
                     dismiss();
@@ -159,7 +159,7 @@ public final class DashboardManageFragment extends BaseDialogFragment {
                 mDashboard.deleteDashboard();
 
                 if (isDhisServiceBound()) {
-                    getDhisService().syncDashboards();
+                    getDhisService().syncDashboards(false);
                     EventBusProvider.post(new UiEvent(UiEvent.UiEventType.SYNC_DASHBOARDS));
                 }
             }
