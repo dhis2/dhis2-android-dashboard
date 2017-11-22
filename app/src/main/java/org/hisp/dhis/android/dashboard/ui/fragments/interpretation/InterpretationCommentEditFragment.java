@@ -44,6 +44,7 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationComment$Table;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
 import butterknife.Bind;
@@ -115,7 +116,7 @@ public class InterpretationCommentEditFragment extends BaseDialogFragment {
                         mCommentEditText.getText().toString());
 
                 if (isDhisServiceBound()) {
-                    getDhisService().syncInterpretations();
+                    getDhisService().syncInterpretations(SyncStrategy.DOWNLOAD_ONLY_NEW);
                 }
                 break;
             }

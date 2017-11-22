@@ -64,6 +64,7 @@ import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader.TrackedTable;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.hisp.dhis.android.dashboard.ui.activities.InterpretationCommentsActivity;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationAdapter;
@@ -142,7 +143,7 @@ public final class InterpretationFragment extends BaseFragment
 
                 if (item.getItemId() == R.id.refresh) {
                     mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
-                    syncInterpretations();
+                    syncInterpretations(SyncStrategy.DOWNLOAD_ALL);
                     return true;
                 }
 
@@ -159,7 +160,7 @@ public final class InterpretationFragment extends BaseFragment
         if (isDhisServiceBound() &&
                 !getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS) &&
                 !SessionManager.getInstance().isResourceTypeSynced(ResourceType.INTERPRETATIONS)) {
-            syncInterpretations();
+            syncInterpretations(SyncStrategy.DOWNLOAD_ONLY_NEW);
         }
 
         boolean isLoading = isDhisServiceBound() &&
@@ -262,7 +263,7 @@ public final class InterpretationFragment extends BaseFragment
             interpretation.deleteInterpretation();
 
             if (isDhisServiceBound()) {
-                getDhisService().syncInterpretations();
+                getDhisService().syncInterpretations(SyncStrategy.DOWNLOAD_ONLY_NEW);
 
                 boolean isLoading = isDhisServiceBound() &&
                         getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
@@ -323,9 +324,9 @@ public final class InterpretationFragment extends BaseFragment
         }
     }
 
-    private void syncInterpretations() {
+    private void syncInterpretations(SyncStrategy syncStrategy) {
         if (isDhisServiceBound()) {
-            getDhisService().syncInterpretations();
+            getDhisService().syncInterpretations(syncStrategy);
             mProgressBar.setVisibility(View.VISIBLE);
         }
     }

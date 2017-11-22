@@ -23,7 +23,7 @@ public class ApiExceptionTests {
     @Test
     public void retrofit_network_exception_map_to_api_exception() {
         APIException apiException = getNetworkExceptionFromRetrofit();
-        assertTrue(apiException.getKind().equals(APIException.Kind.NETWORK));
+        assertTrue(apiException.getKind().equals(APIException.Kind.HTTP));
         assertTrue(apiException.getUrl().equals("test_message"));
     }
 

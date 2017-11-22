@@ -26,6 +26,8 @@
 
 package org.hisp.dhis.android.dashboard.ui.adapters;
 
+import static android.text.TextUtils.isEmpty;
+
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -39,11 +41,6 @@ import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.InterpretationComment;
 import org.hisp.dhis.android.dashboard.api.models.User;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter.CommentViewHolder;
-import org.joda.time.DateTime;
-
-import static android.text.TextUtils.isEmpty;
-
-import java.util.Date;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -79,7 +76,6 @@ public final class InterpretationCommentsAdapter extends AbsAdapter<Interpretati
     @Override
     public void onBindViewHolder(CommentViewHolder holder, int position) {
         InterpretationComment comment = getItem(position);
-        DateTime lastUpdated = DateTime.parse(comment.getLastUpdated());
         User user = comment.getUser();
 
         String name = EMPTY_FIELD;
@@ -91,7 +87,7 @@ public final class InterpretationCommentsAdapter extends AbsAdapter<Interpretati
         holder.usernameTextView.setText(name);
         holder.commentTextView.setText(comment.getText());
         holder.lastUpdatedTextView.setText(
-                lastUpdated == null ? EMPTY_FIELD : lastUpdated.toString(DATE_FORMAT));
+                comment.getLastUpdated() == null ? EMPTY_FIELD : comment.getLastUpdatedToPrint());
 
         holder.menuButtonHandler
                 .setInterpretationComment(comment);

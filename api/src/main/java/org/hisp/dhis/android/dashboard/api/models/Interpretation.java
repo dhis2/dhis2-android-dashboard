@@ -38,6 +38,7 @@ import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.NotNull;
 import com.raizlabs.android.dbflow.annotation.Table;
 
+import org.hisp.dhis.android.dashboard.api.controllers.MapController;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
@@ -86,6 +87,9 @@ public final class Interpretation extends BaseIdentifiableObject {
 
     @JsonProperty("map")
     InterpretationElement map;
+
+    @JsonIgnore
+    DataMap mDataMap;
 
     @JsonProperty("reportTable")
     InterpretationElement reportTable;
@@ -295,6 +299,15 @@ public final class Interpretation extends BaseIdentifiableObject {
         }
 
         return elements;
+    }
+
+    @JsonIgnore
+    public DataMap getDataMap() {
+        if (mDataMap == null){
+            mDataMap = MapController.getDataMap(map.uId);
+        }
+
+        return mDataMap;
     }
 
     public String getText() {

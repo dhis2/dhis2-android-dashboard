@@ -35,7 +35,7 @@ public class APIException extends RuntimeException {
     public static APIException fromRetrofitError(RetrofitError error) {
         switch (error.getKind()) {
             case NETWORK:
-                return networkError(error.getUrl(), (IOException) error.getCause());
+                return httpError(error.getUrl(), error.getResponse());
             case CONVERSION:
                 return conversionError(error.getUrl(), error.getResponse(), error.getCause());
             case HTTP:
@@ -57,7 +57,7 @@ public class APIException extends RuntimeException {
     }
 
     public static APIException httpError(String url, Response response) {
-        String message = response.getStatus() + " " + response.getReason();
+        String message = response == null ? "" : response.getStatus() + " " + response.getReason();
         return new APIException(message, url, response, Kind.HTTP, null);
     }
 

@@ -56,6 +56,7 @@ import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -122,22 +123,27 @@ final class DashboardController {
                 .queryList();
     }
 
-    public void syncDashboards() throws APIException {
+    public void syncDashboards(SyncStrategy syncStrategy) throws APIException {
         /* first we need to fetch all changes from server
         and apply them to local database */
-        getDashboardDataFromServer();
+        getDashboardDataFromServer(syncStrategy);
 
         /* now we can try to send changes made locally to server */
         sendLocalChanges();
     }
 
-    private void getDashboardDataFromServer() throws APIException {
+    private void getDashboardDataFromServer(SyncStrategy syncStrategy) throws APIException {
         DateTime lastUpdated = DateTimeManager.getInstance()
                 .getLastUpdated(ResourceType.DASHBOARDS);
         DateTime serverDateTime = mDhisApi.getSystemInfo()
                 .getServerDate();
 
-        List<Dashboard> dashboards = updateDashboards(lastUpdated);
+        List<Dashboard> dashboards;
+        if (syncStrategy == SyncStrategy.DOWNLOAD_ONLY_NEW) {
+            dashboards = updateDashboards(lastUpdated);
+        } else {
+            dashboards = updateDashboards(null);
+        }
         List<DashboardItem> dashboardItems = updateDashboardItems(dashboards, lastUpdated);
 
         Queue<DbOperation> operations = new LinkedList<>();
@@ -615,6 +621,9 @@ final class DashboardController {
         operations.addAll(DbUtils.createOperations(new Select()
                 .from(DashboardItemContent.class).queryList(), dashboardItemContent));
         DbUtils.applyBatch(operations);
+
+
+
         DateTimeManager.getInstance()
                 .setLastUpdated(ResourceType.DASHBOARDS_CONTENT, serverDateTime);
     }

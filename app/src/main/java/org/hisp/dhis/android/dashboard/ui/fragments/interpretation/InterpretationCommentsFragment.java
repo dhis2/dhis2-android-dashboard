@@ -26,6 +26,8 @@
 
 package org.hisp.dhis.android.dashboard.ui.fragments.interpretation;
 
+import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -62,8 +64,10 @@ import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader.TrackedTable;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter;
-import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter.OnCommentClickListener;
+import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationCommentsAdapter
+        .OnCommentClickListener;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 
 import java.util.Arrays;
@@ -74,8 +78,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
-
-import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -224,7 +226,7 @@ public class InterpretationCommentsFragment extends BaseFragment
         mNewCommentText.setText(EMPTY_FIELD);
 
         if (isDhisServiceBound()) {
-            getDhisService().syncInterpretations();
+            getDhisService().syncInterpretations(SyncStrategy.DOWNLOAD_ONLY_NEW);
         }
     }
 
@@ -244,7 +246,7 @@ public class InterpretationCommentsFragment extends BaseFragment
             comment.deleteComment();
 
             if (isDhisServiceBound()) {
-                getDhisService().syncInterpretations();
+                getDhisService().syncInterpretations(SyncStrategy.DOWNLOAD_ONLY_NEW);
             }
         }
     }

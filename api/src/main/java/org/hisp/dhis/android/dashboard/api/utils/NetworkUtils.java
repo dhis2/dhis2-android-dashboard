@@ -26,6 +26,11 @@
 
 package org.hisp.dhis.android.dashboard.api.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.hisp.dhis.android.dashboard.api.network.APIException;
@@ -146,5 +151,23 @@ public class NetworkUtils {
                 throw apiException;
             }
         }
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        if (context == null) {
+            return false;
+        }
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(
+                Context.CONNECTIVITY_SERVICE);
+        // if no network is available networkInfo will be null, otherwise check if we are connected
+        try {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+                return true;
+            }
+        } catch (Exception e) {
+            Log.e(NetworkUtils.class.getName(), "isNetworkAvailable(): " + e.getMessage());
+        }
+        return false;
     }
 }
