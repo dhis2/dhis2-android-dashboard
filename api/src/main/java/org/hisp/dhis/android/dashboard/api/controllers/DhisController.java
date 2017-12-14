@@ -43,8 +43,11 @@ import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedManager;
-
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.SettingsManager;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
+import org.hisp.dhis.android.dashboard.api.utils.NetworkUtils;
+
+import java.io.IOException;
 
 public class DhisController {
     private static DhisController mDhisController;
@@ -80,19 +83,35 @@ public class DhisController {
     }
 
     public static String buildImageUrl(String resource, String id, Context context) {
-        String widthUserPreference = SettingsManager.getInstance(context).getPreference(
-                (SettingsManager.CHART_WIDTH), SettingsManager.MINIMUM_WIDTH);
-        String heightUserPreference = SettingsManager.getInstance(context).getPreference(
-                (SettingsManager.CHART_HEIGHT), SettingsManager.MINIMUM_HEIGHT);
-        return getInstance().getServerUrl().newBuilder()
-                .addPathSegment("api").addPathSegment(resource).addPathSegment(id).addPathSegment(
-                        "data.png")
-                .addQueryParameter("width", widthUserPreference).addQueryParameter("height", heightUserPreference)
-                .toString();
+        if (resource.contains(PullImageController.MAPS_ENDPOINT)) {
+            return getInstance().getServerUrl().newBuilder()
+                    .addPathSegment("api").addPathSegment(resource).addPathSegment(
+                            id).addPathSegment(
+                            "data.png")
+                    .addQueryParameter("width", "500").addQueryParameter("height", "391")
+                    .toString();
+        } else {
+            String widthUserPreference = SettingsManager.getInstance(context).getPreference(
+                    (SettingsManager.CHART_WIDTH), SettingsManager.MINIMUM_WIDTH);
+            String heightUserPreference = SettingsManager.getInstance(context).getPreference(
+                    (SettingsManager.CHART_HEIGHT), SettingsManager.MINIMUM_HEIGHT);
+            return getInstance().getServerUrl().newBuilder()
+                    .addPathSegment("api").addPathSegment(resource).addPathSegment(
+                            id).addPathSegment(
+                            "data.png")
+                    .addQueryParameter("width", widthUserPreference).addQueryParameter("height",
+                            heightUserPreference)
+                    .toString();
+        }
     }
 
     public UserAccount logInUser(HttpUrl serverUrl, Credentials credentials) throws APIException {
-        return signInUser(serverUrl, credentials);
+        if (NetworkUtils.isNetworkAvailable(mContext)) {
+            return signInUser(serverUrl, credentials);
+        } else {
+            throw APIException.networkError(serverUrl.toString(),
+                    new IOException("Network exception"));
+        }
     }
 
     public UserAccount confirmUser(Credentials credentials) throws APIException {
@@ -158,18 +177,23 @@ public class DhisController {
         (new DashboardController(mDhisApi)).syncDashboardContent();
     }
 
-    public void syncDashboards() throws APIException {
-        (new DashboardController(mDhisApi)).syncDashboards();
+    public void syncDashboards(SyncStrategy syncStrategy) throws APIException {
+        (new DashboardController(mDhisApi)).syncDashboards(syncStrategy);
     }
 
-    public void syncInterpretations() throws APIException {
-        (new InterpretationController(mDhisApi)).syncInterpretations();
+    public void syncInterpretations(SyncStrategy syncStrategy) throws APIException {
+        (new InterpretationController(mDhisApi)).syncInterpretations(syncStrategy);
     }
 
-    public void pullDashboardImages(ImageNetworkPolicy imageNetworkPolicy,Context context) {
-        (new PullImageController(context)).pullDashboardImages(imageNetworkPolicy);
+    public void syncDataMaps() {
+        (new MapController(mDhisApi)).syncDataMaps();
     }
-    public void pullInterpretationImages(ImageNetworkPolicy imageNetworkPolicy,Context context) {
-        (new PullImageController(context)).pullInterpretationImages(imageNetworkPolicy);
+
+    public void pullDashboardImages(ImageNetworkPolicy imageNetworkPolicy, Context context) {
+        (new PullImageController(mDhisApi,context)).pullDashboardImages(imageNetworkPolicy);
+    }
+
+    public void pullInterpretationImages(ImageNetworkPolicy imageNetworkPolicy, Context context) {
+        (new PullImageController(mDhisApi,context)).pullInterpretationImages(imageNetworkPolicy);
     }
 }

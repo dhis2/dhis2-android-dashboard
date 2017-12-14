@@ -26,40 +26,63 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dashboard.api.utils;
+package org.hisp.dhis.android.dashboard.api.models;
 
-import android.content.Context;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
 
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Response;
-import com.squareup.picasso.OkHttpDownloader;
-import com.squareup.picasso.Picasso;
+import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 
-import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
-import org.hisp.dhis.android.dashboard.api.network.RepoManager;
+@Table(databaseName = DbDhis.NAME)
+public final class DataMap extends BaseIdentifiableObject {
+    @Column(name = "basemap")
+    private String basemap;
+    @Column(name = "latitude")
+    private String latitude;
+    @Column(name = "longitude")
+    private String longitude;
+    @Column(name = "zoom")
+    private String zoom;
 
-import java.io.IOException;
-
-public final class PicassoProvider {
-
-    private static Picasso mPicasso;
-
-    private PicassoProvider() {
+    public String getBasemap() {
+        return basemap;
     }
 
-    public static Picasso getInstance(Context context, boolean changeCredentials) {
-        if (mPicasso == null || changeCredentials) {
-            OkHttpClient client = RepoManager.provideOkHttpClient(
-                    DhisController.getInstance().getUserCredentials(), context);
-            mPicasso = new Picasso.Builder(context)
-                    .downloader(new OkHttpDownloader(client))
-                    .build();
-            mPicasso.setIndicatorsEnabled(false);
-            mPicasso.setLoggingEnabled(false);
-        }
+    public void setBasemap(String basemap) {
+        this.basemap = basemap;
+    }
 
-        return mPicasso;
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getZoom() {
+        return zoom;
+    }
+
+    public void setZoom(String zoom) {
+        this.zoom = zoom;
+    }
+
+    public static DataMap getById(String uid) {
+        return new Select()
+                .from(DataMap.class)
+                .where(Condition.column(DataMap$Table
+                        .UID).is(uid))
+                .querySingle();
     }
 }

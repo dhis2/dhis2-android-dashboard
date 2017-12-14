@@ -59,11 +59,13 @@ import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardAdapter;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.SyncingController;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -94,6 +96,8 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     DashboardAdapter mDashboardAdapter;
 
+    long lastDashboardId;
+
     private DhisController.ImageNetworkPolicy mImageNetworkPolicy =
             DhisController.ImageNetworkPolicy.CACHE;
 
@@ -106,9 +110,11 @@ public class DashboardViewPagerFragment extends BaseFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
 
-        mDashboardAdapter = new DashboardAdapter(getChildFragmentManager(),this);
+        mDashboardAdapter = new DashboardAdapter(getChildFragmentManager(), this, new ArrayList
+                <DashboardFragment>(), new ArrayList<Dashboard>());
         mViewPager.setAdapter(mDashboardAdapter);
         mViewPager.addOnPageChangeListener(this);
+        mViewPager.setOffscreenPageLimit(2);
 
         mToolbar.setNavigationIcon(R.mipmap.ic_menu);
         mToolbar.setNavigationOnClickListener(this);
@@ -124,7 +130,7 @@ public class DashboardViewPagerFragment extends BaseFragment
         if (isDhisServiceBound() &&
                 !getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS) &&
                 !SessionManager.getInstance().isResourceTypeSynced(ResourceType.DASHBOARDS)) {
-            syncDashboards();
+            syncDashboards(SyncStrategy.DOWNLOAD_ONLY_NEW);
         }
 
         boolean isLoading = isDhisServiceBound() &&
@@ -192,14 +198,14 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     @Override
     public void onPageSelected(int position) {
-        Dashboard dashboard = mDashboardAdapter.getDashboard(position);
-        Access dashboardAccess = dashboard.getAccess();
+        Access dashboardAccess = mDashboardAdapter.getDashboardAccess(position);
 
         Menu menu = mToolbar.getMenu();
         menu.findItem(R.id.add_dashboard_item)
                 .setVisible(dashboardAccess.isUpdate());
         menu.findItem(R.id.manage_dashboard)
                 .setVisible(dashboardAccess.isUpdate());
+        lastDashboardId = mDashboardAdapter.getDashboardID(position);
     }
 
     @Override
@@ -223,14 +229,27 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     private void setDashboards(List<Dashboard> dashboards) {
         if (dashboards != null) {
-            mDashboardAdapter = new DashboardAdapter(getChildFragmentManager(), this);
+            List<DashboardFragment> dashboardFragments=new ArrayList<>();
+            for (Dashboard dashboard : dashboards) {
+                DashboardFragment dashboardFragment = DashboardFragment
+                        .newInstance(dashboard);
+                dashboardFragment.setSyncingController(this);
+                dashboardFragments.add(dashboardFragment);
+            }
+
+            mDashboardAdapter = new DashboardAdapter(getChildFragmentManager(), this, dashboardFragments,dashboards);
             mViewPager.setAdapter(mDashboardAdapter);
         }
-        mDashboardAdapter.swapData(dashboards);
         mTabs.removeAllTabs();
 
         if (dashboards != null && !dashboards.isEmpty()) {
             mTabs.setupWithViewPager(mViewPager);
+        }
+        if(lastDashboardId > 0){
+            Integer position = mDashboardAdapter.getDashboardPosition(lastDashboardId);
+            if(position!=null && position!=-1){
+                onPageSelected(position);mViewPager.setCurrentItem(position);
+            }
         }
     }
 
@@ -245,7 +264,7 @@ public class DashboardViewPagerFragment extends BaseFragment
         switch (item.getItemId()) {
             case R.id.add_dashboard_item: {
                 long dashboardId = mDashboardAdapter
-                        .getDashboard(mViewPager.getCurrentItem()).getId();
+                        .getDashboardID(mViewPager.getCurrentItem());
                 DashboardItemAddFragment
                         .newInstance(dashboardId)
                         .show(getChildFragmentManager());
@@ -253,7 +272,7 @@ public class DashboardViewPagerFragment extends BaseFragment
             }
             case R.id.refresh: {
                 mImageNetworkPolicy = DhisController.ImageNetworkPolicy.NO_CACHE;
-                syncDashboards();
+                syncDashboards(SyncStrategy.DOWNLOAD_ALL);
                 return true;
             }
             case R.id.add_dashboard: {
@@ -262,10 +281,10 @@ public class DashboardViewPagerFragment extends BaseFragment
                 return true;
             }
             case R.id.manage_dashboard: {
-                Dashboard dashboard = mDashboardAdapter
-                        .getDashboard(mViewPager.getCurrentItem());
+                Long idDashboard = mDashboardAdapter
+                        .getDashboardID(mViewPager.getCurrentItem());
                 DashboardManageFragment
-                        .newInstance(dashboard.getId())
+                        .newInstance(idDashboard)
                         .show(getChildFragmentManager());
                 return true;
             }
@@ -273,9 +292,10 @@ public class DashboardViewPagerFragment extends BaseFragment
         return false;
     }
 
-    private void syncDashboards() {
+    private void syncDashboards(SyncStrategy syncStrategy) {
         if (isDhisServiceBound()) {
-            getDhisService().syncDashboardsAndContent();
+            getDhisService().syncDashboardsAndContent(syncStrategy);
+            getDhisService().syncDataMaps();
             mProgressBar.setVisibility(View.VISIBLE);
         }
     }
@@ -294,8 +314,10 @@ public class DashboardViewPagerFragment extends BaseFragment
             getDhisService().pullInterpretationImages(mImageNetworkPolicy,getContext());
         }
         if (result.getResourceType() == ResourceType.DASHBOARD_IMAGES) {
+            getDhisService().syncInterpretations(SyncStrategy.DOWNLOAD_ALL);
+        }
+        if (result.getResourceType() == ResourceType.INTERPRETATION_IMAGES) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            getDhisService().syncInterpretations();
         }
     }
 

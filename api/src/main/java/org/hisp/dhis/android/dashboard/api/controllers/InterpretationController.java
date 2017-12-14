@@ -26,6 +26,12 @@
 
 package org.hisp.dhis.android.dashboard.api.controllers;
 
+import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.merge;
+import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toMap;
+import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
+import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiException;
+import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
+
 import android.net.Uri;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
@@ -49,6 +55,7 @@ import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -62,12 +69,6 @@ import retrofit.client.Header;
 import retrofit.client.Response;
 import retrofit.mime.TypedString;
 
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.merge;
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toMap;
-import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.findLocationHeader;
-import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.handleApiException;
-import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
-
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
  */
@@ -78,8 +79,8 @@ final class InterpretationController {
         mDhisApi = dhisApi;
     }
 
-    public void syncInterpretations() throws APIException {
-        getInterpretationDataFromServer();
+    public void syncInterpretations(SyncStrategy syncStrategy) throws APIException {
+        getInterpretationDataFromServer(syncStrategy);
         sendLocalChanges();
     }
 
@@ -355,12 +356,17 @@ final class InterpretationController {
         }
     }
 
-    private void getInterpretationDataFromServer() throws APIException {
+    private void getInterpretationDataFromServer(SyncStrategy syncStrategy) throws APIException {
         DateTime lastUpdated = DateTimeManager.getInstance()
                 .getLastUpdated(ResourceType.INTERPRETATIONS);
         DateTime serverTime = mDhisApi.getSystemInfo().getServerDate();
 
-        List<Interpretation> interpretations = updateInterpretations(lastUpdated);
+        List<Interpretation> interpretations;
+        if (syncStrategy == SyncStrategy.DOWNLOAD_ONLY_NEW) {
+            interpretations = updateInterpretations(lastUpdated);
+        } else {
+            interpretations = updateInterpretations(null);
+        }
         List<InterpretationComment> comments = updateInterpretationComments(interpretations);
         List<User> users = updateInterpretationUsers(interpretations, comments);
 

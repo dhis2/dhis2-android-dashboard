@@ -43,6 +43,7 @@ import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation$Table;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
+import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
@@ -115,7 +116,7 @@ public final class InterpretationTextEditFragment extends BaseDialogFragment {
                         mInterpretationText.getText().toString());
 
                 if (isDhisServiceBound()) {
-                    getDhisService().syncInterpretations();
+                    getDhisService().syncInterpretations(SyncStrategy.DOWNLOAD_ONLY_NEW);
                     EventBusProvider.post(new UiEvent(UiEvent
                             .UiEventType.SYNC_INTERPRETATIONS));
                 }

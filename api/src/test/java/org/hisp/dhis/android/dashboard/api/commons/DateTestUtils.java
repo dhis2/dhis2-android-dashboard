@@ -22,6 +22,6 @@ public class DateTestUtils {
     }
 
     public static boolean compareParsedDateWithStringDate(DateTime date, String isDate) {
-        return date.toDate().getTime() == (parseDate(isDate, DHIS2_GMT_NEW_DATE_FORMAT).getTime());
+        return date.toDate().getTime() == (DateTime.parse(isDate).toDate().getTime());
     }
 }

@@ -1,6 +1,6 @@
 <resources>
     <string name="toolbar_title">DHIS2</string>
-    <string name="app_name">DHIS2 Dashboard</string>
+    <string name="app_name">DHIS2 Dashboard (dev)</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_login">LoginActivity</string>
@@ -141,4 +141,7 @@
     <string name="height_title">"Height:"</string>
     <string name="invalid_value">The value is not valid, please enter a value between %1$d and %2$d</string>
     <string name="action_not_allowed_during_sync">"The App is synchronizing with the server, please try again after it's finished"</string>
+    <string name="logged_in">"Logged in as: "</string>
+    <string name="at_server">"At server: "</string>
+    <string name="go_online_report_tables">"Please go online to see report tables"</string>
 </resources>
