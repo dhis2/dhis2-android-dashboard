@@ -130,4 +130,19 @@ public final class SystemInfo extends BaseModel {
     public void setVersion(String version) {
         this.version = version;
     }
+
+
+    public Float getVersionNumber() {
+        Float versionNumber = null;
+
+        if (version != null) {
+            versionNumber = removeNonNumericCharacters(version);
+        }
+
+        return versionNumber;
+    }
+
+    private static Float removeNonNumericCharacters(String version) {
+        return Float.parseFloat(version.replaceAll("[^0-9.]", ""));
+    }
 }
