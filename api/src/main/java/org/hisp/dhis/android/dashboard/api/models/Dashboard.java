@@ -60,6 +60,10 @@ public final class Dashboard extends BaseIdentifiableObject {
     @NotNull
     State state;
 
+    @JsonProperty("publicAccess")
+    @Column(name = "publicAccess")
+    String publicAccess;
+
     @JsonProperty("dashboardItems")
     List<DashboardItem> dashboardItems;
 
@@ -284,5 +288,13 @@ public final class Dashboard extends BaseIdentifiableObject {
     @Override
     public void setLastUpdated(String lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public String getPublicAccess() {
+        return publicAccess;
+    }
+
+    public void setPublicAccess(String publicAccess) {
+        this.publicAccess = publicAccess;
     }
 }
