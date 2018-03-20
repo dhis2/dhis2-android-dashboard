@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
@@ -14,6 +15,8 @@ import org.joda.time.DateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(databaseName = DbDhis.NAME)
 public final class SystemInfo extends BaseModel {
+
+    public static final Float START_LATEST_API_VERSION =2.29f;
 
     @Column(name = "id")
     @PrimaryKey
@@ -144,5 +147,14 @@ public final class SystemInfo extends BaseModel {
 
     private static Float removeNonNumericCharacters(String version) {
         return Float.parseFloat(version.replaceAll("[^0-9.]", ""));
+    }
+
+    public static SystemInfo getSystemInfo(){
+        return new Select().from(SystemInfo.class).querySingle();
+    }
+
+    public static boolean isLoggedInServerWithLatestApiVersion() {
+        Float serverVersion = getSystemInfo().getVersionNumber();
+        return serverVersion >= START_LATEST_API_VERSION;
     }
 }
