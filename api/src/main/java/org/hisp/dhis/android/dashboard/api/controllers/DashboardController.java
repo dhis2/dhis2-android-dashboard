@@ -49,6 +49,7 @@ import org.hisp.dhis.android.dashboard.api.models.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItem$Table;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent$Table;
+import org.hisp.dhis.android.dashboard.api.models.SystemInfo;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
@@ -135,7 +136,9 @@ final class DashboardController {
     private void getDashboardDataFromServer(SyncStrategy syncStrategy) throws APIException {
         DateTime lastUpdated = DateTimeManager.getInstance()
                 .getLastUpdated(ResourceType.DASHBOARDS);
-        DateTime serverDateTime = mDhisApi.getSystemInfo()
+        SystemInfo systemInfo = mDhisApi.getSystemInfo();
+        systemInfo.save();
+        DateTime serverDateTime = systemInfo
                 .getServerDate();
 
         List<Dashboard> dashboards;
