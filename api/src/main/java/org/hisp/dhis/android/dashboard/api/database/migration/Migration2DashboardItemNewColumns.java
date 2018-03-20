@@ -26,6 +26,7 @@ public class Migration2DashboardItemNewColumns extends AlterTableMigration<Dashb
         addColumn(Integer.class, "originalHeight");
         addColumn(Integer.class, "width");
         addColumn(Integer.class, "height");
+        addColumn(Boolean.class, "favorite");
     }
 
 }

@@ -102,6 +102,11 @@ public final class DashboardItem extends BaseIdentifiableObject {
     @Column(name = "height")
     int height;
 
+
+    @JsonProperty("favorite")
+    @Column(name = "favorite")
+    boolean favorite;
+
     @JsonIgnore
     @Column
     @ForeignKey(
@@ -535,5 +540,13 @@ public final class DashboardItem extends BaseIdentifiableObject {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 }
