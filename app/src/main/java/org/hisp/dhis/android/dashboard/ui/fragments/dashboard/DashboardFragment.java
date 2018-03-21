@@ -98,6 +98,9 @@ public class DashboardFragment extends BaseFragment
 
         Bundle args = new Bundle();
         args.putLong(DASHBOARD_ID, dashboard.getId());
+        if(access != null) {
+            access = new Access();
+        }
         args.putBoolean(DELETE, access.isDelete());
         args.putBoolean(UPDATE, access.isUpdate());
         args.putBoolean(READ, access.isRead());
