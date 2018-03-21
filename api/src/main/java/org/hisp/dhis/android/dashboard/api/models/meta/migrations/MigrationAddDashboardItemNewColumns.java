@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dashboard.api.database.migration;
+package org.hisp.dhis.android.dashboard.api.models.meta.migrations;
 
 import com.raizlabs.android.dbflow.annotation.Migration;
 import com.raizlabs.android.dbflow.sql.migration.AlterTableMigration;
@@ -8,12 +8,12 @@ import org.hisp.dhis.android.dashboard.api.models.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbDhis;
 
 @Migration(version = 6, databaseName = DbDhis.NAME)
-public class Migration2DashboardItemNewColumns extends AlterTableMigration<DashboardItem> {
-    public Migration2DashboardItemNewColumns(Class<DashboardItem> table) {
+public class MigrationAddDashboardItemNewColumns extends AlterTableMigration<DashboardItem> {
+    public MigrationAddDashboardItemNewColumns(Class<DashboardItem> table) {
         super(DashboardItem.class);
     }
 
-    public Migration2DashboardItemNewColumns() {
+    public MigrationAddDashboardItemNewColumns() {
         super(DashboardItem.class);
     }
 
