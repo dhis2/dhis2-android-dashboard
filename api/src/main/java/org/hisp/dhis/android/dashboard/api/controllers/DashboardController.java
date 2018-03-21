@@ -162,11 +162,12 @@ final class DashboardController {
     private List<Dashboard> updateDashboards(DateTime lastUpdated) throws APIException {
         final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
         final Map<String, String> QUERY_MAP_FULL = new HashMap<>();
-        final String BASE = "id,created,lastUpdated,name,displayName,access";
+        final String BASE = "id,created,lastUpdated,name,displayName,access,publicAccess";
 
         QUERY_MAP_BASIC.put("fields", "id");
         QUERY_MAP_FULL.put("fields", BASE + ",dashboardItems" +
                 "[" + BASE + ",type,shape,messages," +
+                "x,y,w,h,originalHeight,width,height,favorite," +
                 "chart" + "[" + BASE + "]," +
                 "eventChart" + "[" + BASE + "]" +
                 "map" + "[" + BASE + "]," +
@@ -228,7 +229,8 @@ final class DashboardController {
 
     private List<DashboardItem> updateDashboardItems(List<Dashboard> dashboards, DateTime lastUpdated) throws APIException {
         final Map<String, String> QUERY_MAP_BASIC = new HashMap<>();
-        QUERY_MAP_BASIC.put("fields", "id,created,lastUpdated,shape");
+        QUERY_MAP_BASIC.put("fields", "id,created,lastUpdated,shape" +
+                "x,y,w,h,originalHeight,width,height,favorite,");
 
         if (lastUpdated != null) {
             QUERY_MAP_BASIC.put("filter", "lastUpdated:gt:" + lastUpdated.toLocalDateTime().toString());
@@ -597,7 +599,7 @@ final class DashboardController {
     private void updateDashboardTimeStamp(Dashboard dashboard) throws APIException {
         try {
             final Map<String, String> QUERY_PARAMS = new HashMap<>();
-            QUERY_PARAMS.put("fields", "created,lastUpdated");
+            QUERY_PARAMS.put("fields", "created,lastUpdated,publicAccess");
             Dashboard updatedDashboard = mDhisApi
                     .getDashboard(dashboard.getUId(), QUERY_PARAMS);
 
