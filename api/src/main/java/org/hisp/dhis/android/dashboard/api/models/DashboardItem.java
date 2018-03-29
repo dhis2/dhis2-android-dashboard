@@ -74,39 +74,6 @@ public final class DashboardItem extends BaseIdentifiableObject {
     @Column(name = "shape")
     String shape;
 
-    @JsonProperty("x")
-    @Column(name = "x")
-    int x;
-
-    @JsonProperty("y")
-    @Column(name = "y")
-    int y;
-
-    @JsonProperty("w")
-    @Column(name = "w")
-    int w;
-
-    @JsonProperty("h")
-    @Column(name = "h")
-    int h;
-
-    @JsonProperty("originalHeight")
-    @Column(name = "originalHeight")
-    int originalHeight;
-
-    @JsonProperty("width")
-    @Column(name = "width")
-    int width;
-
-    @JsonProperty("height")
-    @Column(name = "height")
-    int height;
-
-
-    @JsonProperty("favorite")
-    @Column(name = "favorite")
-    boolean favorite;
-
     @JsonIgnore
     @Column
     @ForeignKey(
@@ -484,69 +451,5 @@ public final class DashboardItem extends BaseIdentifiableObject {
 
     public void setOrderPosition(int orderPosition) {
         this.orderPosition = orderPosition;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getW() {
-        return w;
-    }
-
-    public void setW(int w) {
-        this.w = w;
-    }
-
-    public int getH() {
-        return h;
-    }
-
-    public void setH(int h) {
-        this.h = h;
-    }
-
-    public int getOriginalHeight() {
-        return originalHeight;
-    }
-
-    public void setOriginalHeight(int originalHeight) {
-        this.originalHeight = originalHeight;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public boolean isFavorite() {
-        return favorite;
-    }
-
-    public void setFavorite(boolean favorite) {
-        this.favorite = favorite;
     }
 }
