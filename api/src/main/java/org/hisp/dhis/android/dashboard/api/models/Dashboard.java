@@ -30,6 +30,7 @@ package org.hisp.dhis.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.NotNull;
@@ -60,6 +61,7 @@ public final class Dashboard extends BaseIdentifiableObject {
     @NotNull
     State state;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("dashboardItems")
     List<DashboardItem> dashboardItems;
 

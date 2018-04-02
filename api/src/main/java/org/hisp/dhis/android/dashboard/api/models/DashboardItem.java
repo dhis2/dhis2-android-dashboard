@@ -29,6 +29,7 @@
 package org.hisp.dhis.android.dashboard.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
@@ -51,9 +52,8 @@ import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
 
-import static org.hisp.dhis.android.dashboard.api.controllers.MapController.queryDataMaps;
-
 @Table(databaseName = DbDhis.NAME)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public final class DashboardItem extends BaseIdentifiableObject {
     public static final int MAX_CONTENT = 8;
     public static final String SHAPE_NORMAL = "NORMAL";

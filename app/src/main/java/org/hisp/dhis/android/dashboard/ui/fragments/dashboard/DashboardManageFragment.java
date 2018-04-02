@@ -48,6 +48,7 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.Dashboard$Table;
+import org.hisp.dhis.android.dashboard.api.models.SystemInfo;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
@@ -126,6 +127,12 @@ public final class DashboardManageFragment extends BaseDialogFragment {
         mDeleteButton.setEnabled(mDashboard.getAccess().isDelete());
 
         setFragmentBarActionMode(false);
+        //// FIXME: 22/03/2018 The api 29 => putDashboard api call override the server dashboard.
+        //// But the dashboard app is incomplete.
+        //// The dashboard needs all the fields and children fields before put dashboards in api 29 =>
+        if(SystemInfo.isLoggedInServerWithLatestApiVersion()){
+            mDashboardName.setEnabled(false);
+        }
     }
 
 
