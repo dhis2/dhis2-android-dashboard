@@ -368,11 +368,8 @@ final class DashboardController {
     private void postDashboard(Dashboard dashboard) throws APIException {
         try {
             Response response;
-            if (SystemInfo.isLoggedInServerWithLatestApiVersion()) {
-                response = mDhisApi.postDashboard(Dashboard.createNewApiDashboard(dashboard));
-            }else{
-                response = mDhisApi.postDashboard(dashboard);
-            }
+            response = mDhisApi.postDashboard(dashboard);
+
             // also, we will need to find UUID of newly created dashboard,
             // which is contained inside of HTTP Location header
             Header header = findLocationHeader(response.getHeaders());
@@ -391,11 +388,8 @@ final class DashboardController {
 
     private void putDashboard(Dashboard dashboard) throws APIException {
         try {
-            if (SystemInfo.isLoggedInServerWithLatestApiVersion()) {
-                //// TODO: 22/03/2018  Fix dashboard 2.29 update
-                //dashboard = Dashboard.createNewApiDashboard(dashboard);
-                //mDhisApi.putNewDashboard(dashboard.getUId(), dashboard);
-            }else{
+            //// TODO: 22/03/2018  Fix dashboard 2.29 update
+            if (!SystemInfo.isLoggedInServerWithLatestApiVersion()) {
                 mDhisApi.putDashboard(dashboard.getUId(), dashboard);
             }
 
