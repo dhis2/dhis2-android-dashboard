@@ -145,6 +145,10 @@ public final class Access {
     @JsonIgnore
     @Override
     public String toString() {
+        String dataField = "null";
+        if(data!=null) {
+            dataField = data.toString();
+        }
         return StringUtils.create()
                 .append("Access {")
                 .append("manage=").append(manage)
@@ -153,7 +157,7 @@ public final class Access {
                 .append(", read=").append(read)
                 .append(", update=").append(update)
                 .append(", delete=").append(delete)
-                .append(", data=").append(data.toString())
+                .append(", data=").append(dataField)
                 .append("}")
                 .build();
     }
