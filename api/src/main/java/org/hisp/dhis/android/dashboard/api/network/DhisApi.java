@@ -100,19 +100,19 @@ public interface DhisApi {
     @Headers("Accept: application/json")
     DashboardItem getDashboardItem(@Path("uid") String uId, @QueryMap Map<String, String> queryMap);
 
-    @POST("/dashboards/{dashboardUId}/items/content")
+    @POST("/26/dashboards/{dashboardUId}/items/content")
     @Headers("Content-Type: application/json")
     Response postDashboardItem(@Path("dashboardUId") String dashboardUId,
                                @Query("type") String type,
                                @Query("id") String uid,
                                @Body String stubBody);
 
-    @DELETE("/dashboards/{dashboardUId}/items/{itemUId}")
+    @DELETE("/26/dashboards/{dashboardUId}/items/{itemUId}")
     @Headers("Content-Type: application/json")
     Response deleteDashboardItem(@Path("dashboardUId") String dashboardUId,
                                  @Path("itemUId") String itemUId);
 
-    @DELETE("/dashboards/{dashboardUid}/items/{itemUid}/content/{contentUid}")
+    @DELETE("/26/dashboards/{dashboardUid}/items/{itemUid}/content/{contentUid}")
     @Headers("Content-Type: application/json")
     Response deleteDashboardItemContent(@Path("dashboardUid") String dashboardUid,
                                         @Path("itemUid") String itemUid,

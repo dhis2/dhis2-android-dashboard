@@ -49,6 +49,7 @@ import org.hisp.dhis.android.dashboard.api.models.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItem$Table;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent;
 import org.hisp.dhis.android.dashboard.api.models.DashboardItemContent$Table;
+import org.hisp.dhis.android.dashboard.api.models.SystemInfo;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.models.meta.State;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
@@ -135,7 +136,9 @@ final class DashboardController {
     private void getDashboardDataFromServer(SyncStrategy syncStrategy) throws APIException {
         DateTime lastUpdated = DateTimeManager.getInstance()
                 .getLastUpdated(ResourceType.DASHBOARDS);
-        DateTime serverDateTime = mDhisApi.getSystemInfo()
+        SystemInfo systemInfo = mDhisApi.getSystemInfo();
+        systemInfo.save();
+        DateTime serverDateTime = systemInfo
                 .getServerDate();
 
         List<Dashboard> dashboards;
@@ -242,8 +245,7 @@ final class DashboardController {
         }
 
         // List of persisted dashboard items
-        Map<String, DashboardItem> persistedDashboardItems
-                = toMap(queryDashboardItems(null));
+        Map<String, DashboardItem> persistedDashboardItems = toMap(queryDashboardItems(null));
 
         // List of updated dashboard items. We need this only to get
         // information about updates of item shape.
@@ -365,7 +367,9 @@ final class DashboardController {
 
     private void postDashboard(Dashboard dashboard) throws APIException {
         try {
-            Response response = mDhisApi.postDashboard(dashboard);
+            Response response;
+            response = mDhisApi.postDashboard(dashboard);
+
             // also, we will need to find UUID of newly created dashboard,
             // which is contained inside of HTTP Location header
             Header header = findLocationHeader(response.getHeaders());
@@ -384,7 +388,10 @@ final class DashboardController {
 
     private void putDashboard(Dashboard dashboard) throws APIException {
         try {
-            mDhisApi.putDashboard(dashboard.getUId(), dashboard);
+            //// TODO: 22/03/2018  Fix dashboard 2.29 update
+            if (!SystemInfo.isLoggedInServerWithLatestApiVersion()) {
+                mDhisApi.putDashboard(dashboard.getUId(), dashboard);
+            }
 
             dashboard.setState(State.SYNCED);
             dashboard.save();
