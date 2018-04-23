@@ -105,6 +105,7 @@ final class PullImageController {
         for (int i = 0; i < requestUrlList.size(); i++) {
             final String request = requestUrlList.get(i);
             if (imageNetworkPolicy == DhisController.ImageNetworkPolicy.NO_CACHE) {
+                PicassoProvider.getInstance(context, false).invalidate(request);
                 PicassoProvider.getInstance(context, false)
                         .load(request).networkPolicy(NetworkPolicy.NO_CACHE)
                         .memoryPolicy(MemoryPolicy.NO_CACHE).fetch();
