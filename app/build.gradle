@@ -14,8 +14,8 @@ android {
         applicationId "org.hisp.dhis.android.dashboard_dev"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 9
-        versionName "0.7.1"
+        versionCode 10
+        versionName "0.7.2"
     }
 
     compileOptions {
