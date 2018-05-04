@@ -39,6 +39,11 @@
         <activity
             android:name="org.hisp.dhis.android.dashboard.ui.activities.InterpretationCommentsActivity"
             android:label="@string/title_activity_interpretation_comments" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="a5caa46009119f5e584e4964c30a922095b1075c"
+            />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

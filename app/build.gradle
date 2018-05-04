@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'jacoco-android'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 android {
     compileSdkVersion 25
@@ -9,8 +14,8 @@ android {
         applicationId "org.hisp.dhis.android.dashboard"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 8
-        versionName "0.7.0"
+        versionCode 10
+        versionName "0.7.2"
     }
 
     compileOptions {
@@ -54,4 +59,7 @@ dependencies {
 
     // Java test dependencies
     testCompile "junit:junit:4.10"
+    compile('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+        transitive = true;
+    }
 }

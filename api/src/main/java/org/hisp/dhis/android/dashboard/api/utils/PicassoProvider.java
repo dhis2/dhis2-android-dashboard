@@ -30,17 +30,12 @@ package org.hisp.dhis.android.dashboard.api.utils;
 
 import android.content.Context;
 
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Response;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
-
-import java.io.IOException;
 
 public final class PicassoProvider {
 
