@@ -74,7 +74,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
@@ -85,16 +85,16 @@ public class DashboardItemAddFragment extends BaseDialogFragment
     private static final String TAG = DashboardItemAddFragment.class.getSimpleName();
     private static final int LOADER_ID = 3451234;
 
-    @Bind(R.id.filter_options)
+    @BindView(R.id.filter_options)
     EditText mFilter;
 
-    @Bind(R.id.dialog_label)
+    @BindView(R.id.dialog_label)
     TextView mDialogLabel;
 
-    @Bind(R.id.simple_listview)
+    @BindView(R.id.simple_listview)
     ListView mListView;
 
-    @Bind(R.id.filter_resources)
+    @BindView(R.id.filter_resources)
     ImageView mFilterResources;
 
     PopupMenu mResourcesMenu;

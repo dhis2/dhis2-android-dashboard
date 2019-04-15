@@ -54,7 +54,7 @@ import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
@@ -65,25 +65,25 @@ import butterknife.OnFocusChange;
 public final class DashboardManageFragment extends BaseDialogFragment {
     private static final String TAG = DashboardManageFragment.class.getSimpleName();
 
-    @Bind(R.id.fragment_bar)
+    @BindView(R.id.fragment_bar)
     View mFragmentBar;
 
-    @Bind(R.id.fragment_bar_mode_editing)
+    @BindView(R.id.fragment_bar_mode_editing)
     View mFragmentBarEditingMode;
 
-    @Bind(R.id.dialog_label)
+    @BindView(R.id.dialog_label)
     TextView mDialogLabel;
 
-    @Bind(R.id.action_name)
+    @BindView(R.id.action_name)
     TextView mActionName;
 
-    @Bind(R.id.dashboard_name)
+    @BindView(R.id.dashboard_name)
     EditText mDashboardName;
 
-    @Bind(R.id.delete_dashboard_button)
+    @BindView(R.id.delete_dashboard_button)
     Button mDeleteButton;
 
-    @Bind(R.id.text_input_dashboard_name)
+    @BindView(R.id.text_input_dashboard_name)
     TextInputLayout mTextInputLayout;
 
     Dashboard mDashboard;

@@ -21,7 +21,7 @@ import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
@@ -32,10 +32,10 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     public static final String TAG = InterpretationEmptyFragment.class.getSimpleName();
     private static final String IS_LOADING = "state:isLoading";
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.progress_bar)
+    @BindView(R.id.progress_bar)
     SmoothProgressBar mProgressBar;
 
     private DhisController.ImageNetworkPolicy mImageNetworkPolicy =

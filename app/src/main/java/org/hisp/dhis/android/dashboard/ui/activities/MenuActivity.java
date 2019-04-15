@@ -58,7 +58,7 @@ import org.hisp.dhis.android.dashboard.ui.fragments.interpretation.Interpretatio
 import java.util.Arrays;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
@@ -69,10 +69,10 @@ public class MenuActivity extends BaseActivity
 
     private static final int LOADER_ID = 589352;
 
-    @Bind(R.id.navigation_view)
+    @BindView(R.id.navigation_view)
     NavigationView mNavigationView;
 
-    @Bind(R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
     TextView mUsername;

@@ -46,7 +46,7 @@ import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
@@ -57,25 +57,25 @@ import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
 public class ConfirmUserActivity extends BaseActivity {
     private static final String IS_LOADING = "state:isLoading";
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.progress_bar_circular_navy)
+    @BindView(R.id.progress_bar_circular_navy)
     CircularProgressBar mProgressBar;
 
-    @Bind(R.id.re_log_in_views_container)
+    @BindView(R.id.re_log_in_views_container)
     View mViewsContainer;
 
-    @Bind(R.id.username)
+    @BindView(R.id.username)
     EditText mUsername;
 
-    @Bind(R.id.password)
+    @BindView(R.id.password)
     EditText mPassword;
 
-    @Bind(R.id.re_log_in_button)
+    @BindView(R.id.re_log_in_button)
     Button mReLogIn;
 
-    @Bind(R.id.delete_and_log_out_button)
+    @BindView(R.id.delete_and_log_out_button)
     Button mLogOut;
 
     @Override

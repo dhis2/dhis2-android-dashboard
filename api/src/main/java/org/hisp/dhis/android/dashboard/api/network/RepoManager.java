@@ -28,18 +28,13 @@
 
 package org.hisp.dhis.android.dashboard.api.network;
 
-import static com.squareup.okhttp.Credentials.basic;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+
+import com.jakewharton.retrofit.Ok3Client;
 
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
@@ -50,6 +45,12 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cache;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -57,6 +58,8 @@ import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.converter.Converter;
 import retrofit.converter.JacksonConverter;
+
+import static okhttp3.Credentials.basic;
 
 
 public final class RepoManager {
@@ -69,7 +72,7 @@ public final class RepoManager {
     }
 
     public static DhisApi createService(HttpUrl serverUrl, Credentials credentials,
-            final Context context) {
+                                        final Context context) {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(provideServerUrl(serverUrl))
                 .setConverter(provideJacksonConverter())
@@ -91,19 +94,17 @@ public final class RepoManager {
         return new JacksonConverter(ObjectMapperProvider.getInstance());
     }
 
-    private static OkClient provideOkClient(Credentials credentials, Context context) {
-        return new OkClient(provideOkHttpClient(credentials, context));
+    private static Ok3Client provideOkClient(Credentials credentials, Context context) {
+        return new Ok3Client(provideOkHttpClient(credentials, context));
     }
 
     public static OkHttpClient provideOkHttpClient(Credentials credentials, Context context) {
-
-        OkHttpClient client = new OkHttpClient();
-        client.interceptors().add(provideInterceptor(credentials));
-        client.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-        client.setReadTimeout(DEFAULT_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-        client.setWriteTimeout(DEFAULT_WRITE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-        client.setCache(provideCache(context));
-        return client;
+        return new OkHttpClient().newBuilder()
+                .addInterceptor(provideInterceptor(credentials))
+                .connectTimeout(DEFAULT_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+                .readTimeout(DEFAULT_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+                .writeTimeout(DEFAULT_WRITE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+                .cache(provideCache(context)).build();
     }
 
     private static Cache provideCache(Context context) {

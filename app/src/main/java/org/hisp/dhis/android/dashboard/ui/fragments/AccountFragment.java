@@ -51,7 +51,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -60,10 +60,10 @@ import butterknife.ButterKnife;
 public final class AccountFragment extends BaseFragment implements LoaderCallbacks<List<Field>> {
     private static final int LOADER_ID = 66756123;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.recycler_view)
+    @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
     AccountFieldAdapter mAdapter;

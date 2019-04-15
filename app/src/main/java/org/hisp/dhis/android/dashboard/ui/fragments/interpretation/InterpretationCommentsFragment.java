@@ -74,7 +74,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
@@ -88,16 +88,16 @@ public class InterpretationCommentsFragment extends BaseFragment
     private static final String INTERPRETATION_ID = "arg:interpretationId";
     private static final String EMPTY_FIELD = "";
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.recycler_view)
+    @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    @Bind(R.id.interpretation_comment_edit_text)
+    @BindView(R.id.interpretation_comment_edit_text)
     EditText mNewCommentText;
 
-    @Bind(R.id.add_interpretation_comment_button)
+    @BindView(R.id.add_interpretation_comment_button)
     ImageView mAddNewComment;
 
     InterpretationCommentsAdapter mAdapter;

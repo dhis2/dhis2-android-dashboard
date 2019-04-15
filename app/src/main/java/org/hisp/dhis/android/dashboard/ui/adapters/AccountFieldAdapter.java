@@ -10,7 +10,7 @@ import android.widget.TextView;
 import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.ui.models.Field;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -36,10 +36,10 @@ public class AccountFieldAdapter extends AbsAdapter<Field, AccountFieldAdapter.F
     }
 
     public static class FieldViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.field_label_text_view)
+        @BindView(R.id.field_label_text_view)
         public TextView labelTextView;
 
-        @Bind(R.id.field_value_text_view)
+        @BindView(R.id.field_value_text_view)
         public TextView valueTextView;
 
         public FieldViewHolder(View itemView) {

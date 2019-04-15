@@ -76,7 +76,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
@@ -89,13 +89,13 @@ public final class InterpretationFragment extends BaseFragment
     private static final int LOADER_ID = 23452435;
     private static final String IS_LOADING = "state:isLoading";
 
-    @Bind(R.id.progress_bar)
+    @BindView(R.id.progress_bar)
     SmoothProgressBar mProgressBar;
 
-    @Bind(R.id.recycler_view)
+    @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
     InterpretationAdapter mAdapter;

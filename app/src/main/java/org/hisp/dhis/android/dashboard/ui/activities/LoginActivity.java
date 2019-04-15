@@ -39,7 +39,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.squareup.okhttp.HttpUrl;
 import com.squareup.otto.Subscribe;
 
 import org.hisp.dhis.android.dashboard.R;
@@ -50,31 +49,32 @@ import org.hisp.dhis.android.dashboard.api.models.meta.ResponseHolder;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
+import okhttp3.HttpUrl;
 
 public class LoginActivity extends BaseActivity {
     private static final String IS_LOADING = "state:isLoading";
 
-    @Bind(R.id.log_in_views_container)
+    @BindView(R.id.log_in_views_container)
     View mViewsContainer;
 
-    @Bind(R.id.progress_bar_circular_white)
+    @BindView(R.id.progress_bar_circular_white)
     CircularProgressBar mProgressBar;
 
-    @Bind(R.id.server_url)
+    @BindView(R.id.server_url)
     EditText mServerUrl;
 
-    @Bind(R.id.username)
+    @BindView(R.id.username)
     EditText mUsername;
 
-    @Bind(R.id.password)
+    @BindView(R.id.password)
     EditText mPassword;
 
-    @Bind(R.id.log_in_button)
+    @BindView(R.id.log_in_button)
     Button mLogInButton;
 
     @Override

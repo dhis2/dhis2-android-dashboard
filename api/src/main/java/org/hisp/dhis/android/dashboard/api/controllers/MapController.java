@@ -1,30 +1,16 @@
 package org.hisp.dhis.android.dashboard.api.controllers;
 
 import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.merge;
-import static org.hisp.dhis.android.dashboard.api.models.BaseIdentifiableObject.toMap;
 import static org.hisp.dhis.android.dashboard.api.utils.NetworkUtils.unwrapResponse;
 
-import android.content.Context;
-import android.net.Uri;
-import android.widget.ImageView;
-
 import com.raizlabs.android.dbflow.sql.language.Select;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
-
-import org.hisp.dhis.android.dashboard.api.models.Dashboard;
-import org.hisp.dhis.android.dashboard.api.models.DashboardElement;
-import org.hisp.dhis.android.dashboard.api.models.DashboardItem;
 import org.hisp.dhis.android.dashboard.api.models.DataMap;
 import org.hisp.dhis.android.dashboard.api.models.meta.DbOperation;
 import org.hisp.dhis.android.dashboard.api.network.APIException;
-import org.hisp.dhis.android.dashboard.api.network.BaseMapLayerDhisTransformation;
 import org.hisp.dhis.android.dashboard.api.network.DhisApi;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.DateTimeManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.DbUtils;
-import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 import org.joda.time.DateTime;
 
 import java.util.HashMap;
@@ -32,6 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+
+import okhttp3.HttpUrl;
 
 public class MapController {
     private DhisApi mDhisApi;

@@ -48,7 +48,7 @@ import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -58,13 +58,13 @@ import butterknife.OnClick;
 public final class DashboardAddFragment extends BaseDialogFragment {
     private static final String TAG = DashboardAddFragment.class.getSimpleName();
 
-    @Bind(R.id.dialog_label)
+    @BindView(R.id.dialog_label)
     TextView mDialogLabel;
 
-    @Bind(R.id.dashboard_name)
+    @BindView(R.id.dashboard_name)
     EditText mDashboardName;
 
-    @Bind(R.id.text_input_dashboard_name)
+    @BindView(R.id.text_input_dashboard_name)
     TextInputLayout mTextInputLayout;
 
     @Override

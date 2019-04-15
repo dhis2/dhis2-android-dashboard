@@ -55,7 +55,8 @@ import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 
 public class DashboardItemAdapter extends
@@ -733,7 +734,7 @@ public class DashboardItemAdapter extends
         final OnListElementInternalClickListener onListElementInternalClickListener;
         final View itemElementsContainer;
 
-        @Bind({
+        @BindViews({
                 R.id.element_item_0,
                 R.id.element_item_1,
                 R.id.element_item_2,
@@ -745,7 +746,7 @@ public class DashboardItemAdapter extends
         })
         List<TextView> elementItems;
 
-        @Bind({
+        @BindViews({
                 R.id.element_item_0_delete_button,
                 R.id.element_item_1_delete_button,
                 R.id.element_item_2_delete_button,

@@ -30,12 +30,13 @@ package org.hisp.dhis.android.dashboard.api.utils;
 
 import android.content.Context;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.picasso.OkHttpDownloader;
+import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.network.RepoManager;
+
+import okhttp3.OkHttpClient;
 
 public final class PicassoProvider {
 
@@ -49,7 +50,7 @@ public final class PicassoProvider {
             OkHttpClient client = RepoManager.provideOkHttpClient(
                     DhisController.getInstance().getUserCredentials(), context);
             mPicasso = new Picasso.Builder(context)
-                    .downloader(new OkHttpDownloader(client))
+                    .downloader(new OkHttp3Downloader(client))
                     .build();
             mPicasso.setIndicatorsEnabled(false);
             mPicasso.setLoggingEnabled(false);

@@ -25,12 +25,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Locale;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AboutUsFragment extends BaseFragment {
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
     public static String getAppVersion() {

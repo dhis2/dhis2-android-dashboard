@@ -44,7 +44,7 @@ import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation;
 import org.hisp.dhis.android.dashboard.api.models.Interpretation$Table;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -54,10 +54,10 @@ import butterknife.OnClick;
 public final class InterpretationTextFragment extends DialogFragment {
     private static final String TAG = InterpretationTextFragment.class.getSimpleName();
 
-    @Bind(R.id.dialog_label)
+    @BindView(R.id.dialog_label)
     TextView mDialogLabel;
 
-    @Bind(R.id.interpretation_text)
+    @BindView(R.id.interpretation_text)
     TextView mInterpretationText;
 
     Interpretation mInterpretation;

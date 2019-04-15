@@ -27,7 +27,6 @@
 package org.hisp.dhis.android.dashboard.api.controllers;
 
 import com.raizlabs.android.dbflow.sql.language.Delete;
-import com.squareup.okhttp.HttpUrl;
 
 import org.hisp.dhis.android.dashboard.api.models.Dashboard;
 import org.hisp.dhis.android.dashboard.api.models.DashboardElement;
@@ -48,6 +47,8 @@ import org.hisp.dhis.android.dashboard.api.persistence.preferences.LastUpdatedMa
 
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.HttpUrl;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.

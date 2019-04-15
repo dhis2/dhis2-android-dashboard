@@ -31,10 +31,10 @@ package org.hisp.dhis.android.dashboard.api.persistence.preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.squareup.okhttp.HttpUrl;
-
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.meta.Session;
+
+import okhttp3.HttpUrl;
 
 import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 

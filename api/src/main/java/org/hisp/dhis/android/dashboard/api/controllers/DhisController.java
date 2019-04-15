@@ -33,7 +33,6 @@ import static org.hisp.dhis.android.dashboard.api.utils.Preconditions.isNull;
 import android.content.Context;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
-import com.squareup.okhttp.HttpUrl;
 
 import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
@@ -48,6 +47,8 @@ import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.api.utils.NetworkUtils;
 
 import java.io.IOException;
+
+import okhttp3.HttpUrl;
 
 public class DhisController {
     private static DhisController mDhisController;

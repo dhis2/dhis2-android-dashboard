@@ -28,7 +28,8 @@
 
 package org.hisp.dhis.android.dashboard.api.models.meta;
 
-import com.squareup.okhttp.HttpUrl;
+
+import okhttp3.HttpUrl;
 
 public final class Session {
     private final HttpUrl serverUrl;

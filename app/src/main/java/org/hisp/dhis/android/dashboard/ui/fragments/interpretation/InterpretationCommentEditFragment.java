@@ -47,7 +47,7 @@ import org.hisp.dhis.android.dashboard.api.models.InterpretationComment$Table;
 import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -57,10 +57,10 @@ import butterknife.OnClick;
 public class InterpretationCommentEditFragment extends BaseDialogFragment {
     private static final String TAG = InterpretationCommentEditFragment.class.getSimpleName();
 
-    @Bind(R.id.interpretation_comment_edit_text)
+    @BindView(R.id.interpretation_comment_edit_text)
     EditText mCommentEditText;
 
-    @Bind(R.id.dialog_label)
+    @BindView(R.id.dialog_label)
     TextView mDialogLabel;
 
     InterpretationComment mInterpretationComment;

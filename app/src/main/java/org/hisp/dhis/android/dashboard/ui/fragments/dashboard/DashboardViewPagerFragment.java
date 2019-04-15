@@ -70,7 +70,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
@@ -82,16 +82,16 @@ public class DashboardViewPagerFragment extends BaseFragment
     static final String IS_LOADING = "state:isLoading";
     static final int LOADER_ID = 1233432;
 
-    @Bind(R.id.dashboard_tabs)
+    @BindView(R.id.dashboard_tabs)
     TabLayout mTabs;
 
-    @Bind(R.id.dashboard_view_pager)
+    @BindView(R.id.dashboard_view_pager)
     ViewPager mViewPager;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.progress_bar)
+    @BindView(R.id.progress_bar)
     SmoothProgressBar mProgressBar;
 
     DashboardAdapter mDashboardAdapter;

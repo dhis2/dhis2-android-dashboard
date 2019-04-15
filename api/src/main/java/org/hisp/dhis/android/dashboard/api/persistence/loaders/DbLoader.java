@@ -125,6 +125,7 @@ public class DbLoader<T> extends AsyncTaskLoader<T> {
         }
 
         // Begin monitoring the underlying data source.
+
         registerObservers();
 
         if (takeContentChanged() || mData == null) {

@@ -47,7 +47,7 @@ import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -57,10 +57,10 @@ import butterknife.OnClick;
 public final class InterpretationTextEditFragment extends BaseDialogFragment {
     private static final String TAG = InterpretationTextEditFragment.class.getSimpleName();
 
-    @Bind(R.id.dialog_label)
+    @BindView(R.id.dialog_label)
     TextView mDialogLabel;
 
-    @Bind(R.id.interpretation_text)
+    @BindView(R.id.interpretation_text)
     EditText mInterpretationText;
 
     Interpretation mInterpretation;

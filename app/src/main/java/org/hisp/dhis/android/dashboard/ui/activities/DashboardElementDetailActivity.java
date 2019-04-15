@@ -51,7 +51,7 @@ import org.hisp.dhis.android.dashboard.ui.fragments.ImageViewFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.MapImageViewFragment;
 import org.hisp.dhis.android.dashboard.ui.fragments.WebViewFragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class DashboardElementDetailActivity extends BaseActivity {
@@ -59,7 +59,7 @@ public class DashboardElementDetailActivity extends BaseActivity {
     private static final String INTERPRETATION_ELEMENT_ID = "arg:interpretationElementId";
 
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
     public static Intent newIntentForDashboardElement(Activity activity, long dashboardElementId) {

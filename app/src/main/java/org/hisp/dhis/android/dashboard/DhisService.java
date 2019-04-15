@@ -32,8 +32,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.squareup.okhttp.HttpUrl;
-
 import org.hisp.dhis.android.dashboard.api.controllers.DhisController;
 import org.hisp.dhis.android.dashboard.api.job.Job;
 import org.hisp.dhis.android.dashboard.api.job.JobExecutor;
@@ -45,6 +43,8 @@ import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.api.utils.SyncStrategy;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
+
+import okhttp3.HttpUrl;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.

@@ -62,7 +62,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit.mime.TypedInput;
 
@@ -71,10 +71,10 @@ public class WebViewFragment extends BaseFragment {
     private Context mContext;
     private static final String DASHBOARD_TYPE = "dashboardType";
 
-    @Bind(R.id.web_view_content)
+    @BindView(R.id.web_view_content)
     WebView mWebView;
 
-    @Bind(R.id.container_layout_progress_bar)
+    @BindView(R.id.container_layout_progress_bar)
     View mProgressBarContainer;
 
     public static WebViewFragment newInstance(String id, String dashboardType) {

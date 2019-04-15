@@ -60,7 +60,7 @@ import org.hisp.dhis.android.dashboard.ui.fragments.BaseDialogFragment;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -70,10 +70,10 @@ import butterknife.OnClick;
 public final class InterpretationCreateFragment extends BaseDialogFragment {
     private static final String TAG = InterpretationCreateFragment.class.getSimpleName();
 
-    @Bind(R.id.dialog_label)
+    @BindView(R.id.dialog_label)
     TextView mDialogLabel;
 
-    @Bind(R.id.interpretation_text)
+    @BindView(R.id.interpretation_text)
     EditText mInterpretationText;
 
     DashboardItem mDashboardItem;

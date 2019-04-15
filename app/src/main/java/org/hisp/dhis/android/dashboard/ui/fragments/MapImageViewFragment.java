@@ -40,7 +40,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.squareup.okhttp.HttpUrl;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
 
@@ -49,6 +48,7 @@ import org.hisp.dhis.android.dashboard.api.models.DataMap;
 import org.hisp.dhis.android.dashboard.api.network.BaseMapLayerDhisTransformation;
 import org.hisp.dhis.android.dashboard.api.utils.PicassoProvider;
 
+import okhttp3.HttpUrl;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class MapImageViewFragment extends BaseFragment {

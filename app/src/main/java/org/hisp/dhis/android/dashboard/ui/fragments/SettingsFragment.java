@@ -19,7 +19,7 @@ import org.hisp.dhis.android.dashboard.ui.activities.LauncherActivity;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.views.FontEditText;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -27,7 +27,7 @@ import butterknife.OnClick;
  * Created by arazabishov on 7/27/15.
  */
 public final class SettingsFragment extends BaseFragment {
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
     FontEditText widthEditText;
     FontEditText heightEditText;
